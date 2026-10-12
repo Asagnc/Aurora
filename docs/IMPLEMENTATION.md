@@ -42,6 +42,8 @@ SQLite WAL 与外键；IO 线程操作，串行写事务。消息/协议记录�
 - lint 无错误，保留一项 MonochromeLauncherIcon 警告。两次单色衍生图不合格，未采用。
 - 界面已实际启动与检查。无真实 API 密钥，未验证真实服务计费、缓存命中或模型效果。
 - 未连接 ARM64/Root 手机；未证明 Root、手机 APK/NDK 编译或性能领先。
+- [GitHub Linux CI](https://github.com/Asagnc/Aurora/actions/runs/38269980475) 对 f70ac51 通过核心测试、debug/release 构建和 lint，并保存开发构建文件。
+- 模拟器界面操作已验证创建、重命名、置顶、多选和两个会话批量删除；验收用会话随后清理。
 
 ## 构建与已处理陷阱
 

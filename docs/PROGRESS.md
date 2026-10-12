@@ -42,6 +42,7 @@ Android 16+、Kotlin/Compose、RootService/Binder、系统 WebView、三类空�
 - 验证命令：./gradlew :core:test :app:assembleDebug :app:assembleRelease :app:lintDebug :app:verifyDevicePersistence。
 - 最后一项要求已启动模拟器，强制至少六项测试；零测试不会被接受。
 - GitHub Actions 保存开发构建；release 未正式签名，debug APK 只是开发预览。
+- f70ac51 的 Linux CI 已通过核心测试、Android debug/release/lint：[验证与构建文件](https://github.com/Asagnc/Aurora/actions/runs/38269980475)。
 
 ## 下一步
 
