@@ -1,4 +1,4 @@
-name: Core verification
+name: Core and Android verification
 on:
   push:
   pull_request:
@@ -10,7 +10,7 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
@@ -20,3 +20,15 @@ jobs:
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
       - name: Verify protocols and owned files
         run: ./gradlew :core:test --console=plain
+      - name: Install matching stable Android SDK
+        run: sdkmanager "platforms;android-37.0" "build-tools;36.0.0"
+      - name: Build Android application and run lint
+        run: ./gradlew :app:assembleDebug :app:assembleRelease :app:lintDebug --console=plain
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: aurora-development-builds
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+          retention-days: 14

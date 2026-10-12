@@ -12,6 +12,7 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "0.1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildFeatures { compose = true; aidl = true }
     compileOptions {
@@ -42,4 +43,30 @@ dependencies {
     implementation("com.github.topjohnwu.libsu:core:6.0.0")
     implementation("com.github.topjohnwu.libsu:service:6.0.0")
     debugImplementation("androidx.compose.ui:ui-tooling")
+    androidTestImplementation("androidx.test:runner:1.7.0")
+    androidTestImplementation("androidx.test.ext:junit:1.3.0")
+}
+
+abstract class VerifyDeviceResults : DefaultTask() {
+    @get:InputFiles @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val reports: ConfigurableFileCollection
+
+    @TaskAction fun verify() {
+        val documents = reports.files.map { file ->
+            javax.xml.parsers.DocumentBuilderFactory.newInstance().apply {
+                setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
+            }.newDocumentBuilder().parse(file).documentElement
+        }
+        check(documents.isNotEmpty()) { "No device test reports were produced" }
+        val count = documents.sumOf { it.getAttribute("tests").toInt() }
+        check(count >= 6) { "Expected at least six persistence tests; received $count" }
+        check(documents.all { it.getAttribute("failures").toInt() == 0 && it.getAttribute("errors").toInt() == 0 }) {
+            "Device tests failed"
+        }
+    }
+}
+
+tasks.register<VerifyDeviceResults>("verifyDevicePersistence") {
+    dependsOn("connectedDebugAndroidTest")
+    reports.from(fileTree(layout.buildDirectory.dir("outputs/androidTest-results/connected/debug")) { include("**/*.xml") })
 }

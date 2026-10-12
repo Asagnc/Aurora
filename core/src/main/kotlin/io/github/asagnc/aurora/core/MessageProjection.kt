@@ -10,10 +10,11 @@ object MessageProjection {
         )))
     }
 
-    fun history(conversation: Conversation, connection: Connection): List<JsonObject> {
+    fun history(conversation: Conversation, connection: Connection, prefixFingerprint: String): List<JsonObject> {
         val native = conversation.wire
         if (native != null && native.connectionId == connection.id && native.model == connection.model &&
-            native.protocol == connection.protocol) return native.entries
+            native.protocol == connection.protocol && native.baseUrl == connection.baseUrl &&
+            native.credentialRevision == connection.credentialRevision && native.prefixFingerprint == prefixFingerprint) return native.entries
         return conversation.messages.filter { it.complete && it.role in setOf("user", "assistant") }
             .map { message(connection.protocol, it.role, it.text) }
     }
@@ -24,5 +25,12 @@ object MessageProjection {
         Protocol.ANTHROPIC -> objectOf("role" to string("user"), "content" to JsonArray(listOf(
             objectOf("type" to string("tool_result"), "tool_use_id" to string(call.id), "content" to string(output))
         )))
+    }
+
+    fun results(protocol: Protocol, results: List<Pair<ToolCall, String>>): List<JsonObject> {
+        if (protocol != Protocol.ANTHROPIC) return results.map { (call, output) -> result(protocol, call, output) }
+        return listOf(objectOf("role" to string("user"), "content" to JsonArray(results.map { (call, output) ->
+            objectOf("type" to string("tool_result"), "tool_use_id" to string(call.id), "content" to string(output))
+        })))
     }
 }

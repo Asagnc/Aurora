@@ -15,9 +15,14 @@ class AgentLoop(private val transport: ModelTransport, private val executor: Too
         while (true) {
             currentCoroutineContext().ensureActive()
             val text = StringBuilder()
+            var lastUpdate = 0L
             val turn = transport.generate(request.copy(history = history)) { delta ->
                 text.append(delta)
-                onUpdate(RunUpdate(text.toString(), Usage(), "生成回复"))
+                val now = System.nanoTime()
+                if (now - lastUpdate >= 50_000_000) {
+                    onUpdate(RunUpdate(text.toString(), Usage(), "生成回复"))
+                    lastUpdate = now
+                }
             }
             history += turn.nativeEntries
             if (turn.calls.isEmpty()) {
@@ -28,6 +33,8 @@ class AgentLoop(private val transport: ModelTransport, private val executor: Too
             require(turn.stopReason in setOf("tool_calls", "tool_use", "completed")) {
                 "拒绝执行未完成或被截断的工具调用"
             }
+            require(turn.calls.map { it.id }.distinct().size == turn.calls.size) { "Duplicate tool call identifiers" }
+            val results = mutableListOf<Pair<ToolCall, String>>()
             for (call in turn.calls) {
                 currentCoroutineContext().ensureActive()
                 onUpdate(RunUpdate(turn.text, turn.usage, "执行 ${call.name}"))
@@ -38,8 +45,9 @@ class AgentLoop(private val transport: ModelTransport, private val executor: Too
                         "error" to string(failure.message ?: failure.javaClass.simpleName)
                     ))
                 }
-                history += MessageProjection.result(request.connection.protocol, call, output)
+                results += call to output
             }
+            history += MessageProjection.results(request.connection.protocol, results)
             checkpoint(history.toList())
         }
     }

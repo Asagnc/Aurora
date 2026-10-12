@@ -8,6 +8,8 @@ import java.util.UUID
 @Serializable
 enum class Protocol { CHAT, RESPONSES, ANTHROPIC }
 
+@Serializable enum class Authentication { AUTOMATIC, BEARER, API_KEY }
+
 @Serializable
 data class Connection(
     val id: String = UUID.randomUUID().toString(),
@@ -19,6 +21,8 @@ data class Connection(
     val effort: String = "auto",
     val enabled: Boolean = true,
     val official: Boolean = false,
+    val authentication: Authentication = Authentication.AUTOMATIC,
+    val credentialRevision: String = "",
 )
 
 @Serializable
@@ -36,6 +40,9 @@ data class WireHistory(
     val protocol: Protocol,
     val effort: String,
     val entries: List<JsonObject> = emptyList(),
+    val credentialRevision: String = "",
+    val baseUrl: String = "",
+    val prefixFingerprint: String = "",
 )
 
 @Serializable

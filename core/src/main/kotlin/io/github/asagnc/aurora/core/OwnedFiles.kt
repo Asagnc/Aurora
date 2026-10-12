@@ -52,6 +52,14 @@ class OwnedFiles(private val root: Path, private val writable: Boolean = true) {
         coroutineScope { requests.map { request -> async { reads.withPermit { read(request) } } }.awaitAll() }
     }
 
+    suspend fun list(relative: String = "", limit: Int = 200): List<Pair<String, Boolean>> = withContext(Dispatchers.IO) {
+        require(limit in 1..200)
+        val directory = if (relative.isEmpty()) root else resolve(relative)
+        require(Files.isDirectory(directory, LinkOption.NOFOLLOW_LINKS))
+        Files.list(directory).use { entries -> entries.filter { it.fileName.toString() != ".aurora-transactions" }
+            .sorted().limit(limit.toLong()).map { root.relativize(it).toString() to Files.isDirectory(it, LinkOption.NOFOLLOW_LINKS) }.toList() }
+    }
+
     private fun read(request: FileRead): FileSlice = try {
         require(request.offset >= 0 && request.limit in 1..65536)
         val path = resolve(request.path)

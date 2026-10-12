@@ -13,6 +13,7 @@ Research date: 2026-10-12.
 - Android-native execution, PRoot and Root chroot are separate execution backends. PRoot is not inserted into every tool or model request.
 - NDK C/C++ is used where a native tool or measured bottleneck requires it, rather than rewriting all orchestration into a native layer.
 - Latest stable versions are pinned reproducibly and tested as a combination. Android 16 remains the minimum even when compiling and targeting a newer stable SDK.
+- Persistence uses Android-native SQLite with WAL and append-only message/native-history records, confirmed on 2026-10-12.
 
 Approved concept assets: [launcher artwork](assets/approved-icon.png), [chat and drawer preview](assets/approved-chat-ui.png). These are visual references, not implemented screenshots.
 

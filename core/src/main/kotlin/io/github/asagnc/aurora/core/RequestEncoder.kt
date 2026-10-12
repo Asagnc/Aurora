@@ -5,7 +5,7 @@ import kotlinx.serialization.json.*
 object RequestEncoder {
     fun encode(request: ModelRequest): JsonObject {
         val connection = request.connection
-        require(connection.effort in CachePolicy.supportedEfforts(connection)) { "模型不支持此思考等级" }
+        ModelRules.validate(request)
         val fields = linkedMapOf<String, JsonElement>("model" to string(connection.model), "stream" to JsonPrimitive(true))
         when (connection.protocol) {
             Protocol.CHAT -> {
