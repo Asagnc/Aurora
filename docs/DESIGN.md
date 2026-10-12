@@ -4,6 +4,18 @@ Status: product requirements and cache, batch tools, browser and architecture co
 
 Research date: 2026-10-12.
 
+## Approved architecture
+
+- Kotlin is the primary implementation language; the protocol/file core is independent of Android UI.
+- Jetpack Compose and Material 3 render the native application. WebView is the browsing engine, not the application UI renderer.
+- Privileged Android work uses libsu RootService and Binder after authorization; the ordinary path remains available without Root.
+- The app uses the device's existing Linux kernel. No custom kernel, ROM replacement or handset-specific modification is part of the baseline.
+- Android-native execution, PRoot and Root chroot are separate execution backends. PRoot is not inserted into every tool or model request.
+- NDK C/C++ is used where a native tool or measured bottleneck requires it, rather than rewriting all orchestration into a native layer.
+- Latest stable versions are pinned reproducibly and tested as a combination. Android 16 remains the minimum even when compiling and targeting a newer stable SDK.
+
+Approved concept assets: [launcher artwork](assets/approved-icon.png), [chat and drawer preview](assets/approved-chat-ui.png). These are visual references, not implemented screenshots.
+
 ## Confirmed product requirements
 
 - Application name: Aurora. Application ID: `io.github.asagnc.aurora`.

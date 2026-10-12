@@ -20,6 +20,7 @@
 
 - Gradle 9.8.1 + AGP 9.4.1 + Kotlin 2.4.21：`:core:compileKotlin` 通过。
 - `:core:test`：16 项测试通过，覆盖 SSE 边界、断流拒绝、参数分片、签名/原生状态保留、取消传播、缓存分类、文件冲突、路径边界及中断恢复。
+- GitHub Linux CI 对代码提交 `05361af` 独立执行上述测试，通过：[验证记录](https://github.com/Asagnc/Aurora/actions/runs/38262305268)。这不是 Android UI 或手机运行验收。
 - 本机未连接 ADB 手机，没有 Root、ARM64 工具链或性能实测结果。
 
 Android 应用当前是构建配置；还没有可运行界面或可交付 APK。完整待办见 [PROGRESS.md](PROGRESS.md)。
