@@ -154,9 +154,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         app.conversations.setRunState(id, "running")
         val user = ChatMessage(role = "user", text = text)
         val previous = state.value.current?.activeScope?.let { app.nativeHistory.load(id, it) }
-        val compatible = previous?.takeIf { it.connectionId == connection.id && it.model == connection.model &&
-            it.protocol == connection.protocol && it.baseUrl == connection.baseUrl && it.credentialRevision == connection.credentialRevision &&
-            it.prefixFingerprint == fingerprint && state.value.current?.runState != "interrupted" }
+        val compatible = previous?.takeIf { CachePolicy.canReuse(it, connection, fingerprint) && state.value.current?.runState != "interrupted" }
         val projected = compatible?.entries ?: allMessages(id).filter { it.complete }.map { MessageProjection.message(connection.protocol, it.role, it.text) }
         app.conversations.appendMessage(id, user)
         mutable.update { it.copy(messages = it.messages + user) }
@@ -164,15 +162,16 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         val observations = if (ledger.isEmpty()) emptyList() else listOf(MessageProjection.message(connection.protocol, "user",
             "Prior tool execution ledger; completed actions must not be automatically replayed, uncertain actions require inspection:\n" +
                 ledger.joinToString("\n") { "${it.tool} (${it.state}): ${it.result ?: "outcome unknown"}" }))
-        val history = projected + observations + MessageProjection.message(connection.protocol, "user", text)
+        val continuation = compatible?.let { NativeContinuation.append(it, connection, fingerprint, text) }
+        val history = continuation?.history ?: (projected + observations + MessageProjection.message(connection.protocol, "user", text))
         val scope = if (compatible != null) requireNotNull(state.value.current?.activeScope).also {
-            app.nativeHistory.append(id, it, compatible.entries.size.toLong(), history.takeLast(1))
+            app.nativeHistory.append(id, it, compatible.entries.size.toLong(), requireNotNull(continuation).appended)
         } else app.nativeHistory.begin(id, WireHistory(connection.id, connection.model, connection.protocol, connection.effort,
-            history, connection.credentialRevision, connection.baseUrl, fingerprint))
+            history, connection.credentialRevision, connection.baseUrl, fingerprint, connection.authentication))
         var savedCount = history.size
         val transport = HttpModelTransport { credential.token }
         val result = AgentLoop(transport, app.toolRuns.recording(id, files)).run(
-            ModelRequest(connection, SYSTEM, history, files.definitions),
+            ModelRequest(continuation?.connection ?: connection, SYSTEM, history, files.definitions),
             { update -> mutable.update { it.copy(streaming = update.text, stage = update.stage) } },
             { entries -> app.nativeHistory.append(id, scope, savedCount.toLong(), entries.drop(savedCount)); savedCount = entries.size })
         app.conversations.appendMessage(id, ChatMessage(role = "assistant", text = result.text))

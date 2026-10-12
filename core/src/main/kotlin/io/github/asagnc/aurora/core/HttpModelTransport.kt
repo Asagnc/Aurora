@@ -81,8 +81,11 @@ class HttpModelTransport private constructor(
             Authentication.AUTOMATIC -> if (connection.protocol == Protocol.ANTHROPIC) Authentication.API_KEY else Authentication.BEARER
             else -> connection.authentication
         }
-        if (authentication == Authentication.API_KEY) builder.header("x-api-key", token)
-        else builder.header("Authorization", "Bearer $token")
+        when (authentication) {
+            Authentication.API_KEY -> builder.header("x-api-key", token)
+            Authentication.API_KEY_HEADER -> builder.header("api-key", token)
+            else -> builder.header("Authorization", "Bearer $token")
+        }
         if (connection.protocol == Protocol.ANTHROPIC) builder.header("anthropic-version", "2023-06-01")
         return builder.build()
     }

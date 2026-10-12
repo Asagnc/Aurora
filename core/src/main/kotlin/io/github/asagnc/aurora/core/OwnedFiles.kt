@@ -144,7 +144,7 @@ class OwnedFiles(private val root: Path, private val writable: Boolean = true) {
     private fun rollback(tx: Path) {
         val journalPath = tx.resolve("journal.json")
         if (!Files.exists(journalPath)) { removeTransaction(tx); return }
-        val journal = WireJson.decodeFromString(EditJournal.serializer(), Files.readString(journalPath))
+        val journal = WireJson.decodeFromString(EditJournal.serializer(), Files.readAllBytes(journalPath).decodeToString(throwOnInvalidSequence = true))
         journal.files.forEachIndexed { index, backup ->
             val target = resolve(backup.path)
             val current = version(target)

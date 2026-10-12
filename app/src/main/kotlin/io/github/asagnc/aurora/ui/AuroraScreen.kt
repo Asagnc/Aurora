@@ -80,7 +80,7 @@ import kotlinx.coroutines.launch
     }
     if (providers) ProviderDialog(state.connections, ::choose, model::saveConnection) { providers = false }
     pending?.let { next -> AlertDialog(onDismissRequest = { pending = null }, title = { Text("切换配置") },
-        text = { Text("此变更可能使缓存重新建立；中转的保留行为尚不能确认。当前任务保持原配置，变更用于下一轮。") },
+        text = { Text(CachePolicy.switchExplanation(state.selected?.let { CachePolicy.impact(it, next) } ?: CacheImpact.NEW_SCOPE)) },
         confirmButton = { TextButton(onClick = { model.selectConnection(next); pending = null }) { Text("确认切换") } },
         dismissButton = { TextButton(onClick = { pending = null }) { Text("取消") } }) }
     metrics?.let { kind -> MetricDialog(kind, state) { metrics = null } }

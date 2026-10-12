@@ -12,9 +12,7 @@ object MessageProjection {
 
     fun history(conversation: Conversation, connection: Connection, prefixFingerprint: String): List<JsonObject> {
         val native = conversation.wire
-        if (native != null && native.connectionId == connection.id && native.model == connection.model &&
-            native.protocol == connection.protocol && native.baseUrl == connection.baseUrl &&
-            native.credentialRevision == connection.credentialRevision && native.prefixFingerprint == prefixFingerprint) return native.entries
+        if (native != null && !conversation.interrupted && CachePolicy.canReuse(native, connection, prefixFingerprint)) return native.entries
         return conversation.messages.filter { it.complete && it.role in setOf("user", "assistant") }
             .map { message(connection.protocol, it.role, it.text) }
     }

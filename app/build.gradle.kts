@@ -58,8 +58,9 @@ abstract class VerifyDeviceResults : DefaultTask() {
             }.newDocumentBuilder().parse(file).documentElement
         }
         check(documents.isNotEmpty()) { "No device test reports were produced" }
-        val count = documents.sumOf { it.getAttribute("tests").toInt() }
-        check(count >= 6) { "Expected at least six persistence tests; received $count" }
+        check(documents.all { it.getAttribute("tests").toInt() >= 8 }) {
+            "Expected at least eight persistence tests per device report"
+        }
         check(documents.all { it.getAttribute("failures").toInt() == 0 && it.getAttribute("errors").toInt() == 0 }) {
             "Device tests failed"
         }

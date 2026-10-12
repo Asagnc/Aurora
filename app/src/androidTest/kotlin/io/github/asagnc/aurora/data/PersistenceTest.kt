@@ -54,6 +54,33 @@ class PersistenceTest {
         } finally { database.close(); context.deleteDatabase(name) }
     }
 
+    @Test fun reasoningUpdateSurvivesNativeDatabaseReopen() = runBlocking {
+        val name = "test-${UUID.randomUUID()}.db"
+        val database = AuroraDatabase(context, name)
+        try {
+            val store = ConversationStore(database)
+            val native = NativeHistoryStore(store)
+            val id = store.create()
+            val connection = Connection(name = "OpenAI", baseUrl = "https://api.openai.com/v1", protocol = Protocol.RESPONSES,
+                model = "gpt-6.1-sol", effort = "low")
+            val history = WireHistory(connection.id, connection.model, connection.protocol, connection.effort,
+                listOf(MessageProjection.message(connection.protocol, "user", "initial")), baseUrl = connection.baseUrl,
+                prefixFingerprint = "prefix")
+            val scope = native.begin(id, history)
+            val update = NativeContinuation.append(history, connection.copy(effort = "high"), "prefix", "next")
+            native.append(id, scope, history.entries.size.toLong(), update.appended)
+            database.close()
+            val reopened = AuroraDatabase(context, name)
+            try {
+                val recovered = requireNotNull(NativeHistoryStore(ConversationStore(reopened)).load(id, scope))
+                assertEquals("low", recovered.effort)
+                assertEquals("high", CachePolicy.effectiveEffort(recovered))
+                assertEquals(update.history, recovered.entries)
+                assertEquals(1, NativeContinuation.append(recovered, connection.copy(effort = "high"), "prefix", "another").appended.size)
+            } finally { reopened.close() }
+        } finally { database.close(); context.deleteDatabase(name) }
+    }
+
     @Test fun keystoreSecretsSurviveRecreationAndSameKeyKeepsRevision() = runBlocking {
         val id = UUID.randomUUID().toString()
         val vault = CredentialVault(context)
@@ -80,14 +107,38 @@ class PersistenceTest {
             val id = store.create()
             spaces.conversation(id).editBatch(listOf(FileEdit("owned", null, "discard")))
             Files.createDirectories(sharedPath.parent)
-            Files.writeString(sharedPath, "retain")
+            Files.write(sharedPath, "retain".toByteArray())
             val ownerPath = context.filesDir.toPath().resolve("spaces/conversations/$id")
             Files.createSymbolicLink(ownerPath.resolve("shared-link"), sharedPath)
             spaces.delete(id) {}
             assertNull(store.header(id))
             assertFalse(Files.exists(ownerPath))
-            assertEquals("retain", Files.readString(sharedPath))
+            assertEquals("retain", Files.readAllBytes(sharedPath).decodeToString())
         } finally { database.close(); context.deleteDatabase(name); Files.deleteIfExists(sharedPath) }
+    }
+
+    @Test fun fileJournalRecoveryAndListingWorkOnBaseAndroid16() = runBlocking {
+        val name = "test-${UUID.randomUUID()}.db"
+        val database = AuroraDatabase(context, name)
+        val store = ConversationStore(database)
+        val spaces = SpaceStore(context, store)
+        val id = store.create()
+        try {
+            val files = spaces.conversation(id)
+            val root = context.filesDir.toPath().resolve("spaces/conversations/$id")
+            val tx = root.resolve(".aurora-transactions/interrupted")
+            Files.createDirectories(tx)
+            Files.write(tx.resolve("0.old"), "old".toByteArray())
+            Files.write(root.resolve("a"), "new".toByteArray())
+            fun hash(text: String) = java.security.MessageDigest.getInstance("SHA-256").digest(text.toByteArray()).joinToString("") { "%02x".format(it) }
+            val journal = """{"files":[{"path":"a","existed":true,"oldVersion":"${hash("old")}","newVersion":"${hash("new")}"}]}"""
+            Files.write(tx.resolve("journal.json"), journal.toByteArray())
+            files.recover()
+            assertEquals("old", files.readBatch(listOf(FileRead("a"))).single().text)
+            assertEquals(listOf("a" to false), files.list())
+            assertFalse(Files.exists(tx))
+            files.recover()
+        } finally { spaces.delete(id) {}; database.close(); context.deleteDatabase(name) }
     }
 
     @Test fun interruptedDeletionResumesFromPersistentFlag() = runBlocking {

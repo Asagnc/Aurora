@@ -60,6 +60,18 @@ data: {"type":"message_stop"}
         }
     }
 
+    @Test fun plainApiKeyHeaderIsDistinctFromAnthropicHeaderAndBearer() = runBlocking {
+        Fixture { exchange ->
+            assertEquals("fixture-secret", exchange.requestHeaders.getFirst("api-key"))
+            assertNull(exchange.requestHeaders.getFirst("x-api-key"))
+            assertNull(exchange.requestHeaders.getFirst("Authorization"))
+            exchange.sse("data: {\"choices\":[{\"delta\":{\"content\":\"ok\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n")
+        }.use { fixture ->
+            val request = fixture.request(Protocol.CHAT)
+            assertEquals("ok", transport().generate(request.copy(connection = request.connection.copy(authentication = Authentication.API_KEY_HEADER))) {}.text)
+        }
+    }
+
     @Test fun errorsNeverExposeResponseBodyOrCredentials() = runBlocking {
         Fixture { exchange ->
             val bytes = "fixture-secret".toByteArray()
