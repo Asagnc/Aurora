@@ -58,6 +58,8 @@ SQLite WAL 与外键；IO 线程操作，串行写事务。消息/协议记录�
 
 ## 构建与已处理陷阱
 
+2026-10-15：0.1.1 在 API 37 模拟器检查实际主界面、会话抽屉和供应商面板；确认 Gemini 弧线路径恢复正确形状，键盘弹出后输入框、操作按钮与三项指标仍位于键盘上方。输入测试未发送模型请求。当前本地核心 42 项、模拟器 9 项通过，debug/release/lint 构建成功；lint 仍有单色启动图标和 MiMo 长路径两项警告。新版真机检查按用户要求放到最后。
+
 固定 Gradle 9.8.1、AGP 9.4.1、Kotlin 2.4.21、JDK 25、SDK platforms;android-37.0、Build Tools 36.0.0。最低 SDK 36。
 
 同一仓库避免同时运行两个配置缓存构建。Android 平台 AtomicFile 无 exists；用 openRead 支持备份恢复。测试进程启动失败曾产生零测试 XML 而构建返回成功；默认 verify-emulator.ps1 只操作明确指定的实际模拟器、只覆盖安装、不卸载，且强制至少九项通过。Gradle connectedDebugAndroidTest 曾在收尾卸载手机应用，不再作为连接日常手机时的默认工作流。资源目录移动曾导致 AGP 增量遗漏 launcher；清理 app 构建输出后完整构建通过。
