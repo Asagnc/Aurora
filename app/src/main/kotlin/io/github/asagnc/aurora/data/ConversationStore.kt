@@ -33,6 +33,12 @@ class ConversationStore(private val database: AuroraDatabase) {
             .use { cursor -> buildList { while (cursor.moveToNext()) add(cursor.header()) } }
     }
 
+    suspend fun searchTitle(query: String): List<SessionHeader> = read { db ->
+        require(query.length <= 200)
+        db.rawQuery("SELECT * FROM conversations WHERE deleting = 0 AND instr(lower(title), lower(?)) > 0 ORDER BY pinned DESC, updated_at DESC, id LIMIT 100", arrayOf(query))
+            .use { cursor -> buildList { while (cursor.moveToNext()) add(cursor.header()) } }
+    }
+
     suspend fun header(id: String): SessionHeader? = withContext(Dispatchers.IO) {
         database.readableDatabase.rawQuery("SELECT * FROM conversations WHERE id = ? AND deleting = 0", arrayOf(id))
             .use { if (it.moveToFirst()) it.header() else null }

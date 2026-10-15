@@ -18,6 +18,7 @@ class AuroraApplication : Application() {
     val spaces by lazy { SpaceStore(this, conversations) }
     val toolRuns by lazy { ToolRunStore(conversations) }
     val tasks = OwnedTasks()
+    val root by lazy { io.github.asagnc.aurora.root.RootController(this) }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     val ready by lazy { scope.async { conversations.recoverInterruptedRuns(); spaces.recoverDeletes() } }
 }

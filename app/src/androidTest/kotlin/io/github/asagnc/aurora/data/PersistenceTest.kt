@@ -156,6 +156,20 @@ class PersistenceTest {
         } finally { database.close(); context.deleteDatabase(name) }
     }
 
+    @Test fun titleSearchFindsUnloadedRowsAndTreatsWildcardsLiterally() = runBlocking {
+        val name = "test-${UUID.randomUUID()}.db"
+        val database = AuroraDatabase(context, name)
+        try {
+            val store = ConversationStore(database)
+            val older = store.create("needle%_original")
+            store.create("needleXoriginal")
+            repeat(105) { store.create("recent-$it") }
+            assertFalse(store.list().any { it.id == older })
+            assertEquals(listOf(older), store.searchTitle("%_").map { it.id })
+            assertEquals(2, store.searchTitle("NEEDLE").size)
+        } finally { database.close(); context.deleteDatabase(name) }
+    }
+
     @Test fun interruptedToolsBecomeUncertainWithoutReplayingCompletedTools() = runBlocking {
         val name = "test-${UUID.randomUUID()}.db"
         val database = AuroraDatabase(context, name)

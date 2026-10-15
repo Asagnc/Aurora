@@ -2,13 +2,19 @@ package io.github.asagnc.aurora.ui
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -17,87 +23,80 @@ import io.github.asagnc.aurora.core.*
 import io.github.asagnc.aurora.runtime.ChatViewModel
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable fun AuroraScreen(model: ChatViewModel) {
     val state by model.state.collectAsStateWithLifecycle()
     val drawer = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var providers by remember { mutableStateOf(false) }
+    var models by remember { mutableStateOf(false) }
     var metrics by remember { mutableStateOf<String?>(null) }
-    var draft by remember(state.current?.id) { mutableStateOf("") }
+    var space by remember { mutableStateOf<String?>(null) }
+    var draft by rememberSaveable { mutableStateOf("") }
     var pending by remember { mutableStateOf<Connection?>(null) }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris -> if (uris.isNotEmpty()) model.importFiles(uris) }
     fun choose(connection: Connection) {
         if (state.messages.isNotEmpty() && state.selected?.let { CachePolicy.impact(it, connection) } != CacheImpact.UNCHANGED) pending = connection
         else model.selectConnection(connection)
     }
-    ModalNavigationDrawer(drawerState = drawer, drawerContent = {
-        ConversationDrawer(state.sessions, model, onOpen = { id -> model.selectConversation(id); scope.launch { drawer.close() } },
-            onProviders = { providers = true }, onSettings = { metrics = "settings" })
+    ModalNavigationDrawer(drawerState = drawer, scrimColor = AuroraInk.copy(alpha = 0.28f), drawerContent = {
+        ConversationDrawer(state.sessions, model, onOpen = { id -> draft = ""; model.selectConversation(id); scope.launch { drawer.close() } },
+            onProviders = { providers = true }, onSettings = { metrics = "settings" }, onSpace = { space = it },
+            onNew = { draft = ""; model.newConversation(); scope.launch { drawer.close() } })
     }) {
-        Scaffold(topBar = { TopAppBar(title = { Text("Aurora") }, navigationIcon = {
-            IconButton(onClick = { scope.launch { drawer.open() } }) { LocalIcon(R.drawable.ic_menu, "会话抽屉") }
-        }, actions = { IconButton(onClick = { model.newConversation() }) { LocalIcon(R.drawable.ic_add, "新对话") } }) },
-            bottomBar = {
-                Column(Modifier.navigationBarsPadding().imePadding().padding(horizontal = 16.dp)) {
-                    Surface(shape = MaterialTheme.shapes.extraLarge, tonalElevation = 1.dp) {
-                        Column(Modifier.padding(12.dp)) {
-                            if (state.attachments.isNotEmpty()) Text("已导入 ${state.attachments.size} 个文件", style = MaterialTheme.typography.labelMedium)
-                            TextField(value = draft, onValueChange = { draft = it }, placeholder = { Text("给 Aurora 发消息…") },
-                                modifier = Modifier.fillMaxWidth(), maxLines = 6,
-                                colors = TextFieldDefaults.colors(focusedContainerColor = MaterialTheme.colorScheme.surface,
-                                    unfocusedContainerColor = MaterialTheme.colorScheme.surface))
-                            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                IconButton(onClick = { picker.launch(arrayOf("*/*")) }, enabled = !state.running) { LocalIcon(R.drawable.ic_attach_file, "导入文件") }
-                                EffortMenu(state.selected, ::choose)
-                                TextButton(onClick = { providers = true }) { Text(state.selected?.model ?: "选择模型", maxLines = 1) }
-                                FilledIconButton(onClick = { if (state.running) model.stop() else if (model.send(draft)) draft = "" }) {
-                                    LocalIcon(if (state.running) R.drawable.ic_stop else R.drawable.ic_send, if (state.running) "停止生成" else "发送")
-                                }
-                            }
-                        }
-                    }
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        val speed = state.usage.output?.takeIf { state.seconds > 0 }?.let { "≈%.1f tok/s".format(it / state.seconds) } ?: "— tok/s"
-                        TextButton(onClick = { metrics = "speed" }) { Text(speed, style = MaterialTheme.typography.labelMedium) }
-                        TextButton(onClick = { metrics = "cache" }) { Text(state.usage.cacheShare?.let { "缓存 %.1f%%".format(it * 100) } ?: "缓存 —", style = MaterialTheme.typography.labelMedium) }
-                        TextButton(onClick = { metrics = "context" }) { Text(state.usage.input?.let { "上下文 $it" } ?: "上下文 —", style = MaterialTheme.typography.labelMedium) }
-                    }
+        Scaffold(containerColor = MaterialTheme.colorScheme.background, topBar = {
+            Row(Modifier.fillMaxWidth().statusBarsPadding().height(56.dp).padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                IconButton({ scope.launch { drawer.open() } }) { LocalIcon(R.drawable.ic_menu, "会话抽屉") }
+                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) { Text("Aurora", style = MaterialTheme.typography.titleLarge) }
+                IconButton({ draft = ""; model.newConversation() }) { LocalIcon(R.drawable.ic_add, "新对话") }
+            }
+        }, bottomBar = {
+            ChatComposer(state, draft, { draft = it }, { picker.launch(arrayOf("*/*")) }, ::choose, { models = true },
+                { if (state.running) model.stop() else if (model.send(draft)) draft = "" }, { metrics = it })
+        }) { padding ->
+            if (state.messages.isEmpty() && state.streaming.isEmpty()) {
+                Column(Modifier.fillMaxSize().padding(padding).padding(horizontal = 32.dp), verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally) {
+                    Image(painterResource(R.drawable.aurora_artwork), "Aurora", Modifier.size(64.dp).clip(RoundedCornerShape(20.dp)))
+                    Spacer(Modifier.height(20.dp))
+                    Text("从一个想法开始", style = MaterialTheme.typography.headlineSmall)
+                    Spacer(Modifier.height(8.dp))
+                    Text("让 Aurora 帮你处理手机上的任务", color = AuroraMuted, style = MaterialTheme.typography.bodyMedium)
+                    if (state.connections.isEmpty()) TextButton({ providers = true }, Modifier.padding(top = 12.dp)) { Text("添加自己的 API 连接") }
                 }
-            }) { padding ->
-            LazyColumn(Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                if (state.olderBefore != null) item { TextButton(onClick = { model.loadOlderMessages() }) { Text("更早的消息") } }
-                if (state.messages.isEmpty()) item { Text("让 Aurora 帮你处理手机上的任务。先添加自己的 API 连接。", Modifier.padding(vertical = 32.dp)) }
-                items(state.messages, key = { it.id }) { message ->
-                    Surface(shape = MaterialTheme.shapes.large, color = if (message.role == "user") MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface) {
-                        SelectionContainer { Text(message.text + if (message.complete) "" else "\n（未完成）", Modifier.fillMaxWidth().padding(16.dp)) }
-                    }
-                }
-                if (state.streaming.isNotEmpty()) item { SelectionContainer { Text(state.streaming, Modifier.padding(16.dp)) } }
-                if (state.stage.isNotEmpty()) item { Text(state.stage, style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(bottom = 16.dp)) }
+            } else LazyColumn(Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp), contentPadding = PaddingValues(vertical = 16.dp)) {
+                if (state.olderBefore != null) item { TextButton({ model.loadOlderMessages() }) { Text("更早的消息") } }
+                items(state.messages, key = { it.id }) { message -> MessageBubble(message) }
+                if (state.streaming.isNotEmpty()) item { MessageBubble(ChatMessage(role = "assistant", text = state.streaming)) }
+                if (state.stage.isNotEmpty()) item { Text(state.stage, color = AuroraMuted, style = MaterialTheme.typography.bodySmall) }
             }
         }
     }
+    if (models) ModelPickerSheet(state.connections, state.selected, ::choose, { models = false; providers = true }) { models = false }
     if (providers) ProviderDialog(state.connections, ::choose, model::saveConnection) { providers = false }
+    space?.let { SpaceBrowserSheet(model, it) { space = null } }
     pending?.let { next -> AlertDialog(onDismissRequest = { pending = null }, title = { Text("切换配置") },
         text = { Text(CachePolicy.switchExplanation(state.selected?.let { CachePolicy.impact(it, next) } ?: CacheImpact.NEW_SCOPE)) },
-        confirmButton = { TextButton(onClick = { model.selectConnection(next); pending = null }) { Text("确认切换") } },
-        dismissButton = { TextButton(onClick = { pending = null }) { Text("取消") } }) }
-    metrics?.let { kind -> MetricDialog(kind, state) { metrics = null } }
+        confirmButton = { TextButton({ model.selectConnection(next); pending = null }) { Text("确认切换") } },
+        dismissButton = { TextButton({ pending = null }) { Text("取消") } }) }
+    metrics?.let { kind -> if (kind == "settings") SettingsDialog(model) { metrics = null } else MetricDialog(kind, state) { metrics = null } }
     state.error?.let { error -> AlertDialog(onDismissRequest = model::clearError, title = { Text("操作未完成") }, text = { Text(error) },
-        confirmButton = { TextButton(onClick = model::clearError) { Text("知道了") } }) }
+        confirmButton = { TextButton(model::clearError) { Text("知道了") } }) }
 }
 
-@Composable internal fun LocalIcon(resource: Int, label: String) { Icon(painterResource(resource), label) }
+@Composable internal fun LocalIcon(resource: Int, label: String) { Icon(painterResource(resource), label, Modifier.size(22.dp)) }
 
-@Composable private fun EffortMenu(connection: Connection?, choose: (Connection) -> Unit) {
-    var expanded by remember { mutableStateOf(false) }
-    Box {
-        TextButton(onClick = { expanded = true }, enabled = connection != null) { Text("思考 · ${connection?.effort ?: "auto"}") }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            connection?.let { current -> CachePolicy.supportedEfforts(current).forEach { effort ->
-                DropdownMenuItem(text = { Text(effort) }, onClick = { choose(current.copy(effort = effort)); expanded = false })
-            } }
+@Composable private fun MessageBubble(message: ChatMessage) {
+    val user = message.role == "user"
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = if (user) Arrangement.End else Arrangement.Start,
+        verticalAlignment = Alignment.Top) {
+        if (!user) {
+            Image(painterResource(R.drawable.aurora_artwork), "Aurora", Modifier.padding(top = 4.dp).size(28.dp).clip(RoundedCornerShape(9.dp)))
+            Spacer(Modifier.width(8.dp))
+        }
+        Surface(Modifier.widthIn(max = 300.dp), shape = RoundedCornerShape(20.dp), color = if (user) AuroraMint else MaterialTheme.colorScheme.surface,
+            border = if (user) null else BorderStroke(1.dp, AuroraBorder)) {
+            SelectionContainer { Text(message.text + if (message.complete) "" else "\n（未完成）", Modifier.padding(14.dp), style = MaterialTheme.typography.bodyLarge) }
         }
     }
 }

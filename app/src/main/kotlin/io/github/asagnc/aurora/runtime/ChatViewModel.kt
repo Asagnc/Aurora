@@ -24,6 +24,8 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     private val app = application as AuroraApplication
     private val mutable = MutableStateFlow(ChatState())
     val state = mutable.asStateFlow()
+    val rootState = app.root.state
+    private var rootRequest: Job? = null
     private var run: Job? = null
     private var importing: Job? = null
 
@@ -102,6 +104,19 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         action { app.conversations.saveConnection(connection); refresh() }
     }
     fun clearError() { mutable.update { it.copy(error = null) } }
+    suspend fun searchSessions(query: String) = app.conversations.searchTitle(query)
+    private suspend fun inspectedSpace(name: String): OwnedFiles = when (name) {
+        "conversation" -> app.spaces.conversation(requireNotNull(state.value.current?.id) { "请先创建会话" })
+        "resources" -> app.spaces.sharedResources()
+        "workspace" -> app.spaces.sharedWorkspace()
+        else -> error("Unknown space")
+    }
+    suspend fun listSpace(name: String, path: String) = inspectedSpace(name).list(path)
+    suspend fun readSpace(name: String, path: String) = inspectedSpace(name).readBatch(listOf(FileRead(path))).single()
+    fun enableRoot() {
+        if (rootRequest?.isActive != true) rootRequest = action { app.root.connect() }
+    }
+    fun disableRoot() = action { rootRequest?.cancelAndJoin(); app.root.disconnect() }
     fun stop() { run?.cancel() }
     private suspend fun stopAndJoin() { importing?.cancelAndJoin(); run?.cancelAndJoin() }
 

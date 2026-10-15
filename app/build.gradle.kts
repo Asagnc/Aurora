@@ -10,9 +10,10 @@ android {
         applicationId = "io.github.asagnc.aurora"
         minSdk = 36
         targetSdk = 37
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.1.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["notAnnotation"] = "io.github.asagnc.aurora.root.RootRequired"
     }
     buildFeatures { compose = true; aidl = true }
     compileOptions {
@@ -58,7 +59,7 @@ abstract class VerifyDeviceResults : DefaultTask() {
             }.newDocumentBuilder().parse(file).documentElement
         }
         check(documents.isNotEmpty()) { "No device test reports were produced" }
-        check(documents.all { it.getAttribute("tests").toInt() >= 8 }) {
+        check(documents.all { it.getAttribute("tests").toInt() - it.getAttribute("skipped").ifEmpty { "0" }.toInt() >= 8 }) {
             "Expected at least eight persistence tests per device report"
         }
         check(documents.all { it.getAttribute("failures").toInt() == 0 && it.getAttribute("errors").toInt() == 0 }) {

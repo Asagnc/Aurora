@@ -1,0 +1,1 @@
+-keep class io.github.asagnc.aurora.root.AuroraRootService { public <init>(); }
