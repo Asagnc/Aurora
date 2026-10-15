@@ -45,8 +45,7 @@ import kotlinx.coroutines.launch
     BackHandler(enabled = drawer.isOpen) { scope.launch { drawer.close() } }
     ModalNavigationDrawer(drawerState = drawer, scrimColor = AuroraInk.copy(alpha = 0.28f), drawerContent = {
         ConversationDrawer(state.sessions, model, onOpen = { id -> draft = ""; model.selectConversation(id); scope.launch { drawer.close() } },
-            onProviders = { providers = true }, onSettings = { metrics = "settings" }, onSpace = { conversationFilesOnly = false; space = it },
-            onNew = { draft = ""; model.newConversation(); scope.launch { drawer.close() } })
+            onProviders = { providers = true }, onSettings = { metrics = "settings" }, onSpace = { conversationFilesOnly = false; space = it })
     }) {
         Scaffold(containerColor = MaterialTheme.colorScheme.background, topBar = {
             Row(Modifier.fillMaxWidth().statusBarsPadding().height(56.dp).padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -54,19 +53,19 @@ import kotlinx.coroutines.launch
                 Box(Modifier.weight(1f), contentAlignment = Alignment.Center) { Text("Aurora", style = MaterialTheme.typography.titleLarge) }
                 Box {
                     IconButton({ menu = true }) { LocalIcon(R.drawable.ic_more_vert, "会话菜单") }
-                    DropdownMenu(menu, { menu = false }) {
-                        DropdownMenuItem(text = { Text("新会话") }, leadingIcon = { IconBadge(R.drawable.ic_add, androidx.compose.ui.graphics.Color(0xFF347EDD)) },
+                    DropdownMenu(menu, { menu = false }, shape = RoundedCornerShape(20.dp), containerColor = MaterialTheme.colorScheme.surface) {
+                        DropdownMenuItem(text = { Text("新会话") }, leadingIcon = { LocalIcon(R.drawable.ic_add, "新会话") },
                             onClick = { menu = false; draft = ""; model.newConversation() })
-                        DropdownMenuItem(text = { Text("本会话文件") }, leadingIcon = { IconBadge(R.drawable.ic_folder_open, androidx.compose.ui.graphics.Color(0xFF26A879)) },
+                        DropdownMenuItem(text = { Text("本会话文件") }, leadingIcon = { LocalIcon(R.drawable.ic_folder_open, "本会话文件") },
                             enabled = state.current != null, onClick = { menu = false; conversationFilesOnly = true; space = "conversation" })
-                        DropdownMenuItem(text = { Text("浏览器") }, leadingIcon = { IconBadge(R.drawable.ic_language, androidx.compose.ui.graphics.Color(0xFF8762DD)) },
+                        DropdownMenuItem(text = { Text("浏览器") }, leadingIcon = { LocalIcon(R.drawable.ic_language, "浏览器") },
                             enabled = state.current != null, onClick = { menu = false; browser = true })
                     }
                 }
             }
         }, bottomBar = {
             ChatComposer(state, draft, { draft = it }, { picker.launch(arrayOf("*/*")) }, ::choose, { models = true },
-                { if (state.running) model.stop() else if (model.send(draft)) draft = "" }, { metrics = it })
+                { if (state.running) model.stop() else if (model.send(draft)) draft = "" })
         }) { padding ->
             if (state.messages.isEmpty() && state.streaming.isEmpty()) {
                 Column(Modifier.fillMaxSize().padding(padding).padding(horizontal = 32.dp), verticalArrangement = Arrangement.Center,
@@ -82,6 +81,7 @@ import kotlinx.coroutines.launch
                 verticalArrangement = Arrangement.spacedBy(16.dp), contentPadding = PaddingValues(vertical = 16.dp)) {
                 if (state.olderBefore != null) item { TextButton({ model.loadOlderMessages() }) { Text("更早的消息") } }
                 items(state.messages, key = { it.id }) { message -> MessageBubble(message) }
+                if (state.toolRuns.isNotEmpty()) item { ToolActivity(state.toolRuns) }
                 if (state.streaming.isNotEmpty()) item { MessageBubble(ChatMessage(role = "assistant", text = state.streaming)) }
                 if (state.stage.isNotEmpty()) item { Text(state.stage, color = AuroraMuted, style = MaterialTheme.typography.bodySmall) }
             }
@@ -97,7 +97,7 @@ import kotlinx.coroutines.launch
         dismissButton = { TextButton({ pending = null }) { Text("取消") } }) }
     metrics?.let { kind -> if (kind == "settings") SettingsDialog(model,
         { metrics = null; providers = true }, { metrics = null; conversationFilesOnly = false; space = "workspace" }) { metrics = null }
-        else MetricDialog(kind, state) { metrics = null } }
+        }
     state.error?.let { error -> AlertDialog(onDismissRequest = model::clearError, title = { Text("操作未完成") }, text = { Text(error) },
         confirmButton = { TextButton(model::clearError) { Text("知道了") } }) }
 }
@@ -108,10 +108,6 @@ import kotlinx.coroutines.launch
     val user = message.role == "user"
     Row(Modifier.fillMaxWidth(), horizontalArrangement = if (user) Arrangement.End else Arrangement.Start,
         verticalAlignment = Alignment.Top) {
-        if (!user) {
-            Image(painterResource(R.drawable.aurora_artwork), "Aurora", Modifier.padding(top = 4.dp).size(28.dp).clip(RoundedCornerShape(9.dp)))
-            Spacer(Modifier.width(8.dp))
-        }
         Surface(Modifier.weight(1f, fill = false), shape = RoundedCornerShape(18.dp), color = if (user) AuroraMint else MaterialTheme.colorScheme.background) {
             SelectionContainer { Text(message.text + if (message.complete) "" else "\n（未完成）", Modifier.padding(if (user) 14.dp else 4.dp), style = MaterialTheme.typography.bodyLarge) }
         }

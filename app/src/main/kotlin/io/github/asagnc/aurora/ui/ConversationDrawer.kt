@@ -19,7 +19,7 @@ import io.github.asagnc.aurora.runtime.ChatViewModel
 import kotlinx.coroutines.delay
 
 @Composable internal fun ConversationDrawer(sessions: List<SessionHeader>, model: ChatViewModel,
-    onOpen: (String) -> Unit, onProviders: () -> Unit, onSettings: () -> Unit, onSpace: (String) -> Unit, onNew: () -> Unit) {
+    onOpen: (String) -> Unit, onProviders: () -> Unit, onSettings: () -> Unit, onSpace: (String) -> Unit) {
     var selecting by remember { mutableStateOf(false) }
     var selected by remember { mutableStateOf(emptySet<String>()) }
     var menu by remember { mutableStateOf<String?>(null) }
@@ -38,11 +38,6 @@ import kotlinx.coroutines.delay
                 Text("会话", style = MaterialTheme.typography.headlineSmall)
                 IconButton({ selecting = !selecting; selected = emptySet() }) { LocalIcon(R.drawable.ic_checklist, "多选会话") }
             }
-            FilledTonalButton(onNew, Modifier.fillMaxWidth().height(46.dp), shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.filledTonalButtonColors(containerColor = AuroraMint, contentColor = AuroraInk)) {
-                LocalIcon(R.drawable.ic_add, "新对话"); Spacer(Modifier.width(10.dp)); Text("新对话")
-            }
-            Spacer(Modifier.height(12.dp))
             SearchField(query, { query = it }, "搜索会话")
             if (selecting) Row {
                 TextButton({ model.pin(selected.toList(), true); selected = emptySet() }, enabled = selected.isNotEmpty()) { Text("置顶 ${selected.size}") }

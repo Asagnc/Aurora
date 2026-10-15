@@ -34,7 +34,7 @@ import io.github.asagnc.aurora.browser.BrowserController
         tab?.let { browser.navigate(it, address) }
     }
     LaunchedEffect(active?.id, active?.address) { address = active?.address.orEmpty() }
-    DisposableEffect(owner) { onDispose { browser.hide(owner) } }
+    DisposableEffect(owner) { browser.show(owner); onDispose { browser.hide(owner) } }
     FullPage("浏览器", dismiss) {
         val keyboard = LocalSoftwareKeyboardController.current
         val focus = LocalFocusManager.current

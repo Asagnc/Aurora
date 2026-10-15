@@ -179,6 +179,7 @@ class PersistenceTest {
             val id = store.create()
             val completed = tools.start(id, ToolCall("a", "write", objectOf()))
             tools.finish(completed, "committed")
+            assertTrue("A recorded call must not execute again", runCatching { tools.start(id, ToolCall("a", "write", objectOf())) }.isFailure)
             tools.start(id, ToolCall("b", "write", objectOf()))
             store.recoverInterruptedRuns()
             assertEquals(listOf("completed", "uncertain"), tools.list(id).map { it.state })

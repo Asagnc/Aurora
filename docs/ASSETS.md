@@ -9,3 +9,5 @@ Provider brand shapes come from [Lobe Icons static SVGs](https://github.com/lobe
 SVG compact arc flags are expanded to explicit Android path parameters. The installed FontTools SVG parser was used with an arc-preserving pen, coordinates serialized to six decimal places and round-trip checked. Directly copying compact arc flags caused an observed Gemini rendering error; the corrected native vector is checked on the emulator. No rasterized brand assets or runtime icon library are added.
 
 The full [Apache-2.0 license](licenses/Material-Symbols-LICENSE.txt) is also packaged as a local raw resource referenced from the manifest. A monochrome launcher derivative has not yet met visual quality requirements and is not shipped.
+
+0.1.3 removes the unused speed/layers/donut_large vectors after metrics became text-only. Original source attribution above records their history.

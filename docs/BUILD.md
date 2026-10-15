@@ -13,3 +13,5 @@ For ordinary local device checks on Windows, set JAVA_HOME to a compatible JDK 2
 Do not run connectedDebugAndroidTest against an attached everyday phone as routine verification: the Gradle runner may uninstall the application after testing. RootConnectionTest requires an explicitly authorized device and the auroraRootTest=true argument; it is excluded from ordinary Gradle verification using the runner's notAnnotation filter. Root behavior remains unverified until that dedicated test succeeds on hardware.
 
 2026-10-15 final device verification: Android 16 ARM64 realme GT6 SE passed 14 ordinary tests, one separate-process browser recovery test, and one explicitly authorized RootConnectionTest (read-only connect/disconnect/reconnect). FolkPatch authorization is configured inside its app. Packet capture, privileged operations and revocation remain unverified.
+
+0.1.3: require at least 18 ordinary tests, excluding both RootRequired and BrowserRecoveryTest. Run BrowserRecoveryTest alone in a fresh instrumentation process after the ordinary suite. Current core count: 45. Local fixtures do not establish paid-provider cache hit rates.

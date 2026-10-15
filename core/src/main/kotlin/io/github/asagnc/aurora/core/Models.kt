@@ -64,6 +64,9 @@ data class Usage(
     val cacheRead: Long? = null,
     val cacheWrite: Long? = null,
 ) {
+    operator fun plus(other: Usage) = Usage(sum(input, other.input), sum(output, other.output),
+        sum(cacheRead, other.cacheRead), sum(cacheWrite, other.cacheWrite))
+    private fun sum(first: Long?, second: Long?) = if (first != null && second != null) Math.addExact(first, second) else null
     val cacheShare: Double? get() = input?.takeIf { it > 0 }?.let { total ->
         cacheRead?.let { cached -> cached.toDouble() / total }
     }

@@ -21,9 +21,13 @@ internal class BrowserTab(val owner: String, val view: WebView) {
     var title by mutableStateOf("新页面")
     var address by mutableStateOf("")
     var progress by mutableIntStateOf(100)
+    var loading by mutableStateOf(false)
+    var failure by mutableStateOf<String?>(null)
+    var revision = 0L
 }
 
-internal class BrowserController(private val context: Context, private val saveProxy: Boolean = true) {
+internal class BrowserController(private val context: Context, private val saveProxy: Boolean = true,
+    private val intercept: ((WebResourceRequest) -> WebResourceResponse?)? = null) {
     val tabs = mutableStateListOf<BrowserTab>()
     var error by mutableStateOf<String?>(null)
     var proxy by mutableStateOf("")
@@ -33,6 +37,8 @@ internal class BrowserController(private val context: Context, private val saveP
     private var proxyFailed = false
     private var proxyRevision = 0
     private val retired = mutableSetOf<String>()
+    private val agents = mutableMapOf<String, Int>()
+    private val viewers = mutableSetOf<String>()
     val supported: Boolean get() = WebViewFeature.isFeatureSupported(WebViewFeature.MULTI_PROFILE)
     val proxySupported: Boolean get() = WebViewFeature.isFeatureSupported(WebViewFeature.PROXY_OVERRIDE)
 
@@ -59,13 +65,25 @@ internal class BrowserController(private val context: Context, private val saveP
         // Renderer teardown is delegated to close(), which destroys and unregisters the WebView.
         @SuppressLint("MissingOnRenderProcessGone")
         val client = object : WebViewClient() {
+            override fun shouldInterceptRequest(web: WebView, request: WebResourceRequest): WebResourceResponse? = intercept?.invoke(request)
+            override fun onPageStarted(web: WebView, url: String, favicon: android.graphics.Bitmap?) {
+                tab.loading = true; tab.failure = null; tab.address = url; tab.revision++
+            }
             override fun shouldOverrideUrlLoading(web: WebView, request: WebResourceRequest): Boolean {
                 if (request.url.scheme != "https") { error = "仅支持 HTTPS 网页；外部应用和本地文件链接未打开"; return true }
                 return configuring || proxyFailed
             }
-            override fun onPageFinished(web: WebView, url: String) { tab.address = url; tab.title = web.title?.take(80) ?: "网页" }
+            override fun onPageFinished(web: WebView, url: String) {
+                tab.loading = false; tab.address = url; tab.title = web.title?.take(80) ?: "网页"
+            }
             override fun onReceivedError(web: WebView, request: WebResourceRequest, failure: WebResourceError) {
-                if (request.isForMainFrame) error = "网页加载失败（${failure.errorCode}），可检查网络后重新打开"
+                if (request.isForMainFrame) {
+                    tab.loading = false; tab.failure = "network ${failure.errorCode}"
+                    error = "网页加载失败（${failure.errorCode}），可检查网络后重新打开"
+                }
+            }
+            override fun onReceivedHttpError(web: WebView, request: WebResourceRequest, response: WebResourceResponse) {
+                if (request.isForMainFrame) tab.failure = "HTTP ${response.statusCode}"
             }
             override fun onRenderProcessGone(web: WebView, detail: RenderProcessGoneDetail): Boolean {
                 close(tab); error = "网页渲染进程已退出，请重新打开页面"; return true
@@ -80,15 +98,16 @@ internal class BrowserController(private val context: Context, private val saveP
         return tab
     }
 
-    fun navigate(tab: BrowserTab, supplied: String) {
-        if (configuring || proxyFailed || tab !in tabs) return
+    fun navigate(tab: BrowserTab, supplied: String): Boolean {
+        if (configuring || proxyFailed || tab !in tabs) return false
         val address = supplied.trim().let { if ("://" in it) it else "https://$it" }
         val uri = runCatching { URI(address) }.getOrNull()
         if (uri?.scheme != "https" || uri.host.isNullOrBlank() || uri.rawUserInfo != null) {
-            error = "请输入不含用户名或密码的 HTTPS 地址"; return
+            error = "请输入不含用户名或密码的 HTTPS 地址"; return false
         }
-        tab.address = address
+        tab.address = address; tab.loading = true; tab.failure = null
         tab.view.loadUrl(address)
+        return true
     }
 
     fun close(tab: BrowserTab) {
@@ -99,9 +118,26 @@ internal class BrowserController(private val context: Context, private val saveP
     }
 
     fun hide(owner: String) {
-        tabs.filter { it.owner == owner }.forEach { it.view.stopLoading(); it.view.onPause() }
-        // No background browser Agent is implemented yet. Pause global WebView timers while its UI is closed.
-        tabs.firstOrNull()?.view?.pauseTimers()
+        viewers.remove(owner)
+        pauseIdle(owner)
+    }
+    fun show(owner: String) { viewers.add(owner) }
+    private fun pauseIdle(owner: String) {
+        if (owner in agents) return
+        tabs.filter { it.owner == owner }.forEach {
+            if (it.loading) { it.failure = "Navigation stopped before completion"; it.loading = false }
+            it.view.stopLoading(); it.view.onPause()
+        }
+        if (agents.isEmpty() && viewers.isEmpty()) tabs.firstOrNull()?.view?.pauseTimers()
+    }
+    fun beginAgent(owner: String) {
+        check(owner !in retired) { "Conversation browser is being deleted" }
+        check(!configuring && !proxyFailed) { "Browser proxy is not ready" }
+        agents[owner] = (agents[owner] ?: 0) + 1
+    }
+    fun endAgent(owner: String) {
+        val count = (agents[owner] ?: 1) - 1
+        if (count > 0) agents[owner] = count else { agents.remove(owner); if (owner !in viewers) pauseIdle(owner) }
     }
     fun resume(tab: BrowserTab) { if (tab in tabs) { tab.view.resumeTimers(); tab.view.onResume() } }
     suspend fun deleteOwner(owner: String): Unit = withContext(Dispatchers.Main) {
