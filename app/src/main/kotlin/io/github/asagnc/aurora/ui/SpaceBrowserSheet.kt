@@ -16,7 +16,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable internal fun SpaceBrowserSheet(model: ChatViewModel, initial: String, dismiss: () -> Unit) {
+@Composable internal fun SpaceBrowserSheet(model: ChatViewModel, initial: String, conversationOnly: Boolean = false, dismiss: () -> Unit) {
     var space by remember { mutableStateOf(initial) }
     var path by remember { mutableStateOf("") }
     var entries by remember { mutableStateOf(emptyList<Pair<String, Boolean>>()) }
@@ -30,8 +30,8 @@ import kotlinx.coroutines.launch
     }
     ModalBottomSheet(dismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true), containerColor = MaterialTheme.colorScheme.surface) {
         Column(Modifier.fillMaxHeight(0.72f).padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text(if (space == "resources") "Skills 与共享资源" else "空间与工具", style = MaterialTheme.typography.headlineSmall)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(if (conversationOnly) "本会话文件" else if (space == "resources") "Skills 与共享资源" else "空间与工具", style = MaterialTheme.typography.headlineSmall)
+            if (!conversationOnly) Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 listOf("conversation" to "会话", "resources" to "共享读", "workspace" to "共享写").forEach { (name, label) ->
                     FilterChip(space == name, { space = name; path = "" }, label = { Text(label) })
                 }

@@ -4,14 +4,15 @@ Aurora is an Android 16+ phone agent harness in development, with ordinary-devic
 
 Application ID: `io.github.asagnc.aurora`.
 
-The repository contains a runnable development app: Compose chat, ten curated BYOK provider presets and custom gateways, three streaming protocols, encrypted credentials, SQLite conversations and owned file tools. Supported official Responses routes preserve request prefixes when changing effort through append-only updates. Root, the browser, Linux environments, Skills and phone APK/JNI builds remain in development. No performance leadership or guaranteed cache hit rate is claimed.
+The repository contains a runnable development app: Compose chat, ten curated BYOK provider presets and custom gateways, three streaming protocols, encrypted credentials, SQLite conversations and owned file tools. Supported official Responses routes preserve request prefixes when changing effort through append-only updates. A capsule composer, persistent color themes and a manual multi-page browser with conversation profiles and browser-only proxy configuration are implemented. Root execution, browser Agent tools, Linux environments, Skills and phone APK/JNI builds remain in development. Packet capture is planned for Root only; no VPN fallback. No performance leadership or guaranteed cache hit rate is claimed.
 
 - [Approved design baseline](docs/DESIGN.md)
 - [Engineering rules](AGENTS.md)
 - [Next-chat handoff and task checklist](docs/PROGRESS.md)
 - [Implemented behavior and verification evidence](docs/IMPLEMENTATION.md)
+- [Reverse engineering and network tooling scope](docs/REVERSE_ENGINEERING.md)
 
-Build with `./gradlew :core:test :app:assembleDebug :app:assembleRelease :app:lintDebug` using JDK 25 and SDK `platforms;android-37.0` / Build Tools 36.0.0. Dependencies are pinned; minimum Android remains 16/API 36. On Windows, `./scripts/verify-emulator.ps1` validates only a real emulator and requires at least nine passing device tests without uninstalling packages. See [test boundaries](docs/BUILD.md).
+Build with `./gradlew :core:test :app:assembleDebug :app:assembleRelease :app:lintDebug` using JDK 25 and SDK `platforms;android-37.0` / Build Tools 36.0.0. Dependencies are pinned; minimum Android remains 16/API 36. On Windows, `./scripts/verify-emulator.ps1` validates only a real emulator and requires at least fourteen passing device tests plus a separate-process browser recovery check without uninstalling packages. See [test boundaries](docs/BUILD.md).
 
 GitHub Actions stores development APKs. Release output is unsigned; debug builds are development previews. Eight storage/recovery tests pass on an Android 16 ARM64 realme device and an Android 17 emulator. Formal signing, Root execution and on-device compiler validation remain pending.
 

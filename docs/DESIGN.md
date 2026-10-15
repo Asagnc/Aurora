@@ -17,6 +17,10 @@ Research date: 2026-10-12.
 
 Approved concept assets: [launcher artwork](assets/approved-icon.png), [chat and drawer preview](assets/approved-chat-ui.png). These are visual references, not implemented screenshots.
 
+2026-10-15 UI revision supersedes the earlier composer: [approved capsule A and conversation menu](assets/approved-composer-A.png); [color settings direction](assets/approved-color-settings.png). Keep the originally approved launcher artwork. Generated messages and metrics are illustrative, never verification evidence.
+
+2026-10-15 execution constraint: packet capture is Root-only; do not add a VPN capture backend. Ordinary native features remain available without Root. Avoid overhead-heavy substitutes for unavailable privileged operations. PRoot/chroot remain unfinished; resolve their performance tradeoffs before enabling any default Linux backend.
+
 ## Confirmed product requirements
 
 - Application name: Aurora. Application ID: `io.github.asagnc.aurora`.
@@ -36,7 +40,9 @@ Approved concept assets: [launcher artwork](assets/approved-icon.png), [chat and
 - Drawer action at top left; conversation content occupies the main screen.
 - Composer anchored at the bottom and moves above the keyboard.
 - Composer controls: attachment, supported thinking level, model identity/selector, send.
-- Three independently tappable indicators under the composer: output tokens/s, cache read share, context use.
+- Three independently tappable indicators inside the bottom of the capsule composer: output tokens/s, cache read share, context use. Keep unavailable metrics unknown and distinguish estimates.
+- Top-right conversation menu: new conversation, current conversation files, browser. Proxy configuration belongs in browser settings and applies to all browser pages; it does not configure the model transport.
+- Appearance supports named palettes, a custom accent, light/dark/system modes and optional colored function icons. Configuration persists locally. Theme changes do not reconstruct browser engines or trigger model requests.
 - Drawer footer: settings on the left, providers in the center, Skills on the right.
 - Conversation list: multi-selection icon at top right; click opens a conversation; long press or overflow opens rename, pin, select, and delete actions.
 - Multi-selection supports batch deletion and pinning.
@@ -143,6 +149,7 @@ Recommended baseline: system WebView plus current stable AndroidX WebKit, hosted
 - Independent page reads/navigation can be scheduled concurrently; mutations within one page remain ordered.
 - Per-conversation browsing profiles isolate cookies and storage when `MULTI_PROFILE` is supported.
 - Profiles owned by a deleted conversation are removed after associated WebViews are closed. Persisting a login profile is an explicit separate choice.
+- Loaded Chromium profiles may remain in use after WebView destruction. Persist the conversation deletion marker before cleanup, close owned views, await native deletion of cache/cookies/web storage, and retain the empty profile metadata for next-process recovery when immediate removal is rejected. Do not delete conversation files when browsing-data cleanup fails or times out.
 - Browser proxy is a browser-level configuration. Current `ProxyController` overrides all app WebViews; profiles do not imply separate per-tab proxy routing.
 - Independent per-page proxy identities would require an additional isolation design and measurement; they are not claimed by this baseline.
 - Downloads are assigned to the owning conversation or an explicit retained destination.

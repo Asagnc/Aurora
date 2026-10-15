@@ -19,11 +19,16 @@ import io.github.asagnc.aurora.core.Connection
 @Composable internal fun ModelPickerSheet(connections: List<Connection>, selected: Connection?,
     choose: (Connection) -> Unit, manage: () -> Unit, dismiss: () -> Unit) {
     var query by remember { mutableStateOf("") }
+    var category by remember { mutableStateOf("全部") }
     ModalBottomSheet(dismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true), containerColor = MaterialTheme.colorScheme.surface) {
         Column(Modifier.fillMaxHeight(0.75f).padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text("选择模型", style = MaterialTheme.typography.headlineSmall)
             SearchField(query, { query = it }, "搜索供应商或模型")
-            val matches = connections.filter { it.enabled && (it.name.contains(query, true) || it.model.contains(query, true)) }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf("全部", "官方", "中转").forEach { name -> FilterChip(category == name, { category = name }, label = { Text(name) }) }
+            }
+            val matches = connections.filter { it.enabled && (category == "全部" || it.official == (category == "官方")) &&
+                (it.name.contains(query, true) || it.model.contains(query, true)) }
             LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 if (matches.isEmpty()) item { Text(if (connections.isEmpty()) "先添加自己的 API 连接" else "没有匹配的模型",
                     Modifier.padding(vertical = 24.dp), color = AuroraMuted, style = MaterialTheme.typography.bodyMedium) }
@@ -34,9 +39,15 @@ import io.github.asagnc.aurora.core.Connection
                         border = BorderStroke(1.dp, AuroraBorder)) {
                         Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            ModelBrand(connection.model, 36.dp)
-                            Text(connection.model, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge,
-                                maxLines = 2, overflow = TextOverflow.Ellipsis)
+                            ModelBrand(connection.model, 28.dp)
+                            Column(Modifier.weight(1f)) {
+                                Text(connection.model, style = MaterialTheme.typography.bodyLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                                Text(when (connection.protocol) {
+                                    io.github.asagnc.aurora.core.Protocol.CHAT -> "Chat Completions"
+                                    io.github.asagnc.aurora.core.Protocol.RESPONSES -> "Responses"
+                                    io.github.asagnc.aurora.core.Protocol.ANTHROPIC -> "Messages"
+                                }, style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
+                            }
                             RadioButton(connection.id == selected?.id, onClick = null)
                         }
                     }

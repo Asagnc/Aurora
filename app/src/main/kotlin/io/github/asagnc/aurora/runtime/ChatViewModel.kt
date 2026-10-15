@@ -25,6 +25,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     private val mutable = MutableStateFlow(ChatState())
     val state = mutable.asStateFlow()
     val rootState = app.root.state
+    internal val browser get() = app.browser
     private var rootRequest: Job? = null
     private var run: Job? = null
     private var importing: Job? = null
@@ -130,7 +131,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     fun pin(ids: List<String>, pinned: Boolean) = action { app.conversations.pin(ids, pinned); refresh() }
     fun delete(ids: List<String>) = action {
         stopAndJoin()
-        ids.forEach { id -> app.spaces.delete(id, app.tasks::quiesce) }
+        ids.forEach { id ->
+            app.spaces.delete(id, app.tasks::quiesce, app.browser::deleteOwner)
+        }
         refresh()
         if (state.value.current?.id in ids) mutable.update { it.copy(current = null, messages = emptyList(), streaming = "") }
     }

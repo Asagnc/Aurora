@@ -24,6 +24,13 @@ try {
     Set-Content -LiteralPath (Join-Path $directory 'emulator-check.txt') -Value $text -Encoding utf8
     Write-Output $text
     $count = [regex]::Match($text, 'OK \((\d+) tests?\)')
-    if ($exitCode -ne 0 -or !$count.Success -or [int]$count.Groups[1].Value -lt 9 -or
-        $text -match 'FAILURES|INSTRUMENTATION_FAILED|Process crashed') { throw 'Emulator verification did not produce nine passing tests.' }
+    if ($exitCode -ne 0 -or !$count.Success -or [int]$count.Groups[1].Value -lt 14 -or
+        $text -match 'FAILURES|INSTRUMENTATION_FAILED|Process crashed') { throw 'Emulator verification did not produce fourteen passing tests.' }
+    $recovery = & $adb -s $Serial shell am instrument -w -e class io.github.asagnc.aurora.browser.BrowserRecoveryTest io.github.asagnc.aurora.test/androidx.test.runner.AndroidJUnitRunner
+    $recoveryExit = $LASTEXITCODE
+    $recoveryText = $recovery -join [Environment]::NewLine
+    Add-Content -LiteralPath (Join-Path $directory 'emulator-check.txt') -Value $recoveryText -Encoding utf8
+    Write-Output $recoveryText
+    if ($recoveryExit -ne 0 -or $recoveryText -notmatch 'OK \(1 test\)' -or
+        $recoveryText -match 'FAILURES|INSTRUMENTATION_FAILED|Process crashed') { throw 'Fresh-process browser recovery failed.' }
 } finally { Pop-Location }

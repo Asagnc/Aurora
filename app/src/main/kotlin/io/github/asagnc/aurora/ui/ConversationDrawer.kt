@@ -84,11 +84,9 @@ import kotlinx.coroutines.delay
                     LocalIcon(R.drawable.ic_folder_open, "空间与工具"); Spacer(Modifier.width(12.dp)); Text("空间与工具", style = MaterialTheme.typography.bodyMedium)
                 }
             }
-            Row(Modifier.fillMaxWidth().height(80.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().height(64.dp), verticalAlignment = Alignment.CenterVertically) {
                 DrawerFooter("设置", R.drawable.ic_settings, Modifier.weight(1f), onSettings)
-                VerticalDivider(Modifier.height(28.dp), color = AuroraBorder)
                 DrawerFooter("供应商", R.drawable.ic_hub, Modifier.weight(1f), onProviders)
-                VerticalDivider(Modifier.height(28.dp), color = AuroraBorder)
                 DrawerFooter("Skills", R.drawable.ic_extension, Modifier.weight(1f)) { onSpace("resources") }
             }
         }
@@ -105,8 +103,11 @@ import kotlinx.coroutines.delay
 
 @Composable private fun DrawerFooter(label: String, icon: Int, modifier: Modifier, click: () -> Unit) {
     TextButton(click, modifier, contentPadding = PaddingValues(vertical = 8.dp)) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            LocalIcon(icon, label); Text(label, style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+            val color = when (label) { "设置" -> Color(0xFF347EDD); "供应商" -> Color(0xFFE57D15); else -> Color(0xFF8762DD) }
+            androidx.compose.material3.Icon(androidx.compose.ui.res.painterResource(icon), label, Modifier.size(19.dp),
+                tint = if (LocalAppearance.current.state.colorful) color else AuroraMuted)
+            Text(label, style = MaterialTheme.typography.bodySmall, color = AuroraInk)
         }
     }
 }

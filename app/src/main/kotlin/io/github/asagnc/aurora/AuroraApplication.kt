@@ -19,6 +19,16 @@ class AuroraApplication : Application() {
     val toolRuns by lazy { ToolRunStore(conversations) }
     val tasks = OwnedTasks()
     val root by lazy { io.github.asagnc.aurora.root.RootController(this) }
+    internal val browser by lazy { io.github.asagnc.aurora.browser.BrowserController(this) }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    val ready by lazy { scope.async { conversations.recoverInterruptedRuns(); spaces.recoverDeletes() } }
+    val ready by lazy { scope.async {
+        conversations.recoverInterruptedRuns()
+        spaces.recoverDeletes(browser::deleteOwner)
+        val owners = withContext(Dispatchers.Main) { browser.profileOwners() }
+        owners.filter { conversations.header(it) == null }.forEach { owner ->
+            withContext(Dispatchers.Main) { browser.deleteOwner(owner) }
+        }
+        val proxy = getSharedPreferences("browser", MODE_PRIVATE).getString("proxy", "").orEmpty()
+        if (proxy.isNotEmpty()) withContext(Dispatchers.Main) { browser.applyProxy(proxy) }
+    } }
 }

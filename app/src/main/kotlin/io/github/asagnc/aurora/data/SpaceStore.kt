@@ -52,7 +52,9 @@ class SpaceStore(private val context: Context, private val conversations: Conver
         } finally { Files.deleteIfExists(staged) }
     }
 
-    suspend fun delete(id: String, quiesce: suspend (String) -> Unit) {
+    suspend fun delete(id: String, quiesce: suspend (String) -> Unit) = delete(id, quiesce, {})
+
+    suspend fun delete(id: String, quiesce: suspend (String) -> Unit, releaseBrowser: suspend (String) -> Unit) {
         quiesce(id)
         conversations.write { db ->
             val state = db.rawQuery("SELECT run_state FROM conversations WHERE id = ?", arrayOf(id))
@@ -60,13 +62,14 @@ class SpaceStore(private val context: Context, private val conversations: Conver
             require(state != "running") { "Conversation tasks must stop before deletion" }
             db.update("conversations", values("deleting" to 1), "id = ?", arrayOf(id))
         }
+        releaseBrowser(id)
         finishDelete(id)
     }
 
-    suspend fun recoverDeletes() {
+    suspend fun recoverDeletes(releaseBrowser: suspend (String) -> Unit = {}) {
         val pending = conversations.read { db -> db.rawQuery("SELECT id FROM conversations WHERE deleting = 1", null)
             .use { cursor -> buildList { while (cursor.moveToNext()) add(cursor.getString(0)) } } }
-        pending.forEach { finishDelete(it) }
+        pending.forEach { releaseBrowser(it); finishDelete(it) }
     }
 
     private suspend fun finishDelete(id: String) = withContext(Dispatchers.IO) {

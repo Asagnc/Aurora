@@ -7,6 +7,7 @@ Read `docs/DESIGN.md`, `docs/PROGRESS.md` and `docs/IMPLEMENTATION.md` before ch
 - Name: Aurora. Application ID: `io.github.asagnc.aurora`.
 - Android 16+ only; minimum SDK 36. Do not add older-Android compatibility paths.
 - Ordinary features work without Root; privileged features require Root authorization. Do not require Shizuku.
+- Packet capture is Root-only by the user's 2026-10-15 decision; do not implement a VPN capture fallback. Prefer native execution and do not silently add expensive substitutes for unavailable privileges.
 - Current stable dependencies and tools only. Preserve reproducible exact versions and verify compatibility before updating.
 - Only current available model lines belong in curated presets; model availability and endpoint capabilities need current primary sources.
 - Do not claim universal website access, guaranteed cache hits, or performance leadership without evidence.
