@@ -193,3 +193,23 @@ Alternatives assessed: Playwright Android currently remains experimental and req
 - [Playwright Android status](https://playwright.dev/docs/api/class-android)
 - [Compose performance](https://developer.android.com/develop/ui/compose/performance/bestpractices)
 - [Macrobenchmark](https://developer.android.com/topic/performance/benchmarking/macrobenchmark-overview)
+
+## 2026-10-15 integrated UI revision — pending preview approval
+
+User clarification supersedes the drawer new-conversation contract: remove the large new-conversation button from the drawer; retain new conversation in the main top-right conversation tools. A fresh installation must have empty history, without a seeded or test-created conversation. Never remove existing user conversations merely because their title is the default. Current startup opens an existing row; it does not itself create a conversation. QA-created empty rows must not be confused with clean-install behavior.
+
+Proposed interaction for approval: expand conversation tools inline below the header and expand metric details within the composer instead of using generic centered dialogs. Use consistent typography, icon dimensions, shape and surface tokens across these surfaces. Previews are illustrative; implementation is not yet changed.
+
+Reference source inspection: [FolkPatch themed menu](https://github.com/LyraVoid/FolkPatch/blob/main/app/src/main/java/me/bmax/apatch/ui/component/DropdownMenu.kt) centralizes shape, surface and elevation; [Eta conversation pane](https://github.com/Mangi-11/Eta/blob/main/app/src/main/kotlin/io/github/mangi/eta/ui/components/ConversationPanePanel.kt) uses shared Miuix components. Learn visual consistency without copying code or introducing a new UI framework solely for appearance.
+### Preview feedback, 2026-10-15
+
+The user rejected the first integrated UI preview as still visually behind DeepSeek Harness and Claude. Do not implement that preview. Keep the confirmed removal of the drawer new-conversation button and empty fresh-install history. Reconsider the overall typography, density, surface hierarchy and composer proportions before implementation. A replacement concept is being reviewed: fewer borders and colored icon tiles, one input surface without nested fields, secondary inline metrics, compact anchored metric details instead of a large inline expansion. The metric detail treatment is proposed, not approved.
+
+Research: DeepSeek Harness official product demo https://www.deepseek.com/en/harness/ and `packages/client/ui-conversation/src/client/skeleton/InputBar.module.css`, `ContextMeter.module.css` in https://github.com/deepseek-ai/deepseek-harness (master). Composer and menus share design tokens; the context readout uses a compact anchored panel. Claude public overview https://claude.com/product/overview was inspected; the actual claude.ai chat redirects to login, so no claim to inspecting an authenticated current mobile UI.
+### Approved chat direction; theme revision pending, 2026-10-15
+
+The user approved the replacement calm chat / compact anchored metric panel / empty drawer concept generated as exec-0d21a553-be61-4389-9244-4a128cf375da.png. Keep Aurora's original icon and the top-right conversation-tools entry; generated flower/branding and demo text are not production assets. The user now requests a better appearance/theme settings design, referencing Eta and FolkPatch.
+
+Current theme diagnosis: Aurora overrides only some Material color roles and derives accents with fixed interpolation, leaving several foreground/container roles fixed; this is not a complete per-theme light/dark palette. Proposed for review: full role-based theme pairs, coordinated live chat preview, light/dark/system thumbnails, mutually exclusive preset/system/custom color source, palette styles, optional pure-black dark background and local color picker with secondary hex input. Wallpaper decision is pending user clarification. Keep existing palette preferences migratable. Do not copy GPL source into Aurora or adopt a new UI framework solely to imitate a setting page.
+
+Sources inspected: Eta data/model/AppearanceSettings.kt and ui/AppearanceSettingsScreen.kt in https://github.com/Mangi-11/Eta ; FolkPatch AppearanceThemeSection.kt and core/designsystem/.../FolkThemeCatalog.kt in https://github.com/LyraVoid/FolkPatch . Eta separates mode, palette style and accent; FolkPatch enumerates full paired light/dark color roles.
