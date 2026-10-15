@@ -4,7 +4,7 @@
 
 ## 当前应用
 
-0.1.2 按新确认的 A 方案改为胶囊式输入框：灯泡思考按钮、模型家族图标与三项指标位于同一外框，单行胶囊、多行自然增高。右上菜单进入新会话、本会话文件与浏览器。抽屉底部为紧凑彩色横排入口；模型选择支持全部/官方/中转过滤，每行保留家族图标。外观支持五套预设、自定义强调色、浅色/深色/系统模式、彩色图标开关与系统动态配色；配置本地保存。字体大小跟随系统。当前会话文件入口不混入共享目录。
+0.1.2 按新确认的 A 方案改为胶囊式输入框：灯泡思考按钮、模型家族图标与三项指标位于同一外框，单行胶囊、多行自然增高。右上菜单进入新会话、本会话文件与浏览器。抽屉底部为紧凑彩色横排入口；模型选择支持全部/官方/中转过滤，每行保留家族图标。外观支持五套预设、自定义强调色、浅色/深色/系统模式、彩色图标开关与系统动态配色；配置本地保存。字体大小跟随系统。当前会话文件入口不混入共享目录；会话文件浏览和预览也归属会话任务，删除时取消并等待。抽屉返回键先收起抽屉，不直接离开主界面。
 
 会话搜索查询数据库而非仅过滤已加载的一页；百分号与下划线按文字匹配。初次导入附件创建会话时保留草稿，草稿支持配置变化恢复；主动切换会话时清空当前草稿。
 
@@ -81,3 +81,5 @@ SQLite WAL 与外键；IO 线程操作，串行写事务。消息/协议记录�
 真机暴露 Files.readString/writeString 在基础 Android 16 不存在，它们在 36.1 才加入；文件恢复与设备测试使用基础版本可用的字节 API。JVM 模块中的 API 调用不能仅靠新平台模拟器和 app lint 判定可用性，必须在最低支持平台执行核心路径。[官方 API 版本](https://developer.android.com/reference/java/nio/file/Files)。
 
 其他精确依赖版本在构建文件内，来自 Google Maven/Maven Central/Gradle 官方接口/libsu Releases，排除 alpha、beta、RC、preview。构建组合验收不等于服务能力或真机性能验收。
+
+2026-10-15 final device verification: Android 16 ARM64 realme GT6 SE passed 14 ordinary tests, one separate-process browser recovery test, and one explicitly authorized RootConnectionTest (read-only connect/disconnect/reconnect). FolkPatch authorization is configured inside its app. Packet capture, privileged operations and revocation remain unverified.

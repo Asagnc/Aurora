@@ -106,14 +106,17 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     }
     fun clearError() { mutable.update { it.copy(error = null) } }
     suspend fun searchSessions(query: String) = app.conversations.searchTitle(query)
-    private suspend fun inspectedSpace(name: String): OwnedFiles = when (name) {
-        "conversation" -> app.spaces.conversation(requireNotNull(state.value.current?.id) { "请先创建会话" })
-        "resources" -> app.spaces.sharedResources()
-        "workspace" -> app.spaces.sharedWorkspace()
+    private suspend fun <T> inspectSpace(name: String, inspect: suspend (OwnedFiles) -> T): T = when (name) {
+        "conversation" -> {
+            val owner = requireNotNull(state.value.current?.id) { "请先创建会话" }
+            app.tasks.run(owner) { inspect(app.spaces.conversation(owner)) }
+        }
+        "resources" -> inspect(app.spaces.sharedResources())
+        "workspace" -> inspect(app.spaces.sharedWorkspace())
         else -> error("Unknown space")
     }
-    suspend fun listSpace(name: String, path: String) = inspectedSpace(name).list(path)
-    suspend fun readSpace(name: String, path: String) = inspectedSpace(name).readBatch(listOf(FileRead(path))).single()
+    suspend fun listSpace(name: String, path: String) = inspectSpace(name) { it.list(path) }
+    suspend fun readSpace(name: String, path: String) = inspectSpace(name) { it.readBatch(listOf(FileRead(path))).single() }
     fun enableRoot() {
         if (rootRequest?.isActive != true) rootRequest = action { app.root.connect() }
     }

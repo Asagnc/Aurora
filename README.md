@@ -14,6 +14,6 @@ The repository contains a runnable development app: Compose chat, ten curated BY
 
 Build with `./gradlew :core:test :app:assembleDebug :app:assembleRelease :app:lintDebug` using JDK 25 and SDK `platforms;android-37.0` / Build Tools 36.0.0. Dependencies are pinned; minimum Android remains 16/API 36. On Windows, `./scripts/verify-emulator.ps1` validates only a real emulator and requires at least fourteen passing device tests plus a separate-process browser recovery check without uninstalling packages. See [test boundaries](docs/BUILD.md).
 
-GitHub Actions stores development APKs. Release output is unsigned; debug builds are development previews. Eight storage/recovery tests pass on an Android 16 ARM64 realme device and an Android 17 emulator. Formal signing, Root execution and on-device compiler validation remain pending.
+GitHub Actions stores development APKs. Release output is unsigned; debug builds are development previews. Fourteen ordinary device tests plus a separate-process recovery test pass on Android 16 ARM64 realme hardware and an Android 17 emulator. An explicitly authorized FolkPatch read-only Root connect/disconnect/reconnect test also passes on the phone. Formal signing, privileged tools and on-device compiler validation remain pending.
 
 The design covers conversation-owned storage, shared tools, model protocols and caching, batch file tools, an integrated browser, PRoot/chroot execution, and on-device APK/JNI builds. Implementation and performance claims require the verification gates documented in the design.

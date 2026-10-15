@@ -30,7 +30,7 @@ class BrowserTest {
         val owner = UUID.randomUUID().toString()
         val secondOwner = UUID.randomUUID().toString()
         main {
-            browser = BrowserController(instrumentation.targetContext)
+            browser = BrowserController(instrumentation.targetContext, saveProxy = false)
             assertTrue("WebView must support conversation profiles", browser.supported)
             first = requireNotNull(browser.open(owner))
             other = requireNotNull(browser.open(secondOwner))
@@ -68,7 +68,7 @@ class BrowserTest {
         val owner = UUID.randomUUID().toString()
         lateinit var browser: BrowserController
         main {
-            browser = BrowserController(instrumentation.targetContext)
+            browser = BrowserController(instrumentation.targetContext, saveProxy = false)
             val tab = requireNotNull(browser.open(owner))
             listOf("file:///data/data/", "javascript:alert(1)", "https://user:secret@example.com/").forEach {
                 browser.navigate(tab, it)
@@ -101,7 +101,7 @@ class BrowserTest {
             }
         }
         main {
-            browser = BrowserController(instrumentation.targetContext)
+            browser = BrowserController(instrumentation.targetContext, saveProxy = false)
             assertTrue("WebView proxy override required for this check", browser.proxySupported)
             browser.applyProxy("http://127.0.0.1:${server.localPort}") { applied.countDown() }
         }

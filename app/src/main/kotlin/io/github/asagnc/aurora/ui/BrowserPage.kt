@@ -4,11 +4,18 @@ import android.view.ViewGroup
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.unit.dp
 import io.github.asagnc.aurora.R
@@ -21,18 +28,27 @@ import io.github.asagnc.aurora.browser.BrowserController
     var menu by remember { mutableStateOf(false) }
     val tabs = browser.tabs.filter { it.owner == owner }
     val active = tabs.firstOrNull { it.id == selected } ?: tabs.firstOrNull()
+    fun navigate() {
+        if (browser.configuring || address.isBlank()) return
+        val tab = active ?: browser.open(owner)?.also { selected = it.id }
+        tab?.let { browser.navigate(it, address) }
+    }
     LaunchedEffect(active?.id, active?.address) { address = active?.address.orEmpty() }
     DisposableEffect(owner) { onDispose { browser.hide(owner) } }
     FullPage("浏览器", dismiss) {
+        val keyboard = LocalSoftwareKeyboardController.current
+        val focus = LocalFocusManager.current
+        fun openAddress() { navigate(); focus.clearFocus(); keyboard?.hide() }
         Column(Modifier.fillMaxSize()) {
             Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                TextField(address, { address = it }, Modifier.weight(1f), singleLine = true,
+                OutlinedTextField(address, { address = it }, Modifier.weight(1f), singleLine = true,
                     placeholder = { Text("输入 HTTPS 地址", style = MaterialTheme.typography.bodyMedium) },
-                    textStyle = MaterialTheme.typography.bodyMedium)
-                TextButton({
-                    val tab = active ?: browser.open(owner)?.also { selected = it.id }
-                    tab?.let { browser.navigate(it, address) }
-                }, enabled = !browser.configuring && browser.supported && address.isNotBlank()) { Text("打开") }
+                    shape = RoundedCornerShape(24.dp), textStyle = MaterialTheme.typography.bodyMedium,
+                    colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = AuroraBorder,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Go),
+                    keyboardActions = KeyboardActions(onGo = { openAddress() }))
+                TextButton(::openAddress, enabled = !browser.configuring && browser.supported && address.isNotBlank()) { Text("打开") }
                 Box {
                     IconButton({ menu = true }) { LocalIcon(R.drawable.ic_more_vert, "浏览器菜单") }
                     DropdownMenu(menu, { menu = false }) {
@@ -73,7 +89,7 @@ import io.github.asagnc.aurora.browser.BrowserController
                 Spacer(Modifier.height(16.dp))
                 Text(if (browser.supported) "输入网址开始浏览" else "请更新系统 WebView 以支持独立会话配置", style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(10.dp))
-                Text("浏览数据按会话隔离。最多同时打开 8 个页面。模型浏览工具、文件上传下载尚未接入。",
+                Text("本会话的网页与登录状态独立保存。最多同时打开 8 个页面。",
                     color = AuroraMuted, style = MaterialTheme.typography.bodySmall)
             }
         }
@@ -91,6 +107,7 @@ import io.github.asagnc.aurora.browser.BrowserController
             if (!browser.proxySupported) Text("当前 WebView 不支持代理覆盖。", color = MaterialTheme.colorScheme.error)
             OutlinedTextField(value, { value = it }, label = { Text("http(s)://主机:端口 或 socks://主机:端口") }, singleLine = true)
             Text("不支持代理认证。回环和本地地址遵循 WebView 默认绕过规则。", color = AuroraMuted, style = MaterialTheme.typography.bodySmall)
+            if (browser.tabs.isNotEmpty()) TextButton({ browser.tabs.toList().forEach(browser::close) }) { Text("关闭所有会话的浏览器页面") }
             TextButton({ browser.applyProxy("") { dismiss() } }, enabled = browser.tabs.isEmpty() && !browser.configuring) { Text("跟随系统") }
             TextButton({ browser.applyProxy("direct") { dismiss() } }, enabled = browser.proxySupported && browser.tabs.isEmpty() && !browser.configuring) { Text("直连") }
         }

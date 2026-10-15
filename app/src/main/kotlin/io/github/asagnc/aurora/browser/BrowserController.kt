@@ -23,7 +23,7 @@ internal class BrowserTab(val owner: String, val view: WebView) {
     var progress by mutableIntStateOf(100)
 }
 
-internal class BrowserController(private val context: Context) {
+internal class BrowserController(private val context: Context, private val saveProxy: Boolean = true) {
     val tabs = mutableStateListOf<BrowserTab>()
     var error by mutableStateOf<String?>(null)
     var proxy by mutableStateOf("")
@@ -138,7 +138,7 @@ internal class BrowserController(private val context: Context) {
         if (!WebViewFeature.isFeatureSupported(WebViewFeature.PROXY_OVERRIDE)) {
             if (value.isEmpty()) {
                 proxy = ""; proxyFailed = false
-                context.getSharedPreferences("browser", Context.MODE_PRIVATE).edit { remove("proxy") }
+                if (saveProxy) context.getSharedPreferences("browser", Context.MODE_PRIVATE).edit { remove("proxy") }
                 done()
             } else { proxyFailed = true; error = "当前系统 WebView 不支持应用内代理设置，已阻止打开页面" }
             return
@@ -161,7 +161,7 @@ internal class BrowserController(private val context: Context) {
             if (revision != proxyRevision) return@Runnable
             proxy = value; configuring = false
             proxyFailed = false
-            context.getSharedPreferences("browser", Context.MODE_PRIVATE).edit { putString("proxy", value) }
+            if (saveProxy) context.getSharedPreferences("browser", Context.MODE_PRIVATE).edit { putString("proxy", value) }
             done()
         }
         Handler(context.mainLooper).postDelayed({
