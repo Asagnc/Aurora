@@ -16,7 +16,8 @@ class ThemeContrastTest {
             listOf(scheme.primary to scheme.onPrimary, scheme.primaryContainer to scheme.onPrimaryContainer,
                 scheme.secondaryContainer to scheme.onSecondaryContainer, scheme.tertiaryContainer to scheme.onTertiaryContainer,
                 scheme.background to scheme.onBackground, scheme.surface to scheme.onSurface,
-                scheme.surface to scheme.onSurfaceVariant, scheme.errorContainer to scheme.onErrorContainer).forEach { (bg, fg) ->
+                scheme.surface to scheme.onSurfaceVariant, scheme.surfaceContainer to scheme.onSurface,
+                scheme.surfaceContainer to scheme.onSurfaceVariant, scheme.errorContainer to scheme.onErrorContainer).forEach { (bg, fg) ->
                 assertTrue("${state.palette}/$dark/$style contrast ${colorContrast(bg, fg)}", colorContrast(bg, fg) >= 4.5f)
             }
         }

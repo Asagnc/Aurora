@@ -54,7 +54,7 @@ import io.github.asagnc.aurora.runtime.ChatViewModel
             SettingsGroup("偏好") {
                 SettingsRow("外观与配色", LocalAppearance.current.state.let { if (it.dynamic) "系统动态配色" else it.palette },
                     R.drawable.ic_palette, Color(0xFF8B58D0)) { appearance = true }
-                SettingsRow("关于 Aurora", "0.1.4 · Android 16+", R.drawable.ic_info, Color(0xFF4086CC)) { about = true }
+                SettingsRow("关于 Aurora", "0.1.5 · Android 16+", R.drawable.ic_info, Color(0xFF4086CC)) { about = true }
             }
             Spacer(Modifier.height(20.dp))
         }

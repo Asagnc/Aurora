@@ -29,25 +29,26 @@ import io.github.asagnc.aurora.core.Connection
             }
             return@ModalBottomSheet
         }
-        Column(Modifier.fillMaxHeight(0.75f).padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Text("选择模型", style = MaterialTheme.typography.headlineSmall)
+        Column(Modifier.fillMaxWidth().heightIn(max = 600.dp).padding(horizontal = 24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Text("选择模型", style = MaterialTheme.typography.titleMedium)
+            if (connections.count { it.enabled } > 1) {
             SearchField(query, { query = it }, "搜索供应商或模型")
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 listOf("全部", "官方", "中转").forEach { name -> FilterChip(category == name, { category = name }, label = { Text(name) }) }
             }
+            }
             val matches = connections.filter { it.enabled && (category == "全部" || it.official == (category == "官方")) &&
                 (it.name.contains(query, true) || it.model.contains(query, true)) }
-            LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            LazyColumn(Modifier.weight(1f, fill = false), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 if (matches.isEmpty()) item { Text(if (connections.isEmpty()) "先添加自己的 API 连接" else "没有匹配的模型",
                     Modifier.padding(vertical = 24.dp), color = AuroraMuted, style = MaterialTheme.typography.bodyMedium) }
                 items(matches, key = { it.id }) { connection ->
                     Text(connection.name, color = AuroraMuted, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 8.dp))
                     Surface(onClick = { choose(connection); dismiss() }, shape = RoundedCornerShape(18.dp),
-                        color = if (connection.id == selected?.id) AuroraMint else MaterialTheme.colorScheme.surface,
-                        border = BorderStroke(1.dp, AuroraBorder)) {
+                        color = if (connection.id == selected?.id) MaterialTheme.colorScheme.surfaceContainer else MaterialTheme.colorScheme.surface) {
                         Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            ModelBrand(connection.model, 28.dp)
+                            ModelBrand(connection.model, 22.dp)
                             Column(Modifier.weight(1f)) {
                                 Text(connection.model, style = MaterialTheme.typography.bodyLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
                                 Text(when (connection.protocol) {
@@ -61,7 +62,7 @@ import io.github.asagnc.aurora.core.Connection
                     }
                 }
             }
-            OutlinedButton(manage, Modifier.fillMaxWidth(), shape = RoundedCornerShape(18.dp), border = BorderStroke(1.dp, AuroraBorder)) {
+            TextButton(manage, Modifier.fillMaxWidth(), colors = ButtonDefaults.textButtonColors(contentColor = AuroraInk)) {
                 LocalIcon(R.drawable.ic_settings, "管理供应商"); Spacer(Modifier.width(8.dp)); Text("管理供应商和模型")
             }
             Text("仅显示已配置并启用的连接", Modifier.align(Alignment.CenterHorizontally).padding(bottom = 24.dp),

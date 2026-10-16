@@ -1,0 +1,92 @@
+<div id="aurora-review">
+  <div class="review-controls">
+    <label>预览状态 <select id="aurora-scene"><option value="empty">空白会话</option><option value="chat">对话中</option><option value="agent">Agent 执行中</option></select></label>
+    <label>外观 <select id="aurora-theme"><option value="auto">跟随外观</option><option value="dark">深色</option><option value="light">浅色</option></select></label>
+    <span>交互预览 · 消息与数据均为示例</span>
+  </div>
+  <div class="review-stage viz-dotted-background">
+    <div class="aurora-phone" aria-label="Aurora 手机界面预览">
+      <div class="a-status"><span>9:41</span><span><i data-lucide="signal" aria-hidden="true"></i><i data-lucide="wifi" aria-hidden="true"></i><i data-lucide="battery-full" aria-hidden="true"></i></span></div>
+      <header class="a-header"><button data-panel="drawer" aria-label="会话历史"><i data-lucide="menu"></i></button><span>Aurora <i data-lucide="chevron-down" aria-hidden="true"></i></span><button data-panel="menu" aria-label="会话菜单"><i data-lucide="ellipsis"></i></button></header>
+      <main class="a-content" aria-live="polite"></main>
+      <div class="a-footer">
+        <section class="a-metric-detail" hidden aria-live="polite"></section>
+        <section class="a-composer" aria-label="消息输入">
+          <textarea rows="2" placeholder="发消息，或交给 Aurora 一个任务…" aria-label="消息内容"></textarea>
+          <div class="a-compose-row">
+            <button data-panel="attach" aria-label="添加文件"><i data-lucide="plus"></i></button>
+            <button data-panel="effort" class="a-think" aria-label="思考等级"><i data-lucide="lightbulb"></i></button>
+            <button data-panel="model" class="a-model" aria-label="选择模型"><i data-lucide="sparkles" aria-hidden="true"></i><span>GPT-6 Astra</span><span class="a-effort">高</span><i data-lucide="chevron-down" aria-hidden="true"></i></button>
+            <button class="a-send" aria-label="发送示例消息"><i data-lucide="arrow-up"></i></button>
+          </div>
+        </section>
+        <div class="a-metrics"><button data-metric="speed"><i data-lucide="gauge" aria-hidden="true"></i><span>— tok/s</span></button><button data-metric="cache"><i data-lucide="database" aria-hidden="true"></i><span>缓存 —</span></button><button data-metric="context"><i data-lucide="circle-dashed" aria-hidden="true"></i><span>上下文 —</span></button></div>
+      </div>
+      <div class="a-home"><span></span></div>
+      <div class="a-scrim" hidden></div><section class="a-overlay" hidden aria-label="操作面板"></section>
+    </div>
+  </div>
+</div>
+<style>
+#aurora-review {font-family:Inter,"Segoe UI","Microsoft YaHei",sans-serif}
+#aurora-review .review-controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 16px;font-size:12px;color:light-dark(#5f6168,#a9abb1)}
+#aurora-review .review-controls label{display:flex;align-items:center;gap:6px}#aurora-review .review-controls select{font:inherit;padding:7px;border-radius:8px;color:inherit;background:light-dark(#f6f6f8,#242429);border:1px solid light-dark(#dedee4,#404047)}
+#aurora-review .review-stage{padding:20px 0;display:flex;justify-content:center}
+#aurora-review .aurora-phone{--a-bg:light-dark(#faf9f6,#18191b);--a-surface:light-dark(#efeeeb,#242528);--a-fg:light-dark(#292a30,#ededef);--a-muted:light-dark(#75777f,#a0a1a8);--a-line:light-dark(#dddedc,#35363b);--a-accent:light-dark(#7562a6,#b5a4e0);--a-on:light-dark(#fff,#241d34);--a-panel:light-dark(#fffefa,#202124);position:relative;background:var(--a-bg);color:var(--a-fg);width:412px;max-width:100%;min-height:850px;display:flex;flex-direction:column;border-radius:30px;overflow:hidden;box-shadow:0 10px 40px #00000018;font-size:14px;line-height:1.75;color-scheme:light dark}
+#aurora-review .aurora-phone[data-theme=dark]{color-scheme:dark}#aurora-review .aurora-phone[data-theme=light]{color-scheme:light}
+#aurora-review .aurora-phone button{font:inherit;color:inherit;border:0;background:transparent;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:0 10px;border-radius:12px}
+#aurora-review .aurora-phone button:hover{background:color-mix(in srgb,var(--a-fg) 5%,transparent)}
+#aurora-review .aurora-phone button:focus-visible{outline:2px solid var(--a-accent);outline-offset:-2px}
+#aurora-review .aurora-phone svg{width:19px;height:19px;stroke-width:1.6;flex-shrink:0}
+#aurora-review .a-status{display:flex;justify-content:space-between;padding:13px 25px 8px;font-size:12px;font-weight:500}.a-status>span:last-child{display:flex;gap:5px;align-items:center}
+#aurora-review .a-status svg{width:15px;height:15px}
+#aurora-review .a-header{display:flex;justify-content:space-between;align-items:center;padding:3px 12px}.a-header>span{display:flex;align-items:center;gap:5px;font-weight:500;letter-spacing:.1px}
+#aurora-review .a-header>span svg{width:12px;height:12px;color:var(--a-muted)}
+#aurora-review .a-content{flex:1;display:flex;flex-direction:column;padding:20px 24px 28px;gap:22px;min-height:510px}
+#aurora-review .a-empty{margin:auto 0;transform:translateY(-10px)}
+#aurora-review .a-star{color:var(--a-accent);margin-bottom:18px}.a-star svg{width:30px!important;height:30px!important;stroke-width:1.1!important}
+#aurora-review .a-empty h2{font-size:25px;line-height:1.5;font-weight:500;letter-spacing:-.6px;margin:0 0 12px}
+#aurora-review .a-empty p{color:var(--a-muted);font-size:13px;margin:0;line-height:1.9}
+#aurora-review .a-user{align-self:flex-end;border-radius:18px 18px 4px 18px;background:var(--a-surface);padding:11px 15px;max-width:86%;font-size:14px}
+#aurora-review .a-answer p{margin:0 0 15px}.a-answer strong{font-weight:500}.a-answer ul{padding-left:19px;margin:0}.a-answer li{margin:7px 0}
+#aurora-review .a-caption{font-size:11px;color:var(--a-muted);display:flex;align-items:center;gap:6px}.a-caption svg{width:13px;height:13px}
+#aurora-review .a-answer-actions{display:flex;gap:2px;margin:5px 0 0 -10px;color:var(--a-muted)}.a-answer-actions button svg{width:16px!important;height:16px!important}
+#aurora-review .a-run{border-left:1px solid var(--a-line);padding-left:16px;margin-left:4px;display:grid;gap:7px}
+#aurora-review .a-run details>summary{min-height:44px;display:flex;align-items:center;gap:10px;list-style:none;font-size:13px;cursor:default}.a-run summary::-webkit-details-marker{display:none}
+#aurora-review .a-run summary .a-step-name{flex:1}.a-run summary svg{width:15px;height:15px;color:var(--a-muted)}
+#aurora-review .a-run small{font-size:11px;color:var(--a-muted)}.a-run details[open] summary{color:var(--a-accent)}
+#aurora-review .a-run pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--a-surface);padding:12px;border-radius:10px;font-size:11px;line-height:1.8;margin:0 0 10px}
+#aurora-review .a-running{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--a-accent)}.a-running svg{width:15px;height:15px}
+#aurora-review .a-footer{padding:0 12px}.a-composer{padding:13px 12px 7px;background:var(--a-surface);border-radius:25px}
+#aurora-review .a-composer textarea{font:inherit;font-size:14px;line-height:1.6;width:100%;box-sizing:border-box;resize:none;color:var(--a-fg);background:transparent;border:0;padding:0 5px;min-height:47px;outline-offset:3px}
+#aurora-review .a-composer textarea::placeholder{color:var(--a-muted)}
+#aurora-review .a-compose-row{display:flex;align-items:center;gap:2px}.a-compose-row>button{padding:0 7px!important}
+#aurora-review .a-compose-row .a-model{margin-left:auto;gap:6px;min-width:0;font-size:12px;white-space:nowrap}
+#aurora-review .a-model svg:first-child{width:17px;height:17px}.a-model svg:last-child{width:11px;height:11px}.a-effort{color:var(--a-muted);font-size:11px}
+#aurora-review .a-compose-row .a-send{background:var(--a-accent);color:var(--a-on);width:36px;min-height:36px;border-radius:50%;margin-left:5px;flex-shrink:0}
+#aurora-review .a-metrics{display:flex;justify-content:space-between;padding:2px 4px 0;color:var(--a-muted)}
+#aurora-review .a-metrics button{font-size:11px;gap:5px;padding:0 4px;min-height:38px}.a-metrics svg{width:13px!important;height:13px!important}
+#aurora-review .a-home{height:23px;display:flex;align-items:center;justify-content:center}.a-home span{width:100px;height:4px;background:var(--a-fg);border-radius:5px;opacity:.65}
+#aurora-review .a-metric-detail{background:var(--a-panel);border:1px solid var(--a-line);padding:14px 17px;border-radius:16px;margin-bottom:8px;font-size:12px}.a-metric-detail strong{font-weight:500}.a-metric-detail p{margin:7px 0 0;color:var(--a-muted)}
+#aurora-review .a-scrim{position:absolute;inset:0;background:#0006;z-index:3}
+#aurora-review .a-overlay{position:absolute;z-index:4;bottom:0;left:0;right:0;background:var(--a-panel);padding:22px 20px 30px;border-radius:25px 25px 0 0}.a-overlay header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-weight:500}
+#aurora-review .a-overlay .a-option{width:100%;justify-content:flex-start;min-height:52px}.a-option>small{margin-left:auto;color:var(--a-muted);font-size:11px}
+#aurora-review .a-overlay p{color:var(--a-muted);font-size:12px}.a-overlay hr{border:0;border-top:1px solid var(--a-line);margin:14px 0}
+#aurora-review [hidden]{display:none!important}
+@media(max-width:390px){#aurora-review .a-content{padding-left:20px;padding-right:20px}#aurora-review .a-model{gap:4px!important;font-size:11px!important}#aurora-review .a-effort{display:none}#aurora-review .a-footer{padding:0 9px}#aurora-review .a-metrics button{font-size:11px}#aurora-review .review-controls>span{width:100%}}
+</style>
+<script>
+(() => {
+const root=document.getElementById('aurora-review'), phone=root.querySelector('.aurora-phone'), content=root.querySelector('.a-content'), overlay=root.querySelector('.a-overlay'), scrim=root.querySelector('.a-scrim'), metric=root.querySelector('.a-metric-detail'), scene=root.querySelector('#aurora-scene');
+const icons=()=>{if(globalThis.lucide)lucide.createIcons({attrs:{width:19,height:19}})};
+let running=false;
+const sample={empty:`<div class="a-empty"><div class="a-star"><i data-lucide="sparkles" aria-hidden="true"></i></div><h2>有什么想交给 Aurora？</h2><p>从一个问题，到一项需要完成的任务。<br>过程与结果，都在这里。</p></div>`,chat:`<div class="a-user">帮我比较一下这两个 APK 的差异。</div><div class="a-answer"><p>可以，把两个 APK 发给我。我会先核对版本与签名，再比较权限、组件和文件变化。</p><p>最后给你一份<strong>差异摘要</strong>，并保留对应文件，方便继续分析。</p><div class="a-answer-actions"><button aria-label="复制示例回复" data-copy><i data-lucide="copy"></i></button><button aria-label="示例回复详情" data-panel="message"><i data-lucide="info"></i></button></div></div>`,agent:`<div class="a-user">比较这两个 APK，找出权限和组件变化。</div><div class="a-answer"><p>正在比对安装包，已完成签名与基础信息检查。</p></div><div class="a-run"><details><summary><i data-lucide="check"></i><span class="a-step-name">读取两个安装包</span><small>0.3 秒</small><i data-lucide="chevron-down"></i></summary><pre>示例观察\nprevious.apk · 42.8 MB\ncurrent.apk · 44.1 MB\n\n文件归属：本会话空间</pre></details><details><summary><i data-lucide="check"></i><span class="a-step-name">核对版本与签名</span><small>0.8 秒</small><i data-lucide="chevron-down"></i></summary><pre>示例结果\n版本：2.4.0 → 2.5.0\n签名证书：一致\n状态：已返回，尚需结合后续结果判断</pre></details><details open><summary><i data-lucide="scan-line"></i><span class="a-step-name">比较权限与导出组件</span><small>进行中</small><i data-lucide="chevron-down"></i></summary><pre>示例进度\n已读取 AndroidManifest.xml\n正在整理新增权限与组件变化…</pre></details></div><div class="a-running"><i data-lucide="loader-circle"></i><span>分析中 · 可以随时补充要求</span></div>`};
+function draw(){running=scene.value==='agent';content.innerHTML=sample[scene.value];root.querySelector('.a-send').innerHTML=`<i data-lucide="${running?'square':'arrow-up'}"></i>`;root.querySelector('.a-send').setAttribute('aria-label',running?'停止示例任务':'发送示例消息');const labels=scene.value==='empty'?['— tok/s','缓存 —','上下文 —']:['≈ 86 tok/s','缓存 94%','上下文 18%'];root.querySelectorAll('.a-metrics span').forEach((x,i)=>x.textContent=labels[i]);metric.hidden=true;icons()}
+function close(){overlay.hidden=true;scrim.hidden=true}
+const option=(label,action,icon='chevron-right',tail='')=>`<button class="a-option" ${action}><i data-lucide="${icon}" aria-hidden="true"></i>${label}<small>${tail}</small></button>`;
+function panel(kind){const panels={drawer:['会话历史',option('比较 APK 版本差异','data-scene="agent"','message-square','刚刚')+option('安装包分析方法','data-scene="chat"','message-square','昨天')+'<hr>'+option('设置','data-sub="外观、连接与执行偏好"','settings')+option('供应商','data-panel="model"','waypoints')+option('Skills','data-sub="此处仅展示 Skills 入口"','blocks')],menu:['本会话',option('新会话','data-scene="empty"','square-pen')+option('会话文件','data-sub="本会话空间 · 附件与任务产物"','folder')+option('浏览器','data-sub="会话浏览器 · 页面与代理在此管理"','globe')],model:['选择模型',option('GPT-6 Astra','data-choose="GPT-6 Astra"','sparkles','OpenAI · 已选')+option('自定义模型','data-sub="实际列表将来自用户已保存的供应商连接"','waypoints')+'<p>此处型号仅用于界面示例，不测试模型可用性。</p>'],effort:['思考等级',['自动','低','中','高','最高'].map(v=>option(v,`data-effort="${v}"`,'lightbulb',v===root.querySelector('.a-effort').textContent?'已选':'')).join('')],attach:['添加到本会话',option('选择文件','data-sub="正式应用使用 Android 文件选择器"','paperclip')+option('查看会话文件','data-sub="两个示例 APK 与后续分析报告"','folder')],message:['回复详情','<p>示例回复 · 未发送模型请求</p><p>正式界面将展示实际模型、请求用量与对应执行记录。</p>']};const p=panels[kind];if(!p)return;overlay.innerHTML=`<header>${p[0]}<button data-close aria-label="关闭面板"><i data-lucide="x"></i></button></header>${p[1]}`;overlay.hidden=false;scrim.hidden=false;icons()}
+root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.panel){panel(b.dataset.panel);return}if(b.hasAttribute('data-close'))close();if(b.dataset.scene){scene.value=b.dataset.scene;close();draw()}if(b.dataset.effort){root.querySelector('.a-effort').textContent=b.dataset.effort;close()}if(b.dataset.choose){root.querySelector('.a-model>span').textContent=b.dataset.choose;close()}if(b.dataset.sub){overlay.innerHTML=`<header>预览详情<button data-close aria-label="关闭面板"><i data-lucide="x"></i></button></header><p>${b.dataset.sub}</p>`;icons()}if(b.dataset.metric){const k=b.dataset.metric;const data={speed:['速度与步骤','本轮 3 步 · 模型请求 2 次','86 tok/s 为示例端到端估算，包含等待与工具耗时。'],cache:['缓存读取','输入 38,500 tokens · 读取 36,190 tokens','示例命中 94%。实际值以供应商返回为准。'],context:['上下文','示例用量 18%','按最近请求输入量与当前模型上限计算。']};const d=data[k];const same=metric.dataset.kind===k&&!metric.hidden;metric.dataset.kind=k;metric.innerHTML=`<strong>${d[0]}</strong><p>${scene.value==='empty'?'尚未发起请求':d[1]}</p><p>${scene.value==='empty'?'发送消息后显示实际详情。':d[2]}</p>`;metric.hidden=same}if(b.classList.contains('a-send')){if(running){root.querySelector('.a-running span').textContent='已停止 · 保留已完成的记录';running=false;b.setAttribute('aria-label','发送示例消息');b.innerHTML='<i data-lucide="arrow-up"></i>';icons()}else {const input=root.querySelector('textarea');if(input.value.trim()){scene.value='agent';input.value='';draw()}}}if(b.hasAttribute('data-copy')){b.setAttribute('aria-label','示例回复已选中');b.innerHTML='<i data-lucide="check"></i>';icons()}});
+scrim.addEventListener('click',close);scene.addEventListener('change',()=>{close();draw()});root.querySelector('#aurora-theme').addEventListener('change',e=>{phone.dataset.theme=e.target.value});
+const design={radius:25,accent:'#b5a4e0'};draw();if(globalThis.Tweak){const t=new Tweak({container:phone,onChange:()=>{root.querySelector('.a-composer').style.borderRadius=design.radius+'px';phone.style.setProperty('--a-accent',design.accent)}});t.addSlider(design,'radius',{label:'输入框圆角',min:18,max:30,unit:'px'});t.addColorPicker(design,'accent',{label:'强调色',reference:'--a-accent'})}
+})();
+</script>

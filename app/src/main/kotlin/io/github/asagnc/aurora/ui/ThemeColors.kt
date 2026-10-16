@@ -10,11 +10,11 @@ internal fun appearanceScheme(state: AppearanceState, dark: Boolean): ColorSchem
     val colors = palettes[state.palette] ?: palettes.getValue("青岚")
     val seed = if (state.palette == "自定义") Color(state.custom) else colors.first()
     val accent = if (state.style == "单色") Color(0xFF62696A) else seed
-    val canvas = if (dark) Color(0xFF171B1B) else Color(0xFFF8F8F5)
+    val canvas = if (dark) Color(0xFF18191B) else Color(0xFFFAF9F6)
     val ink = if (dark) Color(0xFFE8ECE9) else Color(0xFF252A2C)
     val tint = if (state.style == "鲜明") 0.06f else 0.02f
     val background = if (dark && state.pureBlack) Color.Black else lerp(canvas, accent, tint)
-    val surface = if (dark) lerp(Color(0xFF222827), accent, tint) else Color(0xFFFFFEFC)
+    val surface = if (dark) lerp(Color(0xFF242528), accent, tint) else Color(0xFFFFFEFC)
     val primary = contrastAgainst(if (dark) lerp(accent, Color.White, 0.42f) else accent, background)
     val secondary = contrastAgainst(lerp(accent, ink, 0.55f), background)
     val tertiary = contrastAgainst(if (state.style == "单色") secondary else colors.last(), background)
@@ -23,6 +23,8 @@ internal fun appearanceScheme(state: AppearanceState, dark: Boolean): ColorSchem
     val tertiaryContainer = lerp(surface, tertiary, 0.12f)
     val error = contrastAgainst(if (dark) Color(0xFFFFB4AB) else Color(0xFFBA1A1A), background)
     val errorContainer = if (dark) Color(0xFF66302D) else Color(0xFFFFDAD6)
+    val composer = lerp(background, ink, if (dark) 0.055f else 0.045f)
+    val muted = contrastAgainst(contrastAgainst(lerp(ink, surface, 0.32f), surface), composer)
     val base = if (dark) darkColorScheme() else lightColorScheme()
     return base.copy(
         primary = primary, onPrimary = readableOn(primary), primaryContainer = primaryContainer,
@@ -31,13 +33,13 @@ internal fun appearanceScheme(state: AppearanceState, dark: Boolean): ColorSchem
         onSecondaryContainer = readableOn(secondaryContainer), tertiary = tertiary, onTertiary = readableOn(tertiary),
         tertiaryContainer = tertiaryContainer, onTertiaryContainer = readableOn(tertiaryContainer),
         background = background, onBackground = ink, surface = surface, onSurface = ink,
-        surfaceVariant = secondaryContainer, onSurfaceVariant = contrastAgainst(lerp(ink, surface, 0.32f), surface),
+        surfaceVariant = secondaryContainer, onSurfaceVariant = muted,
         surfaceTint = primary, inverseSurface = ink, inverseOnSurface = readableOn(ink),
         error = error, onError = readableOn(error), errorContainer = errorContainer, onErrorContainer = readableOn(errorContainer),
         outline = lerp(ink, surface, 0.50f), outlineVariant = lerp(ink, surface, 0.87f),
         scrim = Color.Black, surfaceBright = if (dark) lerp(surface, Color.White, 0.08f) else surface,
         surfaceDim = if (dark) background else lerp(surface, ink, 0.05f), surfaceContainerLowest = background,
-        surfaceContainerLow = lerp(surface, background, 0.5f), surfaceContainer = lerp(surface, accent, 0.035f),
+        surfaceContainerLow = lerp(surface, background, 0.5f), surfaceContainer = composer,
         surfaceContainerHigh = lerp(surface, ink, 0.04f), surfaceContainerHighest = lerp(surface, ink, 0.08f),
     )
 }

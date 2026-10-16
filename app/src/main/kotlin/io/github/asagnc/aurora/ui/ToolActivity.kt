@@ -5,25 +5,32 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.foundation.shape.RoundedCornerShape
 import io.github.asagnc.aurora.data.ToolRun
 
 @Composable internal fun ToolActivity(events: List<ToolRun>) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(events.any { it.state == "started" }) }
     var detail by remember { mutableStateOf<String?>(null) }
     val presentations = remember(events) { events.takeLast(50).map(::presentTool) }
+    val lineColor = AuroraBorder
     val active = presentations.lastOrNull { it.event.state == "started" }
+    LaunchedEffect(active?.event?.id) { if (active != null) expanded = true }
     Column(Modifier.fillMaxWidth()) {
         TextButton({ expanded = !expanded }, contentPadding = PaddingValues(horizontal = 4.dp)) {
             Text("${if (expanded) "⌄" else "›"} ${active?.let { "正在${it.title}" } ?: "最近执行记录 · ${events.size}"}", color = AuroraMuted)
         }
-        if (expanded) presentations.forEach { item ->
+        if (expanded) Column(Modifier.fillMaxWidth().padding(start = 8.dp).drawBehind {
+            drawLine(color = lineColor, start = androidx.compose.ui.geometry.Offset.Zero,
+                end = androidx.compose.ui.geometry.Offset(0f, size.height), strokeWidth = 1.dp.toPx())
+        }.padding(start = 12.dp)) { presentations.forEach { item ->
             val event = item.event
             Surface(onClick = { detail = if (detail == event.id) null else event.id }, color = MaterialTheme.colorScheme.background,
                 shape = RoundedCornerShape(12.dp)) {
                 Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 14.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(if (event.state == "started") "·" else if (item.failed) "!" else if (event.state == "uncertain") "?" else "✓", color = AuroraMuted)
                     Text(item.title, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
                     Text(item.status, color = if (item.failed) MaterialTheme.colorScheme.error else AuroraMuted, style = MaterialTheme.typography.bodySmall)
                     Text(if (detail == event.id) "⌄" else "›", color = AuroraMuted)
@@ -31,12 +38,14 @@ import io.github.asagnc.aurora.data.ToolRun
             }
             if (detail == event.id) {
                 val preview = remember(event.result) { toolResultPreview(event.result) }
+                Surface(shape = RoundedCornerShape(10.dp), color = MaterialTheme.colorScheme.surfaceContainer) {
                 SelectionContainer { Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("${event.tool}\n调用 ID：${event.callId}", color = AuroraMuted, style = MaterialTheme.typography.labelMedium)
                     Text(preview, style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace))
                 } }
+                }
             }
-        }
+        } }
         if (expanded && events.size > 50) Text("显示最近 50 项", color = AuroraMuted, style = MaterialTheme.typography.bodySmall)
     }
 }

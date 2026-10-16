@@ -1,31 +1,11 @@
 package io.github.asagnc.aurora.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.*
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.window.*
 import io.github.asagnc.aurora.runtime.ChatState
-
-@Composable internal fun MetricPopup(kind: String, state: ChatState, dismiss: () -> Unit) {
-    val gap = with(LocalDensity.current) { 8.dp.roundToPx() }
-    val position = object : PopupPositionProvider {
-        override fun calculatePosition(anchorBounds: IntRect, windowSize: IntSize, layoutDirection: LayoutDirection, popupContentSize: IntSize): IntOffset {
-            val x = when (kind) { "speed" -> anchorBounds.left; "cache" -> anchorBounds.center.x - popupContentSize.width / 2; else -> anchorBounds.right - popupContentSize.width }
-            return IntOffset(x.coerceIn(gap, maxOf(gap, windowSize.width - popupContentSize.width - gap)),
-                (anchorBounds.top - popupContentSize.height - gap).coerceAtLeast(gap))
-        }
-    }
-    Popup(position, onDismissRequest = dismiss, properties = PopupProperties(focusable = true)) {
-        Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surface,
-            border = BorderStroke(1.dp, AuroraBorder), shadowElevation = 2.dp) { MetricDetails(kind, state) }
-    }
-}
 
 @Composable internal fun MetricDetails(kind: String, state: ChatState) {
     val title = when (kind) { "speed" -> "速度"; "cache" -> "缓存"; else -> "上下文" }
@@ -35,7 +15,7 @@ import io.github.asagnc.aurora.runtime.ChatState
         "cache" -> listOf("输入 tokens" to state.usage.input?.toString(), "缓存读取" to state.usage.cacheRead?.toString(), "缓存写入" to state.usage.cacheWrite?.toString())
         else -> listOf("最近输入" to state.usage.input?.toString(), "模型上限" to state.selected?.contextLimit?.toString())
     }
-    Column(Modifier.width(252.dp).padding(horizontal = 16.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(title, style = MaterialTheme.typography.titleMedium)
         rows.forEach { (label, value) -> Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(label, color = AuroraMuted, style = MaterialTheme.typography.bodySmall)

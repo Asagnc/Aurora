@@ -1,0 +1,6 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!-- Isolated visual fixture; no credentials, persistence or runtime commands. Excluded from release. -->
+        <activity android:name=".ui.ChatReviewActivity" android:exported="true" android:windowSoftInputMode="adjustResize" />
+    </application>
+</manifest>
