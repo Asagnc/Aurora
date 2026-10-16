@@ -13,3 +13,5 @@ The full [Apache-2.0 license](licenses/Material-Symbols-LICENSE.txt) is also pac
 0.1.3 removes the unused speed/layers/donut_large vectors after metrics became text-only. Original source attribution above records their history.
 
 0.1.5 adds independently drawn native outline vectors ic_gauge, ic_database, ic_context, ic_sparkle and ic_thinking. They are Aurora geometry, not copied Lucide paths. The thinking control uses the approved lightbulb silhouette.
+
+0.1.6 removes the unused original ic_lightbulb vector after the approved thinking control switched to the independent ic_thinking outline. Earlier Material attribution records its source history.

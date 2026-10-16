@@ -17,6 +17,7 @@ class AuroraApplication : Application() {
     val nativeHistory by lazy { NativeHistoryStore(conversations) }
     val spaces by lazy { SpaceStore(this, conversations) }
     val toolRuns by lazy { ToolRunStore(conversations) }
+    internal val commands by lazy { io.github.asagnc.aurora.runtime.NativeCommandRunner(this) }
     val tasks = OwnedTasks()
     val root by lazy { io.github.asagnc.aurora.root.RootController(this) }
     internal val browser by lazy { io.github.asagnc.aurora.browser.BrowserController(this) }

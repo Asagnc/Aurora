@@ -18,6 +18,7 @@ class SpaceStore(private val context: Context, private val conversations: Conver
     private val openSpaces = ConcurrentHashMap<Path, OwnedFiles>()
 
     suspend fun conversation(id: String): OwnedFiles = open(path(id), true)
+    internal suspend fun commandRoot(id: String): Path { conversation(id); return path(id) }
     suspend fun sharedResources(): OwnedFiles = open(root.resolve("resources"), false)
     suspend fun sharedWorkspace(): OwnedFiles = open(root.resolve("workspace"), true)
     private suspend fun open(path: Path, writable: Boolean): OwnedFiles = withContext(Dispatchers.IO) {

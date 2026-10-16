@@ -6,16 +6,21 @@ plugins {
 android {
     namespace = "io.github.asagnc.aurora"
     compileSdk = 37
+    ndkVersion = "30.0.16248370"
+    externalNativeBuild { cmake { path = file("src/main/cpp/CMakeLists.txt"); version = "4.1.2" } }
     defaultConfig {
+        ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
+        externalNativeBuild { cmake { targets += "aurora_runner" } }
         applicationId = "io.github.asagnc.aurora"
         minSdk = 36
         targetSdk = 37
-        versionCode = 6
-        versionName = "0.1.5"
+        versionCode = 7
+        versionName = "0.1.6"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["notAnnotation"] = "io.github.asagnc.aurora.root.RootRequired"
     }
     buildFeatures { compose = true; aidl = true }
+    packaging { jniLibs { useLegacyPackaging = true } }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_25
         targetCompatibility = JavaVersion.VERSION_25
@@ -71,4 +76,34 @@ abstract class VerifyDeviceResults : DefaultTask() {
 tasks.register<VerifyDeviceResults>("verifyDevicePersistence") {
     dependsOn("connectedDebugAndroidTest")
     reports.from(fileTree(layout.buildDirectory.dir("outputs/androidTest-results/connected/debug")) { include("**/*.xml") })
+}
+
+abstract class StageNativeRunner : DefaultTask() {
+    @get:InputDirectory @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val binaries: DirectoryProperty
+    @get:OutputDirectory abstract val outputDirectory: DirectoryProperty
+    @get:javax.inject.Inject abstract val fileOperations: FileSystemOperations
+    @TaskAction fun stage() {
+        check(binaries.get().asFile.walkTopDown().any { it.isFile && it.name == "aurora_runner" }) { "Native runner was not built" }
+        fileOperations.sync {
+            from(binaries) {
+                include("*/aurora_runner")
+                eachFile { path = "${file.parentFile.name}/libaurora_runner.so" }
+                includeEmptyDirs = false
+            }
+            into(outputDirectory)
+        }
+    }
+}
+
+// Immutable APK native-library directory; never execute downloaded files from writable app data.
+androidComponents.onVariants { variant ->
+    val capital = variant.name.replaceFirstChar { it.uppercase() }
+    val kind = if (variant.buildType == "debug") "Debug" else "RelWithDebInfo"
+    val stage = tasks.register<StageNativeRunner>("stage${capital}Runner") {
+        dependsOn("externalNativeBuild$capital")
+        binaries.set(layout.buildDirectory.dir("native-runner/$kind"))
+        outputDirectory.set(layout.buildDirectory.dir("generated/runner/${variant.name}"))
+    }
+    variant.sources.jniLibs?.addGeneratedSourceDirectory(stage, StageNativeRunner::outputDirectory)
 }

@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 4.1.2)
+project(aurora_native C)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/../../../build/native-runner/${CMAKE_BUILD_TYPE}/${ANDROID_ABI}")
+add_executable(aurora_runner runner.c capture.c)
+target_compile_options(aurora_runner PRIVATE -Wall -Wextra -Werror -fstack-protector-strong)
+target_link_options(aurora_runner PRIVATE -Wl,-z,relro,-z,now -Wl,-z,max-page-size=16384)

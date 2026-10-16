@@ -21,5 +21,5 @@ if [[ "$aurora_license_status" -ne 0 ]]; then
     cat "${RUNNER_TEMP}/aurora-sdk-licenses.log"
     exit "$aurora_license_status"
 fi
-"$aurora_manager" --sdk_root="$aurora_sdk_path" --channel=0 "platforms;android-37.0" "build-tools;36.0.0"
+"$aurora_manager" --sdk_root="$aurora_sdk_path" --channel=0 "platforms/android-37.0" "build-tools/36.0.0" "ndk/30.0.16248370" "cmake/4.1.2"
 printf 'ANDROID_HOME=%s\nANDROID_SDK_ROOT=%s\n' "$aurora_sdk_path" "$aurora_sdk_path" >>"${GITHUB_ENV:?}"

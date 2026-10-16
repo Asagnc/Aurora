@@ -30,6 +30,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     private val mutable = MutableStateFlow(ChatState())
     val state = mutable.asStateFlow()
     val rootState = app.root.state
+    internal val commandsAvailable get() = app.commands.available
     internal val browser get() = app.browser
     private var rootRequest: Job? = null
     private var run: Job? = null
@@ -176,7 +177,8 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     private suspend fun execute(id: String, text: String, connection: Connection, started: Long) {
         val files = FileToolExecutor(linkedMapOf("conversation" to app.spaces.conversation(id),
             "resources" to app.spaces.sharedResources(), "workspace" to app.spaces.sharedWorkspace()))
-        val tools = ToolRouter(listOf(files, BrowserToolExecutor(app.browser, id)))
+        val tools = ToolRouter(listOf(files, BrowserToolExecutor(app.browser, id),
+            CommandToolExecutor(app.commands, app.spaces.commandRoot(id))))
         val fingerprint = requestFingerprint(SYSTEM, tools.definitions)
         val credential = requireNotNull(app.credentials.get(connection.id)) { "API 密钥不存在" }
         require(credential.revision == connection.credentialRevision) { "API 密钥已改变" }

@@ -29,6 +29,7 @@ import io.github.asagnc.aurora.runtime.ChatViewModel
     val root by model.rootState.collectAsStateWithLifecycle()
     var appearance by remember { mutableStateOf(false) }
     var rootDetails by remember { mutableStateOf(false) }
+    var environment by remember { mutableStateOf<Boolean?>(null) }
     var about by remember { mutableStateOf(false) }
     FullPage("设置", dismiss) {
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
@@ -45,8 +46,8 @@ import io.github.asagnc.aurora.runtime.ChatViewModel
             SettingsGroup("设备与执行") {
                 SettingsRow("Root 权限", root.phase.let { if (it == RootPhase.READY) "已连接" else if (it == RootPhase.CONNECTING) "连接中" else "未连接" },
                     R.drawable.ic_shield, Color(0xFF26A879)) { rootDetails = true }
-                SettingsRow("执行环境", "Android 原生 · Linux 后端尚未接入", R.drawable.ic_terminal, Color(0xFF347EDD)) { about = true }
-                SettingsRow("工具与 Skills", "批量文件工具可用 · 执行器建设中", R.drawable.ic_extension, Color(0xFF9270D7)) { about = true }
+                SettingsRow("执行环境", "Android 原生命令 · 普通权限", R.drawable.ic_terminal, Color(0xFF347EDD)) { environment = false }
+                SettingsRow("工具与 Skills", "文件、浏览器与原生命令 · Skills 待接入", R.drawable.ic_extension, Color(0xFF9270D7)) { environment = true }
             }
             SettingsGroup("数据与存储") {
                 SettingsRow("空间与文件", "会话文件、共享资源与保留工作区", R.drawable.ic_folder_open, Color(0xFF27A899), click = files)
@@ -54,11 +55,12 @@ import io.github.asagnc.aurora.runtime.ChatViewModel
             SettingsGroup("偏好") {
                 SettingsRow("外观与配色", LocalAppearance.current.state.let { if (it.dynamic) "系统动态配色" else it.palette },
                     R.drawable.ic_palette, Color(0xFF8B58D0)) { appearance = true }
-                SettingsRow("关于 Aurora", "0.1.5 · Android 16+", R.drawable.ic_info, Color(0xFF4086CC)) { about = true }
+                SettingsRow("关于 Aurora", "0.1.6 · Android 16+", R.drawable.ic_info, Color(0xFF4086CC)) { about = true }
             }
             Spacer(Modifier.height(20.dp))
         }
     }
+    environment?.let { ExecutionStatusPage(model.commandsAvailable, it) { environment = null } }
     if (appearance) AppearanceSheet { appearance = false }
     if (rootDetails) AlertDialog(onDismissRequest = { rootDetails = false }, title = { Text("Root 连接") },
         text = { Text(root.detail + "\n\n当前仅提供只读握手验证，系统执行工具尚未接入。") },
@@ -67,7 +69,7 @@ import io.github.asagnc.aurora.runtime.ChatViewModel
         }) { Text(if (root.phase == RootPhase.READY || root.phase == RootPhase.CONNECTING) "断开 Root" else "授权并连接 Root") } },
         dismissButton = { TextButton({ rootDetails = false }) { Text("关闭") } })
     if (about) AlertDialog(onDismissRequest = { about = false }, title = { Text("Aurora · 开发版本") },
-        text = { Text("已接入对话、批量读取/编辑和文件空间。Root 系统操作、Linux 执行器、Skills 安装以及逆向/抓包/发包工具仍在开发，不代表已可用。模型 API 密钥由用户自备并加密保存。") },
+        text = { Text("已接入对话、批量文件、浏览器 Agent 与普通权限的原生命令。Root 系统操作、Linux 执行器、Skills 安装以及逆向/抓包/发包工具仍在开发，不代表已可用。模型 API 密钥由用户自备并加密保存。") },
         confirmButton = { TextButton({ about = false }) { Text("关闭") } })
 }
 

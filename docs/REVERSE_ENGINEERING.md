@@ -39,3 +39,5 @@
 - [radare2 发布](https://github.com/radareorg/radare2/releases/tag/6.2.4)、[Frida 发布](https://github.com/frida/frida/releases/tag/17.23.3)。
 - [mitmproxy 发布](https://github.com/mitmproxy/mitmproxy/releases/tag/v12.2.3)、[功能和限制](https://docs.mitmproxy.org/stable/overview/features/)。
 - [Android VPN 生命周期与单实例限制](https://developer.android.com/develop/connectivity/vpn)：已据此讨论并排除当前 VPN 抓包方案。
+
+2026-10-16 / 0.1.6：普通 UID 原生命令已接入（NATIVE_COMMANDS.md），提供监督执行、输出产物、超时和取消基础；不是 Root 抓包/逆向插件已安装的证据。RootService 仍只读握手。

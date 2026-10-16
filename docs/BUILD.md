@@ -15,3 +15,9 @@ Do not run connectedDebugAndroidTest against an attached everyday phone as routi
 2026-10-15 final device verification: Android 16 ARM64 realme GT6 SE passed 14 ordinary tests, one separate-process browser recovery test, and one explicitly authorized RootConnectionTest (read-only connect/disconnect/reconnect). FolkPatch authorization is configured inside its app. Packet capture, privileged operations and revocation remain unverified.
 
 0.1.3: require at least 18 ordinary tests, excluding both RootRequired and BrowserRecoveryTest. Run BrowserRecoveryTest alone in a fresh instrumentation process after the ordinary suite. Current core count: 45. Local fixtures do not establish paid-provider cache hit rates.
+
+## Current 0.1.6 native build
+
+NDK 30.0.16248370 (r30 LTS) and SDK CMake 4.1.2 are pinned. CI installs both stable packages alongside platform/build-tools. Current command-line-tool compatibility wrappers accept slash-style package paths; Windows splits unquoted semicolon package tokens, so the bootstrap uses slash paths. Native executables are built for arm64-v8a and x86_64, staged through the Gradle Variant generated-source API and extracted from the APK native-library directory. The app does not install the NDK on the phone.
+
+The emulator gate now requires 26 ordinary tests plus one isolated recovery test, and core remains 45. Eight native-command tests include real ELF execution, 9 MiB on both streams, cancellation/timeouts/group cleanup, parent exit, abnormal supervisor, UTF-8 and agent-to-artifact integration. ARM64 native runtime and new Root operations await later hardware verification. The earlier counts above describe prior versions.
