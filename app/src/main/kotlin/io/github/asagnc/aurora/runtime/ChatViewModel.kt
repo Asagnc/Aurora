@@ -22,6 +22,7 @@ data class ChatState(
     val olderBefore: Long? = null,
     val toolRuns: List<ToolRun> = emptyList(),
     val totalUsage: Usage = Usage(), val requests: Int = 0,
+    val steps: Long = 0,
 )
 
 class ChatViewModel(application: Application) : AndroidViewModel(application) {
@@ -85,6 +86,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             attachments = if (it.current?.id == id) it.attachments else emptyList(),
             usage = if (keepMetrics) it.usage else Usage(), seconds = if (keepMetrics) it.seconds else 0.0,
             totalUsage = if (keepMetrics) it.totalUsage else Usage(), requests = if (keepMetrics) it.requests else 0,
+            steps = if (keepMetrics) it.steps else 0,
             stage = if (header.runState == "interrupted") "上次任务中断；不会自动重放工具" else if (keepMetrics) it.stage else "") }
     }
 
@@ -198,9 +200,15 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             history, connection.credentialRevision, connection.baseUrl, fingerprint, connection.authentication))
         var savedCount = history.size
         val transport = HttpModelTransport { credential.token }
-        val result = AgentLoop(transport, app.toolRuns.recording(id, tools) {
-            val events = app.toolRuns.recent(id)
-            mutable.update { if (it.current?.id == id) it.copy(toolRuns = events) else it }
+        var steps = 0L
+        val result = AgentLoop(transport, app.toolRuns.recording(id, tools) { event ->
+            if (event.state == "started") steps++
+            mutable.update { current ->
+                val events = if (current.toolRuns.any { it.id == event.id })
+                    current.toolRuns.map { if (it.id == event.id) event else it }
+                else (current.toolRuns + event).takeLast(50)
+                if (current.current?.id == id) current.copy(toolRuns = events, steps = steps) else current
+            }
         }).run(
             ModelRequest(continuation?.connection ?: connection, SYSTEM, history, tools.definitions),
             { update -> mutable.update { it.copy(streaming = update.text, stage = update.stage) } },

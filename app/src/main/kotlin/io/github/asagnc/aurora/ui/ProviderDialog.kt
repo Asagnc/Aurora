@@ -14,6 +14,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import io.github.asagnc.aurora.core.*
 import io.github.asagnc.aurora.R
+import androidx.activity.compose.BackHandler
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable internal fun ProviderDialog(connections: List<Connection>, choose: (Connection) -> Unit,
@@ -35,10 +36,13 @@ import io.github.asagnc.aurora.R
         endpoint = selected?.baseUrl?.takeUnless { selected.requiresWorkspace }.orEmpty()
         protocol = selected?.protocol ?: Protocol.CHAT; auth = selected?.authentication ?: Authentication.AUTOMATIC
     }
+    fun back() { key = ""; if (adding) adding = false else dismiss() }
     ModalBottomSheet(onDismissRequest = { key = ""; dismiss() }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = MaterialTheme.colorScheme.surface) {
+        BackHandler(enabled = adding) { back() }
         Column(Modifier.fillMaxHeight(0.88f).padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                if (adding) IconButton(::back) { LocalIcon(R.drawable.ic_arrow_back, "返回供应商") }
                 Text(if (adding) "添加 API 连接" else "供应商", Modifier.weight(1f), style = MaterialTheme.typography.headlineSmall)
                 IconButton({ key = ""; dismiss() }) { LocalIcon(R.drawable.ic_close, "关闭") }
             }

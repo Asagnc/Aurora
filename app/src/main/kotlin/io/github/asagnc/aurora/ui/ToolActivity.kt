@@ -6,30 +6,35 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.foundation.shape.RoundedCornerShape
 import io.github.asagnc.aurora.data.ToolRun
-import io.github.asagnc.aurora.core.WireJson
-import kotlinx.serialization.json.jsonObject
 
 @Composable internal fun ToolActivity(events: List<ToolRun>) {
     var expanded by remember { mutableStateOf(false) }
     var detail by remember { mutableStateOf<String?>(null) }
+    val presentations = remember(events) { events.takeLast(50).map(::presentTool) }
+    val active = presentations.lastOrNull { it.event.state == "started" }
     Column(Modifier.fillMaxWidth()) {
         TextButton({ expanded = !expanded }, contentPadding = PaddingValues(horizontal = 4.dp)) {
-            Text("${if (expanded) "⌄" else "›"} 最近执行记录 · ${events.size}", color = AuroraMuted)
+            Text("${if (expanded) "⌄" else "›"} ${active?.let { "正在${it.title}" } ?: "最近执行记录 · ${events.size}"}", color = AuroraMuted)
         }
-        if (expanded) events.takeLast(50).forEach { event ->
-            val status = when {
-                event.state == "started" -> "执行中"
-                event.state == "uncertain" -> "结果待核实"
-                event.result?.let { runCatching { WireJson.parseToJsonElement(it).jsonObject.containsKey("error") }.getOrDefault(false) } == true -> "返回错误"
-                else -> "已返回"
+        if (expanded) presentations.forEach { item ->
+            val event = item.event
+            Surface(onClick = { detail = if (detail == event.id) null else event.id }, color = MaterialTheme.colorScheme.background,
+                shape = RoundedCornerShape(12.dp)) {
+                Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 14.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(item.title, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+                    Text(item.status, color = if (item.failed) MaterialTheme.colorScheme.error else AuroraMuted, style = MaterialTheme.typography.bodySmall)
+                    Text(if (detail == event.id) "⌄" else "›", color = AuroraMuted)
+                }
             }
-            TextButton({ detail = if (detail == event.id) null else event.id }, contentPadding = PaddingValues(horizontal = 4.dp)) {
-                Text("${event.tool} · $status", color = AuroraMuted, style = MaterialTheme.typography.bodySmall)
-            }
-            if (detail == event.id) SelectionContainer {
-                Text(event.result?.let { it.take(8000) + if (it.length > 8000) "\n（预览已截断）" else "" } ?: "尚无结果",
-                    Modifier.fillMaxWidth().padding(8.dp), style = MaterialTheme.typography.bodySmall)
+            if (detail == event.id) {
+                val preview = remember(event.result) { toolResultPreview(event.result) }
+                SelectionContainer { Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("${event.tool}\n调用 ID：${event.callId}", color = AuroraMuted, style = MaterialTheme.typography.labelMedium)
+                    Text(preview, style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace))
+                } }
             }
         }
         if (expanded && events.size > 50) Text("显示最近 50 项", color = AuroraMuted, style = MaterialTheme.typography.bodySmall)

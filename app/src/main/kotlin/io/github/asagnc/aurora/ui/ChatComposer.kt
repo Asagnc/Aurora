@@ -22,43 +22,48 @@ import io.github.asagnc.aurora.runtime.ChatState
     choose: (Connection) -> Unit, models: () -> Unit, send: () -> Unit) {
     var metric by remember { mutableStateOf<String?>(null) }
     Box(Modifier.navigationBarsPadding().imePadding().padding(horizontal = 16.dp, vertical = 8.dp)) {
-    Surface(Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp), color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, AuroraBorder.copy(alpha = 0.65f))) {
-        Column(Modifier.padding(horizontal = 14.dp).padding(top = 16.dp, bottom = 4.dp)) {
-            if (state.attachments.isNotEmpty()) Text("已导入 ${state.attachments.size} 个文件", Modifier.padding(horizontal = 8.dp),
-                style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
-            BasicTextField(draft, edit, Modifier.fillMaxWidth().heightIn(min = 44.dp).padding(horizontal = 8.dp),
-                textStyle = MaterialTheme.typography.bodyLarge.copy(color = AuroraInk), maxLines = 6,
-                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary), decorationBox = { field ->
-                    Box { if (draft.isEmpty()) Text("继续追问，或添加新的任务…", color = AuroraMuted, style = MaterialTheme.typography.bodyLarge); field() }
-                })
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                IconButton(attach, Modifier.size(48.dp), enabled = !state.running) { LocalIcon(R.drawable.ic_add, "上传文件") }
-                EffortControl(state.selected, choose, Modifier.weight(1.25f))
-                Surface(onClick = models, modifier = Modifier.weight(1f), shape = CircleShape, color = Color.Transparent) {
-                    Row(Modifier.heightIn(min = 48.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        state.selected?.let { ModelBrand(it.model, 24.dp) }
-                        Text(state.selected?.let { modelFamily(it.model)?.substringBefore(' ') ?: "模型" } ?: "选择模型",
-                            Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.labelLarge)
-                        Icon(painterResource(R.drawable.ic_keyboard_arrow_down), "选择模型", Modifier.size(14.dp))
+        Column(Modifier.fillMaxWidth()) {
+            Surface(Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.surfaceContainer,
+                border = BorderStroke(0.5.dp, AuroraBorder.copy(alpha = 0.4f))) {
+                Column(Modifier.padding(horizontal = 10.dp).padding(top = 12.dp, bottom = 6.dp)) {
+                    if (state.attachments.isNotEmpty()) Text("已导入 ${state.attachments.size} 个文件", Modifier.padding(horizontal = 8.dp),
+                        style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
+                    BasicTextField(draft, edit, Modifier.fillMaxWidth().heightIn(min = 36.dp).padding(horizontal = 8.dp),
+                        textStyle = MaterialTheme.typography.bodyLarge.copy(color = AuroraInk), maxLines = 6,
+                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary), decorationBox = { field ->
+                            Box { if (draft.isEmpty()) Text("发消息或创建任务…", color = AuroraMuted, style = MaterialTheme.typography.bodyLarge); field() }
+                        })
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                        IconButton(attach, Modifier.size(48.dp), enabled = !state.running) { LocalIcon(R.drawable.ic_add, "上传文件") }
+                        EffortControl(state.selected, choose, Modifier.width(48.dp))
+                        Surface(onClick = models, modifier = Modifier.weight(1f).padding(horizontal = 4.dp), shape = RoundedCornerShape(12.dp),
+                            border = BorderStroke(1.dp, AuroraBorder.copy(alpha = 0.6f)), color = MaterialTheme.colorScheme.surfaceContainerLow) {
+                            Row(Modifier.heightIn(min = 48.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                state.selected?.let { ModelBrand(it.model, 24.dp) }
+                                Text(state.selected?.model ?: "选择模型",
+                                    Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.labelLarge)
+                                state.selected?.let { Text(effortLabel(it.effort), color = AuroraMuted, style = MaterialTheme.typography.labelMedium) }
+                                Icon(painterResource(R.drawable.ic_keyboard_arrow_down), "选择模型", Modifier.size(14.dp))
+                            }
+                        }
+                        FilledIconButton(send, Modifier.size(44.dp), enabled = state.running || draft.isNotBlank(), colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)) {
+                            LocalIcon(if (state.running) R.drawable.ic_stop else R.drawable.ic_arrow_upward, if (state.running) "停止生成" else "发送")
+                        }
                     }
-                }
-                FilledIconButton(send, Modifier.size(44.dp), enabled = state.running || draft.isNotBlank(), colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)) {
-                    LocalIcon(if (state.running) R.drawable.ic_stop else R.drawable.ic_arrow_upward, if (state.running) "停止生成" else "发送")
                 }
             }
             ComposerMetrics(state) { metric = it }
         }
-    }
-    metric?.let { MetricPopup(it, state) { metric = null } }
+        metric?.let { MetricPopup(it, state) { metric = null } }
     }
 }
 
 @Composable private fun ComposerMetrics(state: ChatState, metric: (String) -> Unit) {
-    val speed = state.totalUsage.output?.takeIf { state.seconds > 0 }?.let { "≈%.1f tok/s".format(it / state.seconds) } ?: "— tok/s"
+    val speed = (if (state.steps > 0) "${state.steps}步 · " else "") +
+        (state.totalUsage.output?.takeIf { state.seconds > 0 }?.let { "≈%.1f tok/s".format(it / state.seconds) } ?: "— tok/s")
     val context = state.usage.input?.let { used -> state.selected?.contextLimit?.takeIf { it > 0 }?.let { limit ->
         "上下文 %.0f%%".format(used.toDouble() / limit * 100)
     } ?: "上下文 $used" } ?: "上下文 —"
@@ -86,9 +91,7 @@ import io.github.asagnc.aurora.runtime.ChatState
                 horizontalArrangement = Arrangement.spacedBy(3.dp)) {
                 Icon(painterResource(R.drawable.ic_lightbulb), null, Modifier.size(19.dp), tint =
                     if (LocalAppearance.current.state.colorful) Color(0xFFE57D15) else MaterialTheme.colorScheme.primary)
-                Text(effortLabel(connection?.effort ?: "auto"), Modifier.weight(1f), maxLines = 1,
-                    overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.labelLarge)
-                Icon(painterResource(R.drawable.ic_keyboard_arrow_down), "思考等级", Modifier.size(13.dp))
+                Icon(painterResource(R.drawable.ic_keyboard_arrow_down), "思考等级：${effortLabel(connection?.effort ?: "auto")}", Modifier.size(12.dp))
             }
         }
         DropdownMenu(expanded, { expanded = false }) { connection?.let { current ->

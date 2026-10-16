@@ -178,12 +178,26 @@ class PersistenceTest {
             val tools = ToolRunStore(store)
             val id = store.create()
             val completed = tools.start(id, ToolCall("a", "write", objectOf()))
+            assertEquals(1L, tools.count(id))
             tools.finish(completed, "committed")
             assertTrue("A recorded call must not execute again", runCatching { tools.start(id, ToolCall("a", "write", objectOf())) }.isFailure)
             tools.start(id, ToolCall("b", "write", objectOf()))
+            assertEquals(2L, tools.count(id))
+            assertEquals(0L, tools.count(store.create()))
             store.recoverInterruptedRuns()
             assertEquals(listOf("completed", "uncertain"), tools.list(id).map { it.state })
             assertEquals("committed", tools.list(id).first().result)
+            val observed = mutableListOf<ToolRun>()
+            val executor = object : ToolExecutor {
+                override val definitions = emptyList<ToolDefinition>()
+                override suspend fun execute(call: ToolCall) = "x".repeat(9000)
+            }
+            val result = tools.recording(id, executor) { observed += it }.execute(ToolCall("c", "read", objectOf()))
+            assertEquals(listOf("started", "completed"), observed.map { it.state })
+            assertEquals(observed.first().id, observed.last().id)
+            assertEquals(8001, observed.last().result?.length)
+            assertEquals(9000, result.length)
+            assertEquals(result, tools.list(id).last().result)
         } finally { database.close(); context.deleteDatabase(name) }
     }
 }

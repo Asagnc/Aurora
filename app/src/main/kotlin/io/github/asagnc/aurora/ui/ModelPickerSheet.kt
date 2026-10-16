@@ -21,6 +21,14 @@ import io.github.asagnc.aurora.core.Connection
     var query by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("全部") }
     ModalBottomSheet(dismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true), containerColor = MaterialTheme.colorScheme.surface) {
+        if (connections.none { it.enabled }) {
+            Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Text("选择模型", style = MaterialTheme.typography.titleLarge)
+                Text("添加自己的 API 连接后，模型会显示在这里。", color = AuroraMuted, style = MaterialTheme.typography.bodyMedium)
+                Button({ dismiss(); manage() }, Modifier.fillMaxWidth().height(48.dp), shape = RoundedCornerShape(16.dp)) { Text("添加供应商或中转") }
+            }
+            return@ModalBottomSheet
+        }
         Column(Modifier.fillMaxHeight(0.75f).padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text("选择模型", style = MaterialTheme.typography.headlineSmall)
             SearchField(query, { query = it }, "搜索供应商或模型")

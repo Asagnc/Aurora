@@ -7,6 +7,9 @@ import kotlinx.coroutines.CancellationException
 data class ToolRun(val id: String, val callId: String, val tool: String, val state: String, val result: String?)
 
 class ToolRunStore(private val conversations: ConversationStore) {
+    suspend fun count(owner: String): Long = conversations.read { db ->
+        db.rawQuery("SELECT count(*) FROM tool_runs WHERE owner = ?", arrayOf(owner)).use { it.moveToFirst(); it.getLong(0) }
+    }
     suspend fun start(owner: String, call: ToolCall): String = conversations.write { db ->
         conversations.requireActive(db, owner)
         db.rawQuery("SELECT 1 FROM tool_runs WHERE owner = ? AND call_id = ? LIMIT 1", arrayOf(owner, call.id)).use {
@@ -36,18 +39,18 @@ class ToolRunStore(private val conversations: ConversationStore) {
             .use { cursor -> buildList { while (cursor.moveToNext()) add(ToolRun(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4))) }.asReversed() }
     }
 
-    fun recording(owner: String, delegate: ToolExecutor, changed: suspend () -> Unit = {}): ToolExecutor = object : ToolExecutor {
+    fun recording(owner: String, delegate: ToolExecutor, changed: suspend (ToolRun) -> Unit = {}): ToolExecutor = object : ToolExecutor {
         override val definitions get() = delegate.definitions
         override suspend fun execute(call: ToolCall): String {
             val id = start(owner, call)
-            changed()
+            changed(ToolRun(id, call.id, call.name, "started", null))
             val result = try { delegate.execute(call) } catch (cancel: CancellationException) {
                 throw cancel
             } catch (failure: Exception) {
                 objectOf("error" to string(failure.javaClass.simpleName)).toString()
             }
             finish(id, result)
-            changed()
+            changed(ToolRun(id, call.id, call.name, "completed", result.take(8001)))
             return result
         }
     }

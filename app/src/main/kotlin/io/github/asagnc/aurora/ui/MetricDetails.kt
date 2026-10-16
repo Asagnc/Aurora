@@ -30,7 +30,8 @@ import io.github.asagnc.aurora.runtime.ChatState
 @Composable internal fun MetricDetails(kind: String, state: ChatState) {
     val title = when (kind) { "speed" -> "速度"; "cache" -> "缓存"; else -> "上下文" }
     val rows = when (kind) {
-        "speed" -> listOf("本轮输出 tokens" to state.totalUsage.output?.toString(), "模型请求数" to state.requests.toString(), "本轮耗时" to "%.2f 秒".format(state.seconds))
+        "speed" -> listOf("本轮输出 tokens" to state.totalUsage.output?.toString(), "模型请求数" to state.requests.toString(),
+            "工具调用数" to state.steps.toString(), "本轮耗时" to "%.2f 秒".format(state.seconds))
         "cache" -> listOf("输入 tokens" to state.usage.input?.toString(), "缓存读取" to state.usage.cacheRead?.toString(), "缓存写入" to state.usage.cacheWrite?.toString())
         else -> listOf("最近输入" to state.usage.input?.toString(), "模型上限" to state.selected?.contextLimit?.toString())
     }

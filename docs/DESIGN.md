@@ -216,3 +216,5 @@ Sources inspected: Eta data/model/AppearanceSettings.kt and ui/AppearanceSetting
 ## 0.1.3 implementation checkpoint
 
 The latest calm chat concept and colors-only appearance layout are approved and implemented in 0.1.3; earlier pending/rejected preview sections above are historical. Aurora is agent-first: the user chats and watches, while available file and browser operations are routed through the model tool loop. Current browser Agent tools reuse the approved WebView architecture; this does not establish full phone autonomy. Implementation and measured limits are tracked in PROGRESS.md and IMPLEMENTATION.md.
+
+2026-10-16 composer amendment: the user approved placing speed, cache and context in a separate row below the rounded composer, following their supplied reference. This supersedes the earlier inside-composer placement. Keep details locally anchored and metrics based on actual provider observations.
