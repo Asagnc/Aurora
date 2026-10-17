@@ -26,6 +26,8 @@ class RootController(private val context: Context) {
     val state = mutable.asStateFlow()
     private val main = Handler(Looper.getMainLooper())
     private var connection: ServiceConnection? = null
+    @Volatile private var remote: IRootControl? = null
+    internal val commandClient get() = remote?.let(::RootCommandClient)
     private val lifecycle = Mutex()
 
     suspend fun connect() = withContext(Dispatchers.Main.immediate) {
@@ -42,7 +44,10 @@ class RootController(private val context: Context) {
                 val remote = bind()
                 val snapshot = withContext(Dispatchers.IO) { remote.snapshot() }
                 check(connection != null && remote.asBinder().isBinderAlive)
-                mutable.value = RootState(RootPhase.READY, describe(snapshot))
+                require(snapshot.getInt("commandProtocol") == 1)
+                val detail = describe(snapshot)
+                this@RootController.remote = remote
+                mutable.value = RootState(RootPhase.READY, detail)
             }
         } catch (cancel: CancellationException) {
             withContext(NonCancellable) { disconnectLocked() }
@@ -62,6 +67,7 @@ class RootController(private val context: Context) {
             }
             override fun onServiceDisconnected(name: ComponentName) {
                 if (connection === this) {
+                    remote = null
                     connection = null
                     mutable.value = RootState(RootPhase.UNAVAILABLE, "Root 服务已退出；普通功能仍可使用")
                 }
@@ -80,7 +86,10 @@ class RootController(private val context: Context) {
         lifecycle.withLock { disconnectLocked() }
     }
 
-    private suspend fun disconnectLocked() {
+    private suspend fun disconnectLocked() = withContext(NonCancellable) {
+        val endpoint = remote
+        remote = null
+        withContext(Dispatchers.IO) { runCatching { endpoint?.closeCommands() } }
         connection?.let { RootService.unbind(it) }
         connection = null
         withContext(Dispatchers.IO) { runCatching { Shell.getCachedShell()?.close() } }
@@ -92,6 +101,6 @@ class RootController(private val context: Context) {
             snapshot.getInt("pid", -1) > 0 && snapshot.getInt("sdk", -1) >= 36)
         return "Root 服务已验证：UID 0\n服务进程：${snapshot.getInt("pid")}\nAndroid API：${snapshot.getInt("sdk")}\n" +
             "架构：${snapshot.getString("architecture")}\n内核：${snapshot.getString("kernel")}\nSELinux：${snapshot.getString("selinux")}\n" +
-            "当前仅验证连接和只读状态，系统操作工具仍在开发。"
+            "Root 原生命令接口已连接；系统工具包与后台任务仍在开发。"
     }
 }

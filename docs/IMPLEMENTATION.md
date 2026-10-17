@@ -118,3 +118,9 @@ SQLite WAL 与外键；IO 线程操作，串行写事务。消息/协议记录�
 其他精确依赖版本在构建文件内，来自 Google Maven/Maven Central/Gradle 官方接口/libsu Releases，排除 alpha、beta、RC、preview。构建组合验收不等于服务能力或真机性能验收。
 
 2026-10-15 final device verification: Android 16 ARM64 realme GT6 SE passed 14 ordinary tests, one separate-process browser recovery test, and one explicitly authorized RootConnectionTest (read-only connect/disconnect/reconnect). FolkPatch authorization is configured inside its app. Packet capture, privileged operations and revocation remain unverified.
+
+## 0.1.7 Root command interface (2026-10-17)
+
+Supersedes the earlier read-only implementation status: RootService now exposes asynchronous start, completion callback, cancel-and-wait and close. Only an explicitly connected, UID-0/protocol-verified endpoint is included as command_execute_root at agent-run construction. Existing ordinary command execution remains separate; no retry/fallback after an uncertain result. UID checks cover each production method. Controlled supervisor artifacts use descriptor-based ownership restoration; arbitrary Root files/mounts remain outside automatic cleanup.
+
+See ROOT_COMMANDS.md for lifecycle, wire budgets and limits. Seven ordinary-UID cross-process contract tests added; emulator 33 ordinary tests + 1 isolated browser recovery and core 45 pass. Debug and R8 release compile for ARM64/x86_64; lint has no errors and retains the existing MiMo VectorPath warning. Two RootRequired command tests compile but have not run. Android 16 Root execution/ownership/manager revocation still require hardware evidence; historical read-only FolkPatch evidence does not verify them.

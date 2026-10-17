@@ -41,3 +41,5 @@
 - [Android VPN 生命周期与单实例限制](https://developer.android.com/develop/connectivity/vpn)：已据此讨论并排除当前 VPN 抓包方案。
 
 2026-10-16 / 0.1.6：普通 UID 原生命令已接入（NATIVE_COMMANDS.md），提供监督执行、输出产物、超时和取消基础；不是 Root 抓包/逆向插件已安装的证据。RootService 仍只读握手。
+
+2026-10-17 / 0.1.7：独立 Root 命令接口已接入，真实 Binder/原生清理通过普通 UID 跨进程用例；真正 UID 0 的执行/产物归属尚待真机验证。参见 ROOT_COMMANDS.md。Root 命令入口不等于抓包/发包、Frida、Linux 或编译工具包已安装。

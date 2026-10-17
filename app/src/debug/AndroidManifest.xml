@@ -2,5 +2,6 @@
     <application>
         <!-- Isolated visual fixture; no credentials, persistence or runtime commands. Excluded from release. -->
         <activity android:name=".ui.ChatReviewActivity" android:exported="true" android:windowSoftInputMode="adjustResize" />
+        <service android:name=".root.RootProtocolFixtureService" android:exported="false" android:process=":root_protocol_fixture" />
     </application>
 </manifest>

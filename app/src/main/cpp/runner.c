@@ -13,7 +13,15 @@
 #include <unistd.h>
 
 static int open_artifact(int directory, const char *name) {
-    return openat(directory, name, O_WRONLY | O_CREAT | O_EXCL | O_NOFOLLOW | O_CLOEXEC, 0600);
+    int descriptor = openat(directory, name, O_WRONLY | O_CREAT | O_EXCL | O_NOFOLLOW | O_CLOEXEC, 0600);
+    if (descriptor < 0) return -1;
+    struct stat owner;
+    if (fstat(directory, &owner) < 0 ||
+        (geteuid() == 0 && fchown(descriptor, owner.st_uid, owner.st_gid) < 0)) {
+        close(descriptor);
+        return -1;
+    }
+    return descriptor;
 }
 
 static void execute(char **arguments, pid_t parent, int pipes[2][2]) {

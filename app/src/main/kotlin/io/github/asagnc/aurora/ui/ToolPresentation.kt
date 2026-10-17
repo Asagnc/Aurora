@@ -12,6 +12,7 @@ internal fun presentTool(event: ToolRun): ToolPresentation {
     val uncertain = event.state == "uncertain" || event.result?.trimStart()?.startsWith("{\"error\":\"command_outcome_uncertain\"") == true
     val title = when (event.tool) {
         "command_execute" -> "执行原生命令"
+        "command_execute_root" -> "执行 Root 命令"
         "files_list" -> "查看文件列表"
         "files_read_batch" -> "批量读取文件"
         "files_edit_batch" -> "批量编辑文件"

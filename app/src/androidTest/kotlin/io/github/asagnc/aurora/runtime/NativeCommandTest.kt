@@ -93,6 +93,8 @@ class NativeCommandTest {
         assertEquals(JsonPrimitive(true), stopped["stopped"])
         assertTrue(runCatching { runner.execute(root, CommandRequest(listOf("/system/bin/true"), "../")) }.isFailure)
         assertTrue(runCatching { runner.execute(root, CommandRequest(listOf("/system/bin/true", "bad\u0000argument"))) }.isFailure)
+        assertTrue(runCatching { runner.execute(root, CommandRequest(listOf("/system/bin/true"),
+            environment = (0..8).associate { "AURORA_$it" to "x".repeat(8192) })) }.isFailure)
     } }
 
     @Test fun supervisorStopsItsGroupWhenLaunchingParentExits() = runBlocking { fixture { root ->

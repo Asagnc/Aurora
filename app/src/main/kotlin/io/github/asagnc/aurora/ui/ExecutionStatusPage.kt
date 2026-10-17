@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
                 CapabilitySection("文件工具", "已接入 Agent", "批量读取、版本校验编辑与文件列举；会话空间、共享只读资源与保留工作区分开管理。")
                 CapabilitySection("浏览器工具", "已接入 Agent", "开页、读页、元素操作、同步脚本、关页及批量操作。页面与用户浏览器共用；网站访问仍受实际网络和页面限制。")
             }
-            CapabilitySection("Root 执行", "尚未接入", "Root 连接当前只验证 UID 0 和只读状态。普通命令不会因为连接 Root 而自动获得系统权限。")
+            CapabilitySection("Root 执行", "连接后提供独立命令工具", "手动连接后，Agent 可调用 Root 原生命令。支持取消、断开清理与服务退出检测；普通命令保持原有权限。实际访问能力取决于系统 SELinux 和 Root 授权状态。")
             CapabilitySection("后台任务与终端", "尚未接入", "当前为前台监督命令，无交互式 PTY，也不保证系统终止应用后的持续执行。中断结果不会自动重放。")
             CapabilitySection("Skills、Linux 与编译链", "尚未接入", "Skills 安装/运行、PRoot/chroot、APK/NDK 编译工具包，以及抓包、发包和逆向插件仍需继续实现与验收。")
             Text("命令工作目录不等于安全沙箱。原生命令具有 Aurora 当前 UID 的实际访问能力；独立守护化的进程不受普通进程组完整约束。",

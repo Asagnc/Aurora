@@ -16,29 +16,33 @@ data class CommandRequest(val argv: List<String>, val directory: String = "", va
     val outputLimit: Int = 8192, val environment: Map<String, String> = emptyMap())
 
 /** Foreground command scope, not a sandbox for programs running under Aurora's UID. */
-class NativeCommandRunner(context: Context) {
+class NativeCommandRunner(context: Context, private val artifactOwner: Int = android.os.Process.myUid()) {
     private val executable = File(context.applicationInfo.nativeLibraryDir, "libaurora_runner.so")
     private val permits = Semaphore(2)
     val available get() = executable.isFile && executable.canExecute()
 
     suspend fun execute(root: Path, request: CommandRequest): JsonObject = permits.withPermit {
-        withContext(Dispatchers.IO) {
+        runInterruptible(Dispatchers.IO) {
             validate(request)
             check(available) { "Packaged native runner unavailable for this ABI" }
             val cwd = resolveDirectory(root, request.directory)
             val runs = root.resolve("runs")
             require(!Files.isSymbolicLink(runs))
             Files.createDirectories(runs)
+            restoreOwner(runs)
             val directory = Files.createDirectory(runs.resolve(UUID.randomUUID().toString()))
+            restoreOwner(directory)
+            val log = Files.createFile(directory.resolve("supervisor.log"))
+            restoreOwner(log)
             val process = ProcessBuilder(listOf(executable.absolutePath, directory.toString(), "--") + request.argv)
                 .directory(cwd.toFile()).redirectErrorStream(true).redirectOutput(directory.resolve("supervisor.log").toFile())
                 .apply { environment().apply { clear(); put("PATH", "/system/bin:/system/xbin"); put("HOME", root.toString()); put("TMPDIR", cwd.toString()); putAll(request.environment) } }
                 .start()
             try {
                 process.outputStream.close()
-                val code = withTimeoutOrNull(request.timeoutMs) { runInterruptible(Dispatchers.IO) { process.waitFor() } }
-                if (code == null) stop(process)
-                result(root, directory, request.outputLimit, code == null, process.exitValue())
+                val finished = process.waitFor(request.timeoutMs, java.util.concurrent.TimeUnit.MILLISECONDS)
+                if (!finished) stop(process)
+                result(root, directory, request.outputLimit, !finished, process.exitValue())
             } finally {
                 // Conversation deletion waits for this cleanup through its OwnedTasks lease.
                 stop(process)
@@ -47,9 +51,23 @@ class NativeCommandRunner(context: Context) {
         }
     }
 
-    private suspend fun stop(process: Process) = withContext(NonCancellable + Dispatchers.IO) {
-        if (process.isAlive) process.destroy()
-        process.waitFor()
+    private fun restoreOwner(path: Path) {
+        if (android.os.Process.myUid() != 0) return
+        val fd = android.system.Os.open(path.toString(), android.system.OsConstants.O_RDONLY or
+            android.system.OsConstants.O_NOFOLLOW or android.system.OsConstants.O_CLOEXEC, 0)
+        try { android.system.Os.fchown(fd, artifactOwner, artifactOwner) } finally { android.system.Os.close(fd) }
+    }
+
+    private fun stop(process: Process) {
+        // Keep the creating OS thread alive until the native supervisor exits (PDEATHSIG is thread-scoped).
+        var interrupted = Thread.interrupted()
+        try {
+            if (process.isAlive) process.destroy()
+            while (true) {
+                try { process.waitFor(); break }
+                catch (_: InterruptedException) { interrupted = true }
+            }
+        } finally { if (interrupted) Thread.currentThread().interrupt() }
     }
 
     private fun validate(request: CommandRequest) {
@@ -59,6 +77,7 @@ class NativeCommandRunner(context: Context) {
         require(request.environment.size <= 64 && request.environment.all { (key, value) ->
             key.matches(Regex("[A-Za-z_][A-Za-z0-9_]*")) && value.length <= 8192 && '\u0000' !in value
         })
+        require(request.environment.entries.sumOf { (key, value) -> key.toByteArray().size + value.toByteArray().size + 2 } <= 65536)
     }
 
     private fun resolveDirectory(root: Path, relative: String): Path {
@@ -96,7 +115,7 @@ class NativeCommandRunner(context: Context) {
             if (timedOut || stopped || code != 0L || !complete) put("error", string(when {
                 timedOut -> "command_timeout"; stopped -> "command_stopped"; !complete -> "capture_incomplete"; else -> "command_exit"
             }))
-            put("backend", string("android-native")); put("uid", JsonPrimitive(android.os.Process.myUid()))
+            put("backend", string(if (android.os.Process.myUid() == 0) "android-root" else "android-native")); put("uid", JsonPrimitive(android.os.Process.myUid()))
             put("exitCode", JsonPrimitive(code)); put("timedOut", JsonPrimitive(timedOut)); put("stopped", JsonPrimitive(stopped)); put("captureComplete", JsonPrimitive(complete))
             put("stdout", output(root, directory, "stdout", record, limit)); put("stderr", output(root, directory, "stderr", record, limit))
         })
