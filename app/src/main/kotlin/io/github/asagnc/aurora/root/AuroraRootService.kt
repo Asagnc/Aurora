@@ -64,7 +64,8 @@ class AuroraRootService : RootService() {
                 putInt("sdk", Build.VERSION.SDK_INT)
                 putString("kernel", kernel.release.take(256))
                 putString("architecture", kernel.machine.take(64))
-                putString("selinux", runCatching { File("/proc/self/attr/current").readText().trim().take(128) }.getOrDefault("不可读取"))
+                putString("selinux", runCatching { File("/proc/self/attr/current").readText()
+                    .substringBefore('\u0000').trim().take(128) }.getOrDefault("不可读取"))
             }
         }
     }

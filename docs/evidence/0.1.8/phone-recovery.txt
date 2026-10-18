@@ -1,0 +1,6 @@
+
+io.github.asagnc.aurora.browser.BrowserRecoveryTest:.
+
+Time: 0.286
+
+OK (1 test)

@@ -20,6 +20,7 @@ class RootConnectionTest {
                 root.connect()
                 assertEquals(root.state.value.detail, RootPhase.READY, root.state.value.phase)
                 assertTrue(root.state.value.detail.contains("UID 0"))
+                assertFalse("Root status must be safe for Android accessibility/XML", root.state.value.detail.contains('\u0000'))
                 root.disconnect()
                 assertEquals(RootPhase.ORDINARY, root.state.value.phase)
             }

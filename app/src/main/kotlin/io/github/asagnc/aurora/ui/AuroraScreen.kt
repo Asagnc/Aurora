@@ -40,7 +40,7 @@ import kotlinx.coroutines.launch
             onProviders = { providers = true }, onSettings = { metrics = "settings" }, onSpace = { conversationFilesOnly = false; space = it })
     }) {
         Scaffold(containerColor = MaterialTheme.colorScheme.background, topBar = {
-            ChatHeader({ scope.launch { drawer.open() } }, { menu = true })
+            ChatHeader({ scope.launch { drawer.open() } }, { menu = true }, state.current?.title)
         }, bottomBar = {
             ChatComposer(state, draft, { draft = it }, { picker.launch(arrayOf("*/*")) }, ::choose, { models = true },
                 { if (state.running) model.stop() else if (model.send(draft)) draft = "" })

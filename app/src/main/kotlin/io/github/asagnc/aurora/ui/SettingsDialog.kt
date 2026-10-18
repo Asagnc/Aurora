@@ -46,7 +46,7 @@ import io.github.asagnc.aurora.runtime.ChatViewModel
             SettingsGroup("设备与执行") {
                 SettingsRow("Root 权限", root.phase.let { if (it == RootPhase.READY) "已连接" else if (it == RootPhase.CONNECTING) "连接中" else "未连接" },
                     R.drawable.ic_shield, Color(0xFF26A879)) { rootDetails = true }
-                SettingsRow("执行环境", "Android 原生命令 · 普通权限", R.drawable.ic_terminal, Color(0xFF347EDD)) { environment = false }
+                SettingsRow("执行环境", "Android 原生命令 · 普通与 Root 分开", R.drawable.ic_terminal, Color(0xFF347EDD)) { environment = false }
                 SettingsRow("工具与 Skills", "文件、浏览器与原生命令 · Skills 待接入", R.drawable.ic_extension, Color(0xFF9270D7)) { environment = true }
             }
             SettingsGroup("数据与存储") {
@@ -63,13 +63,13 @@ import io.github.asagnc.aurora.runtime.ChatViewModel
     environment?.let { ExecutionStatusPage(model.commandsAvailable, it) { environment = null } }
     if (appearance) AppearanceSheet { appearance = false }
     if (rootDetails) AlertDialog(onDismissRequest = { rootDetails = false }, title = { Text("Root 连接") },
-        text = { Text(root.detail + "\n\n当前仅提供只读握手验证，系统执行工具尚未接入。") },
+        text = { Text(root.detail + "\n\n连接后，新任务可调用独立 Root 命令工具。普通命令保持原权限；Linux、抓包与逆向工具包仍待接入。") },
         confirmButton = { TextButton({
             if (root.phase == RootPhase.READY || root.phase == RootPhase.CONNECTING) model.disableRoot() else model.enableRoot()
         }) { Text(if (root.phase == RootPhase.READY || root.phase == RootPhase.CONNECTING) "断开 Root" else "授权并连接 Root") } },
         dismissButton = { TextButton({ rootDetails = false }) { Text("关闭") } })
     if (about) AlertDialog(onDismissRequest = { about = false }, title = { Text("Aurora · 开发版本") },
-        text = { Text("已接入对话、批量文件、浏览器 Agent 与普通权限的原生命令。Root 系统操作、Linux 执行器、Skills 安装以及逆向/抓包/发包工具仍在开发，不代表已可用。模型 API 密钥由用户自备并加密保存。") },
+        text = { Text("已接入对话、批量文件、浏览器 Agent、普通原生命令和连接后启用的 Root 命令。后台任务、Linux、Skills 安装及逆向/抓包/发包工具包仍在开发。模型 API 密钥由用户自备并加密保存。") },
         confirmButton = { TextButton({ about = false }) { Text("关闭") } })
 }
 

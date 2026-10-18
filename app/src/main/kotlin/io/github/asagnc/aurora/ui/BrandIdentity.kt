@@ -16,6 +16,13 @@ import io.github.asagnc.aurora.R
 import io.github.asagnc.aurora.core.ProviderCatalog
 
 // Visual identity only: names never establish endpoint trust or protocol capabilities.
+private val claudeDisplayName = Regex("claude-(opus|sonnet|haiku|fable)-(\\d+)-(\\d+)")
+internal fun composerModelLabel(model: String?): String {
+    if (model == null) return "选择模型"
+    val match = claudeDisplayName.matchEntire(model) ?: return model
+    return match.groupValues[1].replaceFirstChar { it.uppercase() } + " ${match.groupValues[2]}.${match.groupValues[3]}"
+}
+
 internal fun modelFamily(model: String): String? = ProviderCatalog.presets.firstOrNull { model in it.models }?.name ?: when {
     model.startsWith("gpt-", true) -> "OpenAI"
     model.startsWith("claude-", true) -> "Claude"

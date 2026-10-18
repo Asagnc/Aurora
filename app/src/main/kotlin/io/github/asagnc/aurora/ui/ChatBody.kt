@@ -16,14 +16,16 @@ import io.github.asagnc.aurora.R
 import io.github.asagnc.aurora.core.ChatMessage
 import io.github.asagnc.aurora.runtime.ChatState
 
-@Composable internal fun ChatHeader(drawer: () -> Unit, menu: () -> Unit) {
+@Composable internal fun ChatHeader(drawer: () -> Unit, menu: () -> Unit, title: String? = null) {
     Row(Modifier.fillMaxWidth().statusBarsPadding().height(52.dp).padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically) {
         IconButton(drawer) { LocalIcon(R.drawable.ic_menu, "会话抽屉") }
-        Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-            Text("Aurora", style = MaterialTheme.typography.titleMedium)
+        Column(Modifier.weight(1f).padding(start = 8.dp)) {
+            Text(title ?: "Aurora", style = MaterialTheme.typography.titleMedium, maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            if (title != null) Text("Aurora", color = AuroraMuted, style = MaterialTheme.typography.labelMedium)
         }
-        IconButton(menu) { LocalIcon(R.drawable.ic_more_vert, "会话菜单") }
+        IconButton(menu) { LocalIcon(R.drawable.ic_folder_open, "会话菜单") }
     }
 }
 
@@ -61,9 +63,17 @@ import io.github.asagnc.aurora.runtime.ChatState
         Surface(Modifier.widthIn(max = if (user) 310.dp else 600.dp),
             shape = if (user) RoundedCornerShape(18.dp, 18.dp, 4.dp, 18.dp) else RoundedCornerShape(0.dp),
             color = if (user) MaterialTheme.colorScheme.surfaceContainer else MaterialTheme.colorScheme.background) {
+            Column {
+            if (!user) Row(Modifier.padding(bottom = 10.dp), verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Icon(androidx.compose.ui.res.painterResource(R.drawable.ic_sparkle), null,
+                    Modifier.size(19.dp), tint = MaterialTheme.colorScheme.primary)
+                Text("Aurora", color = AuroraMuted, style = MaterialTheme.typography.labelLarge)
+            }
             SelectionContainer {
                 Text(message.text + if (message.complete) "" else "\n（未完成）",
                     Modifier.padding(if (user) 14.dp else 0.dp), style = MaterialTheme.typography.bodyLarge)
+            }
             }
         }
     }

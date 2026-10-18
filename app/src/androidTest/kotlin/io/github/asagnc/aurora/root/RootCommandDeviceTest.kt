@@ -61,4 +61,22 @@ class RootCommandDeviceTest {
         val result = requireNotNull(controller.commandClient).execute(id, CommandRequest(listOf("/system/bin/true")))
         assertEquals(0L, WireJson.parseToJsonElement(result).jsonObject.number("exitCode"))
     } }
+
+    @RootRequired @Test fun clientCancellationAndRootTimeoutWaitForNativeCleanup() = runBlocking { fixture { controller, id, directory ->
+        val client = requireNotNull(controller.commandClient)
+        val task = launch(Dispatchers.IO) { client.execute(id, CommandRequest(listOf("/system/bin/sh", "-c",
+            "trap 'printf cancelled' TERM; echo ready > started; while :; do sleep 1; done"))) }
+        withTimeout(10_000) { while (!Files.exists(directory.resolve("started"))) delay(20) }
+        task.cancelAndJoin()
+        val outputs = Files.walk(directory.resolve("runs")).use { paths ->
+            paths.filter { it.fileName.toString() == "stdout.bin" }.toList()
+        }
+        assertEquals("cancelled", String(Files.readAllBytes(outputs.single())))
+        assertEquals(context.applicationInfo.uid, Os.lstat(outputs.single().toString()).st_uid)
+        val timed = WireJson.parseToJsonElement(client.execute(id, CommandRequest(listOf("/system/bin/sh", "-c",
+            "trap '' TERM; while :; do sleep 1; done"), timeoutMs = 100))).jsonObject
+        assertEquals("command_timeout", timed.text("error"))
+        assertEquals(0L, timed.number("uid"))
+        assertEquals(JsonPrimitive(true), timed["stopped"])
+    } }
 }

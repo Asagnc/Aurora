@@ -4,6 +4,8 @@ Status: product requirements and cache, batch tools, browser and architecture co
 
 Research date: 2026-10-12.
 
+2026-10-18 approved UI supersession: [capsule comparison, right-side B selected](assets/approved-composer-B-20261018.png), with [conversation direction](assets/chat-direction-20261018.png). This overrides previous composer A and metric positions: thinking lightbulb, explicit model, context ring in controls; speed/input/cache outside. Default execution summary is collapsed. See COMPOSER_B_2026-10-18.md for implemented behavior and actual device evidence; concept numbers are illustrative.
+
 ## Approved architecture
 
 - Kotlin is the primary implementation language; the protocol/file core is independent of Android UI.

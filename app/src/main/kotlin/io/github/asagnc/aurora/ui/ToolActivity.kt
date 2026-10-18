@@ -12,15 +12,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import io.github.asagnc.aurora.data.ToolRun
 
 @Composable internal fun ToolActivity(events: List<ToolRun>) {
-    var expanded by remember { mutableStateOf(events.any { it.state == "started" }) }
+    var expanded by remember { mutableStateOf(false) }
     var detail by remember { mutableStateOf<String?>(null) }
     val presentations = remember(events) { events.takeLast(50).map(::presentTool) }
     val lineColor = AuroraBorder
     val active = presentations.lastOrNull { it.event.state == "started" }
-    LaunchedEffect(active?.event?.id) { if (active != null) expanded = true }
     Column(Modifier.fillMaxWidth()) {
-        TextButton({ expanded = !expanded }, contentPadding = PaddingValues(horizontal = 4.dp)) {
-            Text("${if (expanded) "⌄" else "›"} ${active?.let { "正在${it.title}" } ?: "最近执行记录 · ${events.size}"}", color = AuroraMuted)
+        Surface(onClick = { expanded = !expanded }, shape = RoundedCornerShape(14.dp), color = MaterialTheme.colorScheme.surfaceContainerLow) {
+            Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(horizontal = 12.dp),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                if (active != null) CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp)
+                Text(active?.title ?: "执行记录", Modifier.weight(1f), maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyMedium)
+                Text("最近完成 ${presentations.count { it.event.state == "completed" }} 项", color = AuroraMuted, style = MaterialTheme.typography.labelMedium)
+                Text(if (expanded) "⌄" else "›", color = AuroraMuted)
+            }
         }
         if (expanded) Column(Modifier.fillMaxWidth().padding(start = 8.dp).drawBehind {
             drawLine(color = lineColor, start = androidx.compose.ui.geometry.Offset.Zero,

@@ -1,6 +1,6 @@
-# Root command transport — 0.1.7
+# Root command transport — 0.1.8
 
-Status: implemented over approved libsu 6.0.0 RootService/Binder. Ordinary-UID cross-process tests pass on the emulator. New privileged execution, artifact ownership, Root disconnect/reconnect and manager revocation **have not yet been verified on hardware**. Earlier FolkPatch evidence only establishes the read-only handshake.
+Status: implemented over approved libsu6.0.0 RootService/Binder. On2026-10-18, Android16 ARM64 realme/FolkPatch passed4 authorized Root tests: UID0 execution, controlled artifact ownership/readability, direct cancellation/timeout, disconnect cleanup/reconnect and read-only handshake. Ordinary-UID cross-process tests also pass on hardware and emulator. External manager revocation and force-killing the actual Root service remain unverified. Evidence: COMPOSER_B_2026-10-18.md and evidence/0.1.8/phone-root.txt.
 
 ## Behavior
 
@@ -13,7 +13,7 @@ Status: implemented over approved libsu 6.0.0 RootService/Binder. Ordinary-UID c
 
 ## Ownership and lifecycle
 
-Root runner gives controlled `runs`/UUID directory and supervisor log to the app UID before spawning. Native helper derives ownership from its opened directory descriptor, creates artifacts using `O_EXCL|O_NOFOLLOW`, and applies ownership through new file descriptors. Stdout, stderr and atomic result record are intended to remain app-readable after completion/cancellation/service exit. The actual Root-only `fchown` path still requires hardware verification; it never recursively traverses arbitrary output or mounts.
+Root runner gives controlled `runs`/UUID directory and supervisor log to the app UID before spawning. Native helper derives ownership from its opened directory descriptor, creates artifacts using `O_EXCL|O_NOFOLLOW`, and applies ownership through new file descriptors. The Root-only ownership path is now verified on Android16 hardware for completion/cancellation/disconnect. Abrupt actual Root-service death remains a separate pending hardware case. It never recursively traverses arbitrary output or mounts.
 
 Arbitrary Root commands can create root-owned directories, mounts, credentials or sessions and modify external data. They are not sandboxed. Nested root-owned directories/mounts may prevent ordinary conversation deletion; deletion reports failure/recovery instead of silently deleting outside data. Root-aware installation/mount cleanup remains unfinished. Do not recursively chown arbitrary mount trees as a workaround.
 
@@ -25,7 +25,7 @@ Root-manager revocation has no portable Android callback and may leave an existi
 
 Seven ordinary protocol cases use an unexported **debug-only ordinary-UID service in another process**: literal argv/native output, cancellation cleanup, close/rejection, wire budgets, callback-death cancellation, session bounds/duplicate IDs, service-kill/native parent-death cleanup. Fixture is absent from release and does not simulate verified Root.
 
-Two `RootCommandDeviceTest` cases await the later authorized phone run: UID 0 plus app-readable/owned artifacts; disconnect/cleanup/reconnect. Both are `RootRequired`, require `auroraRootTest=true` and are excluded from ordinary verification. They have **not run**. ARM64 compiles but the new native backend still needs Android 16 runtime tests.
+Three `RootCommandDeviceTest` cases and RootConnectionTest are RootRequired, require auroraRootTest=true and stay excluded from ordinary verification. All4 passed on Android16 ARM64 in0.1.8. Ordinary33 and isolated recovery1 also passed, including actual ARM64 native execution and ordinary-UID service death. They do not establish universal ROM behavior, external manager revocation or containment of arbitrary Root daemons/mounts.
 
 ## Primary references checked 2026-10-16
 

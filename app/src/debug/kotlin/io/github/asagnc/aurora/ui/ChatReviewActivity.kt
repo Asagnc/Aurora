@@ -19,15 +19,16 @@ class ChatReviewActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val scene = intent.getStringExtra("scene")?.takeIf { it in setOf("empty", "chat", "agent") } ?: "empty"
+        val longModel = intent.getBooleanExtra("longModel", false)
         setContent {
             AuroraTheme {
-                var state by remember { mutableStateOf(reviewState(scene)) }
+                var state by remember { mutableStateOf(reviewState(scene, longModel)) }
                 var draft by remember { mutableStateOf("") }
                 var menu by remember { mutableStateOf(false) }
                 var models by remember { mutableStateOf(false) }
                 Scaffold(containerColor = MaterialTheme.colorScheme.background,
                     topBar = { Column {
-                        ChatHeader({}, { menu = true })
+                        ChatHeader({}, { menu = true }, if (scene == "empty") null else "项目结构分析")
                         Text("设计验收 · 示例数据 · $scene", Modifier.padding(horizontal = 24.dp),
                             color = AuroraMuted, style = MaterialTheme.typography.labelMedium)
                     } }, bottomBar = {
@@ -42,16 +43,16 @@ class ChatReviewActivity : ComponentActivity() {
     }
 }
 
-private fun reviewState(scene: String): ChatState {
-    val connection = Connection(name = "界面示例", baseUrl = "https://example.invalid", protocol = Protocol.RESPONSES,
-        model = "gpt-6-astra", effort = "high", contextLimit = 214000)
+private fun reviewState(scene: String, longModel: Boolean): ChatState {
+    val connection = Connection(name = "界面示例", baseUrl = "https://example.invalid", protocol = Protocol.ANTHROPIC,
+        model = if (longModel) "custom/gateway/very-long-model-identifier-20261018" else "claude-sonnet-5-5", effort = "high", contextLimit = 200000)
     val state = ChatState(connections = listOf(connection), selected = connection)
     if (scene == "empty") return state
-    val messages = listOf(ChatMessage(role = "user", text = "比较这两个网页，整理关键差异。"),
-        ChatMessage(role = "assistant", text = if (scene == "agent") "正在读取页面，已完成第一份资料的检查。"
-            else "可以，把两个页面链接发给我。我会核对资料，再比较内容和关键变化。\n\n最后给你一份差异摘要，并保留对应资料，方便继续分析。"))
+    val messages = listOf(ChatMessage(role = "user", text = "整理这个项目，给出改进建议。"),
+        ChatMessage(role = "assistant", text = if (scene == "agent") "我会先梳理目录和依赖，再检查关键实现与性能。\n\n目录结构已梳理完成。"
+            else "目录结构已梳理完成。\n\n这份项目可以从依赖版本、执行流程和资源占用三个方向继续检查。"))
     return state.copy(messages = messages, running = scene == "agent", steps = if (scene == "agent") 3 else 0,
-        requests = 2, usage = Usage(input = 38500, output = 860, cacheRead = 36190), totalUsage = Usage(output = 860), seconds = 10.0,
+        requests = 2, usage = Usage(input = 76000, output = 860, cacheRead = 71440), totalUsage = Usage(output = 860), seconds = 10.0,
         stage = if (scene == "agent") "分析中 · 可查看步骤详情" else "",
         toolRuns = if (scene != "agent") emptyList() else listOf(
             ToolRun("1", "review-1", "browser_open_batch", "completed", "{\"pages\":[\"page-1\",\"page-2\"]}"),
