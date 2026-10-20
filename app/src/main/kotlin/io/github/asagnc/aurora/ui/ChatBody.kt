@@ -40,6 +40,7 @@ import io.github.asagnc.aurora.runtime.ChatState
             Spacer(Modifier.height(12.dp))
             Text("从一个问题，到一项需要完成的任务。\n过程与结果，都在这里。",
                 color = AuroraMuted, style = MaterialTheme.typography.bodyMedium)
+            if (state.running || state.taskId != null) AgentTaskStatus(state)
             if (state.connections.isEmpty()) TextButton(providers, contentPadding = PaddingValues(top = 12.dp)) {
                 Text("添加自己的 API 连接", style = MaterialTheme.typography.bodySmall)
             }
@@ -50,10 +51,7 @@ import io.github.asagnc.aurora.runtime.ChatState
         items(state.messages, key = { it.id }) { message -> MessageBubble(message) }
         if (state.toolRuns.isNotEmpty()) item { ToolActivity(state.toolRuns) }
         if (state.streaming.isNotEmpty()) item { MessageBubble(ChatMessage(role = "assistant", text = state.streaming)) }
-        if (state.stage.isNotEmpty()) item {
-            Text(state.stage, color = if (state.running) MaterialTheme.colorScheme.primary else AuroraMuted,
-                style = MaterialTheme.typography.bodySmall)
-        }
+        if (state.stage.isNotEmpty() || state.taskId != null) item { AgentTaskStatus(state) }
     }
 }
 

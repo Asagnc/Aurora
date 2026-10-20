@@ -1,5 +1,9 @@
 # 实现与验证证据
 
+## 0.1.9（2026-10-20）
+
+已确认的后台Agent架构落地：原生specialUse前台服务、通知停止/返回会话、独立运行投影、SQLite非破坏升级及任务记录。切换会话不取消、不串流，进程死亡只标记中断/未知，不重放工具。实现、验收边界见 BACKGROUND_TASKS.md；本轮新版真机后台/Root联合测试仍待统一验收。
+
 ## 0.1.6（2026-10-16）
 
 普通原生命令接入真实 Agent 工具循环。独立原生监督程序负责信号、子进程组、两路输出预算和原子结果元数据；Kotlin 传递 argv、协调取消、返回退出码/产物与不确定状态。无新增运行库，不给普通 UID 自动提权，不默认经过 PRoot。详见 NATIVE_COMMANDS.md。
@@ -130,3 +134,5 @@ See ROOT_COMMANDS.md for lifecycle, wire budgets and limits. Seven ordinary-UID 
 Supersedes pending hardware statements above: on Android16 ARM64 realme GT6SE, 33 ordinary tests, 1 isolated browser recovery and 4 explicitly authorized RootRequired tests pass. Existing FolkPatch grant remained available after install-r over0.1.3; app was not uninstalled/cleared. Root UID0, controlled artifact ownership/readability, direct cancellation/timeout, disconnect cleanup/reconnect are verified. Strong-killing the actual Root service, external manager revocation and arbitrary Root files/mounts remain unverified/unfinished.
 
 The approved capsule B is implemented with thinking bulb, concrete model, inline context ring, external statistics and bounded in-place details. Execution history defaults collapsed, active titles align with actual tools and completion count is explicitly recent history. Existing themes preserved. Actual device/keyboard/narrow long-name views are separate from clearly labelled debug examples. Details and raw test reports: COMPOSER_B_2026-10-18.md and docs/evidence/0.1.8. Core45, emulator33+1 and debug/release/lint pass; no paid-provider or comparative performance evidence.
+
+2026-10-20最终验证：core45、模拟器普通39、独立浏览器恢复1、Agent进程恢复prepare1/verify1通过；debug/AndroidTest/R8 release构建通过，lint0错误、1项既有MiMo矢量警告。序列化1.12.0升级后已复跑。证据：docs/evidence/0.1.9；新版真机后台/Root联合验收未做。

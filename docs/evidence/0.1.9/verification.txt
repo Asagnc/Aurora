@@ -1,0 +1,10 @@
+2026-10-20 · Aurora 0.1.9 (versionCode10)
+Core: 45 passed, 0 failed
+Emulator API37 x86_64: ordinary39 + isolated browser1 + Agent prepare1/verify1 passed
+Agent prepare/verify separated by emulator-only force-stop; invocation-count remained one
+Debug, AndroidTest, R8 release: build passed
+Lint: 0 errors, 1 existing MiMo VectorPath warning
+kotlinx.serialization: 1.12.0
+Debug APK SHA256: 300ed726c69322332db952143d0b97be52361cfb675d71f4661ef583b1e994f2
+New ARM64/background/Root combined verification: pending
+Paid models/cache/performance benchmarks: not run

@@ -1,5 +1,8 @@
 package io.github.asagnc.aurora.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.BackHandler
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,6 +32,19 @@ import kotlinx.coroutines.launch
     var conversationFilesOnly by remember { mutableStateOf(false) }
     var draft by rememberSaveable { mutableStateOf("") }
     var pending by remember { mutableStateOf<Connection?>(null) }
+    val context = LocalContext.current
+    var notificationRequested by rememberSaveable { mutableStateOf(false) }
+    val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
+    fun sendOrStop() {
+        if (state.running) model.stop()
+        else if (model.send(draft)) {
+            draft = ""
+            if (!notificationRequested && context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                notificationRequested = true
+                notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris -> if (uris.isNotEmpty()) model.importFiles(uris) }
     fun choose(connection: Connection) {
         if (state.messages.isNotEmpty() && state.selected?.let { CachePolicy.impact(it, connection) } != CacheImpact.UNCHANGED) pending = connection
@@ -43,7 +59,7 @@ import kotlinx.coroutines.launch
             ChatHeader({ scope.launch { drawer.open() } }, { menu = true }, state.current?.title)
         }, bottomBar = {
             ChatComposer(state, draft, { draft = it }, { picker.launch(arrayOf("*/*")) }, ::choose, { models = true },
-                { if (state.running) model.stop() else if (model.send(draft)) draft = "" })
+                ::sendOrStop)
         }) { padding ->
             ChatBody(state, Modifier.padding(padding), { providers = true }, model::loadOlderMessages)
         }

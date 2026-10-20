@@ -81,6 +81,7 @@ class ConversationStore(private val database: AuroraDatabase) {
     }
 
     suspend fun recoverInterruptedRuns(): Unit = write { db ->
+        db.execSQL("UPDATE agent_runs SET state = 'interrupted', finished_at = ? WHERE state IN ('queued','running')", arrayOf(System.currentTimeMillis()))
         db.execSQL("UPDATE conversations SET run_state = 'interrupted' WHERE run_state = 'running'")
         db.execSQL("UPDATE tool_runs SET state = 'uncertain' WHERE state = 'started'")
     }

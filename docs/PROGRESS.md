@@ -1,6 +1,12 @@
 # Aurora 接续记录
 
-更新时间：2026-10-18。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
+更新时间：2026-10-20。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
+
+## 0.1.9 后台任务（2026-10-20）
+
+用户已认可原生 specialUse 前台服务架构。实现应用内 ChatController/AgentExecution 与界面生命周期分离、通知回到会话/停止、单运行入口、SQLite schema2 agent_runs 与中断恢复；不自动重放工具。详情见 BACKGROUND_TASKS.md。本轮模拟器专项和完整验证记录于 docs/evidence/0.1.9；新版真机后台与Root联合测试待后续统一验收，不反复要求连接。
+
+后续：PTY/持续输出读取与后台日志，Skills版本化安装，再推进Linux/逆向/抓包/构建链。已有前台服务不等于持久终端或系统强杀后继续原进程。新的架构选择仍需研究确认。
 
 ## 最新确认与验收 · 0.1.8
 
@@ -74,3 +80,5 @@ Root 监督产物按打开的目录/文件描述符恢复为 app 所有；不递
 核心 45 项、模拟器普通 33 项和独立恢复 1 项通过；新增 7 项以普通 UID 的 debug 独立进程测试真实 Binder、取消、关闭、服务被杀和原生父退出清理。debug/release/lint 通过，保留现有 MiMo VectorPath 警告。两个新 RootRequired 设备用例已写但未运行；模拟器 user 镜像无 su，不能据此宣称 Root 执行/产物归属/管理器撤权已验收。真机继续按用户要求最后统一测试，保留安装与数据，不主动反复索要 USB。
 
 接续：先完善任务生命周期/Root 文件与挂载清理、Skills 版本化基础；新的后台服务/终端架构若超出已确认设计，检索后向用户确认。PRoot/chroot、抓包/发包/逆向插件、手机构建链、真实模型缓存基准仍未完成。外部管理器撤权不保证杀掉已存在 UID 0 服务，目前只观察服务死亡/断连与显式断开；不要写成撤权已全面处理。
+
+2026-10-20最终验证：core45、模拟器普通39、独立浏览器恢复1、Agent进程恢复prepare1/verify1通过；debug/AndroidTest/R8 release构建通过，lint0错误、1项既有MiMo矢量警告。序列化1.12.0升级后已复跑。证据：docs/evidence/0.1.9；新版真机后台/Root联合验收未做。

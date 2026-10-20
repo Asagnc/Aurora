@@ -4,7 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenHelper(context, name, null, 1) {
+class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenHelper(context, name, null, 2) {
     init { setWriteAheadLoggingEnabled(true) }
 
     override fun onConfigure(db: SQLiteDatabase) { db.setForeignKeyConstraintsEnabled(true) }
@@ -31,9 +31,19 @@ class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenH
             state TEXT NOT NULL, result TEXT, started_at INTEGER NOT NULL)""")
         db.execSQL("CREATE INDEX tool_run_owner ON tool_runs(owner, started_at)")
         db.execSQL("CREATE TABLE connections (id TEXT PRIMARY KEY, configuration TEXT NOT NULL)")
+        createTaskRuns(db)
+    }
+
+    private fun createTaskRuns(db: SQLiteDatabase) {
+        db.execSQL("""CREATE TABLE agent_runs (
+            id TEXT PRIMARY KEY, owner TEXT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+            state TEXT NOT NULL, created_at INTEGER NOT NULL, finished_at INTEGER)""")
+        db.execSQL("CREATE INDEX agent_run_owner ON agent_runs(owner, created_at)")
+        db.execSQL("CREATE UNIQUE INDEX agent_run_active ON agent_runs(owner) WHERE state IN ('queued','running')")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        error("Unsupported database migration from $oldVersion to $newVersion")
+        require(oldVersion == 1 && newVersion == 2)
+        createTaskRuns(db)
     }
 }
