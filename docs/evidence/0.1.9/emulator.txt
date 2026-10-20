@@ -9,7 +9,7 @@ io.github.asagnc.aurora.runtime.AgentTaskTest:.....
 io.github.asagnc.aurora.runtime.NativeCommandTest:........
 io.github.asagnc.aurora.ui.ThemeContrastTest:.
 
-Time: 23.494
+Time: 20.877
 
 OK (39 tests)
 
@@ -17,7 +17,7 @@ OK (39 tests)
 
 io.github.asagnc.aurora.browser.BrowserRecoveryTest:.
 
-Time: 0.783
+Time: 0.598
 
 OK (1 test)
 
@@ -25,7 +25,7 @@ OK (1 test)
 
 io.github.asagnc.aurora.runtime.AgentRunRecoveryTest:.
 
-Time: 4.139
+Time: 4.359
 
 OK (1 test)
 
@@ -33,7 +33,7 @@ OK (1 test)
 
 io.github.asagnc.aurora.runtime.AgentRunRecoveryTest:.
 
-Time: 0.571
+Time: 0.621
 
 OK (1 test)
 

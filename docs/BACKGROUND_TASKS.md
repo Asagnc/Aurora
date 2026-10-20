@@ -24,6 +24,8 @@ PTY、独立持久命令、终端会话、自动规划与安全续跑、长期�
 
 Google Play 发布需要按真实 specialUse 用途申报审核；没有借用媒体等无关类型。正式签名、Android16 ARM64后台/锁屏/厂商策略和 Root 断连联合测试仍待统一真机验收。
 
+存储异常收尾也释放内存中的运行入口；终态后的会话重新读取异常会作为可见错误处理。此异常分支按控制流复核，未进行磁盘满/数据库损坏故障注入。
+
 ## 源码审阅
 
 ChatController 控制观看状态与提交；AgentExecution 控制固定模型/工具/协议检查点；AgentTaskHost 串行处理 admission、服务就绪与取消；AgentTaskService 处理 Android 通知及服务生命周期。均低于300行，无新增依赖。AgentExecution.execute 保留约50行连续的历史准备和检查点编排，已按写入先后及取消边界复核；声明式 UI 和串行集成测试按职责保留。

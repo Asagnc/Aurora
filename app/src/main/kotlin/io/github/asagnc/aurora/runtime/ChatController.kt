@@ -208,16 +208,19 @@ internal class ChatController(application: Application,
             projectionObserver = scope.launch { projection.collect { project(it) } }
             startExecution(id, content, connection, projection, taskId)
         } catch (failure: Exception) {
-            withContext(NonCancellable) {
-                queuedOwner?.let { owner ->
-                    if (app.agentRuns.latest(owner)?.id == taskId) {
-                        app.conversations.setRunState(owner, "interrupted")
-                        app.agentRuns.finish(taskId, if (failure is CancellationException) "cancelled" else "failed")
+            try {
+                withContext(NonCancellable) {
+                    queuedOwner?.let { owner ->
+                        if (app.agentRuns.latest(owner)?.id == taskId) {
+                            app.conversations.setRunState(owner, "interrupted")
+                            app.agentRuns.finish(taskId, if (failure is CancellationException) "cancelled" else "failed")
+                        }
                     }
                 }
+            } finally {
+                activeOwner = null
+                mutable.update { it.copy(running = false) }
             }
-            activeOwner = null
-            mutable.update { it.copy(running = false) }
             throw failure
         }
     }
@@ -252,8 +255,12 @@ internal class ChatController(application: Application,
         project(projection.value)
         activeOwner = null
         runProjection = null
-        refresh()
-        if (state.value.current?.id == id) open(id, true)
+        try {
+            refresh()
+            if (state.value.current?.id == id) open(id, true)
+        } catch (storage: Exception) {
+            mutable.update { it.copy(error = safeError(storage)) }
+        }
     }
 
     internal fun close() { scope.cancel() }
