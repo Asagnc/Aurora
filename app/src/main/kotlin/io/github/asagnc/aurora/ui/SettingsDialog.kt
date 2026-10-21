@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.view.WindowCompat
 import androidx.compose.ui.res.painterResource
@@ -24,8 +25,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.asagnc.aurora.R
 import io.github.asagnc.aurora.root.RootPhase
 import io.github.asagnc.aurora.runtime.ChatViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable internal fun SettingsDialog(model: ChatViewModel, providers: () -> Unit, files: () -> Unit, dismiss: () -> Unit) {
+    val context = LocalContext.current.applicationContext
+    val version by produceState<String?>(null, context) {
+        value = withContext(Dispatchers.IO) { runCatching {
+            context.packageManager.getPackageInfo(context.packageName, android.content.pm.PackageManager.PackageInfoFlags.of(0)).versionName
+        }.getOrNull() }
+    }
     val root by model.rootState.collectAsStateWithLifecycle()
     var appearance by remember { mutableStateOf(false) }
     var rootDetails by remember { mutableStateOf(false) }
@@ -46,8 +55,8 @@ import io.github.asagnc.aurora.runtime.ChatViewModel
             SettingsGroup("设备与执行") {
                 SettingsRow("Root 权限", root.phase.let { if (it == RootPhase.READY) "已连接" else if (it == RootPhase.CONNECTING) "连接中" else "未连接" },
                     R.drawable.ic_shield, Color(0xFF26A879)) { rootDetails = true }
-                SettingsRow("执行环境", "Android 原生命令 · 普通与 Root 分开", R.drawable.ic_terminal, Color(0xFF347EDD)) { environment = false }
-                SettingsRow("工具与 Skills", "文件、浏览器与原生命令 · Skills 待接入", R.drawable.ic_extension, Color(0xFF9270D7)) { environment = true }
+                SettingsRow("执行环境", "原生命令与交互终端 · 普通 / Root", R.drawable.ic_terminal, Color(0xFF347EDD)) { environment = false }
+                SettingsRow("工具与 Skills", "文件、浏览器、图文与终端 · Skills 待接入", R.drawable.ic_extension, Color(0xFF9270D7)) { environment = true }
             }
             SettingsGroup("数据与存储") {
                 SettingsRow("空间与文件", "会话文件、共享资源与保留工作区", R.drawable.ic_folder_open, Color(0xFF27A899), click = files)
@@ -55,7 +64,7 @@ import io.github.asagnc.aurora.runtime.ChatViewModel
             SettingsGroup("偏好") {
                 SettingsRow("外观与配色", LocalAppearance.current.state.let { if (it.dynamic) "系统动态配色" else it.palette },
                     R.drawable.ic_palette, Color(0xFF8B58D0)) { appearance = true }
-                SettingsRow("关于 Aurora", "0.1.6 · Android 16+", R.drawable.ic_info, Color(0xFF4086CC)) { about = true }
+                SettingsRow("关于 Aurora", "${version ?: "开发版本"} · Android 16+", R.drawable.ic_info, Color(0xFF4086CC)) { about = true }
             }
             Spacer(Modifier.height(20.dp))
         }
@@ -63,13 +72,13 @@ import io.github.asagnc.aurora.runtime.ChatViewModel
     environment?.let { ExecutionStatusPage(model.commandsAvailable, it) { environment = null } }
     if (appearance) AppearanceSheet { appearance = false }
     if (rootDetails) AlertDialog(onDismissRequest = { rootDetails = false }, title = { Text("Root 连接") },
-        text = { Text(root.detail + "\n\n连接后，新任务可调用独立 Root 命令工具。普通命令保持原权限；Linux、抓包与逆向工具包仍待接入。") },
+        text = { Text(root.detail + "\n\n连接后，新任务可调用独立 Root 命令与交互终端。普通命令保持原权限；Linux、抓包与逆向工具包仍待接入。") },
         confirmButton = { TextButton({
             if (root.phase == RootPhase.READY || root.phase == RootPhase.CONNECTING) model.disableRoot() else model.enableRoot()
         }) { Text(if (root.phase == RootPhase.READY || root.phase == RootPhase.CONNECTING) "断开 Root" else "授权并连接 Root") } },
         dismissButton = { TextButton({ rootDetails = false }) { Text("关闭") } })
     if (about) AlertDialog(onDismissRequest = { about = false }, title = { Text("Aurora · 开发版本") },
-        text = { Text("已接入对话、批量文件、浏览器 Agent、普通原生命令和连接后启用的 Root 命令。后台任务、Linux、Skills 安装及逆向/抓包/发包工具包仍在开发。模型 API 密钥由用户自备并加密保存。") },
+        text = { Text("已接入对话、批量文件、浏览器、图文消息、后台 Agent、命令日志和普通 / Root 交互终端。Linux、Skills 安装及逆向、抓包、发包工具包仍在开发。模型 API 密钥由用户自备并加密保存。") },
         confirmButton = { TextButton({ about = false }) { Text("关闭") } })
 }
 

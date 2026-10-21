@@ -103,6 +103,6 @@ class RootController(private val context: Context) {
             snapshot.getInt("pid", -1) > 0 && snapshot.getInt("sdk", -1) >= 36)
         return "Root 服务已验证：UID 0\n服务进程：${snapshot.getInt("pid")}\nAndroid API：${snapshot.getInt("sdk")}\n" +
             "架构：${snapshot.getString("architecture")}\n内核：${snapshot.getString("kernel")}\nSELinux：${snapshot.getString("selinux")}\n" +
-            "Root 原生命令接口已连接；系统 API 与工具包仍在开发。"
+            "Root 原生命令与交互终端接口已连接；系统 API 与工具包仍在开发。"
     }
 }

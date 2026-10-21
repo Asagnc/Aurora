@@ -2,6 +2,14 @@
 
 更新时间：2026-10-21。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## Skills 新选型待确认（2026-10-21）
+
+用户继续后，已比较Agent Skills标准、Eta9adcda01安装/恢复/YAML、DSHA891405e0工作流与Node插件分工、YAML与ZIP库。完整[SKILLS_PROPOSAL.md](SKILLS_PROPOSAL.md)已推送9c6c3b9，并向用户发送确认卡，尚未收到答复。推荐标准SKILL.md、内容哈希共享资源库、现有SQLite索引/恢复/会话引用、按需目录/正文/资源、稳定工具定义和追加目录变更。新增SnakeYAML Engine3.2与Commons Compress1.28.0版本已核对，Kaml已归档，不采用自写简单YAML或盲目ZIP流式提取。Android写目录执行限制、脚本实际运行时、版本占用/清理边界均已说明。
+
+不要把方案当实现，也不要在未确认前接入新依赖/Skills数据库迁移。收到认可后先验证Android/R8与传递依赖，再做解析/归档/摘要核心、安装恢复与版本引用、Agent/原生界面。仍未连接设备，真机集中验收安排不变。
+
+独立修复：设置中的版本号改读实际已安装包版本，移除写死0.1.6；更新后台Agent/图文/日志/普通与Root终端文案及接续列表。Debug/R8Release/lint通过，0错误/既有MiMo警告1；没有新增执行能力，也没有设备视觉验收。0.1.14实现与证据保持下述范围。
+
 ## 0.1.14 原生交互终端（2026-10-21）
 
 用户已认可推荐方案，强调Agent效率/速度/质量与美观。实现普通/Root原生PTY、六个Agent工具、按需增量文本/屏幕/Base64、后台跨回复会话、Root Binder控制+Unix socket FD数据、截止/取消/同SID作业清理、会话记录/中断恢复、原生Canvas查看与IME、滚动/字号/复制/接手。见[INTERACTIVE_TERMINALS.md](INTERACTIVE_TERMINALS.md)。Termux稳定v0.118.3固定提交，只导入12个终端Java组件，来源哈希/Apache/MIT声明保留；没有整个Termux/第三方App/新Linux发行版依赖。

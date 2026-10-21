@@ -1,5 +1,9 @@
 # 实现与验证证据
 
+## 设置状态文案与Skills研究（2026-10-21）
+
+Skills新架构已研究，详见SKILLS_PROPOSAL.md，确认卡待答复，未接依赖/安装器/数据库迁移。独立修复设置版本从包信息后台读取，后台Agent/图文/日志/交互终端文案同步实际能力；Debug/R8Release/lint通过，0错误/既有1警告。此修订不扩展运行能力或硬件证据。
+
 ## 0.1.14 交互终端（2026-10-21）
 
 最终实现提交0be35fc完整CI通过：[39597157476](https://github.com/Asagnc/Aurora/actions/runs/39597157476)。核心72、Linux主机PTY8、源码校验12及全部Android构建/lint通过；证据范围见evidence/0.1.14/README.md。设备12项新增用例仍仅编译。
