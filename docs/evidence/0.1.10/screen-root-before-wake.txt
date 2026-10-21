@@ -23,5 +23,3 @@ kotlinx.coroutines.TimeoutCancellationException: Timed out waiting for 40000 ms
 
 FAILURES!!!
 Tests run: 1,  Failures: 1
-
-

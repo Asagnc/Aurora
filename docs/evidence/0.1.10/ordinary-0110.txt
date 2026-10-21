@@ -13,5 +13,3 @@ io.github.asagnc.aurora.ui.ThemeContrastTest:.
 Time: 13.858
 
 OK (41 tests)
-
-

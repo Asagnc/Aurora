@@ -4,5 +4,3 @@ io.github.asagnc.aurora.browser.BrowserRecoveryTest:.
 Time: 0.211
 
 OK (1 test)
-
-

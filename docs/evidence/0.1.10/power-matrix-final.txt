@@ -4,5 +4,3 @@ io.github.asagnc.aurora.runtime.AgentScreenDeviceTest:..
 Time: 35.638
 
 OK (2 tests)
-
-
