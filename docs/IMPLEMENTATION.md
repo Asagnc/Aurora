@@ -2,6 +2,8 @@
 
 ## 0.1.14 交互终端（2026-10-21）
 
+最终实现提交0be35fc完整CI通过：[39597157476](https://github.com/Asagnc/Aurora/actions/runs/39597157476)。核心72、Linux主机PTY8、源码校验12及全部Android构建/lint通过；证据范围见evidence/0.1.14/README.md。设备12项新增用例仍仅编译。
+
 已确认并实现普通/Root PTY、六个Agent工具、会话所有权/记录/中断恢复、原生终端查看与输入、前台服务跨模型回复生命周期、Root控制与FD数据通道，详见INTERACTIVE_TERMINALS.md。核心72通过，本地debug/R8release/testAPK/lint通过（0错误、既有MiMo警告1）。新增10项普通Android及2项Root用例仅编译，Linux主机8项已在CI步骤通过；未连接设备，不宣称Root/UI/性能验收。日志16MiB、尾部64KiB、4/8活动终端及65536单元主缓冲预算明确，不伪装无限日志或强杀后原shell恢复。
 
 ## 0.1.13 命令事件日志（2026-10-21）
