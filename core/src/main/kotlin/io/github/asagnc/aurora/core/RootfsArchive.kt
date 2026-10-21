@@ -7,7 +7,9 @@ import org.apache.commons.compress.archivers.tar.TarConstants
 
 data class RootfsBudget(val compressed: Long = 512L * 1024 * 1024, val expanded: Long = 2L * 1024 * 1024 * 1024,
     val file: Long = 256L * 1024 * 1024, val entries: Int = 50000)
-data class RootfsEntry(val path: String, val kind: String, val bytes: Long, val mode: Int, val target: String = "")
+@kotlinx.serialization.Serializable
+data class RootfsEntry(val path: String, val kind: String, val bytes: Long, val mode: Int, val target: String = "",
+    val uid: Long = 0, val gid: Long = 0)
 
 /** Dedicated Linux archive contract; links are created only after all ordinary file writes finish. */
 class RootfsArchive(private val budget: RootfsBudget = RootfsBudget()) {
@@ -35,7 +37,8 @@ class RootfsArchive(private val budget: RootfsBudget = RootfsBudget()) {
                 total += entry.size; require(total <= budget.expanded)
                 pathBytes += path.length + entry.linkName.length; require(pathBytes <= 8L * 1024 * 1024)
                 if (kind.endsWith("link")) rootfsLinkDestination(path, entry.linkName, kind == "symlink")
-                result += RootfsEntry(path, kind, entry.size, entry.mode and 0x3ff, entry.linkName)
+                result += RootfsEntry(path, kind, entry.size, entry.mode and 0x3ff, entry.linkName,
+                    entry.longUserId, entry.longGroupId)
             }
         }
         require(result.isNotEmpty())
@@ -51,6 +54,7 @@ class RootfsArchive(private val budget: RootfsBudget = RootfsBudget()) {
             require(entry.path == rootfsName(entry.path) && entry.path.isNotEmpty())
             require(entry.kind in setOf("directory", "file", "symlink", "hardlink") && entry.bytes in 0..budget.file)
             require(entry.mode in 0..0x3ff)
+            require(entry.uid in 0..4294967294L && entry.gid in 0..4294967294L) { "Unsupported Linux owner ID" }
             require(entry.kind == "file" || entry.bytes == 0L)
             if (entry.kind.endsWith("link")) rootfsLinkDestination(entry.path, entry.target, entry.kind == "symlink")
             var parent = entry.path.substringBeforeLast('/', "")
@@ -81,6 +85,10 @@ class RootfsArchive(private val budget: RootfsBudget = RootfsBudget()) {
                     if (name.isEmpty()) continue
                     val expected = requireNotNull(indexed[name])
                     require(seen.add(name) && expected.bytes == entry.size && expected.target == entry.linkName)
+                    require(expected.uid == entry.longUserId && expected.gid == entry.longGroupId &&
+                        expected.mode == (entry.mode and 0x3ff)) { "Rootfs metadata changed after scanning" }
+                    require(entry.linkFlag in setOf(TarConstants.LF_NORMAL, TarConstants.LF_OLDNORM, TarConstants.LF_DIR,
+                        TarConstants.LF_LINK, TarConstants.LF_SYMLINK) && !entry.isSparse)
                     require(when (expected.kind) {
                         "directory" -> entry.isDirectory
                         "file" -> entry.isFile && !entry.isSparse

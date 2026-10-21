@@ -2,6 +2,10 @@
 
 更新时间：2026-10-22。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## Linux 执行层准备修正（2026-10-22）
+
+继续已批准架构，补齐rootfs数值UID/GID计划和新安装entries.json原子发布，提取时复核属主/权限/精确TAR类型，保持普通解包不chown。旧安装缺失元数据须在后续执行资格阶段补全，不自动视作可执行。新增3项核心用例合计129；本机127通过/2项POSIX跳过，官方ARM64样本扫描通过，Debug/lint通过。详见LINUX_IMPLEMENTATION.md。PRoot构建、Root挂载/进程监督与命令/PTY租约仍待继续，未新增手机验收或性能结论。
+
 ## 0.1.18 Linux 基础环境安装（2026-10-22）
 
 用户已确认采用推荐方案，不需再次确认Ubuntu/PRoot/chroot架构。已接官方签名固定摘要、rootfs tar规则与Linux链接/权限、ELF结构/解释器验证、SQLite v5安装恢复/环境代/活动租约元数据、共享目录安装器、Agent环境管理和原生管理页。详见 [LINUX_IMPLEMENTATION.md](LINUX_IMPLEMENTATION.md)。当前尚无Linux执行工具，executionReady明确false；PRoot依赖构建与Root挂载/执行/租约生命周期仍待接入，不把安装基础包当成完成Linux后端。

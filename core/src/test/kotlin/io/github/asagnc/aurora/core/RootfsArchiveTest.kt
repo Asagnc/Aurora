@@ -39,6 +39,33 @@ class RootfsArchiveTest {
         assertFails { RootfsArchive().scan(archive(root, listOf(TarArchiveEntry("device", TarConstants.LF_CHR)))) }
         assertFails { RootfsArchive(RootfsBudget(expanded = 4)).scan(archive(root, listOf(file("large", 10)))) }
     }
+    @Test fun preservesLinuxNumericOwnersAndStripsPrivilegeBits() = fixture { root ->
+        val source = archive(root, listOf(file("owned").apply {
+            setUserId(1001L); setGroupId(1002L); mode = 0xfff
+        }))
+        val entry = RootfsArchive().scan(source).single()
+        assertEquals(1001L, entry.uid); assertEquals(1002L, entry.gid)
+        assertEquals(0x3ff, entry.mode)
+        val encoded = WireJson.encodeToString(kotlinx.serialization.builtins.ListSerializer(RootfsEntry.serializer()), listOf(entry))
+        assertEquals(listOf(entry), WireJson.decodeFromString(
+            kotlinx.serialization.builtins.ListSerializer(RootfsEntry.serializer()), encoded))
+    }
+    @Test fun rejectsNegativeLinuxOwners() = fixture { root ->
+        val source = archive(root, listOf(file("owned")))
+        val unpacker = RootfsArchive()
+        val forged = unpacker.scan(source).map { it.copy(uid = -1) }
+        assertFails { unpacker.extract(source, root.resolve("invalid"), forged) }
+        assertFalse(Files.exists(root.resolve("invalid")))
+    }
+    @Test fun rejectsChangedMetadataBetweenScanAndExtraction() = fixture { root ->
+        assumeTrue(Files.getFileStore(root).supportsFileAttributeView("posix"))
+        val source = archive(root, listOf(file("owned")))
+        val unpacker = RootfsArchive(); val plan = unpacker.scan(source)
+        archive(root, listOf(file("owned").apply { setUserId(123L) }))
+        val target = root.resolve("changed")
+        assertFails { unpacker.extract(source, target, plan) }
+        assertFalse(Files.exists(target))
+    }
     @Test fun checksGzipTrailerAndTarEndMarkers() = fixture { root ->
         val source = archive(root, listOf(file("value")))
         val bytes = Files.readAllBytes(source); bytes[bytes.size - 8] = (bytes[bytes.size - 8].toInt() xor 0xff).toByte()

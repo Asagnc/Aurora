@@ -73,10 +73,8 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
                 LinuxElf.validateRootfs(prepared.resolve("rootfs"), source.architecture)
             }
             val manifest = LinuxRootfsManifest(source, plan.size, bytes)
-            FileChannel.open(prepared.resolve("manifest.json"), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE).use { channel ->
-                val encoded = ByteBuffer.wrap(WireJson.encodeToString(manifest).toByteArray())
-                while (encoded.hasRemaining()) channel.write(encoded); channel.force(true)
-            }
+            writeMetadata(prepared.resolve("entries.json"), WireJson.encodeToString(plan))
+            writeMetadata(prepared.resolve("manifest.json"), WireJson.encodeToString(manifest))
             val version = LinuxVersion(source.sha256, manifest, System.currentTimeMillis())
             currentCoroutineContext().ensureActive()
             catalog.withLock { withContext(NonCancellable) {
@@ -114,6 +112,13 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
     internal fun directory(id: String): Path {
         require(id.matches(Regex("[a-f0-9]{64}")) && !Files.isSymbolicLink(root) && !Files.isSymbolicLink(root.resolve(id)))
         return root.resolve(id)
+    }
+    private fun writeMetadata(path: Path, value: String) {
+        FileChannel.open(path, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE).use { channel ->
+            val encoded = ByteBuffer.wrap(value.toByteArray(Charsets.UTF_8))
+            while (encoded.hasRemaining()) channel.write(encoded)
+            channel.force(true)
+        }
     }
     private fun verifyArchive(path: Path, expected: String) {
         val hash = MessageDigest.getInstance("SHA-256")
