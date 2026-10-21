@@ -57,7 +57,7 @@ class RootfsArchiveTest {
         archive.extract(source, target, archive.scan(source))
         assertEquals(target.resolve("usr/bin/tool"), resolveRootfsPath(target, "/bin/tool"))
         assertTrue(Files.isSameFile(target.resolve("usr/bin/tool"), target.resolve("usr/bin/alias")))
-        assertEquals(5, Files.size(resolveRootfsPath(target, "/bin/tool")))
+        assertEquals(5L, Files.size(resolveRootfsPath(target, "/bin/tool")))
         assertTrue(Files.isExecutable(target.resolve("usr/bin/tool")))
     }
     @Test fun rejectsOversizedPaxHeaderBeforeReadingItsPayload() = fixture { root ->
