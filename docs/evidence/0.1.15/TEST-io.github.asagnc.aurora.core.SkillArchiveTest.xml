@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="io.github.asagnc.aurora.core.SkillArchiveTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-21T13:16:33.441Z" hostname="SOBFY" time="0.144">
+  <properties/>
+  <testcase name="extractsUnicodeAndPublishesVerifiedContent()" classname="io.github.asagnc.aurora.core.SkillArchiveTest" time="0.12"/>
+  <testcase name="rejectsFileDirectoryConflictsAndExpansionBudget()" classname="io.github.asagnc.aurora.core.SkillArchiveTest" time="0.005"/>
+  <testcase name="corruptedArchiveFailsWithoutPublishedContent()" classname="io.github.asagnc.aurora.core.SkillArchiveTest" time="0.006"/>
+  <testcase name="rejectsTraversalWithoutWritingOutsideStaging()" classname="io.github.asagnc.aurora.core.SkillArchiveTest" time="0.004"/>
+  <testcase name="rejectsSymbolicLinks()" classname="io.github.asagnc.aurora.core.SkillArchiveTest" time="0.003"/>
+  <testcase name="rejectsDuplicateEntries()" classname="io.github.asagnc.aurora.core.SkillArchiveTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

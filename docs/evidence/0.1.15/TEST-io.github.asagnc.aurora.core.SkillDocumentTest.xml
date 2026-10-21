@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="io.github.asagnc.aurora.core.SkillDocumentTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-21T13:16:33.593Z" hostname="SOBFY" time="0.065">
+  <properties/>
+  <testcase name="parsesMultilineQuotedMetadataWithoutTouchingBody()" classname="io.github.asagnc.aurora.core.SkillDocumentTest" time="0.003"/>
+  <testcase name="rejectsMissingDescriptionDuplicateKeysAndNonTextValues()" classname="io.github.asagnc.aurora.core.SkillDocumentTest" time="0.027"/>
+  <testcase name="retainsBodyAndWarnsInsteadOfRewritingForeignNames()" classname="io.github.asagnc.aurora.core.SkillDocumentTest" time="0.001"/>
+  <testcase name="rejectsAliasesTagsAndExcessNesting()" classname="io.github.asagnc.aurora.core.SkillDocumentTest" time="0.006"/>
+  <testcase name="enforcesDocumentAndPathBudgets()" classname="io.github.asagnc.aurora.core.SkillDocumentTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
