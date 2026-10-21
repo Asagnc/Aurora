@@ -42,7 +42,7 @@ class RootCommandProtocolTest {
     }
 
     @Test fun realBinderReturnsNativeCommandOutput() = runBlocking { fixture { remote, id, _ ->
-        val result = WireJson.parseToJsonElement(RootCommandClient(remote).execute(id,
+        val result = WireJson.parseToJsonElement(RootCommandClient(remote, context).execute(id,
             CommandRequest(listOf("/system/bin/printf", "%s", "literal; $(unchanged)")))).jsonObject
         assertEquals(0L, result.number("exitCode"))
         assertEquals("literal; $(unchanged)", result["stdout"]!!.jsonObject.text("text"))
@@ -51,7 +51,7 @@ class RootCommandProtocolTest {
     } }
 
     @Test fun cancellationWaitsForRemoteProcessCleanup() = runBlocking { fixture { remote, id, directory ->
-        val task = launch(Dispatchers.IO) { RootCommandClient(remote).execute(id, CommandRequest(listOf("/system/bin/sh", "-c",
+        val task = launch(Dispatchers.IO) { RootCommandClient(remote, context).execute(id, CommandRequest(listOf("/system/bin/sh", "-c",
             "trap 'echo flushed > stopped' TERM; echo ready > started; while :; do sleep 1; done"))) }
         withTimeout(10_000) { while (!Files.exists(directory.resolve("started"))) delay(20) }
         task.cancelAndJoin()
@@ -59,13 +59,13 @@ class RootCommandProtocolTest {
     } }
 
     @Test fun closeCancelsActiveCommandsAndRejectsFurtherStarts() = runBlocking { fixture { remote, id, directory ->
-        val task = async(Dispatchers.IO) { RootCommandClient(remote).execute(id, CommandRequest(listOf("/system/bin/sh", "-c",
+        val task = async(Dispatchers.IO) { RootCommandClient(remote, context).execute(id, CommandRequest(listOf("/system/bin/sh", "-c",
             "trap 'echo flushed > stopped' TERM; echo ready > started; while :; do sleep 1; done"))) }
         withTimeout(10_000) { while (!Files.exists(directory.resolve("started"))) delay(20) }
         withContext(Dispatchers.IO) { remote.closeCommands() }
         assertTrue(withTimeout(3000) { task.await() }.contains("command_outcome_uncertain"))
         assertTrue(Files.exists(directory.resolve("stopped")))
-        val rejected = RootCommandClient(remote).execute(id, CommandRequest(listOf("/system/bin/true")))
+        val rejected = RootCommandClient(remote, context).execute(id, CommandRequest(listOf("/system/bin/true")))
         assertTrue(rejected.contains("command_outcome_uncertain"))
     } }
 
@@ -81,7 +81,7 @@ class RootCommandProtocolTest {
     }
 
     @Test fun serviceDeathReturnsUncertainAndNativeSupervisorCleansUp() = runBlocking { fixture { remote, id, directory ->
-        val task = async(Dispatchers.IO) { RootCommandClient(remote).execute(id, CommandRequest(listOf("/system/bin/sh", "-c",
+        val task = async(Dispatchers.IO) { RootCommandClient(remote, context).execute(id, CommandRequest(listOf("/system/bin/sh", "-c",
             "echo ready > started; sleep 60"))) }
         withTimeout(10_000) { while (!Files.exists(directory.resolve("started"))) delay(20) }
         Process.killProcess(remote.snapshot().getInt("pid"))
@@ -161,7 +161,7 @@ class RootCommandProtocolTest {
             override fun cancelAndWait(id: String) {}
             override fun closeCommands() {}
         }
-        assertTrue(RootCommandClient(dead).execute(UUID.randomUUID().toString(),
+        assertTrue(RootCommandClient(dead, context).execute(UUID.randomUUID().toString(),
             CommandRequest(listOf("/system/bin/true"))).contains("command_outcome_uncertain"))
     }
 }

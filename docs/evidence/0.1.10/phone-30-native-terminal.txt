@@ -1,0 +1,54 @@
+DSHA | enabled=true | [217,202][718,287]
+后台任务 | enabled=true | [718,168][872,322]
+当前跟随系统，点击切换白天；长按跟随系统 | enabled=true | [872,168][1026,322]
+关于 DSHA | enabled=true | [1054,168][1208,322]
+Ubuntu · PTY | enabled=true | [56,402][690,501]
+A− | enabled=true | [718,375][872,529]
+A+ | enabled=true | [872,375][1026,529]
+简易 | enabled=true | [1054,375][1208,529]
+终端 1 | enabled=true | [56,564][308,732]
+× | enabled=true | [308,564][476,732]
+＋ 新建 | enabled=true | [935,564][1208,732]
+root@localhost:~#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ | enabled=true | [84,781][1180,2307]
+ESC | enabled=true | [56,2363][213,2517]
+TAB | enabled=true | [234,2363][391,2517]
+CTRL | enabled=true | [412,2363][596,2517]
+ALT | enabled=true | [617,2363][774,2517]
+↑ | enabled=true | [795,2363][949,2517]
+↓ | enabled=true | [970,2363][1124,2517]
+← | enabled=true | [1145,2363][1208,2517]
+启动 | enabled=true | [0,2556][316,2780]
+启动 | enabled=true | [119,2717][197,2770]
+插件 | enabled=true | [316,2556][632,2780]
+插件 | enabled=true | [435,2717][513,2770]
+设置 | enabled=true | [632,2556][948,2780]
+设置 | enabled=true | [751,2717][829,2770]
+终端 | enabled=true | [948,2556][1264,2780]
+终端 | enabled=true | [1067,2717][1145,2770]

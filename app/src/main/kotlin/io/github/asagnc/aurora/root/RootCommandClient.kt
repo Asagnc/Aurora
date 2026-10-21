@@ -1,12 +1,15 @@
 package io.github.asagnc.aurora.root
 
 import android.os.IBinder
+import android.content.Context
 import io.github.asagnc.aurora.core.*
 import io.github.asagnc.aurora.runtime.CommandRequest
+import io.github.asagnc.aurora.runtime.CommandWakeLock
 import java.util.UUID
 import kotlinx.coroutines.*
 
-internal class RootCommandClient(private val remote: IRootControl) {
+internal class RootCommandClient(private val remote: IRootControl, context: Context) {
+    private val awake = CommandWakeLock(context, "RootCommand")
     suspend fun execute(conversation: String, request: CommandRequest): String = withContext(Dispatchers.IO) {
         val id = UUID.randomUUID().toString()
         val wire = RootCommandWire.encode(request)
@@ -14,6 +17,7 @@ internal class RootCommandClient(private val remote: IRootControl) {
         val result = CompletableDeferred<String>()
         val death = IBinder.DeathRecipient { result.complete(uncertain("Root service exited")) }
         val binder = remote.asBinder()
+        val lease = awake.acquire(request.timeoutMs + 15_000)
         try {
             binder.linkToDeath(death, 0)
             remote.start(id, conversation, wire, object : IRootResult.Stub() {
@@ -24,8 +28,10 @@ internal class RootCommandClient(private val remote: IRootControl) {
         } catch (cancel: CancellationException) { throw cancel }
         catch (failure: Exception) { uncertain(failure.javaClass.simpleName) }
         finally {
-            withContext(NonCancellable + Dispatchers.IO) { runCatching { remote.cancelAndWait(id) } }
-            runCatching { binder.unlinkToDeath(death, 0) }
+            try {
+                withContext(NonCancellable + Dispatchers.IO) { runCatching { remote.cancelAndWait(id) } }
+                runCatching { binder.unlinkToDeath(death, 0) }
+            } finally { lease.close() }
         }
     }
 

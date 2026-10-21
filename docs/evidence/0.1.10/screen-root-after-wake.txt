@@ -1,0 +1,27 @@
+
+io.github.asagnc.aurora.runtime.AgentScreenDeviceTest:
+Error in rootTaskCompletesWithDisplayAsleep(io.github.asagnc.aurora.runtime.AgentScreenDeviceTest):
+kotlinx.coroutines.TimeoutCancellationException: Timed out waiting for 40000 ms
+	at kotlinx.coroutines.TimeoutKt.TimeoutCancellationException(Timeout.kt:281)
+	at kotlinx.coroutines.TimeoutCoroutine.run(Timeout.kt:243)
+	at kotlinx.coroutines.EventLoopImplBase$DelayedRunnableTask.run(EventLoop.common.kt:498)
+	at kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:256)
+	at kotlinx.coroutines.DefaultExecutor.run(DefaultExecutor.kt:105)
+	at java.lang.Thread.run(Thread.java:1119)
+
+
+Time: 66.477
+There was 1 failure:
+1) rootTaskCompletesWithDisplayAsleep(io.github.asagnc.aurora.runtime.AgentScreenDeviceTest)
+kotlinx.coroutines.TimeoutCancellationException: Timed out waiting for 40000 ms
+	at kotlinx.coroutines.TimeoutKt.TimeoutCancellationException(Timeout.kt:281)
+	at kotlinx.coroutines.TimeoutCoroutine.run(Timeout.kt:243)
+	at kotlinx.coroutines.EventLoopImplBase$DelayedRunnableTask.run(EventLoop.common.kt:498)
+	at kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:256)
+	at kotlinx.coroutines.DefaultExecutor.run(DefaultExecutor.kt:105)
+	at java.lang.Thread.run(Thread.java:1119)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+

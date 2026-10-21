@@ -1,0 +1,142 @@
+[
+  {
+    "source": "phone-13-chat.png",
+    "source_sha256": "ed7ee3305b4cb9edbac502bca03fb60766e996fc5a152361ecc6479e13306ccd",
+    "crop": [
+      0,
+      140,
+      1264,
+      2780
+    ],
+    "original_size": [
+      1264,
+      2780
+    ]
+  },
+  {
+    "source": "phone-16-drawer.png",
+    "source_sha256": "6540aa678a524f78da8cb563f0642ca1e650ca400b22e351436a2a7c735affab",
+    "crop": [
+      0,
+      140,
+      1264,
+      2780
+    ],
+    "original_size": [
+      1264,
+      2780
+    ]
+  },
+  {
+    "source": "phone-21-web-settings.png",
+    "source_sha256": "e0fb891fe1e08c5f149e90d84a4d26341c4be090797742b3ee367be1e05e1115",
+    "crop": [
+      0,
+      140,
+      1264,
+      2780
+    ],
+    "original_size": [
+      1264,
+      2780
+    ]
+  },
+  {
+    "source": "phone-26-web-agent-presets-edge.png",
+    "source_sha256": "57e009266f08cdeb37a931436f307fb4e0637fd3a1fc9ff4801f223254b58092",
+    "crop": [
+      0,
+      140,
+      1264,
+      2780
+    ],
+    "original_size": [
+      1264,
+      2780
+    ]
+  },
+  {
+    "source": "phone-30-native-terminal.png",
+    "source_sha256": "4c2497ed63c88ee519b2abed5d5279b40b2f08be39dcf8a5bb6d1df19e7f1258",
+    "crop": [
+      0,
+      140,
+      1264,
+      2780
+    ],
+    "original_size": [
+      1264,
+      2780
+    ]
+  },
+  {
+    "source": "phone-34-terminal-result.png",
+    "source_sha256": "e602696ea8b233c0f0050b995d7fdcad1fbaeefb4bc37decb4d5304f144d1188",
+    "crop": [
+      0,
+      140,
+      1264,
+      2780
+    ],
+    "original_size": [
+      1264,
+      2780
+    ]
+  },
+  {
+    "source": "phone-37-skills.png",
+    "source_sha256": "833e29e098359ec86fe8598c2027dcba8d9b4bc2bb61131234ee75c918be68ce",
+    "crop": [
+      0,
+      140,
+      1264,
+      2780
+    ],
+    "original_size": [
+      1264,
+      2780
+    ]
+  },
+  {
+    "source": "phone-39-backup.png",
+    "source_sha256": "56639cfde595b40403aa772f2955a01f3e149baca8040f6f78e4a7e2840c5533",
+    "crop": [
+      0,
+      140,
+      1264,
+      2780
+    ],
+    "original_size": [
+      1264,
+      2780
+    ]
+  },
+  {
+    "source": "phone-41-automatic-backup.png",
+    "source_sha256": "eed12568be5a1702e41db68c4e0c287e3a83abe025c7a631235cc55e41782f60",
+    "crop": [
+      0,
+      140,
+      1264,
+      2780
+    ],
+    "original_size": [
+      1264,
+      2780
+    ]
+  },
+  {
+    "source": "phone-44-runtime-stopped.png",
+    "source_sha256": "89a537793ca6e23918e429f677fd38229ff974173238ced89c7f4d44b760831c",
+    "crop": [
+      0,
+      140,
+      1264,
+      2780
+    ],
+    "original_size": [
+      1264,
+      2780
+    ]
+  }
+]

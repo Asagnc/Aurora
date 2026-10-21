@@ -2,6 +2,8 @@
 
 更新：2026-10-20。方案已经用户确认，见 BACKGROUND_TASKS_PROPOSAL.md。
 
+2026-10-21补充：用户确认命令阶段有界CPU唤醒锁，0.1.10实现与短时熄屏限制见 [COMMAND_POWER.md](COMMAND_POWER.md)。这覆盖下文“没有默认唤醒锁”的旧状态，但不改为整轮Agent持锁或绕过设备策略。当前真机记录见 DEVICE_ACCEPTANCE_2026-10-21.md。
+
 ## 实现
 
 - Android 原生 specialUse 前台服务，只为用户主动发起的即时 Agent 任务启动；通知包含返回对应会话和停止，不显示 API 密钥或命令正文。没有 WorkManager、开机自启、轮询保活或常驻 Root daemon。

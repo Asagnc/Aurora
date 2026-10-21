@@ -19,35 +19,40 @@ data class CommandRequest(val argv: List<String>, val directory: String = "", va
 class NativeCommandRunner(context: Context, private val artifactOwner: Int = android.os.Process.myUid()) {
     private val executable = File(context.applicationInfo.nativeLibraryDir, "libaurora_runner.so")
     private val permits = Semaphore(2)
+    private val awake = CommandWakeLock(context, "NativeCommand")
     val available get() = executable.isFile && executable.canExecute()
 
     suspend fun execute(root: Path, request: CommandRequest): JsonObject = permits.withPermit {
         runInterruptible(Dispatchers.IO) {
             validate(request)
-            check(available) { "Packaged native runner unavailable for this ABI" }
-            val cwd = resolveDirectory(root, request.directory)
-            val runs = root.resolve("runs")
-            require(!Files.isSymbolicLink(runs))
-            Files.createDirectories(runs)
-            restoreOwner(runs)
-            val directory = Files.createDirectory(runs.resolve(UUID.randomUUID().toString()))
-            restoreOwner(directory)
-            val log = Files.createFile(directory.resolve("supervisor.log"))
-            restoreOwner(log)
-            val process = ProcessBuilder(listOf(executable.absolutePath, directory.toString(), "--") + request.argv)
-                .directory(cwd.toFile()).redirectErrorStream(true).redirectOutput(directory.resolve("supervisor.log").toFile())
-                .apply { environment().apply { clear(); put("PATH", "/system/bin:/system/xbin"); put("HOME", root.toString()); put("TMPDIR", cwd.toString()); putAll(request.environment) } }
-                .start()
-            try {
-                process.outputStream.close()
-                val finished = process.waitFor(request.timeoutMs, java.util.concurrent.TimeUnit.MILLISECONDS)
-                if (!finished) stop(process)
-                result(root, directory, request.outputLimit, !finished, process.exitValue())
-            } finally {
-                // Conversation deletion waits for this cleanup through its OwnedTasks lease.
-                stop(process)
-                process.inputStream.close(); process.errorStream.close()
-            }
+            awake.acquire(request.timeoutMs + 1_000).use { executeBlocking(root, request) }
+        }
+    }
+
+    private fun executeBlocking(root: Path, request: CommandRequest): JsonObject {
+        check(available) { "Packaged native runner unavailable for this ABI" }
+        val cwd = resolveDirectory(root, request.directory)
+        val runs = root.resolve("runs")
+        require(!Files.isSymbolicLink(runs))
+        Files.createDirectories(runs)
+        restoreOwner(runs)
+        val directory = Files.createDirectory(runs.resolve(UUID.randomUUID().toString()))
+        restoreOwner(directory)
+        val log = Files.createFile(directory.resolve("supervisor.log"))
+        restoreOwner(log)
+        val process = ProcessBuilder(listOf(executable.absolutePath, directory.toString(), "--") + request.argv)
+            .directory(cwd.toFile()).redirectErrorStream(true).redirectOutput(directory.resolve("supervisor.log").toFile())
+            .apply { environment().apply { clear(); put("PATH", "/system/bin:/system/xbin"); put("HOME", root.toString()); put("TMPDIR", cwd.toString()); putAll(request.environment) } }
+            .start()
+        try {
+            process.outputStream.close()
+            val finished = process.waitFor(request.timeoutMs, java.util.concurrent.TimeUnit.MILLISECONDS)
+            if (!finished) stop(process)
+            return result(root, directory, request.outputLimit, !finished, process.exitValue())
+        } finally {
+            // Conversation deletion waits for this cleanup through its OwnedTasks lease.
+            stop(process)
+            process.inputStream.close(); process.errorStream.close()
         }
     }
 
