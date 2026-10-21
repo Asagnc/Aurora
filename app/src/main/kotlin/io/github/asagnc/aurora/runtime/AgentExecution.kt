@@ -21,7 +21,7 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
         }
         val skillSnapshot = app.skills.snapshot(id)
         val tools = ToolRouter(listOfNotNull(files, SkillToolExecutor(app.skills, id, skillSnapshot),
-            io.github.asagnc.aurora.linux.LinuxEnvironmentTool(app.linux), BrowserToolExecutor(app.browser, id), ImageToolExecutor(app.images, id),
+            io.github.asagnc.aurora.linux.LinuxEnvironmentTool(app.linux, id, prepared), BrowserToolExecutor(app.browser, id), ImageToolExecutor(app.images, id),
             io.github.asagnc.aurora.terminal.TerminalToolExecutor(app.terminals, id, app.root.terminalClient != null),
             CommandToolExecutor(app.commands, directory, prepared = prepared),
             app.root.commandClient?.let { CommandToolExecutor(app.commands, directory, it, prepared) }))

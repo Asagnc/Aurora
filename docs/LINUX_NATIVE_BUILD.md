@@ -18,6 +18,7 @@ cmake -S app/src/main/cpp/linux -B build-linux \
   -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-36 \
   -DCMAKE_BUILD_TYPE=RelWithDebInfo
 cmake --build build-linux --target aurora_proot
+cmake --build build-linux --target aurora_linux_namespace
 ```
 
 Repeat with x86_64 for that architecture. Only same-architecture 64-bit guests

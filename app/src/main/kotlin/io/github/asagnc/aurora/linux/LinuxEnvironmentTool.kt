@@ -4,18 +4,24 @@ import io.github.asagnc.aurora.core.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.json.*
 
-internal class LinuxEnvironmentTool(private val manager: LinuxEnvironmentManager) : ToolExecutor {
+internal class LinuxEnvironmentTool(private val manager: LinuxEnvironmentManager, private val owner: String,
+    private val prepared: suspend (String, String) -> Unit) : ToolExecutor {
     override val definitions = listOf(ToolDefinition("linux_environment",
-        "Inspect, install, probe or clean shared Linux base images. action=status/install/probe/cleanup. Probe runs a fixed offline PRoot qualification workload, not arbitrary commands. Does not enable business execution or install compiler/tool packs.",
+        "Inspect, install, probe or clean shared Linux base images. action=status/install/probe/probe_root/cleanup. probe runs a fixed offline PRoot workload. probe_root checks connected Root mount/PID namespaces and init teardown without mounting a rootfs or changing system files. Does not enable arbitrary Linux commands or install tool packs.",
         objectOf("type" to string("object"), "properties" to objectOf("action" to objectOf("type" to string("string"),
-            "enum" to JsonArray(listOf("status", "install", "probe", "cleanup").map(::string)))), "required" to JsonArray(listOf(string("action"))),
+            "enum" to JsonArray(listOf("status", "install", "probe", "probe_root", "cleanup").map(::string)))), "required" to JsonArray(listOf(string("action"))),
             "additionalProperties" to JsonPrimitive(false))))
     override suspend fun execute(call: ToolCall): String = try {
         require(call.name == "linux_environment")
         when (call.arguments.text("action")) {
             "install" -> { manager.install(); status() }
             "cleanup" -> objectOf("removedVersions" to JsonPrimitive(manager.cleanup()))
-            "probe" -> manager.probe()
+            "probe" -> manager.probe(owner)
+            "probe_root" -> {
+                val artifact = java.util.UUID.randomUUID().toString()
+                prepared(call.id, "runs/$artifact")
+                manager.probeRoot(owner, artifact)
+            }
             "status" -> status()
             else -> error("Unknown Linux environment action")
         }.toString()

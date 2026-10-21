@@ -18,7 +18,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Emulator test package update failed.' }
     & $adb -s $Serial shell pm grant io.github.asagnc.aurora android.permission.POST_NOTIFICATIONS
     if ($LASTEXITCODE -ne 0) { throw 'Emulator notification permission grant failed.' }
-    $result = & $adb -s $Serial shell am instrument -w -e notAnnotation io.github.asagnc.aurora.root.RootRequired -e notClass io.github.asagnc.aurora.browser.BrowserRecoveryTest,io.github.asagnc.aurora.runtime.AgentRunRecoveryTest io.github.asagnc.aurora.test/androidx.test.runner.AndroidJUnitRunner
+    $result = & $adb -s $Serial shell am instrument -w -e notAnnotation io.github.asagnc.aurora.root.RootRequired,io.github.asagnc.aurora.linux.LinuxImageRequired -e notClass io.github.asagnc.aurora.browser.BrowserRecoveryTest,io.github.asagnc.aurora.runtime.AgentRunRecoveryTest io.github.asagnc.aurora.test/androidx.test.runner.AndroidJUnitRunner
     $exitCode = $LASTEXITCODE
     $text = $result -join [Environment]::NewLine
     $directory = Join-Path $projectRoot 'build/reports'
@@ -26,8 +26,8 @@ try {
     Set-Content -LiteralPath (Join-Path $directory 'emulator-check.txt') -Value $text -Encoding utf8
     Write-Output $text
     $count = [regex]::Match($text, 'OK \((\d+) tests?\)')
-    if ($exitCode -ne 0 -or !$count.Success -or [int]$count.Groups[1].Value -lt 66 -or
-        $text -match 'FAILURES|INSTRUMENTATION_FAILED|Process crashed') { throw 'Emulator verification did not produce sixty-six passing tests.' }
+    if ($exitCode -ne 0 -or !$count.Success -or [int]$count.Groups[1].Value -lt 67 -or
+        $text -match 'FAILURES|INSTRUMENTATION_FAILED|Process crashed') { throw 'Emulator verification did not produce sixty-seven passing tests.' }
     $recovery = & $adb -s $Serial shell am instrument -w -e class io.github.asagnc.aurora.browser.BrowserRecoveryTest io.github.asagnc.aurora.test/androidx.test.runner.AndroidJUnitRunner
     $recoveryExit = $LASTEXITCODE
     $recoveryText = $recovery -join [Environment]::NewLine

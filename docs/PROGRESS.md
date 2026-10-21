@@ -2,6 +2,12 @@
 
 更新时间：2026-10-22。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 0.1.20 Root 命名空间资格（2026-10-22）
+
+用户已确认Root Linux加私有PID空间，与私有挂载配合；能力不足禁用此Linux后端，原生Root命令保留。已接固定原生探测与Agent probe_root、现有Root日志/限时/CPU租约；没有挂Ubuntu或chroot。Agent PRoot固定探测接真实环境版本租约并处理取消释放，完整命令/PTY租约仍待接。见LINUX_ROOT_LIFECYCLE.md、LINUX_IMPLEMENTATION.md。
+
+增加Linux主机Root生命周期4项，Android普通拒绝/Root专项/显式下载运行各1项。普通门槛67；新增设备用例只编译，不把主机namespace结果当Android通过。上一版590e2ed完整[CI39640576221](https://github.com/Asagnc/Aurora/actions/runs/39640576221)已通过，含源码打包和双ABI ELF验证。当前阶段请求小范围手机测试，最终完整验收仍放最后；截至实现时ADB无设备，不自动重装模拟器或Studio。
+
 ## 0.1.19 PRoot 打包与固定探测（2026-10-22）
 
 已将批准的PRoot/talloc/shmem从固定摘要源码编进ARM64/x86_64 APK，加入独立loader和共享talloc，修正当前NDK缺失头、Release入口回收及断言移除后的UB。libandroid-shmem固定目录改显式PROOT_TMP_DIR并避免不可写路径无限重试。原生管理页及Agent增加固定离线probe，但executionReady仍false，任意Linux命令、PTY和Root chroot未接。见LINUX_IMPLEMENTATION.md及LINUX_NATIVE_BUILD.md。

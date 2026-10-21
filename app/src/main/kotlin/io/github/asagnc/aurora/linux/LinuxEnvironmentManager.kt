@@ -109,10 +109,29 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
         } }
         revision.update { it + 1 }; count
     } }
-    suspend fun probe() = catalog.withLock {
-        val current = requireNotNull(registry.current()) { "Install a Linux base first" }
-        LinuxProotProbe(app).inspect(directory(current).resolve("rootfs"))
+    suspend fun probe(owner: String? = null): kotlinx.serialization.json.JsonObject {
+        if (owner == null) return catalog.withLock {
+            val current = requireNotNull(registry.current()) { "Install a Linux base first" }
+            LinuxProotProbe(app).inspect(directory(current).resolve("rootfs"))
+        }
+        var token: String? = null
+        var failure: Throwable? = null
+        try {
+            currentCoroutineContext().ensureActive()
+            val current = withContext(NonCancellable) { catalog.withLock {
+                val id = requireNotNull(registry.current()) { "Install a Linux base first" }
+                token = registry.lease(owner, id)
+                id
+            } }
+            currentCoroutineContext().ensureActive()
+            return LinuxProotProbe(app).inspect(directory(current).resolve("rootfs"))
+        } catch (caught: Throwable) { failure = caught; throw caught }
+        finally { token?.let { lease -> withContext(NonCancellable) {
+            try { catalog.withLock { registry.release(lease) } }
+            catch (cleanup: Throwable) { if (failure != null) failure.addSuppressed(cleanup) else throw cleanup }
+        } } }
     }
+    suspend fun probeRoot(owner: String, artifact: String) = LinuxRootProbe(app).inspect(owner, artifact)
     internal fun directory(id: String): Path {
         require(id.matches(Regex("[a-f0-9]{64}")) && !Files.isSymbolicLink(root) && !Files.isSymbolicLink(root.resolve(id)))
         return root.resolve(id)

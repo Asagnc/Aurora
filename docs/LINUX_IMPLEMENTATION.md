@@ -1,6 +1,14 @@
 # Linux 环境实施记录
 
-2026-10-22。用户已批准LINUX_PROPOSAL.md，当前0.1.19完成原生打包并加入固定工作负载探测；完整运行时尚未就绪。
+2026-10-22。用户已批准LINUX_PROPOSAL.md和私有PID生命周期补充。当前0.1.20增加Root命名空间固定探测，完整运行时尚未就绪。
+
+## 0.1.20 Root 生命周期资格入口
+
+- 用户确认Root Linux使用私有PID+挂载空间，能力不足禁用该后端而不改全局策略。已实现随APK打包的namespace helper：固定探测、父死亡信号/竞态管道、PID1监督、脱离进程组且忽略TERM的测试子进程、外层wait屏障。没有Ubuntu挂载、chroot或任意Root Linux业务执行。见LINUX_ROOT_LIFECYCLE.md。
+- Agent linux_environment新增probe_root，要求已有显式Root连接；复用现有Binder/超时/CPU租约/日志产物，不新增Root守护程序。环境安装不是前置条件，结果仍executionReady=false。
+- Agent PRoot固定探测现取得真实SQLite环境代租约；选择/取租约与清理共用catalog锁，运行期间允许目录管理继续，取消/失败后在NonCancellable收尾释放。UI无会话探测仍持catalog锁。进程死亡遗留租约不盲清；完整命令/PTY尚未接租约。
+- CI新增4项真实Linux Root命名空间专项（正常退出/宿主空间、父TERM+KILL、PID1强杀、普通UID/参数拒绝），核对外部proc中脱离子进程消失。必须区分Linux主机与Android实测。
+- 新增普通拒绝1、Root探测/超时1、显式镜像下载/PRoot执行1项Android用例；后者通过独立注解和auroraLinuxImageTest=true选择，默认普通测试不联网安装镜像。普通门槛67；新增设备用例未执行前不记通过。
 
 ## 0.1.19 PRoot 原生构建与离线探测
 

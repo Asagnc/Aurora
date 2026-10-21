@@ -26,6 +26,8 @@ jobs:
         run: |
           python3 scripts/verify-terminal-sources.py
           python3 scripts/verify-native-pty.py
+      - name: Verify Root namespace teardown on Linux host
+        run: sudo -n python3 scripts/verify-linux-namespaces.py
       - name: Install matching stable Android SDK
         run: bash scripts/setup-android-sdk.sh
       - name: Build Android application and run lint

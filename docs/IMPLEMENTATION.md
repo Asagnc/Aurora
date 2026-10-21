@@ -1,3 +1,7 @@
+# 0.1.20 Root 命名空间资格（2026-10-22）
+
+已确认PID命名空间生命周期设计；新增固定原生Root探测、Agent probe_root和既有日志产物，PRoot探测接环境版本租约。没有任意Linux业务命令/chroot。新增Linux Root主机4项，Android普通/Root/显式镜像专项各1，设备未运行前不写通过。详见LINUX_ROOT_LIFECYCLE.md与LINUX_IMPLEMENTATION.md；构建和CI结果以对应证据为准。
+
 # 0.1.19 PRoot 原生构建（2026-10-22）
 
 批准的三组件固定源码摘要，NDK30/API36双ABI构建，PRoot/loader/talloc随APK打包。原生页与Agent固定离线probe入口已接；执行就绪仍false。双ABI Debug/Release ELF、依赖及16KiB校验与独立ARM64适配器构建通过；完整Android构建/R8/testAPK/lint通过。新增Android冒烟仅编译，主机编译不能替代Android实际执行。见LINUX_IMPLEMENTATION.md、LINUX_NATIVE_BUILD.md及evidence/0.1.19。
