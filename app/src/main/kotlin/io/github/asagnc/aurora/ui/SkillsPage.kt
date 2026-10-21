@@ -27,6 +27,9 @@ import kotlinx.coroutines.launch
     var entries by remember { mutableStateOf(emptyList<SkillEntry>()) }
     var query by remember { mutableStateOf("") }
     var url by remember { mutableStateOf("") }
+    var advanced by remember { mutableStateOf(false) }
+    var ref by remember { mutableStateOf("") }
+    var selection by remember { mutableStateOf("") }
     var busy by remember { mutableStateOf(false) }
     var notice by remember { mutableStateOf<String?>(null) }
     var selected by remember { mutableStateOf<SkillEntry?>(null) }
@@ -52,8 +55,14 @@ import kotlinx.coroutines.launch
                     Text("按需读取，任务固定版本。共享资源不随会话删除；工作流需要的命令与运行环境必须实际可用。", color = AuroraMuted)
                     OutlinedTextField(query, { query = it }, label = { Text("搜索已安装") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
                     OutlinedTextField(url, { url = it }, label = { Text("GitHub 仓库或 HTTPS ZIP") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                    TextButton({ advanced = !advanced }) { Text(if (advanced) "收起来源选项" else "指定子目录或分支") }
+                    if (advanced) {
+                        OutlinedTextField(selection, { selection = it }, label = { Text("子目录（可选）") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                        OutlinedTextField(ref, { ref = it }, label = { Text("GitHub 分支或标签（可选）") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                        Text("留空时，仓库链接使用最新正式发布；tree 链接跟随所指引用。含斜杠的分支请在此完整填写。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
+                    }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        FilledTonalButton({ run { manager.remote(SkillSource(url)); url = "" } }, enabled = !busy && url.isNotBlank()) { Text("安装") }
+                        FilledTonalButton({ run { manager.remote(SkillSource(url.trim(), selection.trim('/'), ref = ref.trim())); url = ""; selection = ""; ref = "" } }, enabled = !busy && url.isNotBlank()) { Text("安装") }
                         TextButton({ picker.launch(arrayOf("application/zip", "application/octet-stream")) }, enabled = !busy) { Text("导入 ZIP") }
                         TextButton({ run { notice = "已清理 ${manager.cleanup()} 字节未引用资源" } }, enabled = !busy) { Text("清理旧版") }
                     }

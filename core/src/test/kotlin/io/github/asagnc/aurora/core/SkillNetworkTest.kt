@@ -33,7 +33,9 @@ class SkillNetworkTest {
             request.url.encodedPath.endsWith("/workflows") -> 200 to "{\"default_branch\":\"main\"}"
             else -> 200 to "{\"sha\":\"$sha\"}"
         } }
-        assertEquals(sha, client.resolve(SkillSource("https://github.com/example/workflows")).source.revision)
+        val fallback = client.resolve(SkillSource("https://github.com/example/workflows"))
+        assertEquals(sha, fallback.source.revision)
+        assertTrue(fallback.source.label.contains("分支快照"))
         assertFailsWith<SkillHttpStatus> { network { 403 to "{}" }.resolve(SkillSource("https://github.com/example/workflows")) }
     }
     @Test fun rejectsCredentialsPlaintextAndFragmentsBeforeNetwork() = runBlocking {
@@ -41,5 +43,19 @@ class SkillNetworkTest {
         listOf("http://example.com/skill.zip", "https://user:secret@example.com/skill.zip", "https://example.com/skill.zip#fragment").forEach {
             assertFailsWith<IllegalArgumentException> { client.resolve(SkillSource(it)) }
         }
+    }
+    @Test fun explicitBranchUsesOneCommitRequestAndSurvivesReResolution() = runBlocking {
+        val requests = mutableListOf<String>()
+        val sha = "c".repeat(40)
+        val client = network { request ->
+            requests += request.url.encodedPath
+            assertEquals("feature/new", request.url.pathSegments.last())
+            200 to "{\"sha\":\"$sha\"}"
+        }
+        val source = SkillSource("https://github.com/example/skills/tree/feature/new/reader", ref = "feature/new")
+        val resolved = client.resolve(source)
+        assertEquals(1, requests.size); assertTrue(requests.single().endsWith("feature%2Fnew"))
+        assertEquals("reader", resolved.source.selection); assertEquals("feature/new", resolved.source.ref)
+        assertEquals(resolved.source, client.resolve(resolved.source).source)
     }
 }

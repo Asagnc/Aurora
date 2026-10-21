@@ -12,6 +12,11 @@ internal suspend fun SkillManager.list(): List<SkillEntry> = registry.entries()
 internal suspend fun SkillManager.snapshot(owner: String): List<SkillEntry> = catalog.withLock {
     registry.entries().filter { it.enabled }.also { registry.pin(owner, it) }
 }
+internal suspend fun SkillManager.files(entry: SkillEntry, query: String = "", offset: Int = 0): JsonObject = catalog.withLock {
+    runInterruptible(Dispatchers.IO) {
+        JsonObject(skillFilePage(store.manifest(entry.hash), query, offset) + mapOf("skill" to entry.summary()))
+    }
+}
 internal suspend fun SkillManager.read(entry: SkillEntry, relative: String, offset: Long = 0): JsonObject = catalog.withLock {
     runInterruptible(Dispatchers.IO) {
         val bytes = store.read(entry.hash, relative, offset)

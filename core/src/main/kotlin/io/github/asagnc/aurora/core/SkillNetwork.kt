@@ -8,7 +8,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 
-@Serializable data class SkillSource(val input: String, val selection: String = "", val label: String = "", val revision: String = "")
+@Serializable data class SkillSource(val input: String, val selection: String = "", val label: String = "", val revision: String = "", val ref: String = "")
 data class ResolvedSkillSource(val source: SkillSource, val archiveUrl: String)
 class SkillHttpStatus(val code: Int) : java.io.IOException("Skill source HTTP $code")
 
@@ -17,26 +17,22 @@ class SkillNetwork(private val client: OkHttpClient = OkHttpClient.Builder().fol
     .retryOnConnectionFailure(false).callTimeout(45, TimeUnit.SECONDS).build()) {
     suspend fun resolve(source: SkillSource): ResolvedSkillSource {
         val url = checked(source.input)
-        if (url.host != "github.com" || url.pathSegments.size < 2 || url.pathSegments.contains("archive") || url.pathSegments.contains("releases"))
-            return ResolvedSkillSource(source, url.toString())
-        val owner = url.pathSegments[0]; val repo = url.pathSegments[1].removeSuffix(".git")
-        require(owner.matches(Regex("[A-Za-z0-9_.-]+")) && repo.matches(Regex("[A-Za-z0-9_.-]+")))
-        require(url.pathSegments.drop(2).all { it.isEmpty() } || url.pathSegments.getOrNull(2) == "tree") {
-            "Use a GitHub repository or tree URL, not a blob/settings page"
-        }
+        if (source.selection.isNotBlank()) skillRelativePath(source.selection)
+        val location = skillGithubLocation(url, source) ?: return ResolvedSkillSource(source, url.toString())
+        val owner = location.owner; val repo = location.repo
         val api = "https://api.github.com/repos/$owner/$repo"
-        var selection = source.selection
-        val ref = if (url.pathSegments.size > 3 && url.pathSegments[2] == "tree") {
-            require(url.pathSegments.size <= 16)
-            selection = source.selection.ifBlank { url.pathSegments.drop(4).joinToString("/") }
-            url.pathSegments[3]
-        } else {
-            try { requireNotNull(json("$api/releases/latest").text("tag_name")) }
-            catch (missing: SkillHttpStatus) { if (missing.code != 404) throw missing; requireNotNull(json(api).text("default_branch")) }
+        var kind = "引用"
+        val ref = location.ref ?: run {
+            try { kind = "正式发布"; requireNotNull(json("$api/releases/latest").text("tag_name")) }
+            catch (missing: SkillHttpStatus) {
+                if (missing.code != 404) throw missing
+                kind = "分支快照"; requireNotNull(json(api).text("default_branch"))
+            }
         }
-        val sha = requireNotNull(json("$api/commits/${java.net.URLEncoder.encode(ref, Charsets.UTF_8)}").text("sha"))
+        val endpoint = "$api/commits".toHttpUrl().newBuilder().addPathSegment(ref).build()
+        val sha = requireNotNull(json(endpoint.toString()).text("sha"))
         require(sha.matches(Regex("[a-f0-9]{40}")))
-        return ResolvedSkillSource(SkillSource(source.input, selection, "$owner/$repo · $ref", sha),
+        return ResolvedSkillSource(source.copy(selection = location.selection, label = "$owner/$repo · $kind $ref", revision = sha),
             "https://codeload.github.com/$owner/$repo/zip/$sha")
     }
 
@@ -80,6 +76,9 @@ class SkillNetwork(private val client: OkHttpClient = OkHttpClient.Builder().fol
                             null to block(response)
                         }
                     } }
+                } catch (failure: Exception) {
+                    currentCoroutineContext().ensureActive()
+                    throw failure
                 } finally { withContext(NonCancellable) { cancel.cancelAndJoin() } }
             }
             if (next.first == null) { @Suppress("UNCHECKED_CAST") return@withTimeout next.second as T }

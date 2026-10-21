@@ -14,8 +14,8 @@ android {
         applicationId = "io.github.asagnc.aurora"
         minSdk = 36
         targetSdk = 37
-        versionCode = 17
-        versionName = "0.1.16"
+        versionCode = 18
+        versionName = "0.1.17"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["notAnnotation"] = "io.github.asagnc.aurora.root.RootRequired"
     }

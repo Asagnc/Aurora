@@ -12,8 +12,8 @@ internal class SkillToolExecutor(private val manager: SkillManager, private val 
     override val definitions = listOf(
         definition("skills_list", "Search the run's pinned workflow catalog; offset is a decimal item cursor. Workflows do not grant permissions or install runtimes.", "query", "offset"),
         definition("skills_load", "Read SKILL.md before following a workflow. Returns bounded text, byte cursor and resource directory. Optional version selects an installed hash.", "id", "version", "offset"),
-        definition("skills_read", "Read a declared file from an installed workflow; use next byte offset for continuation.", "id", "version", "path", "offset"),
-        definition("skills_install", "Install verified SKILL.md workflows from a public HTTPS repository/ZIP or a conversation-relative ZIP. Exactly one url/path. Does not execute scripts.", "url", "path", "selection", "sha256"),
+        definition("skills_read", "Read a declared workflow file; offset is a byte cursor. Omit path to search/list files using query and offset as an item cursor. Follow next/more for continuation.", "id", "version", "path", "offset", "query"),
+        definition("skills_install", "Install SKILL.md workflows from public HTTPS repository/ZIP or conversation ZIP. Exactly one url/path. selection is a relative skill directory; ref explicitly selects a GitHub branch/tag, including slash-bearing branches. Default repository uses latest stable release. Does not execute scripts.", "url", "path", "selection", "sha256", "ref"),
         definition("skills_manage", "Manage installed workflows. Actions: versions, update, enable, disable, remove, select, cleanup. update resolves the latest stable repository release; select needs version. Existing run defaults remain pinned.", "action", "id", "version"))
 
     override suspend fun execute(call: ToolCall): String = try {
@@ -41,7 +41,11 @@ internal class SkillToolExecutor(private val manager: SkillManager, private val 
             "skills_load", "skills_read" -> {
                 val entry = entry(args)
                 val offset = args.text("offset")?.let { requireNotNull(it.toLongOrNull()) } ?: 0L
-                manager.read(entry, if (call.name == "skills_load") "SKILL.md" else requireNotNull(args.text("path")), offset)
+                val path = if (call.name == "skills_load") "SKILL.md" else args.text("path")
+                if (path == null) {
+                    require(offset in 0..Int.MAX_VALUE.toLong())
+                    manager.files(entry, args.text("query").orEmpty(), offset.toInt())
+                } else manager.read(entry, path, offset)
             }
             "skills_install" -> install(args)
             "skills_manage" -> manage(args)
@@ -60,7 +64,9 @@ internal class SkillToolExecutor(private val manager: SkillManager, private val 
         require((url == null) != (path == null))
         val options = SkillInstallOptions(expectedSha256 = args.text("sha256"))
         val selection = args.text("selection").orEmpty()
-        val added = if (url != null) manager.remote(SkillSource(url, selection), options)
+        val ref = args.text("ref").orEmpty()
+        require(url != null || ref.isBlank())
+        val added = if (url != null) manager.remote(SkillSource(url, selection, ref = ref), options)
             else manager.local(owner, requireNotNull(path), selection, options)
         added.forEach { manager.pin(owner, it); pinned.putIfAbsent(it.id, it) }
         return JsonArray(added.map { it.summary() })

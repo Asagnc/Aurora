@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="io.github.asagnc.aurora.core.SkillNetworkTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-21T13:44:28.513Z" hostname="SOBFY" time="0.04">
+  <properties/>
+  <testcase name="choosesLatestStableReleaseAndPinsItsCommit()" classname="io.github.asagnc.aurora.core.SkillNetworkTest" time="0.013"/>
+  <testcase name="explicitBranchUsesOneCommitRequestAndSurvivesReResolution()" classname="io.github.asagnc.aurora.core.SkillNetworkTest" time="0.016"/>
+  <testcase name="rejectsCredentialsPlaintextAndFragmentsBeforeNetwork()" classname="io.github.asagnc.aurora.core.SkillNetworkTest" time="0.009"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

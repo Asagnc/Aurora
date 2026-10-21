@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.asagnc.aurora.core.*
 import io.github.asagnc.aurora.data.SkillEntry
 import io.github.asagnc.aurora.skills.*
@@ -15,10 +16,13 @@ import kotlinx.coroutines.launch
 
 @Composable internal fun SkillDetailPage(entry: SkillEntry, manager: SkillManager, dismiss: () -> Unit) {
     val scope = rememberCoroutineScope()
-    var body by remember(entry.hash) { mutableStateOf("读取工作流…") }
+    val revision by manager.version.collectAsStateWithLifecycle()
+    var current by remember(entry.id) { mutableStateOf(entry) }
+    var body by remember(current.hash) { mutableStateOf("读取工作流…") }
     var versions by remember { mutableStateOf(emptyList<SkillEntry>()) }
     var notice by remember { mutableStateOf<String?>(null) }
     var busy by remember { mutableStateOf(false) }
+    var files by remember { mutableStateOf(false) }
     fun run(action: suspend () -> Unit) {
         if (busy) return
         scope.launch {
@@ -29,30 +33,39 @@ import kotlinx.coroutines.launch
             finally { busy = false }
         }
     }
-    LaunchedEffect(entry.hash) {
+    LaunchedEffect(revision, entry.id) {
         try {
-            val result = manager.read(entry, "SKILL.md")
+            val installed = manager.list().firstOrNull { it.id == entry.id }
+            if (installed == null) dismiss() else {
+                current = installed
+                versions = manager.registry.versions(installed.id)
+            }
+        } catch (cancel: CancellationException) { throw cancel }
+        catch (_: Exception) { notice = "安装状态读取失败，请返回列表重试。" }
+    }
+    LaunchedEffect(current.hash) {
+        try {
+            val result = manager.read(current, "SKILL.md")
             body = result.text("text") ?: "无法按 UTF-8 显示"
             if (result["complete"].toString() != "true") body += "\n\n界面仅预览前 64 KiB；Agent 可继续读取。"
-            versions = manager.registry.versions(entry.id)
         } catch (cancel: CancellationException) { throw cancel }
         catch (_: Exception) { body = "资源读取失败或校验不通过。" }
     }
-    FullPage(entry.metadata.name, dismiss) {
+    FullPage(current.metadata.name, dismiss) {
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Text(entry.metadata.description, style = MaterialTheme.typography.titleMedium)
-            Text("版本 ${entry.hash}\n${entry.bytes} 字节\n来源：${entry.source.label.ifBlank { entry.source.input.substringBefore('?') }}", color = AuroraMuted)
-            entry.metadata.compatibility.takeIf { it.isNotBlank() }?.let { Text("环境要求：$it") }
-            entry.metadata.license.takeIf { it.isNotBlank() }?.let { Text("许可：$it") }
-            entry.metadata.warnings.forEach { Text(it, color = MaterialTheme.colorScheme.error) }
+            Text(current.metadata.description, style = MaterialTheme.typography.titleMedium)
+            Text("${if (current.enabled) "已启用" else "已停用"} · ${current.bytes} 字节\n版本 ${current.hash}\n来源：${current.source.label.ifBlank { current.source.input.substringBefore('?') }}", color = AuroraMuted)
+            current.metadata.compatibility.takeIf { it.isNotBlank() }?.let { Text("环境要求：$it") }
+            current.metadata.license.takeIf { it.isNotBlank() }?.let { Text("许可：$it") }
+            current.metadata.warnings.forEach { Text(it, color = MaterialTheme.colorScheme.error) }
+            TextButton({ files = true }) { Text("查看工作流文件") }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilledTonalButton({ run {
-                    manager.remote(entry.source, SkillInstallOptions(replaceId = entry.id))
+                    manager.remote(current.source, SkillInstallOptions(replaceId = current.id))
                     notice = "已检查并安装来源的最新版本；新任务生效。"
-                    versions = manager.registry.versions(entry.id)
-                } }, enabled = !busy && entry.source.input.startsWith("https://")) { Text("检查更新") }
+                } }, enabled = !busy && current.source.input.startsWith("https://")) { Text("检查更新") }
                 TextButton({ run {
-                    val references = manager.remove(entry.id)
+                    val references = manager.remove(current.id)
                     if (references.isEmpty()) dismiss() else notice = "已停用；${references.size} 个会话仍引用旧版，资源暂时保留。"
                 } }, enabled = !busy) { Text("移除") }
             }
@@ -61,11 +74,12 @@ import kotlinx.coroutines.launch
             if (versions.size > 1) {
                 Text("已保留的版本", style = MaterialTheme.typography.titleSmall)
                 versions.forEach { previous -> TextButton({ run {
-                    manager.rollback(entry.id, previous.hash); notice = "已选择 ${previous.hash.take(10)}；新任务生效。"
-                } }, enabled = !busy) { Text(previous.hash.take(16)) } }
+                    manager.rollback(current.id, previous.hash); notice = "已选择 ${previous.hash.take(10)}；新任务生效。"
+                } }, enabled = !busy && previous.hash != current.hash) { Text(previous.hash.take(16) + if (previous.hash == current.hash) " · 当前" else "") } }
             }
             HorizontalDivider()
             Text(body, style = MaterialTheme.typography.bodyMedium)
         }
     }
+    if (files) SkillFilesPage(current, manager) { files = false }
 }

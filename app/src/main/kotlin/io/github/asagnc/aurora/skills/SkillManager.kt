@@ -87,7 +87,7 @@ internal class SkillManager(private val app: AuroraApplication, internal val reg
                 val prepared = runInterruptible { prepare(archive, stage, source.selection) }
                 require(options.replaceId == null || prepared.size == 1) { "Updating a local skill requires one selected skill" }
                 val entries = prepared.map { skill ->
-                    SkillEntry(options.replaceId ?: skillDigest("${source.input.substringBefore('?')}\n${skill.relative}".toByteArray()),
+                    SkillEntry(options.replaceId ?: skillSourceId(source, skill.relative),
                         skill.manifest.digest, true, source.copy(selection = skill.relative), skill.manifest.metadata, skill.manifest.bytes)
                 }
                 currentCoroutineContext().ensureActive()

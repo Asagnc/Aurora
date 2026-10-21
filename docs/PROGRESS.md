@@ -2,6 +2,16 @@
 
 更新时间：2026-10-21。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 0.1.17 Skills 来源与文件发现（2026-10-21）
+
+0.1.16 最终实现95f435f完整 [CI39608255424](https://github.com/Asagnc/Aurora/actions/runs/39608255424) 已通过，核心101、Linux主机PTY8/源码12与Android构建/lint。
+
+本版增加显式GitHub ref及子目录选择：含斜杠分支可由UI或Agent传完整ref，一次提交解析固定SHA，不逐个猜测分支；兼容旧来源JSON和旧ID，显式ref有独立命名空间。修复名为archive/releases的仓库或子目录被误判下载；来源标签区分正式发布/分支快照/指定引用。普通仓库默认仍跟进最新正式release。无显式ref的歧义tree URL不自动消歧，需填写来源选项。
+
+skills_read不填path时支持资源搜索/分页，能遍历超过128项文件；UI增加工作流文件页与UTF-8分段预览。更新/回滚后详情跟随实际当前版本，当前项、启停状态、正文同步刷新。固定运行中的默认版本策略保持原契约。
+
+新增14项核心测试（GitHub解析5、提交解析1、文件分页3、下载重定向/预算/取消5），合计115；完整本地Android构建/R8/测试APK/lint证据见 [evidence/0.1.17](evidence/0.1.17/README.md)。没有新依赖或数据库迁移。UI、真实SAF/外网下载及新增Android用例仍待最终真机验收；没有付费模型实测或最优性能结论。私有来源/签名、Linux/编译/逆向/Root抓包执行工具包仍未实现。
+
 ## 0.1.16 Skills 故障与取消边界（2026-10-21）
 
 上一版 112e496 完整 [CI39606872871](https://github.com/Asagnc/Aurora/actions/runs/39606872871) 已通过，包含核心87、Linux主机PTY8/源码12校验和Android构建/lint。
