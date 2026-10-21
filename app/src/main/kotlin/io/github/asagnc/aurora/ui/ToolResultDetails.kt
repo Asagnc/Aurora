@@ -12,11 +12,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import io.github.asagnc.aurora.core.CommandOutputSummary
 import io.github.asagnc.aurora.core.summarizeToolResult
+import io.github.asagnc.aurora.core.WireJson
+import io.github.asagnc.aurora.core.ImageArtifact
+import kotlinx.serialization.json.*
 import io.github.asagnc.aurora.data.ToolRun
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-@Composable internal fun ToolResultDetails(event: ToolRun, openArtifact: (String) -> Unit) {
+@Composable internal fun ToolResultDetails(event: ToolRun, openArtifact: (String) -> Unit, owner: String? = null) {
     val projection by produceState<Pair<io.github.asagnc.aurora.core.ToolResultSummary?, String>?>(null, event.result) {
         value = withContext(Dispatchers.Default) { summarizeToolResult(event.result) to toolResultPreview(event.result) }
     }
@@ -24,8 +27,18 @@ import kotlinx.coroutines.withContext
     val preview = projection?.second ?: "正在读取结果预览…"
     var raw by remember(event.id) { mutableStateOf(false) }
     val command = summary?.stdout != null || summary?.stderr != null
+    val image by produceState<ImageArtifact?>(null, event.result) {
+        value = withContext(Dispatchers.Default) {
+            if (event.tool != "images_publish" || (event.result?.length ?: 0) > 8000) null else runCatching {
+                WireJson.parseToJsonElement(requireNotNull(event.result)).jsonObject["image"]?.let {
+                    WireJson.decodeFromJsonElement(ImageArtifact.serializer(), it)
+                }
+            }.getOrNull()
+        }
+    }
     Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(event.tool, color = AuroraMuted, style = MaterialTheme.typography.labelMedium)
+        image?.let { ArtifactImage(owner, it.link, it.description) }
         if (command) {
             summary.exitCode?.let { Text("退出码 $it", style = MaterialTheme.typography.labelMedium) }
             summary.error?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }

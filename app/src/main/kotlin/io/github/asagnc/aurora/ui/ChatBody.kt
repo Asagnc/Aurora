@@ -29,7 +29,7 @@ import io.github.asagnc.aurora.runtime.ChatState
 }
 
 @Composable internal fun ChatBody(state: ChatState, modifier: Modifier = Modifier,
-    providers: () -> Unit = {}, older: () -> Unit = {}, openArtifact: (String) -> Unit = {}) {
+    providers: () -> Unit = {}, older: () -> Unit = {}, openArtifact: (String) -> Unit = {}, openLink: (String) -> Unit = {}) {
     if (state.messages.isEmpty() && state.streaming.isEmpty()) {
         Column(modifier.fillMaxSize().padding(horizontal = 26.dp), verticalArrangement = Arrangement.Center) {
             Icon(androidx.compose.ui.res.painterResource(R.drawable.ic_sparkle), null,
@@ -47,16 +47,17 @@ import io.github.asagnc.aurora.runtime.ChatState
     } else ChatTimeline(state.current?.id,
         listOf(state.messages.lastOrNull()?.id, state.streaming, state.toolRuns, state.stage), modifier) {
         if (state.olderBefore != null) item(key = "older") { TextButton(older) { Text("更早的消息") } }
-        items(state.messages, key = { it.id }) { message -> MessageBubble(message) }
-        if (state.toolRuns.isNotEmpty()) item(key = "tools") { ToolActivity(state.toolRuns, openArtifact) }
+        items(state.messages, key = { it.id }) { message -> MessageBubble(message, owner = state.current?.id, openLink = openLink) }
+        if (state.toolRuns.isNotEmpty()) item(key = "tools") { ToolActivity(state.toolRuns, openArtifact, state.current?.id) }
         if (state.streaming.isNotEmpty()) item(key = "stream") {
-            MessageBubble(ChatMessage(id = "stream", role = "assistant", text = state.streaming), streaming = true)
+            MessageBubble(ChatMessage(id = "stream", role = "assistant", text = state.streaming), streaming = true, owner = state.current?.id, openLink = openLink)
         }
         if (state.stage.isNotEmpty() || state.taskId != null) item(key = "task") { AgentTaskStatus(state) }
     }
 }
 
-@Composable private fun MessageBubble(message: ChatMessage, streaming: Boolean = false) {
+@Composable private fun MessageBubble(message: ChatMessage, streaming: Boolean = false, owner: String? = null,
+    openLink: (String) -> Unit = {}) {
     val user = message.role == "user"
     Row(Modifier.fillMaxWidth(), horizontalArrangement = if (user) Arrangement.End else Arrangement.Start) {
         Surface(Modifier.widthIn(max = if (user) 310.dp else 600.dp),
@@ -72,10 +73,9 @@ import io.github.asagnc.aurora.runtime.ChatState
                 if (!streaming) CopyTextButton(message.text, "复制回复")
             }
             if (user) Row(Modifier.align(Alignment.End)) { CopyTextButton(message.text, "复制消息") }
-            SelectionContainer {
-                Text(message.text + if (message.complete) "" else "\n（未完成）",
-                    Modifier.padding(if (user) 14.dp else 0.dp), style = MaterialTheme.typography.bodyLarge)
-            }
+            if (user) SelectionContainer { Text(message.text, Modifier.padding(14.dp), style = MaterialTheme.typography.bodyLarge) }
+            else RichReply(message.text, owner, streaming, openLink)
+            if (!message.complete) Text("（未完成）", color = AuroraMuted, style = MaterialTheme.typography.labelMedium)
             }
         }
     }

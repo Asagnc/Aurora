@@ -11,7 +11,7 @@ import io.github.asagnc.aurora.data.ToolRun
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-@Composable internal fun ToolActivity(events: List<ToolRun>, openArtifact: (String) -> Unit = {}) {
+@Composable internal fun ToolActivity(events: List<ToolRun>, openArtifact: (String) -> Unit = {}, owner: String? = null) {
     var expanded by remember { mutableStateOf(false) }
     var detail by remember { mutableStateOf<String?>(null) }
     val presentations by produceState(emptyList<ToolPresentation>(), events) {
@@ -46,7 +46,7 @@ import kotlinx.coroutines.withContext
             }
             if (detail == event.id) {
                 Surface(shape = RoundedCornerShape(10.dp), color = MaterialTheme.colorScheme.surfaceContainer) {
-                    ToolResultDetails(event, openArtifact)
+                    ToolResultDetails(event, openArtifact, owner)
                 }
             }
         } }

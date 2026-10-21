@@ -166,8 +166,12 @@ internal class ChatController(application: Application,
     fun delete(ids: List<String>) = action {
         importing?.cancelAndJoin()
         if (activeOwner in ids) { preparing?.cancelAndJoin(); app.agentTasks.stopAndJoin() }
+        if (state.value.current?.id in ids) mutable.update { it.copy(current = null, messages = emptyList(), streaming = "", toolRuns = emptyList(), taskId = null) }
         ids.forEach { id ->
-            app.spaces.delete(id, app.tasks::quiesce, app.browser::deleteOwner)
+            app.spaces.delete(id, app.tasks::quiesce) { owner ->
+                app.browser.deleteOwner(owner)
+                app.imageLoader.memoryCache?.let { cache -> cache.keys.filter { it.key.startsWith("$owner:") }.forEach(cache::remove) }
+            }
         }
         refresh()
         if (state.value.current?.id in ids) mutable.update { it.copy(current = null, messages = emptyList(), streaming = "") }

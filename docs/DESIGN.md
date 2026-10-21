@@ -17,6 +17,7 @@ Research date: 2026-10-12.
 - Latest stable versions are pinned reproducibly and tested as a combination. Android 16 remains the minimum even when compiling and targeting a newer stable SDK.
 - Persistence uses Android-native SQLite with WAL and append-only message/native-history records, confirmed on 2026-10-12.
 - 2026-10-21 confirmed: bounded partial CPU wake leases belong to active native/Root commands, never the whole Agent/model wait. See COMMAND_POWER.md; no policy bypass or persistent daemon.
+- 2026-10-21 confirmed: native Compose Markdown, Coil3 shared decoding, and conversation-owned image artifacts. Agent image publication is independent of provider vision/image-generation APIs. See RICH_CONTENT_PLAN.md.
 
 Approved concept assets: [launcher artwork](assets/approved-icon.png), [chat and drawer preview](assets/approved-chat-ui.png). These are visual references, not implemented screenshots.
 

@@ -9,6 +9,10 @@
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
         <meta-data android:name="aurora.material_symbols_license" android:resource="@raw/material_symbols_license" />
         <meta-data android:name="aurora.lobe_icons_license" android:resource="@raw/lobe_icons_license" />
+        <provider android:name="androidx.core.content.FileProvider" android:authorities="${applicationId}.images"
+            android:exported="false" android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/image_paths" />
+        </provider>
         <service android:name=".runtime.AgentTaskService" android:exported="false" android:foregroundServiceType="specialUse">
             <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="User-initiated interactive Agent tasks with observable execution and cancellation" />

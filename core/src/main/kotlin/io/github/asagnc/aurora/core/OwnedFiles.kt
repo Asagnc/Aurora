@@ -52,6 +52,25 @@ class OwnedFiles(private val root: Path, private val writable: Boolean = true) {
         coroutineScope { requests.map { request -> async { reads.withPermit { read(request) } } }.awaitAll() }
     }
 
+    suspend fun readBinary(relative: String, limit: Int): ByteArray = withContext(Dispatchers.IO) {
+        require(limit in 1..32 * 1024 * 1024)
+        reads.withPermit {
+            val path = resolve(relative)
+            require(Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS))
+            FileChannel.open(path, StandardOpenOption.READ, LinkOption.NOFOLLOW_LINKS).use { channel ->
+                val size = channel.size()
+                require(size in 1..limit.toLong()) { "Binary file exceeds read budget" }
+                val buffer = ByteBuffer.allocate(size.toInt())
+                while (buffer.hasRemaining()) {
+                    currentCoroutineContext().ensureActive()
+                    check(channel.read(buffer) >= 0) { "File changed during read" }
+                }
+                check(channel.size() == size) { "File changed during read" }
+                buffer.array()
+            }
+        }
+    }
+
     suspend fun list(relative: String = "", limit: Int = 200): List<Pair<String, Boolean>> = withContext(Dispatchers.IO) {
         require(limit in 1..200)
         val directory = if (relative.isEmpty()) root else resolve(relative)

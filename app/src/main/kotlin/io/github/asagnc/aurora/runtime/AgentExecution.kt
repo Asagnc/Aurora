@@ -14,7 +14,7 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
         val files = FileToolExecutor(linkedMapOf("conversation" to app.spaces.conversation(id),
             "resources" to app.spaces.sharedResources(), "workspace" to app.spaces.sharedWorkspace()))
         val directory = app.spaces.commandRoot(id)
-        val tools = ToolRouter(listOfNotNull(files, BrowserToolExecutor(app.browser, id),
+        val tools = ToolRouter(listOfNotNull(files, BrowserToolExecutor(app.browser, id), ImageToolExecutor(app.images, id),
             CommandToolExecutor(app.commands, directory),
             app.root.commandClient?.let { CommandToolExecutor(app.commands, directory, it) }))
         val fingerprint = requestFingerprint(SYSTEM, tools.definitions)

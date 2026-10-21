@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
             if (tools) {
                 CapabilitySection("文件工具", "已接入 Agent", "批量读取、版本校验编辑与文件列举；会话空间、共享只读资源与保留工作区分开管理。")
                 CapabilitySection("浏览器工具", "已接入 Agent", "开页、读页、元素操作、同步脚本、关页及批量操作。页面与用户浏览器共用；网站访问仍受实际网络和页面限制。")
+                CapabilitySection("图片产物", "已接入 Agent", "发布会话中的图片或下载 HTTPS 图片；回复中可展示，支持放大、保存与分享。图片随会话删除；视觉模型输入和模型生图 API 尚未接入。")
             }
             CapabilitySection("Root 执行", "连接后提供独立命令工具", "手动连接后，Agent 可调用 Root 原生命令。支持取消、断开清理与服务退出检测；普通命令保持原有权限。实际访问能力取决于系统 SELinux 和 Root 授权状态。")
             CapabilitySection("后台 Agent 任务", "已接入前台服务", "任务运行时可离开页面或切换会话，通过通知返回或停止。系统终止应用后会标记中断，不自动重放工具。")

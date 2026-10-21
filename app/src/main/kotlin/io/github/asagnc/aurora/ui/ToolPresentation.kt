@@ -12,6 +12,7 @@ internal fun presentTool(event: ToolRun): ToolPresentation {
     val failed = summary?.error != null || (summary?.exitCode ?: 0L) != 0L
     val uncertain = event.state == "uncertain" || summary?.uncertain == true
     val title = when (event.tool) {
+        "images_publish" -> "发布图片"
         "command_execute" -> "执行原生命令"
         "command_execute_root" -> "执行 Root 命令"
         "files_list" -> "查看文件列表"

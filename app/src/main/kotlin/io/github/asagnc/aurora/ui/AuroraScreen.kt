@@ -66,7 +66,9 @@ import kotlinx.coroutines.launch
                 artifactFolder = path.substringBeforeLast('/', "")
                 conversationFilesOnly = true
                 space = "conversation"
-            })
+            }, { address -> state.current?.id?.let { owner ->
+                model.browser.open(owner)?.let { tab -> model.browser.navigate(tab, address); browser = true }
+            } })
         }
     }
     if (menu) ConversationMenuSheet(state.current != null, { draft = ""; model.newConversation() },
