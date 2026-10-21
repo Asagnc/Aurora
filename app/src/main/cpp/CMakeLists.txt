@@ -7,3 +7,4 @@ target_link_options(aurora_runner PRIVATE -Wl,-z,relro,-z,now -Wl,-z,max-page-si
 add_executable(aurora_pty pty.c)
 target_compile_options(aurora_pty PRIVATE -Wall -Wextra -Werror -fstack-protector-strong)
 target_link_options(aurora_pty PRIVATE -Wl,-z,relro,-z,now -Wl,-z,max-page-size=16384)
+include(linux/Proot.cmake)

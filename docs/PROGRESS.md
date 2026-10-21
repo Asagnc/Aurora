@@ -2,6 +2,12 @@
 
 更新时间：2026-10-22。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 0.1.19 PRoot 打包与固定探测（2026-10-22）
+
+已将批准的PRoot/talloc/shmem从固定摘要源码编进ARM64/x86_64 APK，加入独立loader和共享talloc，修正当前NDK缺失头、Release入口回收及断言移除后的UB。libandroid-shmem固定目录改显式PROOT_TMP_DIR并避免不可写路径无限重试。原生管理页及Agent增加固定离线probe，但executionReady仍false，任意Linux命令、PTY和Root chroot未接。见LINUX_IMPLEMENTATION.md及LINUX_NATIVE_BUILD.md。
+
+本地Debug/R8Release/testAPK/lint、双ABI APK ELF/依赖/16KiB检查、独立ARM64源码构建通过；核心仍129，新增Android冒烟1项只编译，普通门槛66。CI增加打包校验和对应源码ZIP交付。未新增设备、Root、实际guest或性能证据。用户同意以后底座闭环完成做小范围真机检查，最后再完整验收，不需每次小改连手机。
+
 ## Linux 执行层准备修正（2026-10-22）
 
 继续已批准架构，补齐rootfs数值UID/GID计划和新安装entries.json原子发布，提取时复核属主/权限/精确TAR类型，保持普通解包不chown。旧安装缺失元数据须在后续执行资格阶段补全，不自动视作可执行。新增3项核心用例合计129；本机127通过/2项POSIX跳过，官方ARM64样本扫描通过，Debug/lint通过。详见LINUX_IMPLEMENTATION.md。PRoot构建、Root挂载/进程监督与命令/PTY租约仍待继续，未新增手机验收或性能结论。

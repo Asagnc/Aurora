@@ -10,12 +10,12 @@ android {
     externalNativeBuild { cmake { path = file("src/main/cpp/CMakeLists.txt"); version = "4.1.2" } }
     defaultConfig {
         ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
-        externalNativeBuild { cmake { targets += listOf("aurora_runner", "aurora_pty") } }
+        externalNativeBuild { cmake { targets += listOf("aurora_runner", "aurora_pty", "aurora_proot") } }
         applicationId = "io.github.asagnc.aurora"
         minSdk = 36
         targetSdk = 37
-        versionCode = 19
-        versionName = "0.1.18"
+        versionCode = 20
+        versionName = "0.1.19"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["notAnnotation"] = "io.github.asagnc.aurora.root.RootRequired"
     }
@@ -90,7 +90,7 @@ abstract class StageNativeRunner : DefaultTask() {
         check(binaries.get().asFile.walkTopDown().any { it.isFile && it.name == "aurora_runner" }) { "Native runner was not built" }
         fileOperations.sync {
             from(binaries) {
-                include("*/aurora_runner", "*/aurora_pty")
+                include("*/aurora_runner", "*/aurora_pty", "*/aurora_proot", "*/aurora_proot_loader")
                 eachFile { path = "${file.parentFile.name}/lib${file.name}.so" }
                 includeEmptyDirs = false
             }

@@ -1,5 +1,7 @@
 # Aurora 功能与接续清单
 
+0.1.19：PRoot/loader/talloc双ABI原生构建与APK分发、固定离线probe入口已实现，完整Linux命令/PTY/Root chroot仍未接；executionReady保持false。新版Android冒烟只编译，普通门槛66。详见LINUX_IMPLEMENTATION.md。
+
 0.1.14：普通/Root交互PTY、六个Agent工具、原生终端查看、跨模型回复生命周期、持久记录及中断恢复已实现；核心72通过，新增10项设备测试仅编译。终端不等于Linux工具链。见[INTERACTIVE_TERMINALS.md](INTERACTIVE_TERMINALS.md)。下表旧版本证据不扩展为新版设备通过。
 
 0.1.13：事件驱动持续日志、持久产物映射、有效有界命令展示投影已实现，核心67通过；新日志5项设备用例仅编译，Root协议2等仍待验收，见[LIVE_COMMAND_LOGS.md](LIVE_COMMAND_LOGS.md)。
@@ -19,7 +21,7 @@
 | 普通原生命令与终端 | command_execute保持轻量；0.1.13事件日志，0.1.14新增普通/Root PTY与六个终端工具、独立查看页 | 新日志/PTY待设备验收；日志轮转、跨强杀保留原进程、独立守护化完整约束未实现 |
 | Root | 独立 command_execute_root；Android16 ARM64 FolkPatch 通过真实UID0、受控产物归属/读取、取消/超时、断开/重连专项 | 外部管理器撤权、Root服务强杀恢复、挂载与任意Root文件清理、直接系统API工具仍待验收/实现；普通命令不自动升级权限 |
 | Skills | 0.1.17：SKILL.md、ZIP/公共HTTPS安装、哈希/恢复/版本引用、五个Agent工具、显式Git引用、分页资源发现/原生文件浏览、更新管理 | 新版设备验收、私有来源/签名、真实提供器/强杀安装矩阵；工作流所需Linux/执行工具包另行实现 |
-| Linux | 0.1.18：官方Ubuntu基础包校验/安装、tar/链接/ELF验证、共享代/SQLite恢复、原生页和Agent环境管理 | PRoot打包/资格、Root挂载/执行、命令/PTY租约和包集合更新；安装基础包不等于可执行 |
+| Linux | 0.1.19：官方Ubuntu基础包校验/安装、共享代/恢复、PRoot双ABI打包、原生页和Agent固定probe | Android实际资格、Root挂载/执行、任意命令/PTY租约和包集合更新；打包与探测入口不等于完整可用 |
 | 逆向 | 候选分工已记录，已有文件/浏览器/普通命令基础 | JADX、Apktool、radare2、Frida 插件与 Android ARM64 验收 |
 | 网络 | 模型传输与浏览器代理 | Root 原生抓包、过滤/轮转/丢包统计、HTTP/TCP/UDP/原始发包和重放；不做 VPN 抓包 |
 | 手机编译 | 普通命令入口已接入 | JDK/Android SDK/NDK 工具包安装、APK/Compose/JNI 构建、签名与安装验收 |

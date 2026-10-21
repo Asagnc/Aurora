@@ -109,6 +109,10 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
         } }
         revision.update { it + 1 }; count
     } }
+    suspend fun probe() = catalog.withLock {
+        val current = requireNotNull(registry.current()) { "Install a Linux base first" }
+        LinuxProotProbe(app).inspect(directory(current).resolve("rootfs"))
+    }
     internal fun directory(id: String): Path {
         require(id.matches(Regex("[a-f0-9]{64}")) && !Files.isSymbolicLink(root) && !Files.isSymbolicLink(root.resolve(id)))
         return root.resolve(id)

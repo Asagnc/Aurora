@@ -6,15 +6,16 @@ import kotlinx.serialization.json.*
 
 internal class LinuxEnvironmentTool(private val manager: LinuxEnvironmentManager) : ToolExecutor {
     override val definitions = listOf(ToolDefinition("linux_environment",
-        "Inspect, install or clean shared Linux base images. action=status/install/cleanup. Installation downloads a verified Ubuntu base for this device ABI. Does not execute Linux commands, install compiler/tool packs, or prove PRoot/chroot availability.",
+        "Inspect, install, probe or clean shared Linux base images. action=status/install/probe/cleanup. Probe runs a fixed offline PRoot qualification workload, not arbitrary commands. Does not enable business execution or install compiler/tool packs.",
         objectOf("type" to string("object"), "properties" to objectOf("action" to objectOf("type" to string("string"),
-            "enum" to JsonArray(listOf("status", "install", "cleanup").map(::string)))), "required" to JsonArray(listOf(string("action"))),
+            "enum" to JsonArray(listOf("status", "install", "probe", "cleanup").map(::string)))), "required" to JsonArray(listOf(string("action"))),
             "additionalProperties" to JsonPrimitive(false))))
     override suspend fun execute(call: ToolCall): String = try {
         require(call.name == "linux_environment")
         when (call.arguments.text("action")) {
             "install" -> { manager.install(); status() }
             "cleanup" -> objectOf("removedVersions" to JsonPrimitive(manager.cleanup()))
+            "probe" -> manager.probe()
             "status" -> status()
             else -> error("Unknown Linux environment action")
         }.toString()

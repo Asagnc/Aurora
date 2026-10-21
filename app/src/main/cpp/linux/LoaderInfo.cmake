@@ -1,0 +1,11 @@
+execute_process(COMMAND "${READELF}" -s --wide "${LOADER}"
+    OUTPUT_VARIABLE symbols COMMAND_ERROR_IS_FATAL ANY)
+foreach(symbol IN ITEMS _start pokedata_workaround)
+    string(REGEX MATCH "[0-9]+: +([0-9a-fA-F]+)[^\n]* ${symbol}(\n|$)" found "${symbols}")
+    if(NOT found)
+        message(FATAL_ERROR "Missing PRoot loader symbol: ${symbol}")
+    endif()
+    set(${symbol} "0x${CMAKE_MATCH_1}")
+endforeach()
+math(EXPR offset "${pokedata_workaround} - ${_start}")
+file(WRITE "${OUTPUT}" "#include <unistd.h>\nconst ssize_t offset_to_pokedata_workaround = ${offset};\n")

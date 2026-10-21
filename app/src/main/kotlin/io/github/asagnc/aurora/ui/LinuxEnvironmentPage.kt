@@ -66,7 +66,12 @@ import kotlinx.coroutines.*
             }
             HorizontalDivider()
             Text("执行状态", style = MaterialTheme.typography.titleSmall)
-            Text("PRoot / Root chroot 尚未接入执行。安装基础环境后仍需验证后端能力；当前不会显示为可运行。", color = AuroraMuted)
+            Text("PRoot 已随应用打包，可检查基础执行能力。完整命令、终端生命周期与 Root chroot 尚未接入。", color = AuroraMuted)
+            OutlinedButton({ run {
+                val result = manager.probe()
+                notice = if (result["workloadPassed"] == kotlinx.serialization.json.JsonPrimitive(true))
+                    "基础检查通过；完整执行能力仍待验收。" else "基础检查未通过：$result"
+            } }, enabled = !busy && current != null) { Text("检查 PRoot 执行能力") }
         }
     }
 }

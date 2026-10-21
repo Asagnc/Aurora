@@ -1,0 +1,222 @@
+-- The C compiler identification is Clang 21.0.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/Users/Admin/AppData/Local/Android/Sdk/ndk/30.0.16248370/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Performing Test HAVE_PROCESS_VM
+-- Performing Test HAVE_PROCESS_VM - Success
+-- Performing Test HAVE_SECCOMP_FILTER
+-- Performing Test HAVE_SECCOMP_FILTER - Success
+-- The ASM compiler identification is Clang with GNU-like command-line
+-- Found assembler: C:/Users/Admin/AppData/Local/Android/Sdk/ndk/30.0.16248370/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe
+-- Configuring done (0.8s)
+-- Generating done (0.0s)
+-- Build files have been written to: C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-standalone
+[1/76] Building C object CMakeFiles/aurora_proot_loader.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/loader/loader.c.o
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/loader/loader.c:253:5: warning: inline asm clobber list contains reserved registers: SP [-Winline-asm]
+  253 |                                 BRANCH(stmt->start.stack_pointer, stmt->start.entry_point);
+      |                                 ^
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/loader/assembly-arm64.h:32:3: note: expanded from macro 'BRANCH'
+   32 |                 "// Restore initial stack pointer.      \n\t"   \
+      |                 ^
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/loader/loader.c:253:5: note: Reserved registers on the clobber list may not be preserved across the asm statement, and clobbering them may lead to undefined behaviour.
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/loader/assembly-arm64.h:32:3: note: expanded from macro 'BRANCH'
+
+   32 |                 "// Restore initial stack pointer.      \n\t"   \
+
+      |                 ^
+
+1 warning generated.
+
+[2/76] Building ASM object CMakeFiles/aurora_proot_loader.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/loader/assembly.S.o
+[3/76] Building C object CMakeFiles/aurora_shmem.dir/linux-config/shmem.c.o
+[4/76] Linking C executable aurora_proot_loader
+[5/76] Linking C static library libaurora_shmem.a
+[6/76] Building C object CMakeFiles/aurora_talloc.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/talloc-2.5.0/talloc.c.o
+[7/76] Linking C shared library libaurora_talloc.so
+[8/76] Generating linux-config/loader-info.c
+[9/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/cli/note.c.o
+[10/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/cli/proot.c.o
+[11/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/cli/cli.c.o
+[12/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/execve/enter.c.o
+[13/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/execve/exit.c.o
+[14/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/execve/shebang.c.o
+[15/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/execve/elf.c.o
+[16/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/execve/ldso.c.o
+[17/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/execve/auxv.c.o
+[18/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/execve/aoxp.c.o
+[19/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/path/binding.c.o
+[20/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/path/glue.c.o
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/path/glue.c:76:14: warning: 'talloc_autofree_context' is deprecated [-Wdeprecated-declarations]
+   76 |         autofreed = talloc_autofree_context();
+      |                     ^
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/talloc-2.5.0/talloc.h:1084:46: note: 'talloc_autofree_context' has been explicitly marked deprecated here
+ 1084 | _PUBLIC_ void *talloc_autofree_context(void) _DEPRECATED_;
+
+      |                                              ^
+
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/talloc-2.5.0/talloc.h:119:38: note: expanded from macro '_DEPRECATED_'
+
+  119 | #define _DEPRECATED_ __attribute__ ((deprecated))
+
+      |                                      ^
+
+1 warning generated.
+
+[21/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/path/canon.c.o
+[22/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/path/f2fs-bug.c.o
+[23/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/path/proc.c.o
+[24/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/path/path.c.o
+[25/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/path/temp.c.o
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/path/temp.c:37:33: warning: 'talloc_autofree_context' is deprecated [-Wdeprecated-declarations]
+   37 |         temp_directory = talloc_strdup(talloc_autofree_context(), tmp);
+      |                                        ^
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/talloc-2.5.0/talloc.h:1084:46: note: 'talloc_autofree_context' has been explicitly marked deprecated here
+ 1084 | _PUBLIC_ void *talloc_autofree_context(void) _DEPRECATED_;
+      |                                              ^
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/talloc-2.5.0/talloc.h:119:38: note: expanded from macro '_DEPRECATED_'
+  119 | #define _DEPRECATED_ __attribute__ ((deprecated))
+      |                                      ^
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/path/temp.c:273:13: warning: 'talloc_autofree_context' is deprecated [-Wdeprecated-declarations]
+  273 |                 context = talloc_autofree_context();
+      |                           ^
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/talloc-2.5.0/talloc.h:1084:46: note: 'talloc_autofree_context' has been explicitly marked deprecated here
+ 1084 | _PUBLIC_ void *talloc_autofree_context(void) _DEPRECATED_;
+      |                                              ^
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/talloc-2.5.0/talloc.h:119:38: note: expanded from macro '_DEPRECATED_'
+
+  119 | #define _DEPRECATED_ __attribute__ ((deprecated))
+
+      |                                      ^
+
+2 warnings generated.
+
+[26/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/syscall/seccomp.c.o
+[27/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/syscall/syscall.c.o
+[28/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/syscall/chain.c.o
+[29/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/syscall/sysnum.c.o
+[30/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/syscall/exit.c.o
+[31/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/syscall/socket.c.o
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/syscall/socket.c:154:10: warning: 'mktemp' is deprecated: mktemp is unsafe, use mkstemp or tmpfile instead [-Wdeprecated-declarations]
+  154 |                 (void) mktemp(shorter_host_path);
+      |                        ^
+C:/Users/Admin/AppData/Local/Android/Sdk/ndk/30.0.16248370/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/stdlib.h:165:66: note: 'mktemp' has been explicitly marked deprecated here
+
+  165 | char* _Nullable mktemp(char* _Nonnull __template) __attribute__((__deprecated__("mktemp is unsafe, use mkstemp or tmpfile instead")));
+
+      |                                                                  ^
+
+1 warning generated.
+
+[32/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/syscall/rlimit.c.o
+[33/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/syscall/heap.c.o
+[34/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/syscall/pipe_shadow.c.o
+[35/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/syscall/enter.c.o
+[36/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/tracee/mem.c.o
+[37/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/tracee/tracee.c.o
+[38/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/tracee/reg.c.o
+[39/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/tracee/statx.c.o
+[40/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/tracee/seccomp.c.o
+[41/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/tracee/event.c.o
+[42/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/ptrace/user.c.o
+In file included from C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/ptrace/user.c:30:
+
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/ptrace/user.h:47:1: warning: non-void function does not return a value [-Wreturn-type]
+
+   47 | }
+
+      | ^
+
+1 warning generated.
+
+[43/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/ptrace/ptrace.c.o
+In file included from C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/ptrace/ptrace.c:34:
+
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/ptrace/user.h:47:1: warning: non-void function does not return a value [-Wreturn-type]
+
+   47 | }
+
+      | ^
+
+1 warning generated.
+
+[44/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/extension.c.o
+[45/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/ptrace/wait.c.o
+[46/76] Building C object CMakeFiles/aurora_proot.dir/215b65f9584a68b51b214b8d1641dbcf/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/ashmem_memfd/ashmem_memfd.c.o
+[47/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/chown.c.o
+[48/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/chroot.c.o
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/chroot.c:54:2: warning: ignoring return value of function declared with 'warn_unused_result' attribute [-Wunused-result]
+
+   54 |         realpath(path, path_host_absolute);
+
+      |         ^~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~~~~
+
+1 warning generated.
+
+[49/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/kompat/kompat.c.o
+[50/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/getsockopt.c.o
+[51/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/socket.c.o
+[52/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/sendmsg.c.o
+[53/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/open.c.o
+[54/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/rename.c.o
+[55/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/unlink.c.o
+[56/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/chmod.c.o
+[57/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/utimensat.c.o
+[58/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/link.c.o
+[59/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/exec.c.o
+[60/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/access.c.o
+[61/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/symlink.c.o
+[62/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/mk.c.o
+[63/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/stat.c.o
+[64/76] Building C object CMakeFiles/aurora_proot.dir/215b65f9584a68b51b214b8d1641dbcf/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/helper_functions.c.o
+[65/76] Building C object CMakeFiles/aurora_proot.dir/215b65f9584a68b51b214b8d1641dbcf/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/hidden_files/hidden_files.c.o
+[66/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/mountinfo/mountinfo.c.o
+[67/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/sysvipc/sysvipc.c.o
+[68/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fake_id0/fake_id0.c.o
+[69/76] Building C object CMakeFiles/aurora_proot.dir/215b65f9584a68b51b214b8d1641dbcf/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/port_switch/port_switch.c.o
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/port_switch/port_switch.c:174:100: warning: sizeof on array function parameter will return size of 'long *' instead of 'long[]' [-Wsizeof-array-argument]
+  174 |                     write_data(tracee, peek_reg(tracee, CURRENT, SYSARG_2), socketcall_arg2, sizeof(socketcall_arg2));
+      |                                                                                                    ^
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/port_switch/port_switch.c:145:121: note: declared here
+  145 | void mod_port(Tracee *tracee, bool is_socketcall, bool is_bind, bool is_udp, struct sockaddr_storage *my_sockaddr, long socketcall_arg2[]) {   
+      |                                                                                                                         ^
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/port_switch/port_switch.c:182:100: warning: sizeof on array function parameter will return size of 'long *' instead of 'long[]' [-Wsizeof-array-argument]
+  182 |                     write_data(tracee, peek_reg(tracee, CURRENT, SYSARG_2), socketcall_arg2, sizeof(socketcall_arg2));
+      |                                                                                                    ^
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/port_switch/port_switch.c:145:121: note: declared here
+  145 | void mod_port(Tracee *tracee, bool is_socketcall, bool is_bind, bool is_udp, struct sockaddr_storage *my_sockaddr, long socketcall_arg2[]) {   
+      |                                                                                                                         ^
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/port_switch/port_switch.c:204:100: warning: sizeof on array function parameter will return size of 'long *' instead of 'long[]' [-Wsizeof-array-argument]
+  204 |                     write_data(tracee, peek_reg(tracee, CURRENT, SYSARG_2), socketcall_arg2, sizeof(socketcall_arg2));
+      |                                                                                                    ^
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/port_switch/port_switch.c:145:121: note: declared here
+  145 | void mod_port(Tracee *tracee, bool is_socketcall, bool is_bind, bool is_udp, struct sockaddr_storage *my_sockaddr, long socketcall_arg2[]) {   
+      |                                                                                                                         ^
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/port_switch/port_switch.c:212:100: warning: sizeof on array function parameter will return size of 'long *' instead of 'long[]' [-Wsizeof-array-argument]
+  212 |                     write_data(tracee, peek_reg(tracee, CURRENT, SYSARG_2), socketcall_arg2, sizeof(socketcall_arg2));
+      |                                                                                                    ^
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/port_switch/port_switch.c:145:121: note: declared here
+  145 | void mod_port(Tracee *tracee, bool is_socketcall, bool is_bind, bool is_udp, struct sockaddr_storage *my_sockaddr, long socketcall_arg2[]) {   
+
+      |                                                                                                                         ^
+
+4 warnings generated.
+
+[70/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/sysvipc/sysvipc_msg.c.o
+[71/76] Building C object CMakeFiles/aurora_proot.dir/C_/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/sysvipc/sysvipc_sem.c.o
+[72/76] Building C object CMakeFiles/aurora_proot.dir/01ee6575c3e435cba893f30ec2b80191/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/fix_symlink_size/fix_symlink_size.c.o
+[73/76] Building C object CMakeFiles/aurora_proot.dir/linux-config/loader-info.c.o
+[74/76] Building C object CMakeFiles/aurora_proot.dir/linux-config/sysvipc_shm.c.o
+C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/linux-standalone/linux-config/sysvipc_shm.c:828:10: warning: 'mktemp' is deprecated: mktemp is unsafe, use mkstemp or tmpfile instead [-Wdeprecated-declarations]
+  828 |                 (void) mktemp(path);
+      |                        ^
+C:/Users/Admin/AppData/Local/Android/Sdk/ndk/30.0.16248370/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/stdlib.h:165:66: note: 'mktemp' has been explicitly marked deprecated here
+  165 | char* _Nullable mktemp(char* _Nonnull __template) __attribute__((__deprecated__("mktemp is unsafe, use mkstemp or tmpfile instead")));
+
+      |                                                                  ^
+
+1 warning generated.
+
+[75/76] Building C object CMakeFiles/aurora_proot.dir/215b65f9584a68b51b214b8d1641dbcf/e/work/Aurora/app/build/linux-sources/proot-5.1.107.98/src/extension/link2symlink/link2symlink.c.o
+[76/76] Linking C executable aurora_proot

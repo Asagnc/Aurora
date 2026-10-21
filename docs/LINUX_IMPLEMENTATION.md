@@ -1,6 +1,14 @@
 # Linux 环境实施记录
 
-2026-10-22。用户已批准LINUX_PROPOSAL.md，当前0.1.18是基础环境安装阶段。
+2026-10-22。用户已批准LINUX_PROPOSAL.md，当前0.1.19完成原生打包并加入固定工作负载探测；完整运行时尚未就绪。
+
+## 0.1.19 PRoot 原生构建与离线探测
+
+- PRoot5.1.107.98、talloc2.5.0、libandroid-shmem0.7从精确SHA256源码构建，使用现有NDK30/API36，ARM64/x86_64均随APK分发PRoot与独立loader；talloc共享链接。无第三方App、可写目录可执行文件下载、旧API兼容二进制或32位guest支持。
+- loader使用当前上游arch.h地址，ARM64工作入口偏移来自实际链接符号；修正Release段回收丢失pokedata入口、NDEBUG移除assert后的非void函数落空及缺少string.h声明。libandroid-shmem使用显式PROOT_TMP_DIR并修正不可写路径无限重试；原始源码保持不变、适配修改可复现。见LINUX_NATIVE_BUILD.md。
+- Linux页和Agent linux_environment action=probe可对已安装镜像运行固定离线工作负载：干净环境、shell/子进程、文件写读、硬链接、HOME/tmp绑定与退出码。结果workloadPassed与executionReady分开，后者仍false；不自动执行任意业务命令。探测复用原生命令监督/限时/CPU租约，持有catalog锁防镜像清理，结果返回后清除临时产物且不留失效产物链接。
+- APK内保留许可，CI交付精确源码树及独立CMake适配器ZIP。双ABI Debug/Release ELF实际检查16KiB、栈/段权限、loader静态结构和动态依赖；独立ARM64源码重建通过。
+- 新增1项Android普通UID --version冒烟测试只编译，ordinary gate66；尚未在Android运行固定工作负载或新版冒烟测试。PRoot构建不是Android ptrace/SELinux/guest运行资格证明。
 
 ## 已实现
 
@@ -19,10 +27,10 @@
 
 新增3项核心测试，累计129：属主/去特权位/JSON往返、非法属主计划、POSIX扫描后元数据改变与失败清理。Windows本轮127通过、2项POSIX跳过，固定官方ARM64包SHA与扫描通过；Debug构建与lint通过。POSIX失败清理由Linux CI执行，不是手机验收。
 
-1. PRoot5.1.107.98/talloc2.5.0/libandroid-shmem0.7源码锁、当前NDK构建、loader随APK打包与Android16资格探测。
+1. PRoot源码锁/构建/loader打包和固定探测入口已接；Android16实际资格与超时/取消/强杀/PTY/并发清理矩阵待验证。
 2. Root私有挂载、进入环境、宿主监督/退出屏障；活动租约接命令及PTY执行，进程死亡/挂载恢复。不能把数据库表存在当作活动租约已接入执行。
 3. 会话HOME/tmp/run和共享工具缓存映射、受管理的包集合更新/新环境代/复制成本与回收。
-4. Linux命令与PTY Agent执行工具；界面观看实际能力与运行日志。目前executionReady始终false，不把下载或ELF检查当成可以执行。
+4. 任意Linux命令与PTY Agent执行工具；界面观看实际能力与持久运行日志。目前executionReady始终false，probe只执行固定离线夹具，不把下载/ELF/基础夹具通过当成完整运行时可用。
 5. 真机Android16普通/Root资格、SELinux、清理和实际性能；完整手机APK构建及逆向/抓包工具包依旧是后续工作。
 
 官方基础包只扫描/校验ELF不执行guest程序。Host POSIX提取不是Root chroot、PRoot或Android16运行验收。chroot不被描述为安全沙箱。

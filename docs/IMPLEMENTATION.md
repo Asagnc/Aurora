@@ -1,3 +1,7 @@
+# 0.1.19 PRoot 原生构建（2026-10-22）
+
+批准的三组件固定源码摘要，NDK30/API36双ABI构建，PRoot/loader/talloc随APK打包。原生页与Agent固定离线probe入口已接；执行就绪仍false。双ABI Debug/Release ELF、依赖及16KiB校验与独立ARM64适配器构建通过；完整Android构建/R8/testAPK/lint通过。新增Android冒烟仅编译，主机编译不能替代Android实际执行。见LINUX_IMPLEMENTATION.md、LINUX_NATIVE_BUILD.md及evidence/0.1.19。
+
 # 0.1.18 Linux 基础环境（2026-10-22）
 
 Linux方案已获用户认可。本阶段接入官方固定摘要/签名验证、tar.gz链接与权限规则、ELF/解释器检查、SQLite v5版本/恢复/租约元数据、原生安装页和Agent环境管理。详见LINUX_IMPLEMENTATION.md。基础环境安装不等于Linux可执行；PRoot打包、Root挂载/监督、命令与PTY租约仍待继续实施，executionReady保持false。核心126（Windows125通过/1POSIX跳过）；新增Android2项仅编译，设备集中验收不变。
