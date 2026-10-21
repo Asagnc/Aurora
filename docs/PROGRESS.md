@@ -2,6 +2,10 @@
 
 更新时间：2026-10-21。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 下一步：PTY 选型待确认（2026-10-21）
+
+已研究 Termux 独立原生组件、xterm.js/WebView、libghostty-vt 与自写模拟器，推荐稳定 Termux 组件 + Aurora 自有普通/Root PTY 会话管理；见 [TERMINAL_PROPOSAL.md](TERMINAL_PROPOSAL.md)。最新非预发布实查为 v0.118.3。Ghostty 当前嵌入 API 尚变动且未单独打版本；Termux 上游主线程解析不能直接照搬。提案包括前台服务生命周期扩展、FD 数据通道、Agent 游标工具与资源预算，需要用户确认后实现；没有新增应用代码、依赖或设备测试，不将提案算已完成。
+
 ## 0.1.13 事件日志（2026-10-21）
 
 用户已认可FileObserver事件驱动日志方案。实现复用现有start ID固定产物目录，无新增Root回调；账本持久映射，SQLite1/2→3新增artifact_directory/presentation；Root命令握手与请求协议2，身份协议1不变。工具详情可看实时stdout/stderr、复制、跟随/暂停，离页/后台/收起/删除释放监听。有效有界JSON投影保留大输出错误/退出码/真实丢弃预算，完整结果未修改。详见[LIVE_COMMAND_LOGS.md](LIVE_COMMAND_LOGS.md)。
