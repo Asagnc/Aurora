@@ -1,0 +1,259 @@
+Reusing configuration cache.
+> Task :terminal:generateDebugAssets UP-TO-DATE
+> Task :core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:preBuild UP-TO-DATE
+> Task :terminal:preBuild UP-TO-DATE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :terminal:preReleaseBuild UP-TO-DATE
+> Task :terminal:preDebugBuild UP-TO-DATE
+> Task :core:processTestResources NO-SOURCE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :terminal:generateDebugResources UP-TO-DATE
+> Task :core:processResources NO-SOURCE
+> Task :terminal:javaPreCompileDebug UP-TO-DATE
+> Task :terminal:processDebugNavigationResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :terminal:mergeDebugAssets UP-TO-DATE
+> Task :app:generateDebugGlobalSynthetics UP-TO-DATE
+> Task :terminal:writeDebugAarMetadata UP-TO-DATE
+> Task :terminal:packageDebugResources UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :terminal:parseDebugLocalResources UP-TO-DATE
+> Task :terminal:generateDebugRFile UP-TO-DATE
+> Task :core:compileKotlin UP-TO-DATE
+> Task :core:compileJava NO-SOURCE
+> Task :core:classes UP-TO-DATE
+> Task :core:jar UP-TO-DATE
+> Task :terminal:compileDebugKotlin NO-SOURCE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :core:compileTestKotlin UP-TO-DATE
+> Task :app:compileDebugAidl UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :core:compileTestJava NO-SOURCE
+> Task :terminal:compileDebugJavaWithJavac UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :terminal:processDebugJavaRes NO-SOURCE
+> Task :app:generateDebugRFile UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :terminal:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :terminal:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :core:testClasses UP-TO-DATE
+> Task :terminal:extractDeepLinksDebug UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:mergeLibDexDebug UP-TO-DATE
+> Task :terminal:processDebugManifest UP-TO-DATE
+> Task :terminal:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :core:test UP-TO-DATE
+> Task :terminal:mergeDebugJniLibFolders UP-TO-DATE
+> Task :terminal:mergeDebugNativeLibs NO-SOURCE
+> Task :terminal:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :terminal:compileDebugLibraryResources UP-TO-DATE
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :terminal:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :terminal:mergeReleaseNativeLibs NO-SOURCE
+> Task :terminal:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :terminal:generateReleaseResources UP-TO-DATE
+> Task :app:configureCMakeDebug[arm64-v8a]
+> Task :app:configureCMakeDebug[x86_64]
+> Task :terminal:packageReleaseResources UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :terminal:processReleaseNavigationResources UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:configureCMakeRelWithDebInfo[x86_64]
+> Task :terminal:parseReleaseLocalResources UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :terminal:javaPreCompileRelease UP-TO-DATE
+> Task :terminal:generateReleaseRFile UP-TO-DATE
+> Task :app:configureCMakeRelWithDebInfo[arm64-v8a]
+> Task :app:checkReleaseDuplicateClasses UP-TO-DATE
+> Task :app:compileReleaseAidl UP-TO-DATE
+> Task :app:generateReleaseResources UP-TO-DATE
+> Task :app:packageReleaseResources UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:javaPreCompileRelease UP-TO-DATE
+> Task :terminal:prepareReleaseArtProfile UP-TO-DATE
+> Task :app:processReleaseNavigationResources UP-TO-DATE
+> Task :app:parseReleaseLocalResources UP-TO-DATE
+> Task :app:generateReleaseRFile UP-TO-DATE
+> Task :terminal:writeReleaseAarMetadata UP-TO-DATE
+> Task :terminal:compileReleaseKotlin NO-SOURCE
+> Task :app:checkReleaseAarMetadata UP-TO-DATE
+> Task :terminal:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :app:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :terminal:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :terminal:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :terminal:exportReleaseConsumerProguardFiles UP-TO-DATE
+> Task :app:compileReleaseNavigationResources UP-TO-DATE
+> Task :app:mergeReleaseArtProfile UP-TO-DATE
+> Task :app:createReleaseCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksRelease UP-TO-DATE
+> Task :app:mergeReleaseResources UP-TO-DATE
+> Task :terminal:extractDeepLinksRelease UP-TO-DATE
+> Task :terminal:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :terminal:compileReleaseLibraryResources UP-TO-DATE
+> Task :terminal:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :app:extractProguardFiles UP-TO-DATE
+> Task :terminal:processReleaseManifest UP-TO-DATE
+> Task :terminal:processReleaseJavaRes NO-SOURCE
+> Task :app:mergeReleaseStartupProfile UP-TO-DATE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :terminal:generateReleaseAssets UP-TO-DATE
+> Task :terminal:mergeReleaseAssets UP-TO-DATE
+> Task :app:processReleaseMainManifest UP-TO-DATE
+> Task :app:mergeReleaseAssets UP-TO-DATE
+> Task :app:processReleaseManifest UP-TO-DATE
+> Task :app:compressReleaseAssets UP-TO-DATE
+> Task :app:processReleaseManifestForPackage UP-TO-DATE
+> Task :app:extractReleaseVersionControlInfo UP-TO-DATE
+> Task :terminal:createFullJarRelease UP-TO-DATE
+> Task :app:processReleaseResources UP-TO-DATE
+> Task :terminal:extractProguardFiles UP-TO-DATE
+> Task :terminal:prepareLintJarForPublish UP-TO-DATE
+> Task :terminal:checkReleaseAarMetadata UP-TO-DATE
+> Task :terminal:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :app:buildCMakeDebug[x86_64][aurora_pty,aurora_runner]
+> Task :terminal:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :terminal:generateReleaseLintModel UP-TO-DATE
+> Task :terminal:mergeReleaseJavaResource UP-TO-DATE
+> Task :terminal:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :terminal:extractReleaseAnnotations UP-TO-DATE
+> Task :terminal:generateReleaseLintVitalModel UP-TO-DATE
+> Task :terminal:syncReleaseLibJars UP-TO-DATE
+> Task :terminal:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :app:writeReleaseAppMetadata UP-TO-DATE
+> Task :app:writeReleaseSigningConfigVersions UP-TO-DATE
+> Task :app:preDebugAndroidTestBuild SKIPPED
+> Task :terminal:lintVitalAnalyzeRelease UP-TO-DATE
+> Task :app:compileDebugAndroidTestAidl NO-SOURCE
+> Task :app:generateDebugAndroidTestResources UP-TO-DATE
+> Task :app:processDebugAndroidTestNavigationResources UP-TO-DATE
+> Task :app:javaPreCompileDebugAndroidTest UP-TO-DATE
+> Task :app:generateDebugAndroidTestAssets UP-TO-DATE
+> Task :app:mergeDebugAndroidTestAssets UP-TO-DATE
+> Task :app:compressDebugAndroidTestAssets UP-TO-DATE
+> Task :app:buildCMakeDebug[arm64-v8a][aurora_pty,aurora_runner]
+> Task :app:packageDebugAndroidTestResources UP-TO-DATE
+> Task :app:generateDebugAndroidTestGlobalSynthetics UP-TO-DATE
+> Task :app:collectReleaseDependencies UP-TO-DATE
+> Task :app:sdkReleaseDependencyData UP-TO-DATE
+> Task :app:parseDebugAndroidTestLocalResources UP-TO-DATE
+> Task :app:buildCMakeRelWithDebInfo[arm64-v8a][aurora_pty,aurora_runner]
+> Task :app:desugarDebugAndroidTestFileDependencies UP-TO-DATE
+> Task :app:mapDebugAndroidTestSourceSetPaths UP-TO-DATE
+> Task :app:compileDebugAndroidTestNavigationResources UP-TO-DATE
+> Task :app:externalNativeBuildDebug
+> Task :app:buildCMakeRelWithDebInfo[x86_64][aurora_pty,aurora_runner]
+> Task :app:checkDebugAndroidTestAarMetadata UP-TO-DATE
+> Task :app:checkDebugAndroidTestDuplicateClasses UP-TO-DATE
+> Task :app:generateDebugAndroidTestRFile UP-TO-DATE
+> Task :app:mergeLibDexDebugAndroidTest UP-TO-DATE
+> Task :app:stageDebugRunner UP-TO-DATE
+> Task :app:mergeDebugAndroidTestResources UP-TO-DATE
+> Task :app:mergeDebugAndroidTestJniLibFolders UP-TO-DATE
+> Task :app:mergeExtDexDebugAndroidTest UP-TO-DATE
+> Task :app:writeDebugAndroidTestSigningConfigVersions UP-TO-DATE
+> Task :app:validateSigningDebugAndroidTest UP-TO-DATE
+> Task :terminal:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :terminal:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :terminal:checkDebugAarMetadata UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :terminal:prepareDebugArtProfile UP-TO-DATE
+> Task :terminal:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :app:mergeDebugAndroidTestManifest UP-TO-DATE
+> Task :terminal:extractDebugAnnotations UP-TO-DATE
+> Task :terminal:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :app:processDebugAndroidTestManifest UP-TO-DATE
+> Task :terminal:mergeDebugJavaResource UP-TO-DATE
+> Task :terminal:writeDebugLintModelMetadata UP-TO-DATE
+> Task :app:mergeDebugNativeLibs UP-TO-DATE
+> Task :terminal:syncDebugLibJars UP-TO-DATE
+> Task :app:stripDebugDebugSymbols UP-TO-DATE
+> Task :app:mergeDebugAndroidTestNativeLibs NO-SOURCE
+> Task :terminal:bundleDebugLocalLintAar UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:stripDebugAndroidTestDebugSymbols NO-SOURCE
+> Task :terminal:preDebugAndroidTestBuild UP-TO-DATE
+> Task :terminal:preDebugUnitTestBuild UP-TO-DATE
+> Task :terminal:createFullJarDebug UP-TO-DATE
+> Task :terminal:generateDebugLintModel UP-TO-DATE
+> Task :terminal:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :app:processDebugAndroidTestResources UP-TO-DATE
+> Task :terminal:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :terminal:lintAnalyzeDebugAndroidTest UP-TO-DATE
+> Task :terminal:lintAnalyzeDebug UP-TO-DATE
+> Task :app:externalNativeBuildRelease
+> Task :terminal:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :app:stageReleaseRunner UP-TO-DATE
+> Task :app:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :app:mergeReleaseNativeLibs UP-TO-DATE
+> Task :app:stripReleaseDebugSymbols UP-TO-DATE
+> Task :app:extractReleaseNativeSymbolTables UP-TO-DATE
+> Task :app:mergeReleaseNativeDebugMetadata UP-TO-DATE
+> Task :app:compileDebugKotlin
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :app:mergeDebugJavaResource UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :app:compileReleaseKotlin
+> Task :app:generateDebugLintReportModel
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:processReleaseJavaRes UP-TO-DATE
+> Task :app:mergeReleaseJavaResource UP-TO-DATE
+> Task :app:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :app:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :app:generateDebugAndroidTestLintModel
+> Task :app:generateReleaseLintVitalReportModel
+> Task :app:generateDebugUnitTestLintModel
+> Task :app:compileDebugAndroidTestKotlin
+> Task :app:compileDebugAndroidTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugAndroidTestJavaRes UP-TO-DATE
+> Task :app:mergeDebugAndroidTestJavaResource UP-TO-DATE
+> Task :app:dexBuilderDebugAndroidTest UP-TO-DATE
+> Task :app:mergeProjectDexDebugAndroidTest UP-TO-DATE
+> Task :app:packageDebugAndroidTest UP-TO-DATE
+> Task :app:createDebugAndroidTestApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleDebugAndroidTest UP-TO-DATE
+> Task :app:lintAnalyzeDebugUnitTest
+> Task :app:expandReleaseArtProfileWildcards
+> Task :app:dexBuilderDebug
+> Task :app:mergeProjectDexDebug
+> Task :app:packageDebug
+> Task :app:assembleDebug
+> Task :app:createDebugApkListingFileRedirect UP-TO-DATE
+> Task :app:produceReleaseComposeMapping
+> Task :app:reportReleaseComposeMappingErrors
+> Task :app:lintAnalyzeDebugAndroidTest
+> Task :app:lintVitalAnalyzeRelease
+> Task :app:lintVitalReportRelease UP-TO-DATE
+> Task :app:lintVitalRelease
+> Task :app:minifyReleaseWithR8
+> Task :app:convertShrunkResourcesToBinaryRelease UP-TO-DATE
+> Task :app:optimizeReleaseResources UP-TO-DATE
+> Task :app:mergeReleaseComposeMapping
+> Task :app:compileReleaseArtProfile
+> Task :app:packageRelease
+> Task :app:assembleRelease
+> Task :app:createReleaseApkListingFileRedirect UP-TO-DATE
+> Task :app:lintAnalyzeDebug
+
+> Task :app:lintReportDebug
+Wrote HTML report to file:///C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/reports/lint-results-debug.html
+Wrote SARIF report to file:///C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/app/build/reports/lint-results-debug.sarif
+
+> Task :app:lintDebug
+
+BUILD SUCCESSFUL in 33s
+214 actionable tasks: 35 executed, 179 up-to-date
+Configuration cache entry reused.

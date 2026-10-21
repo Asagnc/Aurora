@@ -1,3 +1,7 @@
+# 0.1.18 Linux 基础环境（2026-10-22）
+
+Linux方案已获用户认可。本阶段接入官方固定摘要/签名验证、tar.gz链接与权限规则、ELF/解释器检查、SQLite v5版本/恢复/租约元数据、原生安装页和Agent环境管理。详见LINUX_IMPLEMENTATION.md。基础环境安装不等于Linux可执行；PRoot打包、Root挂载/监督、命令与PTY租约仍待继续实施，executionReady保持false。核心126（Windows125通过/1POSIX跳过）；新增Android2项仅编译，设备集中验收不变。
+
 # 0.1.17 Skills 来源与文件浏览（2026-10-21）
 
 显式GitHub ref和子目录接入UI/Agent，斜杠分支与URL路径可明确区分；旧来源JSON/ID兼容，不新增SQLite迁移。修复archive/releases路径误判，来源标明正式发布/快照。skills_read支持省略path搜索/分页全部声明资源；用户有文件浏览与分段阅读页。详情订阅目录版本事件，更新/回滚后刷新真实状态。核心115；完整构建证据与边界见evidence/0.1.17。新增界面仅编译，未冒充实机审美/交互验收。

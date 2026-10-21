@@ -8,6 +8,8 @@ Research date: 2026-10-12.
 
 ## Approved architecture
 
+- 2026-10-22 confirmed: Ubuntu Base26.10 same-architecture environment, Root-qualified private-mount-namespace chroot preferred, PRoot5.1.107.98 on demand for ordinary UID, shared version generations/cache and conversation-owned writable homes. See LINUX_PROPOSAL.md. Qualification and runtime implementation are separate from downloading a rootfs.
+
 - 2026-10-21 confirmed: standard SKILL.md, versioned content-addressed shared resources, existing SQLite index/recovery/pins, progressive Agent loading and native management. Dependencies track verified stable releases; active tasks retain pinned versions. See SKILLS_IMPLEMENTATION.md.
 
 - 2026-10-21 confirmed: on-demand native PTY, pinned independent Termux terminal components, Aurora-owned sessions and Agent tools, Root Binder control/FD transport, reuse the foreground task service. See INTERACTIVE_TERMINALS.md. Ordinary commands retain their pipe executor.

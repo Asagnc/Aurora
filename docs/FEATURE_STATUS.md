@@ -19,7 +19,7 @@
 | 普通原生命令与终端 | command_execute保持轻量；0.1.13事件日志，0.1.14新增普通/Root PTY与六个终端工具、独立查看页 | 新日志/PTY待设备验收；日志轮转、跨强杀保留原进程、独立守护化完整约束未实现 |
 | Root | 独立 command_execute_root；Android16 ARM64 FolkPatch 通过真实UID0、受控产物归属/读取、取消/超时、断开/重连专项 | 外部管理器撤权、Root服务强杀恢复、挂载与任意Root文件清理、直接系统API工具仍待验收/实现；普通命令不自动升级权限 |
 | Skills | 0.1.17：SKILL.md、ZIP/公共HTTPS安装、哈希/恢复/版本引用、五个Agent工具、显式Git引用、分页资源发现/原生文件浏览、更新管理 | 新版设备验收、私有来源/签名、真实提供器/强杀安装矩阵；工作流所需Linux/执行工具包另行实现 |
-| Linux | 原生执行与 Linux 后端分离的设计已确认 | PRoot/chroot 环境安装、运行、挂载、依赖复用与清理 |
+| Linux | 0.1.18：官方Ubuntu基础包校验/安装、tar/链接/ELF验证、共享代/SQLite恢复、原生页和Agent环境管理 | PRoot打包/资格、Root挂载/执行、命令/PTY租约和包集合更新；安装基础包不等于可执行 |
 | 逆向 | 候选分工已记录，已有文件/浏览器/普通命令基础 | JADX、Apktool、radare2、Frida 插件与 Android ARM64 验收 |
 | 网络 | 模型传输与浏览器代理 | Root 原生抓包、过滤/轮转/丢包统计、HTTP/TCP/UDP/原始发包和重放；不做 VPN 抓包 |
 | 手机编译 | 普通命令入口已接入 | JDK/Android SDK/NDK 工具包安装、APK/Compose/JNI 构建、签名与安装验收 |

@@ -1,0 +1,128 @@
+package io.github.asagnc.aurora.linux
+
+import android.os.Build
+import io.github.asagnc.aurora.AuroraApplication
+import io.github.asagnc.aurora.core.*
+import io.github.asagnc.aurora.data.*
+import java.nio.ByteBuffer
+import java.nio.channels.FileChannel
+import java.nio.file.*
+import java.security.MessageDigest
+import java.util.UUID
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.encodeToString
+
+/** Shared image generations, separate from conversation homes and from native Android executors. */
+internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
+    internal val registry = LinuxRegistry(app.conversations)
+    internal val catalog = Mutex()
+    private val installer = Mutex()
+    private val root = app.filesDir.toPath().resolve("spaces/resources/linux")
+    private val staging = app.filesDir.toPath().resolve("spaces/resources/.linux-staging")
+    private val network = SkillNetwork()
+    val revision = MutableStateFlow(0L)
+    val status = MutableStateFlow("尚未安装 Linux 环境")
+    val image get() = UbuntuBaseImages.current(LinuxArchitecture.fromAbi(Build.SUPPORTED_ABIS.first()))
+
+    suspend fun recover() = withContext(Dispatchers.IO) { installer.withLock {
+        app.spaces.sharedResources()
+        require(!Files.isSymbolicLink(root) && !Files.isSymbolicLink(staging))
+        Files.createDirectories(root); Files.createDirectories(staging)
+        catalog.withLock { registry.pending().forEach { (operation, id) ->
+            if (registry.versions().none { it.id == id }) removeSkillTree(directory(id))
+            registry.clear(operation)
+        } }
+        Files.newDirectoryStream(staging).use { entries -> entries.forEach { removeSkillTree(it) } }
+        status.value = if (registry.current() == null) "尚未安装 Linux 环境" else "基础环境已安装，执行能力待探测"
+    } }
+
+    suspend fun install(): LinuxVersion = installer.withLock { withContext(Dispatchers.IO) {
+        val source = image
+        val installed = catalog.withLock {
+            registry.versions().firstOrNull { it.id == source.sha256 }?.also { version ->
+                LinuxElf.validateRootfs(directory(version.id).resolve("rootfs"), source.architecture)
+                withContext(NonCancellable) {
+                    registry.select(version.id); revision.update { it + 1 }
+                    status.value = "基础环境已安装，执行能力待探测"
+                }
+            }
+        }
+        if (installed != null) return@withContext installed
+        val operation = UUID.randomUUID().toString()
+        val stage = Files.createDirectory(staging.resolve(operation))
+        var committed = false
+        var original: Throwable? = null
+        try {
+            require(Files.getFileStore(stage).usableSpace >= 128L * 1024 * 1024) { "Insufficient download space" }
+            status.value = "下载 Ubuntu ${source.version} ${source.architecture.imageName}…"
+            val archive = stage.resolve("base.tar.gz"); network.download(source.url, archive)
+            runInterruptible { verifyArchive(archive, source.sha256) }
+            status.value = "校验 Linux 布局、链接与可用空间…"
+            val unpacker = RootfsArchive()
+            val plan = runInterruptible { unpacker.scan(archive) }
+            val bytes = plan.sumOf { it.bytes }
+            require(Files.getFileStore(stage).usableSpace >= bytes + plan.size * 4096L + 64L * 1024 * 1024) { "Insufficient expanded space" }
+            val prepared = Files.createDirectory(stage.resolve("prepared"))
+            status.value = "解压基础环境…"
+            runInterruptible {
+                unpacker.extract(archive, prepared.resolve("rootfs"), plan) { path, mode -> android.system.Os.chmod(path.toString(), mode) }
+                LinuxElf.validateRootfs(prepared.resolve("rootfs"), source.architecture)
+            }
+            val manifest = LinuxRootfsManifest(source, plan.size, bytes)
+            FileChannel.open(prepared.resolve("manifest.json"), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE).use { channel ->
+                val encoded = ByteBuffer.wrap(WireJson.encodeToString(manifest).toByteArray())
+                while (encoded.hasRemaining()) channel.write(encoded); channel.force(true)
+            }
+            val version = LinuxVersion(source.sha256, manifest, System.currentTimeMillis())
+            currentCoroutineContext().ensureActive()
+            catalog.withLock { withContext(NonCancellable) {
+                registry.begin(operation, version.id)
+                require(!Files.exists(directory(version.id), LinkOption.NOFOLLOW_LINKS))
+                Files.move(prepared, directory(version.id), StandardCopyOption.ATOMIC_MOVE)
+                registry.publish(operation, version); committed = true
+                revision.update { it + 1 }; status.value = "基础环境已安装，执行能力待探测"
+            } }
+            version
+        } catch (failure: Throwable) {
+            original = failure
+            status.value = if (committed) "基础环境已安装，执行能力待探测"
+                else if (failure is CancellationException) "Linux 安装已取消" else "Linux 安装失败，原有环境保留"
+            throw failure
+        } finally { withContext(NonCancellable) {
+            try {
+                catalog.withLock { registry.pending().firstOrNull { it.first == operation }?.let { (_, id) ->
+                    if (registry.versions().none { it.id == id }) removeSkillTree(directory(id))
+                    registry.clear(operation)
+                } }
+                removeSkillTree(stage)
+            } catch (cleanup: Throwable) { if (original != null) original.addSuppressed(cleanup) else throw cleanup }
+        } }
+    } }
+
+    suspend fun cleanup(): Int = catalog.withLock { withContext(Dispatchers.IO) {
+        var count = 0
+        registry.unused().forEach { id -> withContext(NonCancellable) {
+            val operation = UUID.randomUUID().toString()
+            registry.reserveRemoval(operation, id); removeSkillTree(directory(id)); registry.clear(operation); count++
+        } }
+        revision.update { it + 1 }; count
+    } }
+    internal fun directory(id: String): Path {
+        require(id.matches(Regex("[a-f0-9]{64}")) && !Files.isSymbolicLink(root) && !Files.isSymbolicLink(root.resolve(id)))
+        return root.resolve(id)
+    }
+    private fun verifyArchive(path: Path, expected: String) {
+        val hash = MessageDigest.getInstance("SHA-256")
+        Files.newInputStream(path, LinkOption.NOFOLLOW_LINKS).use { input -> val bytes = ByteArray(65536)
+            while (true) {
+                if (Thread.currentThread().isInterrupted) throw InterruptedException()
+                val count = input.read(bytes); if (count < 0) break; hash.update(bytes, 0, count)
+            }
+        }
+        require(hash.digest().joinToString("") { "%02x".format(it) } == expected) { "Official image SHA256 mismatch" }
+    }
+}

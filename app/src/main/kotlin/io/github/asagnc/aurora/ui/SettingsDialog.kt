@@ -41,6 +41,7 @@ import kotlinx.coroutines.withContext
     var environment by remember { mutableStateOf<Boolean?>(null) }
     var about by remember { mutableStateOf(false) }
     var skills by remember { mutableStateOf(false) }
+    var linux by remember { mutableStateOf(false) }
     FullPage("设置", dismiss) {
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
             Row(Modifier.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -55,10 +56,11 @@ import kotlinx.coroutines.withContext
             }
             SettingsGroup("设备与执行") {
                 SettingsRow("Skills", "工作流、版本与更新", R.drawable.ic_hub, Color(0xFF347EDD)) { skills = true }
+                SettingsRow("Linux 环境", "基础环境、安装与版本", R.drawable.ic_terminal, Color(0xFF347EDD)) { linux = true }
                 SettingsRow("Root 权限", root.phase.let { if (it == RootPhase.READY) "已连接" else if (it == RootPhase.CONNECTING) "连接中" else "未连接" },
                     R.drawable.ic_shield, Color(0xFF26A879)) { rootDetails = true }
                 SettingsRow("执行环境", "原生命令与交互终端 · 普通 / Root", R.drawable.ic_terminal, Color(0xFF347EDD)) { environment = false }
-                SettingsRow("工具与 Skills", "文件、浏览器、图文与终端 · Skills 待接入", R.drawable.ic_extension, Color(0xFF9270D7)) { environment = true }
+                SettingsRow("工具能力", "文件、浏览器、图文、Skills 与终端", R.drawable.ic_extension, Color(0xFF9270D7)) { environment = true }
             }
             SettingsGroup("数据与存储") {
                 SettingsRow("空间与文件", "会话文件、共享资源与保留工作区", R.drawable.ic_folder_open, Color(0xFF27A899), click = files)
@@ -83,6 +85,7 @@ import kotlinx.coroutines.withContext
         text = { Text("已接入对话、批量文件、浏览器、图文消息、后台 Agent、Skills、命令日志和普通 / Root 交互终端。Linux 及逆向、抓包、发包工具包仍在开发。模型 API 密钥由用户自备并加密保存。") },
         confirmButton = { TextButton({ about = false }) { Text("关闭") } })
     if (skills) SkillsPage { skills = false }
+    if (linux) LinuxEnvironmentPage { linux = false }
 }
 
 @Composable internal fun FullPage(title: String, dismiss: () -> Unit, content: @Composable () -> Unit) {
