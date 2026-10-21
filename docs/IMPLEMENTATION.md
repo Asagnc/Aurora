@@ -1,5 +1,9 @@
 # 实现与验证证据
 
+## 0.1.14 交互终端（2026-10-21）
+
+已确认并实现普通/Root PTY、六个Agent工具、会话所有权/记录/中断恢复、原生终端查看与输入、前台服务跨模型回复生命周期、Root控制与FD数据通道，详见INTERACTIVE_TERMINALS.md。核心72通过，本地debug/R8release/testAPK/lint通过（0错误、既有MiMo警告1）。新增10项Android设备用例仅编译，Linux主机8项待CI执行；未连接设备，不宣称Root/UI/性能验收。日志16MiB、尾部64KiB、4/8活动终端及65536单元主缓冲预算明确，不伪装无限日志或强杀后原shell恢复。
+
 ## 0.1.13 命令事件日志（2026-10-21）
 
 FileObserver按观看生命周期收集，真实事件驱动增量读取、每流64KiB尾部预算；复用执行ID固定目录、账本持久映射。SQLite3非破坏迁移、Root命令协议2；完整输出结果之外存有效有界presentation，避免截断JSON隐藏错误。详见LIVE_COMMAND_LOGS.md。核心67项通过；新增5项Android专项只编译，Binder路径和v1迁移夹具已更新；新版设备/Root/迁移/手势/耗电未验收。

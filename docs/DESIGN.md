@@ -8,6 +8,8 @@ Research date: 2026-10-12.
 
 ## Approved architecture
 
+- 2026-10-21 confirmed: on-demand native PTY, pinned independent Termux terminal components, Aurora-owned sessions and Agent tools, Root Binder control/FD transport, reuse the foreground task service. See INTERACTIVE_TERMINALS.md. Ordinary commands retain their pipe executor.
+
 - Kotlin is the primary implementation language; the protocol/file core is independent of Android UI.
 - Jetpack Compose and Material 3 render the native application. WebView is the browsing engine, not the application UI renderer.
 - Privileged Android work uses libsu RootService and Binder after authorization; the ordinary path remains available without Root.

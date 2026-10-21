@@ -11,6 +11,7 @@ import kotlinx.coroutines.runBlocking
 /** Ordinary-UID cross-process IPC fixture. Never included in release; does not simulate Root privileges. */
 class RootProtocolFixtureService : Service() {
     private val commands = RootCommandSession()
+    private val terminals by lazy { RootTerminalSessions(this) }
     override fun onBind(intent: Intent): IBinder = object : IRootControl.Stub() {
         override fun snapshot() = Bundle().apply { putInt("uid", Process.myUid()); putInt("pid", Process.myPid()) }
         override fun start(id: String, conversation: String, request: Bundle, callback: IRootResult) {
@@ -24,7 +25,16 @@ class RootProtocolFixtureService : Service() {
             }
         }
         override fun cancelAndWait(id: String) { runBlocking { commands.cancelAndWait(id) } }
-        override fun closeCommands() { runBlocking { commands.close() } }
+        override fun closeCommands() { runBlocking { commands.close(); terminals.close() } }
+        override fun openTerminal(id: String, conversation: String, request: Bundle, callback: IRootResult): Bundle {
+            check(Binder.getCallingUid() == applicationInfo.uid)
+            require(UUID.fromString(conversation).toString() == conversation)
+            val directory = filesDir.toPath().resolve("root-protocol-fixture").resolve(conversation)
+            Files.createDirectories(directory)
+            return terminals.open(id, directory, RootTerminalWire.decode(request), callback)
+        }
+        override fun activateTerminal(id: String) { terminals.activate(id) }
+        override fun stopTerminal(id: String) { runBlocking { terminals.stop(id) } }
     }
-    override fun onDestroy() { runBlocking { commands.close() }; super.onDestroy() }
+    override fun onDestroy() { runBlocking { commands.close(); terminals.close() }; super.onDestroy() }
 }

@@ -20,6 +20,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
       - name: Verify protocols and owned files
         run: ./gradlew :core:test --console=plain
+      - name: Verify native PTY process lifecycle on Linux host
+        run: |
+          python3 scripts/verify-terminal-sources.py
+          python3 scripts/verify-native-pty.py
       - name: Install matching stable Android SDK
         run: bash scripts/setup-android-sdk.sh
       - name: Build Android application and run lint

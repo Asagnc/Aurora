@@ -28,6 +28,7 @@ class RootController(private val context: Context) {
     private var connection: ServiceConnection? = null
     @Volatile private var remote: IRootControl? = null
     internal val commandClient get() = remote?.let { RootCommandClient(it, context) }
+    internal val terminalClient get() = remote?.let { RootTerminalClient(it) }
     private val lifecycle = Mutex()
 
     suspend fun connect() = withContext(Dispatchers.Main.immediate) {
@@ -45,6 +46,7 @@ class RootController(private val context: Context) {
                 val snapshot = withContext(Dispatchers.IO) { remote.snapshot() }
                 check(connection != null && remote.asBinder().isBinderAlive)
                 require(snapshot.getInt("commandProtocol") == 2)
+                require(snapshot.getInt("terminalProtocol") == 1)
                 val detail = describe(snapshot)
                 this@RootController.remote = remote
                 mutable.value = RootState(RootPhase.READY, detail)

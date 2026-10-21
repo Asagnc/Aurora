@@ -1,0 +1,9 @@
+Aurora embeds selected Terminal Emulator for Android / Termux terminal components.
+Source: https://github.com/termux/termux-app
+Version: v0.118.3 / 5b657c6adf4304e5198951ce815fe0205dcac29c
+Original projects: Jack Palevich's Android Terminal Emulator; Termux contributors.
+Apache 2.0 exception: see termux-upstream.md and termux-terminal-apache.txt.
+WcWidth derives Unicode tables from jquast/wcwidth; see wcwidth-mit.txt.
+Aurora changes: TerminalSessionClient removes Termux-owned process callbacks.
+TerminalEmulator applies a retained buffer cell budget during resize.
+Aurora owns transport, lifecycle, background parsing and View integration.

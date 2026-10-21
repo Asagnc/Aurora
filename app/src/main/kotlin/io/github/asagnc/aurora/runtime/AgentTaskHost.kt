@@ -32,7 +32,7 @@ internal class AgentTaskHost(private val context: Context) {
                     finally {
                         if (active?.id == id) {
                             active = null
-                            context.stopService(Intent(context, AgentTaskService::class.java))
+                            AgentTaskService.refresh(context)
                         }
                     }
                 }

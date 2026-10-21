@@ -35,7 +35,7 @@ class ChatReviewActivity : ComponentActivity() {
                         ChatComposer(state, draft, { draft = it }, {}, { state = state.copy(selected = it) }, { models = true },
                             { state = state.copy(running = false, stage = "已停止 · 保留已完成记录") })
                     }) { padding -> ChatBody(state, Modifier.padding(padding)) }
-                if (menu) ConversationMenuSheet(scene != "empty", {}, {}, {}) { menu = false }
+                if (menu) ConversationMenuSheet(scene != "empty", {}, {}, {}, {}) { menu = false }
                 if (models) ModelPickerSheet(state.connections, state.selected,
                     { state = state.copy(selected = it); models = false }, {}) { models = false }
             }

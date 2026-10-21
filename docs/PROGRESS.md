@@ -2,9 +2,15 @@
 
 更新时间：2026-10-21。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
-## 下一步：PTY 选型待确认（2026-10-21）
+## 0.1.14 原生交互终端（2026-10-21）
 
-已研究 Termux 独立原生组件、xterm.js/WebView、libghostty-vt 与自写模拟器，推荐稳定 Termux 组件 + Aurora 自有普通/Root PTY 会话管理；见 [TERMINAL_PROPOSAL.md](TERMINAL_PROPOSAL.md)。最新非预发布实查为 v0.118.3。Ghostty 当前嵌入 API 尚变动且未单独打版本；Termux 上游主线程解析不能直接照搬。提案包括前台服务生命周期扩展、FD 数据通道、Agent 游标工具与资源预算，需要用户确认后实现；没有新增应用代码、依赖或设备测试，不将提案算已完成。
+用户已认可推荐方案，强调Agent效率/速度/质量与美观。实现普通/Root原生PTY、六个Agent工具、按需增量文本/屏幕/Base64、后台跨回复会话、Root Binder控制+Unix socket FD数据、截止/取消/同SID作业清理、会话记录/中断恢复、原生Canvas查看与IME、滚动/字号/复制/接手。见[INTERACTIVE_TERMINALS.md](INTERACTIVE_TERMINALS.md)。Termux稳定v0.118.3固定提交，只导入12个终端Java组件，来源哈希/Apache/MIT声明保留；没有整个Termux/第三方App/新Linux发行版依赖。
+
+核心72项通过，Debug/R8Release/test/lint通过；新增10项Android用例只编译，ordinary gate61，设备尚未连接。新增Linux主机8项PTY生命周期测试交给CI执行；主机不是Android/Root证据。无真实模型或性能基准。当前重点完成CI再更新结果；下一步Skills版本化工具包，新底层继续研究确认。不擅自恢复模拟器或要求现在接手机。
+
+## PTY 研究记录（已确认，2026-10-21）
+
+已研究 Termux 独立原生组件、xterm.js/WebView、libghostty-vt 与自写模拟器，推荐稳定 Termux 组件 + Aurora 自有普通/Root PTY 会话管理；见 [TERMINAL_PROPOSAL.md](TERMINAL_PROPOSAL.md)。最新非预发布实查为 v0.118.3。Ghostty 当前嵌入 API 尚变动且未单独打版本；Termux 上游主线程解析不能直接照搬。用户随后已认可并进入0.1.14实现，不再重复请求此架构许可。
 
 ## 0.1.13 事件日志（2026-10-21）
 

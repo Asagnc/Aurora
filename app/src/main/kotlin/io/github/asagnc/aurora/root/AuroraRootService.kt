@@ -17,6 +17,7 @@ import kotlinx.coroutines.runBlocking
 
 class AuroraRootService : RootService() {
     private val commands = RootCommandSession()
+    private val terminals by lazy { RootTerminalSessions(this) }
 
     private fun verifyCaller() {
         check(Binder.getCallingUid() == applicationInfo.uid) { "Caller is outside Aurora" }
@@ -50,8 +51,15 @@ class AuroraRootService : RootService() {
 
         override fun closeCommands() {
             verifyCaller()
-            runBlocking { commands.close() }
+            runBlocking { commands.close(); terminals.close() }
         }
+
+        override fun openTerminal(id: String, conversation: String, request: Bundle, callback: IRootResult): Bundle {
+            verifyCaller()
+            return terminals.open(id, conversationRoot(conversation), RootTerminalWire.decode(request), callback)
+        }
+        override fun activateTerminal(id: String) { verifyCaller(); terminals.activate(id) }
+        override fun stopTerminal(id: String) { verifyCaller(); runBlocking { terminals.stop(id) } }
 
         override fun snapshot(): Bundle {
             verifyCaller()
@@ -59,6 +67,7 @@ class AuroraRootService : RootService() {
             return Bundle().apply {
                 putInt("protocol", 1)
                 putInt("commandProtocol", 2)
+                putInt("terminalProtocol", 1)
                 putInt("uid", Process.myUid())
                 putInt("pid", Process.myPid())
                 putInt("sdk", Build.VERSION.SDK_INT)
@@ -70,5 +79,5 @@ class AuroraRootService : RootService() {
         }
     }
 
-    override fun onDestroy() { runBlocking { commands.close() } }
+    override fun onDestroy() { runBlocking { commands.close(); terminals.close() } }
 }

@@ -1,5 +1,7 @@
 # Build environment
 
+0.1.14: core72 passed; debug/R8release/AndroidTest/lint pass (0 errors,1 existing MiMo warning). Ten new Android PTY/IME/ownership/Binder cases are compiled only, ordinary gate61. CI adds eight Linux-host native PTY tests and twelve-source integrity verification; host checks do not replace Android/Root acceptance. See INTERACTIVE_TERMINALS.md. New terminalProtocol1 requires the updated Root service without changing commandProtocol2.
+
 0.1.13: core67 passed; debug/R8release/AndroidTest/lint pass (0 errors,1 existing MiMo warning). Ordinary gate51 includes five new CommandLogDeviceTest cases (compiled, not executed without a device). Root command protocol2 requires the updated service; SQLite schema3 migrates from1/2. Details and unverified device scope: LIVE_COMMAND_LOGS.md.
 
 0.1.12 (2026-10-21): pin native Compose Markdown0.46.0 and Coil3.6.3; no browser renderer for messages. Core59 passed. Five ImageArtifactDeviceTest cases added to the ordinary gate (minimum46) but not run without a connected device; compilation does not count as acceptance. Debug/R8 release/AndroidTest/lint pass; lint0 errors,1 existing MiMo vector warning. Keep SDK36 as the minimum; use FileChannel instead of Files.writeString which lint identifies as requiring36.1.

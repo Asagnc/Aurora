@@ -5,3 +5,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Aurora"
 include(":core", ":app")
+include(":terminal")

@@ -19,6 +19,7 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
             mutable.update { it.copy(toolRuns = it.toolRuns.map { old -> if (old.id == event.id) event else old }) }
         }
         val tools = ToolRouter(listOfNotNull(files, BrowserToolExecutor(app.browser, id), ImageToolExecutor(app.images, id),
+            io.github.asagnc.aurora.terminal.TerminalToolExecutor(app.terminals, id, app.root.terminalClient != null),
             CommandToolExecutor(app.commands, directory, prepared = prepared),
             app.root.commandClient?.let { CommandToolExecutor(app.commands, directory, it, prepared) }))
         val fingerprint = requestFingerprint(SYSTEM, tools.definitions)

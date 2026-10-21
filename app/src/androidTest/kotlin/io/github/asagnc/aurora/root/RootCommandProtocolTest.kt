@@ -18,6 +18,18 @@ import org.junit.runner.RunWith
 class RootCommandProtocolTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
+    @Test fun realBinderCarriesInteractivePtyBytesViaFileDescriptor() = runBlocking { fixture { remote, owner, _ ->
+        val endpoint = RootTerminalClient(remote).open(UUID.randomUUID().toString(), owner,
+            io.github.asagnc.aurora.terminal.PtyRequest(listOf("/system/bin/sh", "-c", "read word; echo \"\u0024word\"; exit 7")))
+        val output = async(Dispatchers.IO) { String(endpoint.output.readBytes()) }
+        try {
+            endpoint.write("binder-pty\n".toByteArray())
+            val result = withTimeout(5000) { endpoint.exit.await() }
+            assertEquals(7, result.exitCode); assertEquals("exited", result.state)
+            assertTrue(withTimeout(5000) { output.await() }.contains("binder-pty"))
+        } finally { endpoint.stop(); endpoint.closeStreams(); output.cancelAndJoin() }
+    } }
+
     private suspend fun fixture(block: suspend (IRootControl, String, Path) -> Unit) {
         val ready = CompletableDeferred<IRootControl>()
         val connection = object : ServiceConnection {
@@ -162,6 +174,9 @@ class RootCommandProtocolTest {
             override fun start(id: String, conversation: String, request: Bundle, callback: IRootResult) { error("Must not start") }
             override fun cancelAndWait(id: String) {}
             override fun closeCommands() {}
+            override fun openTerminal(id: String, conversation: String, request: Bundle, callback: IRootResult) = Bundle()
+            override fun activateTerminal(id: String) {}
+            override fun stopTerminal(id: String) {}
         }
         assertTrue(RootCommandClient(dead, context).execute(UUID.randomUUID().toString(),
             CommandRequest(listOf("/system/bin/true"))).contains("command_outcome_uncertain"))

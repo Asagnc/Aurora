@@ -25,12 +25,14 @@ class AuroraApplication : Application() {
     internal val agentRuns by lazy { io.github.asagnc.aurora.data.AgentRunStore(conversations) }
     val tasks = OwnedTasks()
     internal val agentTasks by lazy { io.github.asagnc.aurora.runtime.AgentTaskHost(this) }
+    internal val terminals by lazy { io.github.asagnc.aurora.terminal.TerminalManager(this) }
     internal val chat by lazy { io.github.asagnc.aurora.runtime.ChatController(this) }
     val root by lazy { io.github.asagnc.aurora.root.RootController(this) }
     internal val browser by lazy { io.github.asagnc.aurora.browser.BrowserController(this) }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     val ready by lazy { scope.async {
         conversations.recoverInterruptedRuns()
+        terminals.recover()
         spaces.recoverDeletes(browser::deleteOwner)
         val owners = withContext(Dispatchers.Main) { browser.profileOwners() }
         owners.filter { conversations.header(it) == null }.forEach { owner ->

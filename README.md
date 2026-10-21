@@ -12,6 +12,7 @@ The repository contains a runnable development app: Compose chat, ten curated BY
 
 - [Current functionality, gaps and priorities](docs/FEATURE_STATUS.md)
 - [Native command execution and boundaries](docs/NATIVE_COMMANDS.md)
+- [Interactive native/Root PTY sessions and verification gaps](docs/INTERACTIVE_TERMINALS.md)
 - [Root command transport and hardware verification gaps](docs/ROOT_COMMANDS.md)
 - [Approved design baseline](docs/DESIGN.md)
 - [Engineering rules](AGENTS.md)

@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
     var providers by remember { mutableStateOf(false) }
     var menu by remember { mutableStateOf(false) }
     var browser by remember { mutableStateOf(false) }
+    var terminal by remember { mutableStateOf(false) }
     var models by remember { mutableStateOf(false) }
     var metrics by remember { mutableStateOf<String?>(null) }
     var space by remember { mutableStateOf<String?>(null) }
@@ -72,11 +73,12 @@ import kotlinx.coroutines.launch
         }
     }
     if (menu) ConversationMenuSheet(state.current != null, { draft = ""; model.newConversation() },
-        { conversationFilesOnly = true; space = "conversation" }, { browser = true }) { menu = false }
+        { conversationFilesOnly = true; space = "conversation" }, { browser = true }, { terminal = true }) { menu = false }
     if (models) ModelPickerSheet(state.connections, state.selected, ::choose, { models = false; providers = true }) { models = false }
     if (providers) ProviderDialog(state.connections, ::choose, model::saveConnection) { providers = false }
     space?.let { SpaceBrowserSheet(model, it, conversationFilesOnly, artifactFolder) { space = null; artifactFolder = "" } }
     if (browser) state.current?.id?.let { BrowserPage(model.browser, it) { browser = false } }
+    if (terminal) state.current?.id?.let { TerminalPage(it) { terminal = false } }
     pending?.let { next -> AlertDialog(onDismissRequest = { pending = null }, title = { Text("切换配置") },
         text = { Text(CachePolicy.switchExplanation(state.selected?.let { CachePolicy.impact(it, next) } ?: CacheImpact.NEW_SCOPE)) },
         confirmButton = { TextButton({ model.selectConnection(next); pending = null }) { Text("确认切换") } },

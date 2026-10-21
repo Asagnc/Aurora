@@ -9,13 +9,14 @@ import io.github.asagnc.aurora.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable internal fun ConversationMenuSheet(hasConversation: Boolean, new: () -> Unit,
-    files: () -> Unit, browser: () -> Unit, dismiss: () -> Unit) {
+    files: () -> Unit, browser: () -> Unit, terminal: () -> Unit, dismiss: () -> Unit) {
     ModalBottomSheet(onDismissRequest = dismiss, containerColor = MaterialTheme.colorScheme.surface) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(bottom = 24.dp)) {
             Text("本会话", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(bottom = 12.dp))
             ConversationMenuItem("新会话", R.drawable.ic_edit, true) { dismiss(); new() }
             ConversationMenuItem("本会话文件", R.drawable.ic_folder_open, hasConversation) { dismiss(); files() }
             ConversationMenuItem("浏览器", R.drawable.ic_language, hasConversation) { dismiss(); browser() }
+            ConversationMenuItem("交互终端", R.drawable.ic_terminal, hasConversation) { dismiss(); terminal() }
         }
     }
 }
