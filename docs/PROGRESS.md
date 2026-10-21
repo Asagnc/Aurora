@@ -6,7 +6,7 @@
 
 用户已认可推荐方案，强调Agent效率/速度/质量与美观。实现普通/Root原生PTY、六个Agent工具、按需增量文本/屏幕/Base64、后台跨回复会话、Root Binder控制+Unix socket FD数据、截止/取消/同SID作业清理、会话记录/中断恢复、原生Canvas查看与IME、滚动/字号/复制/接手。见[INTERACTIVE_TERMINALS.md](INTERACTIVE_TERMINALS.md)。Termux稳定v0.118.3固定提交，只导入12个终端Java组件，来源哈希/Apache/MIT声明保留；没有整个Termux/第三方App/新Linux发行版依赖。
 
-核心72项通过，Debug/R8Release/test/lint通过；新增10项Android用例只编译，ordinary gate61，设备尚未连接。新增Linux主机8项PTY生命周期测试交给CI执行；主机不是Android/Root证据。无真实模型或性能基准。当前重点完成CI再更新结果；下一步Skills版本化工具包，新底层继续研究确认。不擅自恢复模拟器或要求现在接手机。
+核心72项通过，Debug/R8Release/test/lint通过；新增10项普通Android用例及2项显式Root用例只编译，ordinary gate61，设备尚未连接。Linux主机8项PTY生命周期和12源码哈希校验已在CI39596437466对应步骤通过，完整Android CI仍在收尾。复查另补启动前空间已关闭的结构化失败、防止后台launch异常崩溃、主线程取消不做阻塞FD关闭、持久状态失败明示；对应最终提交继续CI验证。主机不是Android/Root证据，无真实模型或性能基准。下一步Skills版本化工具包，新底层继续研究确认。不擅自恢复模拟器或要求现在接手机。
 
 ## PTY 研究记录（已确认，2026-10-21）
 

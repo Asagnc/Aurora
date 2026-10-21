@@ -1,6 +1,6 @@
 # Build environment
 
-0.1.14: core72 passed; debug/R8release/AndroidTest/lint pass (0 errors,1 existing MiMo warning). Ten new Android PTY/IME/ownership/Binder cases are compiled only, ordinary gate61. CI adds eight Linux-host native PTY tests and twelve-source integrity verification; host checks do not replace Android/Root acceptance. See INTERACTIVE_TERMINALS.md. New terminalProtocol1 requires the updated Root service without changing commandProtocol2.
+0.1.14: core72 passed; debug/R8release/AndroidTest/lint pass (0 errors,1 existing MiMo warning). Ten new ordinary Android PTY/IME/ownership/Binder cases plus two explicit RootRequired PTY cases are compiled only, ordinary gate61. Eight Linux-host native PTY tests and twelve-source integrity verification passed their CI step; host checks do not replace Android/Root acceptance. See INTERACTIVE_TERMINALS.md. New terminalProtocol1 requires the updated Root service without changing commandProtocol2.
 
 0.1.13: core67 passed; debug/R8release/AndroidTest/lint pass (0 errors,1 existing MiMo warning). Ordinary gate51 includes five new CommandLogDeviceTest cases (compiled, not executed without a device). Root command protocol2 requires the updated service; SQLite schema3 migrates from1/2. Details and unverified device scope: LIVE_COMMAND_LOGS.md.
 

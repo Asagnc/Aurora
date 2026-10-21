@@ -29,7 +29,8 @@ internal class TerminalManager(private val app: AuroraApplication) {
     internal fun current(owner: String) = sessions.values.filter { it.initial.owner == owner }.map { it.record }
     internal fun serviceReady(id: String): Boolean = sessions[id]?.takeIf { it.job.isActive }?.let { it.ready.complete(Unit); true } ?: false
     internal fun serviceFailed(id: String, failure: Exception) { sessions[id]?.ready?.completeExceptionally(failure) }
-    internal fun stopAll() { sessions.values.forEach { it.endpoint?.stop(); it.job.cancel() } }
+    // Cancellation guards perform descriptor/process shutdown on IO, not the service's main thread.
+    internal fun stopAll() { sessions.values.forEach { it.job.cancel() } }
     internal suspend fun forget(owner: String) {
         val owned = sessions.values.filter { it.initial.owner == owner }
         owned.forEach { it.endpoint?.stop(); it.job.cancel() }
@@ -60,7 +61,9 @@ internal class TerminalManager(private val app: AuroraApplication) {
                             }
                         } finally { lease?.let { if (it.held) it.close() } }
                     }
-                } finally {
+                } catch (cancel: CancellationException) { throw cancel }
+                catch (failure: Exception) { next.failStart(failure) }
+                finally {
                     if (!next.opened.isCompleted) next.opened.completeExceptionally(IllegalStateException("Conversation closing"))
                     version.update { it + 1 }
                 }

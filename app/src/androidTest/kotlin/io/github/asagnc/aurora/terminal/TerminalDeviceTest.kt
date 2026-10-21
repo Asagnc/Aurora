@@ -120,6 +120,7 @@ class TerminalDeviceTest {
             withTimeout(5000) { app.spaces.delete(owner, app.tasks::quiesce) { app.terminals.forget(it) } }
             assertTrue(session.job.isCompleted); assertFalse(Files.exists(path))
             assertNull(app.terminals.session(owner, terminal.id))
+            assertTrue(runCatching { app.terminals.start(owner, PtyRequest()) }.isFailure)
         }
     }
 

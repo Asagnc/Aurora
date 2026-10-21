@@ -17,6 +17,42 @@ import org.junit.runner.RunWith
 class RootCommandDeviceTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
+    @RootRequired @Test fun rootPtyHasRealUidZeroInteractiveInputAndExitStatus() = runBlocking { fixture { controller, owner, _ ->
+        val endpoint = requireNotNull(controller.terminalClient).open(UUID.randomUUID().toString(), owner,
+            io.github.asagnc.aurora.terminal.PtyRequest(listOf("/system/bin/sh", "-c",
+                "test -t 0 || exit 8; id -u; read word; printf '<%s>' \"\u0024word\"; exit 9")))
+        val output = async(Dispatchers.IO) { String(endpoint.output.readBytes()) }
+        try {
+            endpoint.write("root-pty\n".toByteArray())
+            val result = withTimeout(5000) { endpoint.exit.await() }
+            assertEquals(9, result.exitCode); assertEquals("exited", result.state)
+            val text = withTimeout(5000) { output.await() }
+            assertTrue(text.contains(Regex("(?m)^0\\r?\u0024"))); assertTrue(text.contains("<root-pty>"))
+        } finally { endpoint.stop(); endpoint.closeStreams(); output.cancelAndJoin() }
+    } }
+
+    @RootRequired @Test fun disconnectStopsRootPtyAndReconnectDoesNotReplayIt() = runBlocking { fixture { controller, owner, _ ->
+        val endpoint = requireNotNull(controller.terminalClient).open(UUID.randomUUID().toString(), owner,
+            io.github.asagnc.aurora.terminal.PtyRequest(listOf("/system/bin/sh", "-c", "printf ready; sleep 60")))
+        val ready = CompletableDeferred<Unit>()
+        val output = async(Dispatchers.IO) { if (endpoint.output.read() >= 0) ready.complete(Unit); endpoint.output.readBytes() }
+        try {
+            withTimeout(5000) { ready.await() }
+            controller.disconnect()
+            withTimeout(5000) { output.await() }
+            val old = withTimeout(5000) { runCatching { endpoint.exit.await() } }
+            assertTrue(old.isFailure || old.getOrThrow().state != "exited")
+            controller.connect()
+            assertEquals(RootPhase.READY, controller.state.value.phase)
+            val fresh = requireNotNull(controller.terminalClient).open(UUID.randomUUID().toString(), owner,
+                io.github.asagnc.aurora.terminal.PtyRequest(listOf("/system/bin/id", "-u")))
+            try {
+                assertEquals("0", String(fresh.output.readBytes()).trim())
+                assertEquals(0, withTimeout(5000) { fresh.exit.await() }.exitCode)
+            } finally { fresh.stop(); fresh.closeStreams() }
+        } finally { endpoint.stop(); endpoint.closeStreams(); output.cancelAndJoin() }
+    } }
+
     private suspend fun fixture(block: suspend (RootController, String, Path) -> Unit) {
         check(InstrumentationRegistry.getArguments().getString("auroraRootTest") == "true")
         val id = UUID.randomUUID().toString()

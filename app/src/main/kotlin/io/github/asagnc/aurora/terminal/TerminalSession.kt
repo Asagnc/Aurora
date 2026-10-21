@@ -27,6 +27,12 @@ internal class TerminalSession(val initial: TerminalRecord, val request: PtyRequ
     @Volatile private var failure: String? = null
     lateinit var job: Job
 
+    fun failStart(failure: Exception) {
+        record = record.copy(state = "failed", reason = failure.javaClass.simpleName)
+        opened.completeExceptionally(failure)
+        announce()
+    }
+
     suspend fun run(open: suspend () -> PtyEndpoint) {
         var final = "interrupted"
         var code: Int? = null
@@ -57,7 +63,9 @@ internal class TerminalSession(val initial: TerminalRecord, val request: PtyRequ
                 endpoint?.let { transport -> transport.stop(); runCatching { transport.exit.await() }; transport.closeStreams() }
                 replies.close()
                 record = record.copy(state = final, exitCode = code, reason = failure ?: if (final == "interrupted") "Session stopped; input not replayed" else null)
-                runCatching { records.save(record) }
+                runCatching { records.save(record) }.onFailure {
+                    record = record.copy(state = "failed", reason = "state_persistence_failed:${it.javaClass.simpleName}")
+                }
                 if (!opened.isCompleted) opened.completeExceptionally(IllegalStateException(record.reason ?: "Terminal startup failed"))
                 announce()
             }
