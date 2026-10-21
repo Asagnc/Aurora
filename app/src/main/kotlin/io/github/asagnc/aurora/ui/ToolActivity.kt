@@ -1,20 +1,22 @@
 package io.github.asagnc.aurora.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.foundation.shape.RoundedCornerShape
 import io.github.asagnc.aurora.data.ToolRun
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-@Composable internal fun ToolActivity(events: List<ToolRun>) {
+@Composable internal fun ToolActivity(events: List<ToolRun>, openArtifact: (String) -> Unit = {}) {
     var expanded by remember { mutableStateOf(false) }
     var detail by remember { mutableStateOf<String?>(null) }
-    val presentations = remember(events) { events.takeLast(50).map(::presentTool) }
+    val presentations by produceState(emptyList<ToolPresentation>(), events) {
+        value = withContext(Dispatchers.Default) { events.takeLast(50).map(::presentTool) }
+    }
     val lineColor = AuroraBorder
     val active = presentations.lastOrNull { it.event.state == "started" }
     Column(Modifier.fillMaxWidth()) {
@@ -43,12 +45,8 @@ import io.github.asagnc.aurora.data.ToolRun
                 }
             }
             if (detail == event.id) {
-                val preview = remember(event.result) { toolResultPreview(event.result) }
                 Surface(shape = RoundedCornerShape(10.dp), color = MaterialTheme.colorScheme.surfaceContainer) {
-                SelectionContainer { Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("${event.tool}\n调用 ID：${event.callId}", color = AuroraMuted, style = MaterialTheme.typography.labelMedium)
-                    Text(preview, style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace))
-                } }
+                    ToolResultDetails(event, openArtifact)
                 }
             }
         } }

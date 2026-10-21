@@ -1,7 +1,6 @@
 package io.github.asagnc.aurora.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -30,7 +29,7 @@ import io.github.asagnc.aurora.runtime.ChatState
 }
 
 @Composable internal fun ChatBody(state: ChatState, modifier: Modifier = Modifier,
-    providers: () -> Unit = {}, older: () -> Unit = {}) {
+    providers: () -> Unit = {}, older: () -> Unit = {}, openArtifact: (String) -> Unit = {}) {
     if (state.messages.isEmpty() && state.streaming.isEmpty()) {
         Column(modifier.fillMaxSize().padding(horizontal = 26.dp), verticalArrangement = Arrangement.Center) {
             Icon(androidx.compose.ui.res.painterResource(R.drawable.ic_sparkle), null,
@@ -45,17 +44,19 @@ import io.github.asagnc.aurora.runtime.ChatState
                 Text("添加自己的 API 连接", style = MaterialTheme.typography.bodySmall)
             }
         }
-    } else LazyColumn(modifier.fillMaxSize().padding(horizontal = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(22.dp), contentPadding = PaddingValues(vertical = 20.dp)) {
-        if (state.olderBefore != null) item { TextButton(older) { Text("更早的消息") } }
+    } else ChatTimeline(state.current?.id,
+        listOf(state.messages.lastOrNull()?.id, state.streaming, state.toolRuns, state.stage), modifier) {
+        if (state.olderBefore != null) item(key = "older") { TextButton(older) { Text("更早的消息") } }
         items(state.messages, key = { it.id }) { message -> MessageBubble(message) }
-        if (state.toolRuns.isNotEmpty()) item { ToolActivity(state.toolRuns) }
-        if (state.streaming.isNotEmpty()) item { MessageBubble(ChatMessage(role = "assistant", text = state.streaming)) }
-        if (state.stage.isNotEmpty() || state.taskId != null) item { AgentTaskStatus(state) }
+        if (state.toolRuns.isNotEmpty()) item(key = "tools") { ToolActivity(state.toolRuns, openArtifact) }
+        if (state.streaming.isNotEmpty()) item(key = "stream") {
+            MessageBubble(ChatMessage(id = "stream", role = "assistant", text = state.streaming), streaming = true)
+        }
+        if (state.stage.isNotEmpty() || state.taskId != null) item(key = "task") { AgentTaskStatus(state) }
     }
 }
 
-@Composable private fun MessageBubble(message: ChatMessage) {
+@Composable private fun MessageBubble(message: ChatMessage, streaming: Boolean = false) {
     val user = message.role == "user"
     Row(Modifier.fillMaxWidth(), horizontalArrangement = if (user) Arrangement.End else Arrangement.Start) {
         Surface(Modifier.widthIn(max = if (user) 310.dp else 600.dp),
@@ -67,7 +68,10 @@ import io.github.asagnc.aurora.runtime.ChatState
                 Icon(androidx.compose.ui.res.painterResource(R.drawable.ic_sparkle), null,
                     Modifier.size(19.dp), tint = MaterialTheme.colorScheme.primary)
                 Text("Aurora", color = AuroraMuted, style = MaterialTheme.typography.labelLarge)
+                Spacer(Modifier.weight(1f))
+                if (!streaming) CopyTextButton(message.text, "复制回复")
             }
+            if (user) Row(Modifier.align(Alignment.End)) { CopyTextButton(message.text, "复制消息") }
             SelectionContainer {
                 Text(message.text + if (message.complete) "" else "\n（未完成）",
                     Modifier.padding(if (user) 14.dp else 0.dp), style = MaterialTheme.typography.bodyLarge)

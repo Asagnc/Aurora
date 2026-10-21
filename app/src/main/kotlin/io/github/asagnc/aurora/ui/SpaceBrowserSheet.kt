@@ -16,9 +16,10 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable internal fun SpaceBrowserSheet(model: ChatViewModel, initial: String, conversationOnly: Boolean = false, dismiss: () -> Unit) {
+@Composable internal fun SpaceBrowserSheet(model: ChatViewModel, initial: String, conversationOnly: Boolean = false,
+    initialPath: String = "", dismiss: () -> Unit) {
     var space by remember { mutableStateOf(initial) }
-    var path by remember { mutableStateOf("") }
+    var path by remember { mutableStateOf(initialPath) }
     var entries by remember { mutableStateOf(emptyList<Pair<String, Boolean>>()) }
     var error by remember { mutableStateOf<String?>(null) }
     var preview by remember { mutableStateOf<String?>(null) }

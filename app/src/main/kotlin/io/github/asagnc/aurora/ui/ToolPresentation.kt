@@ -1,15 +1,16 @@
 package io.github.asagnc.aurora.ui
 
 import io.github.asagnc.aurora.core.WireJson
+import io.github.asagnc.aurora.core.summarizeToolResult
 import io.github.asagnc.aurora.data.ToolRun
 import kotlinx.serialization.json.*
 
 internal data class ToolPresentation(val event: ToolRun, val title: String, val status: String, val failed: Boolean)
 
 internal fun presentTool(event: ToolRun): ToolPresentation {
-    // Executors serialize their top-level error envelope with the error field first.
-    val failed = event.result?.trimStart()?.startsWith("{\"error\":") == true
-    val uncertain = event.state == "uncertain" || event.result?.trimStart()?.startsWith("{\"error\":\"command_outcome_uncertain\"") == true
+    val summary = summarizeToolResult(event.result)
+    val failed = summary?.error != null || (summary?.exitCode ?: 0L) != 0L
+    val uncertain = event.state == "uncertain" || summary?.uncertain == true
     val title = when (event.tool) {
         "command_execute" -> "执行原生命令"
         "command_execute_root" -> "执行 Root 命令"
@@ -29,6 +30,8 @@ internal fun presentTool(event: ToolRun): ToolPresentation {
     val status = when {
         event.state == "started" -> "进行中"
         uncertain -> "结果待核实"
+        summary?.error == "command_timeout" -> "已超时"
+        summary?.error == "command_stopped" -> "已停止"
         failed -> "返回错误"
         else -> "已返回"
     }

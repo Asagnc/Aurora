@@ -1,5 +1,7 @@
 # Build environment
 
+2026-10-21 cleanup: Android Studio and the unused AVD/emulator system image were removed. Windows builds now use the standalone JDK at the task workspace's `../jdk-25` via JAVA_HOME, with the same SDK/NDK/CMake and `../gradle-cache`. No IDE is required. Do not re-download an emulator merely to repeat historical checks; this machine currently has no connected device.
+
 0.1.10 update (2026-10-21): the ordinary gate now requires41 tests, including real PowerManager lease independence/timeout checks. Explicit AgentScreenDeviceTest requires auroraScreenTest=true and auroraRootTest=true plus a pre-authorized Root manager; it briefly changes display state and is excluded by RootRequired from ordinary runs. Real Android16 ARM64 passed41+1+4+2; see DEVICE_ACCEPTANCE_2026-10-21.md. The local emulator did not complete this round; the user chose hardware evidence first. No daily-phone Aurora force-stop recovery sequence was run.
 
 Local builds use the installed JDK 25 and SDK. Android CI bootstraps its own SDK because the hosted runner did not provide sdkmanager on PATH.

@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
     var models by remember { mutableStateOf(false) }
     var metrics by remember { mutableStateOf<String?>(null) }
     var space by remember { mutableStateOf<String?>(null) }
+    var artifactFolder by remember { mutableStateOf("") }
     var conversationFilesOnly by remember { mutableStateOf(false) }
     var draft by rememberSaveable { mutableStateOf("") }
     var pending by remember { mutableStateOf<Connection?>(null) }
@@ -61,14 +62,18 @@ import kotlinx.coroutines.launch
             ChatComposer(state, draft, { draft = it }, { picker.launch(arrayOf("*/*")) }, ::choose, { models = true },
                 ::sendOrStop)
         }) { padding ->
-            ChatBody(state, Modifier.padding(padding), { providers = true }, model::loadOlderMessages)
+            ChatBody(state, Modifier.padding(padding), { providers = true }, model::loadOlderMessages, { path ->
+                artifactFolder = path.substringBeforeLast('/', "")
+                conversationFilesOnly = true
+                space = "conversation"
+            })
         }
     }
     if (menu) ConversationMenuSheet(state.current != null, { draft = ""; model.newConversation() },
         { conversationFilesOnly = true; space = "conversation" }, { browser = true }) { menu = false }
     if (models) ModelPickerSheet(state.connections, state.selected, ::choose, { models = false; providers = true }) { models = false }
     if (providers) ProviderDialog(state.connections, ::choose, model::saveConnection) { providers = false }
-    space?.let { SpaceBrowserSheet(model, it, conversationFilesOnly) { space = null } }
+    space?.let { SpaceBrowserSheet(model, it, conversationFilesOnly, artifactFolder) { space = null; artifactFolder = "" } }
     if (browser) state.current?.id?.let { BrowserPage(model.browser, it) { browser = false } }
     pending?.let { next -> AlertDialog(onDismissRequest = { pending = null }, title = { Text("切换配置") },
         text = { Text(CachePolicy.switchExplanation(state.selected?.let { CachePolicy.impact(it, next) } ?: CacheImpact.NEW_SCOPE)) },
