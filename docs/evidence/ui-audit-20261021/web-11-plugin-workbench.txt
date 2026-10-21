@@ -1,0 +1,76 @@
+Browser tab: 2, Title: "DeepSeek Harness", URL: "http://127.0.0.1:3187/".
+0 AXWebArea DeepSeek Harness, URL: 127.0.0.1:3187/
+	1 container
+		2 button 新建会话
+		3 button 收起侧边栏
+		4 button 新建会话
+		5 container 全局面板
+			6 button 插件
+		7 text 工作区
+		8 container
+			9 button (collapsed) Description: 搜索会话, Secondary Actions: Expand
+			10 text field (settable)
+		11 button 视图选项
+		12 button 添加工作区
+		13 outline 会话
+			14 container
+				15 row (expanded) 默认工作区, Secondary Actions: Collapse
+					16 text 默认工作区
+				17 row (selectable) 新会话
+					18 text 新会话
+		19 pop up button (collapsed) Description: 设置, Secondary Actions: Expand
+		20 container
+			21 heading 插件, Value: 1
+				22 text 插件
+			23 text 安装、启用和配置插件
+			24 button 插件说明
+			25 button 刷新
+			26 button 添加插件
+		27 container
+			28 heading 官方, Value: 3
+				29 text 官方
+			30 text 8
+			31 content list
+				32 container
+					33 button 查看 智能体团队
+					34 text 实验性
+					35 text 启用团队协作、团队工具、成员列表和共享任务看板。
+					36 switch Description: 启用 智能体团队, Value: 0
+				37 container
+					38 button 查看 自动授权审查
+					39 text 实验性
+					40 text 提供自动审查权限模式，由模型在每次工具调用前判断是否授权。
+					41 switch Description: 启用 自动授权审查, Value: 0
+				42 container
+					43 button 查看 自动化任务
+					44 text 实验性
+					45 text 按设定的时间或周期，在会话中自动执行任务。
+					46 switch Description: 启用 自动化任务, Value: 0
+				47 container
+					48 button 查看 语音输入
+					49 text 实验性
+					50 text 在本机使用 SenseVoice 转写录音，首次使用需安装依赖。
+					51 switch Description: 启用 语音输入, Value: 0
+				52 container
+					53 button 查看 终端
+					54 text 限制每条命令最多能跑多久、最多输出多少内容。
+				55 container
+					56 button 查看 Agent 循环
+					57 text 控制 Agent 派发工具调用的方式。
+				58 container
+					59 button 查看 子智能体
+					60 text 设置子智能体的递归层级、数量和模型。
+				61 container
+					62 button 查看 网页搜索
+					63 text 设置 DeepSeek 的搜索提供方。
+		64 container
+			65 heading 已安装, Value: 3
+				66 text 已安装
+			67 text 1
+			68 content list
+				69 container
+					70 button 查看 dsh-web-mobile
+					71 text 尽可能的使dsh适配竖屏等移动端设备
+					72 switch Description: 启用 dsh-web-mobile, Value: 0
+
+The focused UI element is 6 button 插件

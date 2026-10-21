@@ -1,0 +1,35 @@
+Browser tab: 2, Title: "DeepSeek Harness", URL: "http://127.0.0.1:3187/".
+0 AXWebArea DeepSeek Harness, URL: 127.0.0.1:3187/
+	1 container
+		2 button 新建会话
+		3 button 收起侧边栏
+		4 button 新建会话
+		5 container 全局面板
+			6 button 插件
+		7 text 工作区
+		8 container
+			9 button (collapsed) Description: 搜索会话, Secondary Actions: Expand
+			10 text field (settable)
+		11 button 视图选项
+		12 button 添加工作区
+		13 outline 会话
+			14 container
+				15 row (expanded) 默认工作区, Secondary Actions: Collapse
+					16 text 默认工作区
+				17 row (selectable) 新会话
+					18 text 新会话
+		19 pop up button (collapsed) Description: 设置, Secondary Actions: Expand
+		20 button 返回插件列表
+		21 heading 终端, Value: 3
+			22 text 终端
+		23 text 限制每条命令最多能跑多久、最多输出多少内容。
+		24 container
+			25 text 命令超时（毫秒）
+			26 text field (settable) 命令超时（毫秒）, Value: 120000, ID: plugin-config-shell-timeout
+			27 text 单条命令允许运行多久，超时即终止。
+			28 text 单流输出上限（字节）
+			29 text field (settable) 单流输出上限（字节）, Value: 64000, ID: plugin-config-shell-output
+			30 text 超出部分会转存到临时文件，而不是被丢弃。
+			31 button (disabled) 保存
+
+The focused UI element is 0 AXWebArea DeepSeek Harness, URL: 127.0.0.1:3187/

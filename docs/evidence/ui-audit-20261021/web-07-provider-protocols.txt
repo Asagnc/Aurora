@@ -1,0 +1,125 @@
+Browser tab: 2, Title: "DeepSeek Harness", URL: "http://127.0.0.1:3187/".
+0 AXWebArea DeepSeek Harness, URL: 127.0.0.1:3187/
+	1 container
+		2 container
+			3 button 新建会话
+			4 button 收起侧边栏
+			5 button 新建会话
+			6 container 全局面板
+				7 button 插件
+			8 text 工作区
+			9 container
+				10 button (collapsed) Description: 搜索会话, Secondary Actions: Expand
+				11 text field (settable)
+			12 button 视图选项
+			13 button 添加工作区
+			14 outline 会话
+				15 container
+					16 row (selectable, expanded) 默认工作区, Secondary Actions: Collapse
+						17 text 默认工作区
+					18 row (selected) 新会话
+						19 text 新会话
+			20 pop up button (expanded) Description: 设置, Secondary Actions: Collapse
+			21 container
+				22 text 探索未至之境 预览版
+				23 pop up button (collapsed) Description: 选择工作区, Secondary Actions: Expand
+				24 pop up button (collapsed) 标准模式, Help: 选择新任务使用的 Agent 预设, Secondary Actions: Expand
+				25 text entry area (settable) 描述你想要构建的内容, / 调用指令, @ 文件或对话
+				26 pop up button (collapsed) Description: 添加文件或调用指令, Secondary Actions: Expand
+				27 button 访问模式，当前：工作区内修改
+				28 pop up button (collapsed) Description: 选择模型，当前 DeepSeek-V41-Flash，推理等级 High, Help: DeepSeek-V41-Flash · High, Secondary Actions: Expand
+				29 button (disabled) 发送消息
+			30 container
+				31 tab group
+					32 tab (selected, settable, boolean) 文件 关闭, Description: 关闭, Value: 1
+文件
+					33 button 新标签页
+					34 button 分栏
+					35 container
+						36 button 全屏
+						37 button 收起右侧边栏
+				38 container
+					39 text C:\Users\Admin\Documents\deepseek-harness\ default-workspace
+				40 button 重新读取
+				41 button 用 文件资源管理器 打开
+				42 pop up button (collapsed) Description: 更多打开方式, Secondary Actions: Expand
+				43 content list
+					44 text 空目录
+		45 container 设置
+			46 container
+				47 text 设置
+				48 button 通用设置
+				49 button 模型
+				50 button 内置插件
+				51 button Agent 预设
+			52 button 打开配置文件
+			53 button 关闭
+			54 container
+				55 heading 模型, Value: 2
+					56 text 模型
+				57 text 填入各提供商的 API 密钥即可使用其模型。
+				58 content list
+					59 container
+						60 text DeepSeek deepseek-official API 密钥
+						61 text field (settable) API 密钥
+						62 button (expanded) 自定义设置, Secondary Actions: Collapse
+							63 text 自定义设置
+						64 text API 地址
+						65 text field (settable) API 地址
+						66 text 请填写兼容 Anthropic Messages 协议的 API 地址。
+						67 container 模型目录
+							68 text 模型目录 正在使用适配器默认模型
+							69 text field (settable) Description: 模型 ID 1, Value: deepseek-flash
+							70 text field (settable) Description: 显示名称 1, Value: DeepSeek-V41-Flash
+							71 button (expanded) Description: 模型选项 1, Help: 模型选项, Secondary Actions: Collapse
+							72 button Description: 删除模型 1, Help: 删除模型
+							81 container
+								82 text 上下文窗口
+								83 text field (settable) Description: 上下文窗口 1, Value: 1M
+							84 container
+								85 text 最大输出 token 数
+								86 text field (settable) 最大输出 token 数 1
+							87 container 输入类型 1
+								88 text 输入类型
+								89 container
+									90 checkbox (settable, integer) Description: 文本, Value: 1
+									91 text 文本
+								92 container
+									93 checkbox (settable, integer) Description: 图片, Value: 1
+									94 text 图片
+							73 text field (settable) Description: 模型 ID 2, Value: deepseek-v4-pro
+							74 text field (settable) Description: 显示名称 2, Value: DeepSeek-V4-Pro
+							75 button (collapsed) Description: 模型选项 2, Help: 模型选项, Secondary Actions: Expand
+							76 button Description: 删除模型 2, Help: 删除模型
+							77 button 添加模型
+						78 button 取消
+						79 button 保存
+				95 tab group 添加方式
+					96 tab (selectable, settable, boolean) 第三方模型提供商, Value: 0, ID: :r12:-catalog
+					97 tab (selected, settable, boolean) 自定义模型 API, Value: 1, ID: :r12:-custom
+				98 text 连接中转站、自部署服务或其他兼容 OpenAI / Anthropic 协议的接口，需填写 API 地址、协议和模型。
+				99 container Description: 自定义模型 API, ID: :r12:-custom-panel
+					100 text Provider ID
+					101 text field (settable) Provider ID
+					102 text 以小写字母开头的标识，在请求中唯一标识该提供商，并用于派生凭据名。
+					103 text 显示名称
+					104 text field (settable) 显示名称
+					105 text API 地址
+					106 text field (settable) API 地址
+					107 text API 协议
+					108 pop up button (collapsed, settable) Description: API 协议, Value: OpenAI Chat Completions, Secondary Actions: Expand
+						109 menu
+							110 (selected) OpenAI Chat Completions
+							111 OpenAI Responses
+							112 Anthropic Messages
+					113 text API 密钥
+					114 text field (settable) API 密钥
+					115 container 模型目录
+						116 text 模型目录
+						117 button (disabled) 获取可用模型, Help: 请先填写 API 地址，再获取。
+						118 text 模型选择器中将不显示任何模型；目录外 ID 仍可直接发送。
+						119 button 添加模型
+					120 button 取消
+					121 button (disabled) 创建提供商
+
+The focused UI element is 97 tab (selected, settable, boolean) 自定义模型 API, Value: 1, ID: :r12:-custom
