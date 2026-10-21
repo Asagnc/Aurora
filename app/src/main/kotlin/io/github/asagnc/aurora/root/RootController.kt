@@ -44,7 +44,7 @@ class RootController(private val context: Context) {
                 val remote = bind()
                 val snapshot = withContext(Dispatchers.IO) { remote.snapshot() }
                 check(connection != null && remote.asBinder().isBinderAlive)
-                require(snapshot.getInt("commandProtocol") == 1)
+                require(snapshot.getInt("commandProtocol") == 2)
                 val detail = describe(snapshot)
                 this@RootController.remote = remote
                 mutable.value = RootState(RootPhase.READY, detail)

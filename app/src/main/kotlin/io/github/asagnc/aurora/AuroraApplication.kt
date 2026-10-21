@@ -21,6 +21,7 @@ class AuroraApplication : Application() {
         .memoryCache { coil3.memory.MemoryCache.Builder().maxSizeBytes(48L * 1024 * 1024).build() }.diskCache(null).build() }
     val toolRuns by lazy { ToolRunStore(conversations) }
     internal val commands by lazy { io.github.asagnc.aurora.runtime.NativeCommandRunner(this) }
+    internal val commandLogs by lazy { io.github.asagnc.aurora.runtime.CommandLogObserver(this) }
     internal val agentRuns by lazy { io.github.asagnc.aurora.data.AgentRunStore(conversations) }
     val tasks = OwnedTasks()
     internal val agentTasks by lazy { io.github.asagnc.aurora.runtime.AgentTaskHost(this) }

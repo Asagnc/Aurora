@@ -42,10 +42,12 @@ class RootCommandProtocolTest {
     }
 
     @Test fun realBinderReturnsNativeCommandOutput() = runBlocking { fixture { remote, id, _ ->
+        val artifact = UUID.randomUUID().toString()
         val result = WireJson.parseToJsonElement(RootCommandClient(remote, context).execute(id,
-            CommandRequest(listOf("/system/bin/printf", "%s", "literal; $(unchanged)")))).jsonObject
+            CommandRequest(listOf("/system/bin/printf", "%s", "literal; $(unchanged)")), artifact)).jsonObject
         assertEquals(0L, result.number("exitCode"))
         assertEquals("literal; $(unchanged)", result["stdout"]!!.jsonObject.text("text"))
+        assertEquals("runs/$artifact/stdout.bin", result["stdout"]!!.jsonObject.text("artifact"))
         // Fixture UID must never be presented as verified Root.
         assertEquals(Process.myUid().toLong(), result.number("uid"))
     } }

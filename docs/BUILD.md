@@ -1,5 +1,7 @@
 # Build environment
 
+0.1.13: core67 passed; debug/R8release/AndroidTest/lint pass (0 errors,1 existing MiMo warning). Ordinary gate51 includes five new CommandLogDeviceTest cases (compiled, not executed without a device). Root command protocol2 requires the updated service; SQLite schema3 migrates from1/2. Details and unverified device scope: LIVE_COMMAND_LOGS.md.
+
 0.1.12 (2026-10-21): pin native Compose Markdown0.46.0 and Coil3.6.3; no browser renderer for messages. Core59 passed. Five ImageArtifactDeviceTest cases added to the ordinary gate (minimum46) but not run without a connected device; compilation does not count as acceptance. Debug/R8 release/AndroidTest/lint pass; lint0 errors,1 existing MiMo vector warning. Keep SDK36 as the minimum; use FileChannel instead of Files.writeString which lint identifies as requiring36.1.
 
 2026-10-21 cleanup: Android Studio and the unused AVD/emulator system image were removed. Windows builds now use the standalone JDK at the task workspace's `../jdk-25` via JAVA_HOME, with the same SDK/NDK/CMake and `../gradle-cache`. No IDE is required. Do not re-download an emulator merely to repeat historical checks; this machine currently has no connected device.

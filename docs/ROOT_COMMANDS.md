@@ -1,4 +1,8 @@
-# Root command transport — 0.1.8
+# Root command transport — 0.1.13
+
+2026-10-21：命令握手commandProtocol及Bundle版本为2，start ID同时用作产物目录UUID，普通/Root统一映射以支持事件日志；身份协议及原生采集结果格式仍为1。拒绝旧版服务，不自动重放命令。接口仍只有原有start/complete，没有逐行日志回调。旧版真机测试不代表本版协议2已验收；见LIVE_COMMAND_LOGS.md。
+
+## Historical 0.1.8 acceptance
 
 Status: implemented over approved libsu6.0.0 RootService/Binder. On2026-10-18, Android16 ARM64 realme/FolkPatch passed4 authorized Root tests: UID0 execution, controlled artifact ownership/readability, direct cancellation/timeout, disconnect cleanup/reconnect and read-only handshake. Ordinary-UID cross-process tests also pass on hardware and emulator. External manager revocation and force-killing the actual Root service remain unverified. Evidence: COMPOSER_B_2026-10-18.md and evidence/0.1.8/phone-root.txt.
 

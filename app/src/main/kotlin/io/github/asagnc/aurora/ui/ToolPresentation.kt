@@ -8,7 +8,7 @@ import kotlinx.serialization.json.*
 internal data class ToolPresentation(val event: ToolRun, val title: String, val status: String, val failed: Boolean)
 
 internal fun presentTool(event: ToolRun): ToolPresentation {
-    val summary = summarizeToolResult(event.result)
+    val summary = summarizeToolResult(event.presentation ?: event.result)
     val failed = summary?.error != null || (summary?.exitCode ?: 0L) != 0L
     val uncertain = event.state == "uncertain" || summary?.uncertain == true
     val title = when (event.tool) {

@@ -39,7 +39,7 @@ class AuroraRootService : RootService() {
             val decoded = RootCommandWire.decode(request)
             commands.start(id, callback) {
                 NativeCommandRunner(this@AuroraRootService, applicationInfo.uid)
-                    .execute(conversationRoot(conversation), decoded).toString()
+                    .execute(conversationRoot(conversation), decoded, id).toString()
             }
         }
 
@@ -58,7 +58,7 @@ class AuroraRootService : RootService() {
             val kernel = Os.uname()
             return Bundle().apply {
                 putInt("protocol", 1)
-                putInt("commandProtocol", 1)
+                putInt("commandProtocol", 2)
                 putInt("uid", Process.myUid())
                 putInt("pid", Process.myPid())
                 putInt("sdk", Build.VERSION.SDK_INT)

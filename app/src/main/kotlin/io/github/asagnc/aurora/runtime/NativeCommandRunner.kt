@@ -22,21 +22,22 @@ class NativeCommandRunner(context: Context, private val artifactOwner: Int = and
     private val awake = CommandWakeLock(context, "NativeCommand")
     val available get() = executable.isFile && executable.canExecute()
 
-    suspend fun execute(root: Path, request: CommandRequest): JsonObject = permits.withPermit {
+    suspend fun execute(root: Path, request: CommandRequest, artifactId: String = UUID.randomUUID().toString()): JsonObject = permits.withPermit {
         runInterruptible(Dispatchers.IO) {
             validate(request)
-            awake.acquire(request.timeoutMs + 1_000).use { executeBlocking(root, request) }
+            require(UUID.fromString(artifactId).toString() == artifactId)
+            awake.acquire(request.timeoutMs + 1_000).use { executeBlocking(root, request, artifactId) }
         }
     }
 
-    private fun executeBlocking(root: Path, request: CommandRequest): JsonObject {
+    private fun executeBlocking(root: Path, request: CommandRequest, artifactId: String): JsonObject {
         check(available) { "Packaged native runner unavailable for this ABI" }
         val cwd = resolveDirectory(root, request.directory)
         val runs = root.resolve("runs")
         require(!Files.isSymbolicLink(runs))
         Files.createDirectories(runs)
         restoreOwner(runs)
-        val directory = Files.createDirectory(runs.resolve(UUID.randomUUID().toString()))
+        val directory = Files.createDirectory(runs.resolve(artifactId))
         restoreOwner(directory)
         val log = Files.createFile(directory.resolve("supervisor.log"))
         restoreOwner(log)

@@ -1,5 +1,7 @@
 # 原生命令执行底座 · 0.1.6
 
+0.1.13：已接入观看时FileObserver事件日志、持久产物映射与有效JSON展示投影，见[LIVE_COMMAND_LOGS.md](LIVE_COMMAND_LOGS.md)。原生采集协议/每流8MiB保存预算不变；普通和Root路径均有对应UUID，Root命令IPC升级为2。此版设备运行仍待验收，历史通过不替代新版结果。
+
 0.1.10补充（2026-10-21）：普通与Root命令在应用侧采用用户确认的有界CPU唤醒范围，见 [COMMAND_POWER.md](COMMAND_POWER.md)；既有权限、参数/输出预算、监督程序与取消机制不变。
 
 **0.1.8当前验收更新（2026-10-18）：Android16 ARM64 真机普通33项、独立恢复1项、Root专项4项通过，包括真实原生程序与UID0执行。** 下文0.1.6/0.1.7“ARM64仅编译/Root待测”段落为历史状态，不再表示当前后端状态。详见 COMPOSER_B_2026-10-18.md 和 ROOT_COMMANDS.md；外部撤权、任意Root文件/挂载、Root服务强杀仍未完整验证。

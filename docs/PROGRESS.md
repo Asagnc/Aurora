@@ -2,6 +2,12 @@
 
 更新时间：2026-10-21。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 0.1.13 事件日志（2026-10-21）
+
+用户已认可FileObserver事件驱动日志方案。实现复用现有start ID固定产物目录，无新增Root回调；账本持久映射，SQLite1/2→3新增artifact_directory/presentation；Root命令握手与请求协议2，身份协议1不变。工具详情可看实时stdout/stderr、复制、跟随/暂停，离页/后台/收起/删除释放监听。有效有界JSON投影保留大输出错误/退出码/真实丢弃预算，完整结果未修改。详见[LIVE_COMMAND_LOGS.md](LIVE_COMMAND_LOGS.md)。
+
+核心67通过（日志新增6、投影新增2），debug/R8release/AndroidTest/lint通过；新增5个设备用例只编译，ordinary gate为51。图文0.1.12此前已推送bd7dd16且CI通过。本版无连接设备，最新Root2、UI、SQLite迁移、inotify事件尚未实际跑；不要把“编译”写成验收。继续PTY/持久终端与Skills，新选型先研究确认；不擅自恢复已清理的模拟器。
+
 ## 0.1.12 图文消息与图片产物（2026-10-21）
 
 用户已确认Compose Markdown+Coil3+独立会话产物组合，要求按实际最适合选择。实现GFM/代码复制、后台增量流式、长回复阅读页、images_publish、会话原图快照/清单、SHA校验、缩略图、大图缩放、SAF保存和单URI分享。删除取消等待图片任务并清理对应内存缓存；不重复加入模型图像输入。实现细节和限制见[RICH_CONTENT_PLAN.md](RICH_CONTENT_PLAN.md)。库固定0.46.0/3.6.3；Android16最低API36保持，不使用Files.writeString的36.1重载。

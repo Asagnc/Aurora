@@ -4,7 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenHelper(context, name, null, 2) {
+class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenHelper(context, name, null, 3) {
     init { setWriteAheadLoggingEnabled(true) }
 
     override fun onConfigure(db: SQLiteDatabase) { db.setForeignKeyConstraintsEnabled(true) }
@@ -28,7 +28,7 @@ class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenH
         db.execSQL("""CREATE TABLE tool_runs (
             owner TEXT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
             id TEXT PRIMARY KEY, call_id TEXT NOT NULL, tool TEXT NOT NULL,
-            state TEXT NOT NULL, result TEXT, started_at INTEGER NOT NULL)""")
+            state TEXT NOT NULL, result TEXT, started_at INTEGER NOT NULL, artifact_directory TEXT, presentation TEXT)""")
         db.execSQL("CREATE INDEX tool_run_owner ON tool_runs(owner, started_at)")
         db.execSQL("CREATE TABLE connections (id TEXT PRIMARY KEY, configuration TEXT NOT NULL)")
         createTaskRuns(db)
@@ -43,7 +43,9 @@ class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenH
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        require(oldVersion == 1 && newVersion == 2)
-        createTaskRuns(db)
+        require(oldVersion in 1..2 && newVersion == 3)
+        if (oldVersion < 2) createTaskRuns(db)
+        db.execSQL("ALTER TABLE tool_runs ADD COLUMN artifact_directory TEXT")
+        db.execSQL("ALTER TABLE tool_runs ADD COLUMN presentation TEXT")
     }
 }

@@ -4,9 +4,11 @@ import io.github.asagnc.aurora.core.*
 import java.nio.file.Path
 import kotlinx.serialization.json.*
 import io.github.asagnc.aurora.root.RootCommandClient
+import java.util.UUID
 
 internal class CommandToolExecutor(private val runner: NativeCommandRunner, private val root: Path,
-    private val privileged: RootCommandClient? = null) : ToolExecutor {
+    private val privileged: RootCommandClient? = null,
+    private val prepared: suspend (String, String) -> Unit = { _, _ -> }) : ToolExecutor {
     private val name = if (privileged == null) "command_execute" else "command_execute_root"
     override val definitions = if (!runner.available) emptyList() else listOf(ToolDefinition(name,
         (if (privileged == null) "Execute an Android-native foreground command as Aurora's ordinary app UID, not Root or Linux/chroot. "
@@ -33,6 +35,8 @@ internal class CommandToolExecutor(private val runner: NativeCommandRunner, priv
         }.orEmpty()
         val request = CommandRequest(argv, args.text("directory").orEmpty(), args.number("timeoutMs") ?: 60_000,
             Math.toIntExact(args.number("outputLimit") ?: 8192), environment)
-        return privileged?.execute(root.fileName.toString(), request) ?: runner.execute(root, request).toString()
+        val artifact = UUID.randomUUID().toString()
+        prepared(call.id, "runs/$artifact")
+        return privileged?.execute(root.fileName.toString(), request, artifact) ?: runner.execute(root, request, artifact).toString()
     }
 }

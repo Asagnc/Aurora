@@ -20,7 +20,12 @@ class AgentRunStoreTest {
             val oldStore = ConversationStore(initial)
             val owner = oldStore.create("preserve me")
             oldStore.appendMessage(owner, ChatMessage(role = "user", text = "saved history"))
-            initial.writableDatabase.apply { execSQL("DROP TABLE agent_runs"); version = 1 }
+            initial.writableDatabase.apply {
+                execSQL("DROP TABLE agent_runs")
+                execSQL("ALTER TABLE tool_runs DROP COLUMN artifact_directory")
+                execSQL("ALTER TABLE tool_runs DROP COLUMN presentation")
+                version = 1
+            }
             initial.close()
             val upgraded = AuroraDatabase(context, name)
             try {

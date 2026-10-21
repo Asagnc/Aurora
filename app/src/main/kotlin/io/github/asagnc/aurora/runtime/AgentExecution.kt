@@ -14,9 +14,13 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
         val files = FileToolExecutor(linkedMapOf("conversation" to app.spaces.conversation(id),
             "resources" to app.spaces.sharedResources(), "workspace" to app.spaces.sharedWorkspace()))
         val directory = app.spaces.commandRoot(id)
+        val prepared: suspend (String, String) -> Unit = { callId, path ->
+            val event = app.toolRuns.attachArtifact(id, callId, path)
+            mutable.update { it.copy(toolRuns = it.toolRuns.map { old -> if (old.id == event.id) event else old }) }
+        }
         val tools = ToolRouter(listOfNotNull(files, BrowserToolExecutor(app.browser, id), ImageToolExecutor(app.images, id),
-            CommandToolExecutor(app.commands, directory),
-            app.root.commandClient?.let { CommandToolExecutor(app.commands, directory, it) }))
+            CommandToolExecutor(app.commands, directory, prepared = prepared),
+            app.root.commandClient?.let { CommandToolExecutor(app.commands, directory, it, prepared) }))
         val fingerprint = requestFingerprint(SYSTEM, tools.definitions)
         val credential = requireNotNull(app.credentials.get(connection.id)) { "API 密钥不存在" }
         require(credential.revision == connection.credentialRevision) { "API 密钥已改变" }

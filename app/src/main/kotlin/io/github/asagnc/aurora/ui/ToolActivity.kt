@@ -26,7 +26,7 @@ import kotlinx.coroutines.withContext
                 if (active != null) CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp)
                 Text(active?.title ?: "执行记录", Modifier.weight(1f), maxLines = 1,
                     overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyMedium)
-                Text("最近完成 ${presentations.count { it.event.state == "completed" }} 项", color = AuroraMuted, style = MaterialTheme.typography.labelMedium)
+                Text("已返回 ${presentations.count { it.event.state == "completed" }} 项", color = AuroraMuted, style = MaterialTheme.typography.labelMedium)
                 Text(if (expanded) "⌄" else "›", color = AuroraMuted)
             }
         }

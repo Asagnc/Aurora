@@ -3,8 +3,10 @@ package io.github.asagnc.aurora.data
 import io.github.asagnc.aurora.core.*
 import java.util.UUID
 import kotlinx.coroutines.CancellationException
+import android.database.Cursor
 
-data class ToolRun(val id: String, val callId: String, val tool: String, val state: String, val result: String?)
+data class ToolRun(val id: String, val callId: String, val tool: String, val state: String, val result: String?,
+    val artifactDirectory: String? = null, val presentation: String? = null)
 
 class ToolRunStore(private val conversations: ConversationStore) {
     suspend fun count(owner: String): Long = conversations.read { db ->
@@ -21,13 +23,27 @@ class ToolRunStore(private val conversations: ConversationStore) {
         id
     }
 
-    suspend fun finish(id: String, result: String): Unit = conversations.write { db ->
-        require(db.update("tool_runs", values("state" to "completed", "result" to result), "id = ? AND state = 'started'", arrayOf(id)) == 1)
+    suspend fun finish(id: String, result: String): ToolRun = conversations.write { db ->
+        val tool = db.rawQuery("SELECT tool FROM tool_runs WHERE id = ?", arrayOf(id)).use { require(it.moveToFirst()); it.getString(0) }
+        val projection = if (tool in setOf("command_execute", "command_execute_root")) compactCommandResult(result) else null
+        require(db.update("tool_runs", values("state" to "completed", "result" to result, "presentation" to projection), "id = ? AND state = 'started'", arrayOf(id)) == 1)
+        db.rawQuery("SELECT id, call_id, tool, state, substr(result, 1, 8001), artifact_directory, presentation FROM tool_runs WHERE id = ?", arrayOf(id))
+            .use { require(it.moveToFirst()); it.toolRun() }
+    }
+
+    suspend fun attachArtifact(owner: String, callId: String, directory: String): ToolRun = conversations.write { db ->
+        require(commandArtifactId(directory) != null)
+        conversations.requireActive(db, owner)
+        require(db.update("tool_runs", values("artifact_directory" to directory),
+            "owner = ? AND call_id = ? AND state = 'started' AND artifact_directory IS NULL AND tool IN ('command_execute','command_execute_root')",
+            arrayOf(owner, callId)) == 1)
+        db.rawQuery("SELECT id, call_id, tool, state, result, artifact_directory, presentation FROM tool_runs WHERE owner = ? AND call_id = ?", arrayOf(owner, callId))
+            .use { require(it.moveToFirst()); it.toolRun() }
     }
 
     suspend fun list(owner: String): List<ToolRun> = conversations.read { db ->
-        db.rawQuery("SELECT id, call_id, tool, state, result FROM tool_runs WHERE owner = ? ORDER BY rowid", arrayOf(owner))
-            .use { cursor -> buildList { while (cursor.moveToNext()) add(ToolRun(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4))) } }
+        db.rawQuery("SELECT id, call_id, tool, state, result, artifact_directory, presentation FROM tool_runs WHERE owner = ? ORDER BY rowid", arrayOf(owner))
+            .use { cursor -> buildList { while (cursor.moveToNext()) add(cursor.toolRun()) } }
     }
 
     suspend fun markUncertain(owner: String): Unit = conversations.write { db ->
@@ -35,8 +51,11 @@ class ToolRunStore(private val conversations: ConversationStore) {
     }
 
     suspend fun recent(owner: String): List<ToolRun> = conversations.read { db ->
-        db.rawQuery("SELECT id, call_id, tool, state, substr(result, 1, 8001) FROM tool_runs WHERE owner = ? ORDER BY rowid DESC LIMIT 50", arrayOf(owner))
-            .use { cursor -> buildList { while (cursor.moveToNext()) add(ToolRun(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4))) }.asReversed() }
+        db.rawQuery("SELECT id, call_id, tool, state, CASE WHEN tool IN ('command_execute','command_execute_root') AND presentation IS NULL THEN result ELSE substr(result, 1, 8001) END, artifact_directory, presentation FROM tool_runs WHERE owner = ? ORDER BY rowid DESC LIMIT 50", arrayOf(owner))
+            .use { cursor -> buildList { while (cursor.moveToNext()) {
+                val record = cursor.toolRun()
+                add(record.copy(result = record.result?.take(8001), presentation = record.presentation ?: if (record.tool in setOf("command_execute", "command_execute_root")) record.result?.let(::compactCommandResult) else null))
+            } }.asReversed() }
     }
 
     fun recording(owner: String, delegate: ToolExecutor, changed: suspend (ToolRun) -> Unit = {}): ToolExecutor = object : ToolExecutor {
@@ -49,9 +68,10 @@ class ToolRunStore(private val conversations: ConversationStore) {
             } catch (failure: Exception) {
                 objectOf("error" to string(failure.javaClass.simpleName)).toString()
             }
-            finish(id, result)
-            changed(ToolRun(id, call.id, call.name, "completed", result.take(8001)))
+            changed(finish(id, result))
             return result
         }
     }
 }
+
+private fun Cursor.toolRun() = ToolRun(getString(0), getString(1), getString(2), getString(3), getString(4), getString(5), getString(6))

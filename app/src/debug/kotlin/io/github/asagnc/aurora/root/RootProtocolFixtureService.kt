@@ -20,7 +20,7 @@ class RootProtocolFixtureService : Service() {
             val decoded = RootCommandWire.decode(request)
             commands.start(id, callback) {
                 Files.createDirectories(root)
-                NativeCommandRunner(this@RootProtocolFixtureService).execute(root, decoded).toString()
+                NativeCommandRunner(this@RootProtocolFixtureService).execute(root, decoded, id).toString()
             }
         }
         override fun cancelAndWait(id: String) { runBlocking { commands.cancelAndWait(id) } }
