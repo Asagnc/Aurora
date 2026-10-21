@@ -30,6 +30,7 @@ class LinuxNamespaceDeviceTest {
 
     @RootRequired @Test fun rootNamespaceProbeAndTimeoutPreserveCallerMountNamespace() = runBlocking {
         check(InstrumentationRegistry.getArguments().getString("auroraRootTest") == "true")
+        org.junit.Assume.assumeTrue("Optional PID namespaces are absent on this kernel", Files.exists(Path.of("/proc/self/ns/pid")))
         val owner = UUID.randomUUID().toString()
         val directory = context.filesDir.toPath().resolve("spaces/conversations/$owner")
         Files.createDirectories(directory)

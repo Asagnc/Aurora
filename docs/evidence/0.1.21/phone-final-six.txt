@@ -1,0 +1,11 @@
+
+io.github.asagnc.aurora.linux.LinuxNativePackageTest:.
+io.github.asagnc.aurora.linux.LinuxNamespaceDeviceTest:.
+io.github.asagnc.aurora.linux.LinuxImageDeviceTest:.
+io.github.asagnc.aurora.linux.RootLinuxCapabilityDeviceTest:...
+
+Time: 4.508
+
+OK (6 tests)
+
+

@@ -1,6 +1,10 @@
 # Linux 环境实施记录
 
-2026-10-22。用户已批准LINUX_PROPOSAL.md和私有PID生命周期补充。当前0.1.20增加Root命名空间固定探测，完整运行时尚未就绪。
+2026-10-22。用户已批准LINUX_PROPOSAL.md及真机后的cgroup生命周期修订，后者替代必需PID空间。当前0.1.21完成小范围资格/兼容修复，完整运行时尚未就绪。
+
+## 0.1.21 真机发现（优先于下方历史）
+
+见DEVICE_LINUX_2026-10-22.md：6项普通/Root通过，空间查询改StatFs，普通硬链接限制在下载前失败，Root硬链接保持App属主。没有发布Ubuntu安装，PRoot guest未执行。Root私有挂载和本任务cgroup创建/加入/kill/空状态/删除通过；PID命名空间本机缺失。用户确认LINUX_CGROUP_PROPOSAL.md，生产probe_root仅查挂载，不继续要求PID空间。完整cgroup原生监督/事件/pidfd/恢复、Root安装与chroot/命令/PTY仍待继续。
 
 ## 0.1.20 Root 生命周期资格入口
 

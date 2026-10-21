@@ -16,6 +16,9 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.encodeToString
 
+internal class LinuxInstallCapabilityException(cause: Throwable) : java.io.IOException(
+    "Linux rootfs requires hardlinks; Root installation backend is not yet connected", cause)
+
 /** Shared image generations, separate from conversation homes and from native Android executors. */
 internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
     internal val registry = LinuxRegistry(app.conversations)
@@ -57,7 +60,8 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
         var committed = false
         var original: Throwable? = null
         try {
-            require(Files.getFileStore(stage).usableSpace >= 128L * 1024 * 1024) { "Insufficient download space" }
+            require(android.os.StatFs(stage.toString()).availableBytes >= 128L * 1024 * 1024) { "Insufficient download space" }
+            runInterruptible { checkHardlinks(stage) }
             status.value = "下载 Ubuntu ${source.version} ${source.architecture.imageName}…"
             val archive = stage.resolve("base.tar.gz"); network.download(source.url, archive)
             runInterruptible { verifyArchive(archive, source.sha256) }
@@ -65,7 +69,7 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
             val unpacker = RootfsArchive()
             val plan = runInterruptible { unpacker.scan(archive) }
             val bytes = plan.sumOf { it.bytes }
-            require(Files.getFileStore(stage).usableSpace >= bytes + plan.size * 4096L + 64L * 1024 * 1024) { "Insufficient expanded space" }
+            require(android.os.StatFs(stage.toString()).availableBytes >= bytes + plan.size * 4096L + 64L * 1024 * 1024) { "Insufficient expanded space" }
             val prepared = Files.createDirectory(stage.resolve("prepared"))
             status.value = "解压基础环境…"
             runInterruptible {
@@ -87,7 +91,8 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
             version
         } catch (failure: Throwable) {
             original = failure
-            status.value = if (committed) "基础环境已安装，执行能力待探测"
+            status.value = if (failure is LinuxInstallCapabilityException) "当前环境无法创建硬链接，Root 安装后端尚未接入"
+                else if (committed) "基础环境已安装，执行能力待探测"
                 else if (failure is CancellationException) "Linux 安装已取消" else "Linux 安装失败，原有环境保留"
             throw failure
         } finally { withContext(NonCancellable) {
@@ -141,6 +146,23 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
             val encoded = ByteBuffer.wrap(value.toByteArray(Charsets.UTF_8))
             while (encoded.hasRemaining()) channel.write(encoded)
             channel.force(true)
+        }
+    }
+    private fun checkHardlinks(stage: Path) {
+        val source = stage.resolve(".link-source")
+        val target = stage.resolve(".link-target")
+        var original: Throwable? = null
+        try {
+            Files.createFile(source)
+            Files.createLink(target, source)
+            require(Files.isSameFile(source, target)) { "Hardlink identity unavailable" }
+        } catch (failure: java.io.IOException) {
+            val unavailable = LinuxInstallCapabilityException(failure)
+            original = unavailable; throw unavailable
+        } catch (failure: Throwable) { original = failure; throw failure }
+        finally {
+            try { Files.deleteIfExists(target); Files.deleteIfExists(source) }
+            catch (cleanup: Throwable) { if (original != null) original.addSuppressed(cleanup) else throw cleanup }
         }
     }
     private fun verifyArchive(path: Path, expected: String) {

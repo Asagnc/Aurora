@@ -1,0 +1,37 @@
+
+io.github.asagnc.aurora.linux.LinuxImageDeviceTest:
+Error in officialImageRunsFixedOrdinaryProotWorkload(io.github.asagnc.aurora.linux.LinuxImageDeviceTest):
+java.lang.SecurityException: getFileStore
+	at sun.nio.fs.UnixFileSystemProvider.getFileStore(UnixFileSystemProvider.java:387)
+	at java.nio.file.Files.getFileStore(Files.java:1461)
+	at io.github.asagnc.aurora.linux.LinuxEnvironmentManager$install$2$1.invokeSuspend(LinuxEnvironmentManager.kt:60)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:34)
+	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)
+	at kotlinx.coroutines.internal.LimitedDispatcher$Worker.run(LimitedDispatcher.kt:124)
+	at kotlinx.coroutines.scheduling.TaskImpl.run(Tasks.kt:89)
+	at kotlinx.coroutines.scheduling.CoroutineScheduler.runSafely(CoroutineScheduler.kt:586)
+	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.executeTask(CoroutineScheduler.kt:798)
+	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.runWorker(CoroutineScheduler.kt:717)
+	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.run(CoroutineScheduler.kt:704)
+
+
+Time: 0.293
+There was 1 failure:
+1) officialImageRunsFixedOrdinaryProotWorkload(io.github.asagnc.aurora.linux.LinuxImageDeviceTest)
+java.lang.SecurityException: getFileStore
+	at sun.nio.fs.UnixFileSystemProvider.getFileStore(UnixFileSystemProvider.java:387)
+	at java.nio.file.Files.getFileStore(Files.java:1461)
+	at io.github.asagnc.aurora.linux.LinuxEnvironmentManager$install$2$1.invokeSuspend(LinuxEnvironmentManager.kt:60)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:34)
+	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)
+	at kotlinx.coroutines.internal.LimitedDispatcher$Worker.run(LimitedDispatcher.kt:124)
+	at kotlinx.coroutines.scheduling.TaskImpl.run(Tasks.kt:89)
+	at kotlinx.coroutines.scheduling.CoroutineScheduler.runSafely(CoroutineScheduler.kt:586)
+	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.executeTask(CoroutineScheduler.kt:798)
+	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.runWorker(CoroutineScheduler.kt:717)
+	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.run(CoroutineScheduler.kt:704)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+

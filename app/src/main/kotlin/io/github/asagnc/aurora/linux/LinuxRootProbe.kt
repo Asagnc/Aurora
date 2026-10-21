@@ -12,14 +12,15 @@ internal class LinuxRootProbe(private val app: AuroraApplication) {
         val client = requireNotNull(app.root.commandClient) { "Connect Root before probing namespaces" }
         val helper = Path.of(app.applicationInfo.nativeLibraryDir, "libaurora_linux_namespace.so")
         val result = WireJson.parseToJsonElement(client.execute(owner,
-            CommandRequest(listOf(helper.toString(), "--probe"), timeoutMs = 10_000), artifact)).jsonObject
+            CommandRequest(listOf(helper.toString(), "--probe-mount"), timeoutMs = 10_000), artifact)).jsonObject
         val observed = result["stdout"]?.jsonObject?.text("text")?.let { text ->
             runCatching { WireJson.parseToJsonElement(text).jsonObject }.getOrNull()
         }
         val passed = result.number("exitCode") == 0L && result["error"] == null && observed?.number("protocol") == 1L &&
-            listOf("privateMountNamespace", "privatePidNamespace", "detachedWorkerStarted", "namespaceInitReaped")
-                .all { observed[it] == JsonPrimitive(true) }
-        return objectOf("backend" to string("root-namespaces"), "workloadPassed" to JsonPrimitive(passed),
+            observed["privateMountNamespace"] == JsonPrimitive(true)
+        return objectOf("backend" to string("root-mount-namespace"), "workloadPassed" to JsonPrimitive(passed),
+            "pidNamespaceRequired" to JsonPrimitive(false),
+            "scope" to string("Mount isolation only. Full cgroup lifecycle, Root installation and chroot execution are not yet connected."),
             "executionReady" to JsonPrimitive(false), "observation" to (observed ?: JsonNull), "result" to result)
     }
 }

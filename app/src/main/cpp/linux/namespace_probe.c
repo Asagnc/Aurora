@@ -78,7 +78,20 @@ static __attribute__((noreturn)) void namespace_init(int lifetime, int report, i
     _exit(wait_child(worker));
 }
 
+static int probe_mount_namespace(void) {
+    if (geteuid() != 0) { errno = EPERM; return failure("root_required"); }
+    struct stat before, after;
+    if (stat("/proc/self/ns/mnt", &before) < 0) return failure("mount_namespace_identity");
+    if (unshare(CLONE_NEWNS) < 0) return failure("mount_unshare");
+    if (mount(NULL, "/", NULL, MS_REC | MS_PRIVATE, NULL) < 0) return failure("private_propagation");
+    if (stat("/proc/self/ns/mnt", &after) < 0) return failure("new_mount_identity");
+    if (before.st_ino == after.st_ino) { errno = EINVAL; return failure("unchanged_mount_namespace"); }
+    puts("{\"protocol\":1,\"privateMountNamespace\":true}");
+    return 0;
+}
+
 int main(int argc, char **argv) {
+    if (argc == 2 && strcmp(argv[1], "--probe-mount") == 0) return probe_mount_namespace();
     int hold_ms = 0;
     if (argc != 2 && argc != 4) return 64;
     if (strcmp(argv[1], "--probe") != 0) return 64;

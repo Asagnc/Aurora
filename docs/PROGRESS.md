@@ -2,6 +2,14 @@
 
 更新时间：2026-10-22。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 0.1.21 Linux 真机资格与修订（2026-10-22，优先接续）
+
+保留数据更新真机，最终普通3+Root3共6项通过。详见DEVICE_LINUX_2026-10-22.md及evidence/0.1.21。发现并修复Files.getFileStore在Android抛SecurityException（改StatFs）；普通硬链接被拒，增加下载前能力预检和结构化失败/暂存清理，不复制或link2symlink冒充。Root链接实际成功且保持App属主，但Root安装器仍未接。
+
+**用户已确认新修订**：当前内核没有pid空间入口，Root授权UID0有效；不再以PID空间为Root Linux硬前置。改任务专属cgroup v2+私有挂载+subreaper/pidfd/事件，见LINUX_CGROUP_PROPOSAL.md，不需重复确认。真机已验证scope创建/子进程加入/仅本scope kill/空状态/删除，以及私有挂载不改变调用者空间。生产probe_root改只查私有挂载，executionReady仍false；cgroup原生监督和事件/恢复、Root安装、chroot/命令/PTY仍待接。PRoot guest没有跑到，不把--version当资格完成。
+
+eb52443完整[CI39643726174](https://github.com/Asagnc/Aurora/actions/runs/39643726174)已成功。本版本地Debug/R8Release/testAPK/lint通过；实际失败及6项通过原始证据均保留。手机Aurora保留，测试辅助包清理；不改全局SELinux/调度/Root策略，不装新内核或模拟器。
+
 ## 0.1.20 Root 命名空间资格（2026-10-22）
 
 用户已确认Root Linux加私有PID空间，与私有挂载配合；能力不足禁用此Linux后端，原生Root命令保留。已接固定原生探测与Agent probe_root、现有Root日志/限时/CPU租约；没有挂Ubuntu或chroot。Agent PRoot固定探测接真实环境版本租约并处理取消释放，完整命令/PTY租约仍待接。见LINUX_ROOT_LIFECYCLE.md、LINUX_IMPLEMENTATION.md。

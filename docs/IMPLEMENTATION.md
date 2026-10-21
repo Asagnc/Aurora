@@ -1,3 +1,7 @@
+# 0.1.21 真机Linux资格（2026-10-22）
+
+普通3+Root3共6项真机通过，失败记录保留。Android空间查询改StatFs，硬链接能力改下载前检查并明确Root安装尚未接；Root硬链接/cgroup基本操作/私有挂载实测成功。PID空间本机缺失，用户批准任务专属cgroup方案替代必需PID空间。Root probe只查挂载，完整执行仍未就绪。见DEVICE_LINUX_2026-10-22.md及LINUX_CGROUP_PROPOSAL.md。完整本地Android构建/R8/testAPK/lint通过，不扩展为guest/chroot/事件恢复或性能验收。
+
 # 0.1.20 Root 命名空间资格（2026-10-22）
 
 已确认PID命名空间生命周期设计；新增固定原生Root探测、Agent probe_root和既有日志产物，PRoot探测接环境版本租约。没有任意Linux业务命令/chroot。新增Linux Root主机4项，Android普通/Root/显式镜像专项各1，设备未运行前不写通过。详见LINUX_ROOT_LIFECYCLE.md与LINUX_IMPLEMENTATION.md；构建和CI结果以对应证据为准。

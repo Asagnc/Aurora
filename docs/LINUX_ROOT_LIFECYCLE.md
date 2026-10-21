@@ -1,5 +1,10 @@
 # Root Linux 生命周期（已确认，2026-10-22）
 
+**真机后的修订优先**：当前Android内核没有pid命名空间入口，用户已确认
+改用任务专属cgroup v2+私有挂载空间。以下PID方案是此前实现/验证记录，
+不再是Root Linux硬前置。见LINUX_CGROUP_PROPOSAL.md及DEVICE_LINUX_2026-10-22.md。
+probe_root现只检查私有挂载空间，完整cgroup生命周期仍待接入。
+
 用户已确认增加私有PID命名空间，配合已批准的私有挂载空间。
 设备不支持则禁用该Root Linux后端，保留普通/Root Android原生命令。
 这不是另装内核、常驻Root守护程序或修改全局SELinux策略。

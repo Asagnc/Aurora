@@ -1,0 +1,9 @@
+
+io.github.asagnc.aurora.linux.LinuxNativePackageTest:.
+io.github.asagnc.aurora.linux.LinuxNamespaceDeviceTest:.
+
+Time: 0.373
+
+OK (2 tests)
+
+
