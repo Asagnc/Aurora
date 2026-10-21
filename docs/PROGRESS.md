@@ -2,6 +2,14 @@
 
 更新时间：2026-10-21。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 0.1.16 Skills 故障与取消边界（2026-10-21）
+
+上一版 112e496 完整 [CI39606872871](https://github.com/Asagnc/Aurora/actions/runs/39606872871) 已通过，包含核心87、Linux主机PTY8/源码12校验和Android构建/lint。
+
+本版将已有发布/恢复流程提到核心层并由实际安装器复用，新增14项故障/取消/UTF-8测试，核心合计101项通过。覆盖部分目录已移动而索引未提交、已索引版本保留、批量第二包失败、恢复失败保留日志并可重试、清理失败不覆盖原错误、发布前/发布中取消、忽略线程中断的流通过关闭结束、打开阶段取消、已有目标不覆盖和中文/emoji跨64KiB读取。取消后的已提交安装照样发布目录刷新；更新返回真实启停状态。SAF打开使用CancellationSignal，阻塞文件检查移到IO线程。没有新增库/守护进程/底层选型。
+
+本地 core/test、Debug、R8 Release、AndroidTest APK、lintDebug 全通过，0错误/既有MiMo矢量警告1；证据见 [evidence/0.1.16](evidence/0.1.16/README.md)。Android迁移/界面/SAF真实提供器/Root/耗电仍待集中真机验收；主机故障夹具不等同真实断电或设备强杀。下一步仍需补GitHub歧义引用、私有来源/签名、更多安装/导入设备场景；Linux/编译/逆向/Root抓包执行工具包尚未实现。
+
 ## 0.1.15 Skills（2026-10-21）
 
 用户已批准方案并要求最新稳定版本。已实现标准 SKILL.md/YAML、ZIP/HTTPS/GitHub 安装、共享内容哈希库、SQLite v4 索引/恢复/会话引用、每轮版本固定、五个 Agent 工具和原生管理页（搜索/启停/更新/版本选择/移除/清理）。目录变化追加原生历史，不改旧前缀；更新需显式操作或 Agent 调用，不存在隐藏后台自动下载。详见 [SKILLS_IMPLEMENTATION.md](SKILLS_IMPLEMENTATION.md)。依赖已核实稳定版并升级传递依赖；只支持 Stored/Deflate 的边界配套处理 R8 可选解码器引用。

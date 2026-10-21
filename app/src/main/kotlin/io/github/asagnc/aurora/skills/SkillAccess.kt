@@ -17,13 +17,13 @@ internal suspend fun SkillManager.read(entry: SkillEntry, relative: String, offs
         val bytes = store.read(entry.hash, relative, offset)
         val manifest = store.manifest(entry.hash)
         val expected = manifest.files.single { it.path == relative }
-        val text = runCatching { Charsets.UTF_8.newDecoder().decode(java.nio.ByteBuffer.wrap(bytes)).toString() }.getOrNull()
-        objectOf("skill" to entry.summary(), "path" to string(relative), "text" to (text?.let(::string) ?: JsonNull),
-            "next" to JsonPrimitive(offset + bytes.size), "size" to JsonPrimitive(expected.size), "complete" to JsonPrimitive(offset + bytes.size == expected.size),
+        val slice = decodeSkillText(bytes, offset + bytes.size == expected.size)
+        objectOf("skill" to entry.summary(), "path" to string(relative), "text" to (slice.text?.let(::string) ?: JsonNull),
+            "next" to JsonPrimitive(offset + slice.consumed), "size" to JsonPrimitive(expected.size), "complete" to JsonPrimitive(offset + slice.consumed == expected.size),
             "baseDirectory" to string(store.directory(entry.hash).resolve("content").toString()),
             "files" to JsonArray(manifest.files.take(128).map { string(it.path) }),
             "filesTruncated" to JsonPrimitive(manifest.files.size > 128),
-            "encoding" to string(if (text == null) "binary-or-partial-UTF8" else "UTF-8"))
+            "encoding" to string(if (slice.text == null) "binary-or-invalid-UTF8-offset" else "UTF-8"))
     }
 }
 internal suspend fun SkillManager.pin(owner: String, entry: SkillEntry) = catalog.withLock { registry.pin(owner, listOf(entry)) }

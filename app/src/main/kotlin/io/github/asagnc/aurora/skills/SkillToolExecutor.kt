@@ -33,14 +33,14 @@ internal class SkillToolExecutor(private val manager: SkillManager, private val 
             "skills_list" -> {
                 val query = args.text("query").orEmpty().take(200)
                 val found = pinned.values.filter { query.isBlank() || "${it.metadata.name} ${it.metadata.description}".contains(query, true) }
-                val offset = args.text("offset")?.toIntOrNull() ?: 0
+                val offset = args.text("offset")?.let { requireNotNull(it.toIntOrNull()) } ?: 0
                 require(offset in 0..found.size)
                 objectOf("skills" to JsonArray(found.drop(offset).take(64).map { it.summary() }),
                     "next" to JsonPrimitive(minOf(found.size, offset + 64)), "more" to JsonPrimitive(found.size > offset + 64))
             }
             "skills_load", "skills_read" -> {
                 val entry = entry(args)
-                val offset = args.text("offset")?.toLongOrNull() ?: 0L
+                val offset = args.text("offset")?.let { requireNotNull(it.toLongOrNull()) } ?: 0L
                 manager.read(entry, if (call.name == "skills_load") "SKILL.md" else requireNotNull(args.text("path")), offset)
             }
             "skills_install" -> install(args)

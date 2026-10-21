@@ -20,6 +20,7 @@ internal class SkillManager(private val app: AuroraApplication, internal val reg
     internal val catalog = Mutex()
     private val installer = Mutex()
     internal val store = SkillContentStore(app.filesDir.toPath().resolve("spaces/resources/skills"))
+    private val publication = SkillPublication(store, registry)
     private val staging = app.filesDir.toPath().resolve("spaces/resources/.skill-staging")
     private val network = SkillNetwork()
     val version = MutableStateFlow(0L)
@@ -28,10 +29,7 @@ internal class SkillManager(private val app: AuroraApplication, internal val reg
     suspend fun recover() = withContext(Dispatchers.IO) { installer.withLock {
         app.spaces.sharedResources(); store.initialize()
         require(!Files.isSymbolicLink(staging)); Files.createDirectories(staging)
-        registry.pending().forEach { (id, hashes) ->
-            hashes.forEach { hash -> if (!registry.known(hash)) store.remove(hash) }
-            registry.clearOperation(id)
-        }
+        publication.recover()
         Files.newDirectoryStream(staging).use { entries -> entries.forEach { removeSkillTree(it) } }
     } }
 
@@ -48,22 +46,23 @@ internal class SkillManager(private val app: AuroraApplication, internal val reg
         val name = withContext(Dispatchers.IO) { app.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
             ?.use { if (it.moveToFirst()) it.getString(0) else null } ?: "本地 ZIP" }
         return install(SkillSource(uri.toString(), label = name), SkillInstallOptions(replaceId = replaceId)) { archive ->
-            runInterruptible(Dispatchers.IO) { requireNotNull(app.contentResolver.openInputStream(uri)).use { input ->
-                Files.newOutputStream(archive, StandardOpenOption.CREATE_NEW).use { output -> copyBounded(input, output) }
-            } }
+            val signal = android.os.CancellationSignal()
+            SkillArchiveTransfer.copy(archive, {
+                val descriptor = requireNotNull(app.contentResolver.openAssetFileDescriptor(uri, "r", signal))
+                try { descriptor.createInputStream() } catch (failure: Throwable) { descriptor.close(); throw failure }
+            }, signal::cancel)
         }
     }
 
     suspend fun local(owner: String, relative: String, selection: String = "", options: SkillInstallOptions = SkillInstallOptions()): List<SkillEntry> {
-        val root = app.spaces.commandRoot(owner)
-        var path = root
-        for (part in skillRelativePath(relative)) { path = path.resolve(part); require(!Files.isSymbolicLink(path)) }
-        val sourcePath = path
-        require(Files.isRegularFile(sourcePath, LinkOption.NOFOLLOW_LINKS) && Files.size(sourcePath) <= 64L * 1024 * 1024)
+        val sourcePath = withContext(Dispatchers.IO) {
+            var path = app.spaces.commandRoot(owner)
+            for (part in skillRelativePath(relative)) { path = path.resolve(part); require(!Files.isSymbolicLink(path)) }
+            require(Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS) && Files.size(path) <= 64L * 1024 * 1024)
+            path
+        }
         return install(SkillSource("conversation:$owner/$relative", selection, "会话 ZIP · $relative"), options) { archive ->
-            runInterruptible(Dispatchers.IO) { Files.newInputStream(sourcePath, LinkOption.NOFOLLOW_LINKS).use { input ->
-                Files.newOutputStream(archive, StandardOpenOption.CREATE_NEW).use { output -> copyBounded(input, output) }
-            } }
+            SkillArchiveTransfer.copy(archive, { Files.newInputStream(sourcePath, LinkOption.NOFOLLOW_LINKS) })
         }
     }
 
@@ -71,7 +70,7 @@ internal class SkillManager(private val app: AuroraApplication, internal val reg
         installer.withLock { withContext(Dispatchers.IO) {
             val id = UUID.randomUUID().toString()
             val stage = Files.createDirectory(staging.resolve(id))
-            var journal = false
+            var committed = false
             try {
                 status.value = "读取 ZIP…"
                 val archive = stage.resolve("download.zip"); fetch(archive)
@@ -93,23 +92,25 @@ internal class SkillManager(private val app: AuroraApplication, internal val reg
                 }
                 currentCoroutineContext().ensureActive()
                 // Once publication begins, finish the journal/index transaction even if its caller cancels.
-                withContext(NonCancellable) { catalog.withLock {
+                catalog.withLock {
                     options.replaceId?.let { require(registry.entries().any { entry -> entry.id == it }) { "Update target no longer exists" } }
-                    registry.begin(id, prepared.map { it.manifest.digest }); journal = true
                     status.value = "发布已校验版本…"
-                    prepared.forEach(store::publish)
-                    registry.finish(id, entries); journal = false
-                } }
-                status.value = "已安装 ${entries.size} 个工作流"; version.update { it + 1 }
-                entries
+                    publication.publish(id, prepared) {
+                        registry.finish(id, entries)
+                        committed = true
+                        // Notify even if the caller cancels exactly as the committed result is dispatched.
+                        version.update { it + 1 }
+                        status.value = "已安装 ${entries.size} 个工作流"
+                    }
+                }
+                val installed = registry.entries().associateBy { it.id }
+                entries.map { installed.getValue(it.id) }
             } catch (failure: Throwable) {
-                status.value = if (failure is CancellationException) "安装已取消" else "安装失败：${failure.message?.take(160) ?: failure.javaClass.simpleName}"
+                status.value = if (committed) "安装已完成，调用已结束；已安装版本可用"
+                    else if (failure is CancellationException) "安装已取消"
+                    else "安装失败，请检查归档、网络或存储；原有版本保留"
                 throw failure
             } finally { withContext(NonCancellable) {
-                if (journal) catalog.withLock {
-                    registry.pending().firstOrNull { it.first == id }?.second?.forEach { if (!registry.known(it)) store.remove(it) }
-                    registry.clearOperation(id)
-                }
                 removeSkillTree(stage)
             } }
         } }
@@ -127,12 +128,4 @@ internal class SkillManager(private val app: AuroraApplication, internal val reg
         }
     }
 
-    private fun copyBounded(input: java.io.InputStream, output: java.io.OutputStream) {
-        val bytes = ByteArray(65536); var total = 0L
-        while (true) {
-            if (Thread.currentThread().isInterrupted) throw InterruptedException()
-            val count = input.read(bytes); if (count < 0) break
-            total += count; require(total <= 64L * 1024 * 1024) { "Skill ZIP exceeds 64 MiB" }; output.write(bytes, 0, count)
-        }
-    }
 }

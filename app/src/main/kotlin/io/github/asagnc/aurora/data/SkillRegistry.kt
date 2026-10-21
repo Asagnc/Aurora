@@ -14,7 +14,7 @@ import kotlinx.serialization.json.*
         "enabled" to JsonPrimitive(enabled), "bytes" to JsonPrimitive(bytes))
 }
 
-internal class SkillRegistry(private val conversations: ConversationStore) {
+internal class SkillRegistry(private val conversations: ConversationStore) : SkillPublicationJournal {
     suspend fun entries(): List<SkillEntry> = conversations.read { db ->
         db.rawQuery("SELECT s.id,s.current_hash,s.enabled,s.source,v.metadata,v.bytes FROM skills s JOIN skill_versions v ON v.hash=s.current_hash ORDER BY s.id", null)
             .use { cursor -> buildList { while (cursor.moveToNext()) add(SkillEntry(cursor.getString(0), cursor.getString(1), cursor.getInt(2) != 0,
@@ -25,7 +25,7 @@ internal class SkillRegistry(private val conversations: ConversationStore) {
             .use { cursor -> buildList { while (cursor.moveToNext()) add(SkillEntry(id, cursor.getString(0), cursor.getInt(1) != 0,
                 WireJson.decodeFromString(cursor.getString(2)), WireJson.decodeFromString(cursor.getString(3)), cursor.getLong(4))) } }
     }
-    suspend fun begin(id: String, hashes: List<String>) = conversations.write { db ->
+    override suspend fun begin(id: String, hashes: List<String>) = conversations.write { db ->
         db.insertOrThrow("skill_operations", null, values("id" to id, "hashes" to JsonArray(hashes.map(::string)).toString()))
         Unit
     }
@@ -42,14 +42,14 @@ internal class SkillRegistry(private val conversations: ConversationStore) {
         }
         db.delete("skill_operations", "id=?", arrayOf(id)); Unit
     }
-    suspend fun pending(): List<Pair<String, List<String>>> = conversations.read { db ->
+    override suspend fun pending(): List<Pair<String, List<String>>> = conversations.read { db ->
         db.rawQuery("SELECT id,hashes FROM skill_operations", null).use { cursor -> buildList { while (cursor.moveToNext())
             add(cursor.getString(0) to WireJson.parseToJsonElement(cursor.getString(1)).jsonArray.map { it.jsonPrimitive.content }) } }
     }
-    suspend fun known(hash: String): Boolean = conversations.read { db ->
+    override suspend fun known(hash: String): Boolean = conversations.read { db ->
         db.rawQuery("SELECT 1 FROM skill_versions WHERE hash=?", arrayOf(hash)).use { it.moveToFirst() }
     }
-    suspend fun clearOperation(id: String) = conversations.write { it.delete("skill_operations", "id=?", arrayOf(id)); Unit }
+    override suspend fun clearOperation(id: String) = conversations.write { it.delete("skill_operations", "id=?", arrayOf(id)); Unit }
     suspend fun pin(owner: String, entries: List<SkillEntry>) = conversations.write { db ->
         conversations.requireActive(db, owner)
         entries.forEach { entry -> db.insertWithOnConflict("skill_pins", null, values("owner" to owner, "skill_id" to entry.id,

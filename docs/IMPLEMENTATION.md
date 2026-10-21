@@ -1,3 +1,7 @@
+# 0.1.16 Skills 稳定性（2026-10-21）
+
+核心实际发布/恢复逻辑增加7项失败与取消用例，归档导入4项关闭/取消用例，UTF-8分块3项，共101项核心测试通过。复用SQLite恢复记录，不增加持久化类型；发布中取消完成短提交单元、已提交目录变化保证通知，返回实际启停状态。见 SKILLS_IMPLEMENTATION.md 和 evidence/0.1.16。本地完整Android构建/R8/lint通过，设备证据保持历史范围。
+
 # 0.1.15 Skills（2026-10-21）
 
 已按用户确认实现，详见 [SKILLS_IMPLEMENTATION.md](SKILLS_IMPLEMENTATION.md)。标准解析、版本化共享资源/恢复日志、SQLite v4、按需 Agent 工具、原生管理与显式最新来源更新。核心 87 项；Android 构建与 R8/lint 验证，新增两项设备测试仅编译。没有新增 Linux/逆向/抓包运行时，也没有真实模型缓存或性能结论。

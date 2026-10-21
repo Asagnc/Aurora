@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="io.github.asagnc.aurora.core.SkillArchiveTransferTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-21T13:26:24.398Z" hostname="SOBFY" time="0.036">
+  <properties/>
+  <testcase name="cancellationDuringOpenClosesStreamThatArrivesAfterCancellation()" classname="io.github.asagnc.aurora.core.SkillArchiveTransferTest" time="0.008"/>
+  <testcase name="cancellationClosesStreamEvenWhenReadIgnoresThreadInterruption()" classname="io.github.asagnc.aurora.core.SkillArchiveTransferTest" time="0.004"/>
+  <testcase name="successfulImportClosesItsOwnedStream()" classname="io.github.asagnc.aurora.core.SkillArchiveTransferTest" time="0.008"/>
+  <testcase name="importNeverOverwritesExistingArchive()" classname="io.github.asagnc.aurora.core.SkillArchiveTransferTest" time="0.014"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
