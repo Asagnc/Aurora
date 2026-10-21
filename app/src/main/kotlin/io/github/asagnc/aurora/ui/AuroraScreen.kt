@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
     val drawer = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var providers by remember { mutableStateOf(false) }
+    var skills by remember { mutableStateOf(false) }
     var menu by remember { mutableStateOf(false) }
     var browser by remember { mutableStateOf(false) }
     var terminal by remember { mutableStateOf(false) }
@@ -55,7 +56,9 @@ import kotlinx.coroutines.launch
     BackHandler(enabled = drawer.isOpen) { scope.launch { drawer.close() } }
     ModalNavigationDrawer(drawerState = drawer, scrimColor = AuroraInk.copy(alpha = 0.28f), drawerContent = {
         ConversationDrawer(state.sessions, model, onOpen = { id -> draft = ""; model.selectConversation(id); scope.launch { drawer.close() } },
-            onProviders = { providers = true }, onSettings = { metrics = "settings" }, onSpace = { conversationFilesOnly = false; space = it })
+            onProviders = { providers = true }, onSettings = { metrics = "settings" }, onSpace = {
+                if (it == "resources") skills = true else { conversationFilesOnly = false; space = it }
+            })
     }) {
         Scaffold(containerColor = MaterialTheme.colorScheme.background, topBar = {
             ChatHeader({ scope.launch { drawer.open() } }, { menu = true }, state.current?.title)
@@ -76,6 +79,7 @@ import kotlinx.coroutines.launch
         { conversationFilesOnly = true; space = "conversation" }, { browser = true }, { terminal = true }) { menu = false }
     if (models) ModelPickerSheet(state.connections, state.selected, ::choose, { models = false; providers = true }) { models = false }
     if (providers) ProviderDialog(state.connections, ::choose, model::saveConnection) { providers = false }
+    if (skills) SkillsPage { skills = false }
     space?.let { SpaceBrowserSheet(model, it, conversationFilesOnly, artifactFolder) { space = null; artifactFolder = "" } }
     if (browser) state.current?.id?.let { BrowserPage(model.browser, it) { browser = false } }
     if (terminal) state.current?.id?.let { TerminalPage(it) { terminal = false } }

@@ -4,6 +4,13 @@ plugins {
 }
 kotlin { jvmToolchain(25) }
 dependencies {
+    implementation("org.snakeyaml:snakeyaml-engine:3.2")
+    implementation("org.apache.commons:commons-compress:1.28.0")
+    constraints {
+        implementation("commons-io:commons-io:2.22.0")
+        implementation("commons-codec:commons-codec:1.23.0")
+        implementation("org.apache.commons:commons-lang3:3.21.0")
+    }
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.12.0")
     implementation("com.squareup.okhttp3:okhttp:5.5.0")

@@ -1,3 +1,7 @@
+# 0.1.15 Skills（2026-10-21）
+
+已按用户确认实现，详见 [SKILLS_IMPLEMENTATION.md](SKILLS_IMPLEMENTATION.md)。标准解析、版本化共享资源/恢复日志、SQLite v4、按需 Agent 工具、原生管理与显式最新来源更新。核心 87 项；Android 构建与 R8/lint 验证，新增两项设备测试仅编译。没有新增 Linux/逆向/抓包运行时，也没有真实模型缓存或性能结论。
+
 # 实现与验证证据
 
 ## 设置状态文案与Skills研究（2026-10-21）

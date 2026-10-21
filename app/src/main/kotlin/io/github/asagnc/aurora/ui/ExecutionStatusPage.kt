@@ -26,7 +26,8 @@ import androidx.compose.ui.unit.dp
             CapabilitySection("后台 Agent 任务", "已接入前台服务", "任务运行时可离开页面或切换会话，通过通知返回或停止。系统终止应用后会标记中断，不自动重放工具。")
             CapabilitySection("命令日志", "已接入事件监听", "展开详情可看实时输出，收起或离开后停止监听；每流显示末尾64 KiB，最终产物受保存预算约束。")
             CapabilitySection("交互式终端", "已接入 Agent · 待设备验收", "普通与 Root PTY、游标读取、输入、窗口调整及停止；原生终端查看页。切换页面继续执行，进程死亡标记中断；日志受16 MiB预算约束，未实现日志轮转。")
-            CapabilitySection("Skills、Linux 与编译链", "尚未接入", "Skills 安装/运行、PRoot/chroot、APK/NDK 编译工具包，以及抓包、发包和逆向插件仍需继续实现与验收。")
+            CapabilitySection("Skills", "已接入 Agent · 待设备验收", "标准 SKILL.md、ZIP/公共 HTTPS 导入、按需读取、版本固定与更新管理。工作流不等于已安装执行环境。")
+            CapabilitySection("Linux 与编译链", "尚未接入", "PRoot/chroot、APK/NDK 编译工具包，以及抓包、发包和逆向插件仍需继续实现与验收。")
             Text("命令工作目录不等于安全沙箱。原生命令具有 Aurora 当前 UID 的实际访问能力；独立守护化的进程不受普通进程组完整约束。",
                 style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
         }

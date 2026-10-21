@@ -2,13 +2,11 @@
 
 更新时间：2026-10-21。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
-## Skills 新选型待确认（2026-10-21）
+## 0.1.15 Skills（2026-10-21）
 
-用户继续后，已比较Agent Skills标准、Eta9adcda01安装/恢复/YAML、DSHA891405e0工作流与Node插件分工、YAML与ZIP库。完整[SKILLS_PROPOSAL.md](SKILLS_PROPOSAL.md)已推送9c6c3b9，并向用户发送确认卡，尚未收到答复。推荐标准SKILL.md、内容哈希共享资源库、现有SQLite索引/恢复/会话引用、按需目录/正文/资源、稳定工具定义和追加目录变更。新增SnakeYAML Engine3.2与Commons Compress1.28.0版本已核对，Kaml已归档，不采用自写简单YAML或盲目ZIP流式提取。Android写目录执行限制、脚本实际运行时、版本占用/清理边界均已说明。
+用户已批准方案并要求最新稳定版本。已实现标准 SKILL.md/YAML、ZIP/HTTPS/GitHub 安装、共享内容哈希库、SQLite v4 索引/恢复/会话引用、每轮版本固定、五个 Agent 工具和原生管理页（搜索/启停/更新/版本选择/移除/清理）。目录变化追加原生历史，不改旧前缀；更新需显式操作或 Agent 调用，不存在隐藏后台自动下载。详见 [SKILLS_IMPLEMENTATION.md](SKILLS_IMPLEMENTATION.md)。依赖已核实稳定版并升级传递依赖；只支持 Stored/Deflate 的边界配套处理 R8 可选解码器引用。
 
-不要把方案当实现，也不要在未确认前接入新依赖/Skills数据库迁移。收到认可后先验证Android/R8与传递依赖，再做解析/归档/摘要核心、安装恢复与版本引用、Agent/原生界面。仍未连接设备，真机集中验收安排不变。
-
-独立修复：设置中的版本号改读实际已安装包版本，移除写死0.1.6；更新后台Agent/图文/日志/普通与Root终端文案及接续列表。Debug/R8Release/lint通过，0错误/既有MiMo警告1；没有新增执行能力，也没有设备视觉验收。0.1.14实现与证据保持下述范围。
+新增核心 15 项，合计 87；本地核心测试、Debug/R8 Release/AndroidTest APK/lint 验证记录保存在工作区 outputs/skills-verified-build-20261021.txt。新增两项 Android 数据迁移/引用专项只编译，未执行；本版没有设备、真实模型、耗电或性能领先结论。最终真机集中验收安排不变。待后续重点：安装崩溃注入/取消矩阵、私有来源/签名、含斜杠引用消歧、大目录和界面实机审查；Linux/编译/逆向/Root 抓包执行工具包仍未实现。
 
 ## 0.1.14 原生交互终端（2026-10-21）
 

@@ -4,7 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenHelper(context, name, null, 3) {
+class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenHelper(context, name, null, 4) {
     init { setWriteAheadLoggingEnabled(true) }
 
     override fun onConfigure(db: SQLiteDatabase) { db.setForeignKeyConstraintsEnabled(true) }
@@ -32,6 +32,7 @@ class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenH
         db.execSQL("CREATE INDEX tool_run_owner ON tool_runs(owner, started_at)")
         db.execSQL("CREATE TABLE connections (id TEXT PRIMARY KEY, configuration TEXT NOT NULL)")
         createTaskRuns(db)
+        SkillRegistry.create(db)
     }
 
     private fun createTaskRuns(db: SQLiteDatabase) {
@@ -43,9 +44,12 @@ class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenH
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        require(oldVersion in 1..2 && newVersion == 3)
+        require(oldVersion in 1..3 && newVersion == 4)
         if (oldVersion < 2) createTaskRuns(db)
-        db.execSQL("ALTER TABLE tool_runs ADD COLUMN artifact_directory TEXT")
-        db.execSQL("ALTER TABLE tool_runs ADD COLUMN presentation TEXT")
+        if (oldVersion < 3) {
+            db.execSQL("ALTER TABLE tool_runs ADD COLUMN artifact_directory TEXT")
+            db.execSQL("ALTER TABLE tool_runs ADD COLUMN presentation TEXT")
+        }
+        SkillRegistry.create(db)
     }
 }

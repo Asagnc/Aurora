@@ -3,6 +3,7 @@ package io.github.asagnc.aurora.runtime
 import io.github.asagnc.aurora.AuroraApplication
 import io.github.asagnc.aurora.core.*
 import io.github.asagnc.aurora.browser.BrowserToolExecutor
+import io.github.asagnc.aurora.skills.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
@@ -18,7 +19,8 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
             val event = app.toolRuns.attachArtifact(id, callId, path)
             mutable.update { it.copy(toolRuns = it.toolRuns.map { old -> if (old.id == event.id) event else old }) }
         }
-        val tools = ToolRouter(listOfNotNull(files, BrowserToolExecutor(app.browser, id), ImageToolExecutor(app.images, id),
+        val skillSnapshot = app.skills.snapshot(id)
+        val tools = ToolRouter(listOfNotNull(files, SkillToolExecutor(app.skills, id, skillSnapshot), BrowserToolExecutor(app.browser, id), ImageToolExecutor(app.images, id),
             io.github.asagnc.aurora.terminal.TerminalToolExecutor(app.terminals, id, app.root.terminalClient != null),
             CommandToolExecutor(app.commands, directory, prepared = prepared),
             app.root.commandClient?.let { CommandToolExecutor(app.commands, directory, it, prepared) }))
@@ -38,9 +40,12 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
             "Prior tool execution ledger; completed actions must not be automatically replayed, uncertain actions require inspection:\n" +
                 ledger.joinToString("\n") { "${it.tool} (${it.state}): ${it.result ?: "outcome unknown"}" }))
         val continuation = compatible?.let { NativeContinuation.append(it, connection, fingerprint, text) }
-        val history = continuation?.history ?: (projected + observations + MessageProjection.message(connection.protocol, "user", text))
+        val baseHistory = continuation?.history ?: (projected + observations + MessageProjection.message(connection.protocol, "user", text))
+        val skillContext = SkillCatalogContext.append(connection.protocol, baseHistory,
+            SkillCatalogContext.message(skillSnapshot.map { it.summary() }))
+        val history = baseHistory + skillContext
         val scope = if (compatible != null) requireNotNull(state.value.current?.activeScope).also {
-            app.nativeHistory.append(id, it, compatible.entries.size.toLong(), requireNotNull(continuation).appended)
+            app.nativeHistory.append(id, it, compatible.entries.size.toLong(), requireNotNull(continuation).appended + skillContext)
         } else app.nativeHistory.begin(id, WireHistory(connection.id, connection.model, connection.protocol, connection.effort,
             history, connection.credentialRevision, connection.baseUrl, fingerprint, connection.authentication))
         var savedCount = history.size

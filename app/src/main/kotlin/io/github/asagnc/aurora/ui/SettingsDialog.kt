@@ -40,6 +40,7 @@ import kotlinx.coroutines.withContext
     var rootDetails by remember { mutableStateOf(false) }
     var environment by remember { mutableStateOf<Boolean?>(null) }
     var about by remember { mutableStateOf(false) }
+    var skills by remember { mutableStateOf(false) }
     FullPage("设置", dismiss) {
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
             Row(Modifier.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -53,6 +54,7 @@ import kotlinx.coroutines.withContext
                 SettingsRow("供应商与 API", "官方服务与自定义中转", R.drawable.ic_hub, Color(0xFF347EDD), click = providers)
             }
             SettingsGroup("设备与执行") {
+                SettingsRow("Skills", "工作流、版本与更新", R.drawable.ic_hub, Color(0xFF347EDD)) { skills = true }
                 SettingsRow("Root 权限", root.phase.let { if (it == RootPhase.READY) "已连接" else if (it == RootPhase.CONNECTING) "连接中" else "未连接" },
                     R.drawable.ic_shield, Color(0xFF26A879)) { rootDetails = true }
                 SettingsRow("执行环境", "原生命令与交互终端 · 普通 / Root", R.drawable.ic_terminal, Color(0xFF347EDD)) { environment = false }
@@ -78,8 +80,9 @@ import kotlinx.coroutines.withContext
         }) { Text(if (root.phase == RootPhase.READY || root.phase == RootPhase.CONNECTING) "断开 Root" else "授权并连接 Root") } },
         dismissButton = { TextButton({ rootDetails = false }) { Text("关闭") } })
     if (about) AlertDialog(onDismissRequest = { about = false }, title = { Text("Aurora · 开发版本") },
-        text = { Text("已接入对话、批量文件、浏览器、图文消息、后台 Agent、命令日志和普通 / Root 交互终端。Linux、Skills 安装及逆向、抓包、发包工具包仍在开发。模型 API 密钥由用户自备并加密保存。") },
+        text = { Text("已接入对话、批量文件、浏览器、图文消息、后台 Agent、Skills、命令日志和普通 / Root 交互终端。Linux 及逆向、抓包、发包工具包仍在开发。模型 API 密钥由用户自备并加密保存。") },
         confirmButton = { TextButton({ about = false }) { Text("关闭") } })
+    if (skills) SkillsPage { skills = false }
 }
 
 @Composable internal fun FullPage(title: String, dismiss: () -> Unit, content: @Composable () -> Unit) {
