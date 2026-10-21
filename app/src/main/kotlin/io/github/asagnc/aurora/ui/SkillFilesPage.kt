@@ -17,10 +17,10 @@ import kotlinx.serialization.json.*
 
 @Composable internal fun SkillFilesPage(entry: SkillEntry, manager: SkillManager, dismiss: () -> Unit) {
     var query by remember { mutableStateOf("") }
-    var page by remember { mutableStateOf(0) }
+    var page by remember { mutableIntStateOf(0) }
     var listing by remember { mutableStateOf<JsonObject?>(null) }
     var selected by remember { mutableStateOf<String?>(null) }
-    var offset by remember { mutableStateOf(0L) }
+    var offset by remember { mutableLongStateOf(0L) }
     var chunk by remember { mutableStateOf<JsonObject?>(null) }
     var failure by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(entry.hash, query, page, selected, offset) {
@@ -31,7 +31,7 @@ import kotlinx.serialization.json.*
         } catch (cancel: CancellationException) { throw cancel }
         catch (_: Exception) { failure = "读取失败或内容校验不通过，请检查当前安装版本。" }
     }
-    FullPage(selected ?: "工作流文件", {
+    FullPage(if (selected == null) "工作流文件" else "文件预览", {
         if (selected == null) dismiss() else { selected = null; offset = 0 }
     }) {
         if (selected == null) LazyColumn(Modifier.fillMaxSize().padding(horizontal = 24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -58,6 +58,7 @@ import kotlinx.serialization.json.*
             if (listing == null && failure == null) item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
         } else Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             chunk?.let { result ->
+                Text(selected.orEmpty(), style = MaterialTheme.typography.titleSmall)
                 Text("版本 ${entry.hash.take(12)} · 字节 $offset / ${result["size"]}", color = AuroraMuted, style = MaterialTheme.typography.bodySmall)
                 Text(result.text("text") ?: "此段无法按 UTF-8 显示，可由 Agent 使用文件或命令工具进一步处理。")
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
