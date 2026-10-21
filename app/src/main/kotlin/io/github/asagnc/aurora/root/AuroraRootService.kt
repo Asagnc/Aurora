@@ -18,6 +18,7 @@ import kotlinx.coroutines.runBlocking
 class AuroraRootService : RootService() {
     private val commands = RootCommandSession()
     private val terminals by lazy { RootTerminalSessions(this) }
+    private val linux by lazy { RootLinuxPreparation(this) }
 
     private fun verifyCaller() {
         check(Binder.getCallingUid() == applicationInfo.uid) { "Caller is outside Aurora" }
@@ -60,6 +61,17 @@ class AuroraRootService : RootService() {
         }
         override fun activateTerminal(id: String) { verifyCaller(); terminals.activate(id) }
         override fun stopTerminal(id: String) { verifyCaller(); runBlocking { terminals.stop(id) } }
+        override fun prepareLinux(operation: String, callback: IRootResult) {
+            verifyCaller()
+            commands.start(operation, callback) { linux.prepare(operation) }
+        }
+        override fun discardLinux(operation: String) {
+            verifyCaller()
+            runBlocking(kotlinx.coroutines.Dispatchers.IO) {
+                if (linux.belongsToCurrent(operation)) commands.cancelAndWait(operation)
+                linux.discard(operation)
+            }
+        }
 
         override fun snapshot(): Bundle {
             verifyCaller()
@@ -68,6 +80,12 @@ class AuroraRootService : RootService() {
                 putInt("protocol", 1)
                 putInt("commandProtocol", 2)
                 putInt("terminalProtocol", 1)
+                runCatching {
+                    val encoded = io.github.asagnc.aurora.core.WireJson.encodeToString(
+                        io.github.asagnc.aurora.core.LinuxRootIdentity.serializer(), linux.identity)
+                    putString("linuxIdentity", encoded)
+                    putInt("linuxPrepareProtocol", 1)
+                }
                 putInt("uid", Process.myUid())
                 putInt("pid", Process.myPid())
                 putInt("sdk", Build.VERSION.SDK_INT)

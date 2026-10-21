@@ -35,6 +35,8 @@ class RootProtocolFixtureService : Service() {
         }
         override fun activateTerminal(id: String) { terminals.activate(id) }
         override fun stopTerminal(id: String) { runBlocking { terminals.stop(id) } }
+        override fun prepareLinux(operation: String, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
+        override fun discardLinux(operation: String) { throw SecurityException("Fixture is not Root") }
     }
     override fun onDestroy() { runBlocking { commands.close(); terminals.close() }; super.onDestroy() }
 }

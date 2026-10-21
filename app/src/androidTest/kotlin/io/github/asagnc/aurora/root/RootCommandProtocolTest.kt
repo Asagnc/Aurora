@@ -18,6 +18,15 @@ import org.junit.runner.RunWith
 class RootCommandProtocolTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
+    @Test fun ordinaryBinderFixtureRejectsPrivilegedLinuxPreparation() = runBlocking { fixture { remote, _, _ ->
+        val operation = UUID.randomUUID().toString()
+        val callback = object : IRootResult.Stub() { override fun complete(result: String) {} }
+        try { remote.prepareLinux(operation, callback); fail("Ordinary fixture prepared Root links") }
+        catch (_: SecurityException) {}
+        try { remote.discardLinux(operation); fail("Ordinary fixture discarded Root staging") }
+        catch (_: SecurityException) {}
+    } }
+
     @Test fun realBinderCarriesInteractivePtyBytesViaFileDescriptor() = runBlocking { fixture { remote, owner, _ ->
         val endpoint = RootTerminalClient(remote).open(UUID.randomUUID().toString(), owner,
             io.github.asagnc.aurora.terminal.PtyRequest(listOf("/system/bin/sh", "-c", "read word; echo \"\u0024word\"; exit 7")))
@@ -177,6 +186,8 @@ class RootCommandProtocolTest {
             override fun openTerminal(id: String, conversation: String, request: Bundle, callback: IRootResult) = Bundle()
             override fun activateTerminal(id: String) {}
             override fun stopTerminal(id: String) {}
+            override fun prepareLinux(operation: String, callback: IRootResult) { error("Must not prepare") }
+            override fun discardLinux(operation: String) {}
         }
         assertTrue(RootCommandClient(dead, context).execute(UUID.randomUUID().toString(),
             CommandRequest(listOf("/system/bin/true"))).contains("command_outcome_uncertain"))

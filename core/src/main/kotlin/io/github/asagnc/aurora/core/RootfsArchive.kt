@@ -68,7 +68,7 @@ class RootfsArchive(private val budget: RootfsBudget = RootfsBudget()) {
         }
     }
 
-    fun extract(archive: Path, target: Path, plan: List<RootfsEntry>, mode: (Path, Int) -> Unit = { path, bits ->
+    fun extract(archive: Path, target: Path, plan: List<RootfsEntry>, hooks: RootfsExtractionHooks = RootfsExtractionHooks(), mode: (Path, Int) -> Unit = { path, bits ->
         Files.setAttribute(path, "unix:mode", bits, LinkOption.NOFOLLOW_LINKS)
     }) {
         validate(plan)
@@ -76,6 +76,18 @@ class RootfsArchive(private val budget: RootfsBudget = RootfsBudget()) {
         require(!Files.exists(target, LinkOption.NOFOLLOW_LINKS))
         Files.createDirectory(target)
         try {
+            hooks.created(target)
+            fun directory(path: Path) {
+                require(path.startsWith(target))
+                var current = target
+                for (part in target.relativize(path)) {
+                    current = current.resolve(part)
+                    if (!Files.exists(current, LinkOption.NOFOLLOW_LINKS)) {
+                        Files.createDirectory(current); hooks.created(current)
+                    }
+                    require(Files.isDirectory(current, LinkOption.NOFOLLOW_LINKS))
+                }
+            }
             val indexed = plan.associateBy { it.path }
             val seen = mutableSetOf<String>()
             stream(archive) { tar ->
@@ -97,10 +109,11 @@ class RootfsArchive(private val budget: RootfsBudget = RootfsBudget()) {
                         else -> false
                     })
                     val path = target.resolve(name)
-                    if (expected.kind == "directory") Files.createDirectories(path)
+                    if (expected.kind == "directory") directory(path)
                     else if (expected.kind == "file") {
-                        Files.createDirectories(path.parent)
+                        directory(path.parent)
                         Files.newOutputStream(path, StandardOpenOption.CREATE_NEW, LinkOption.NOFOLLOW_LINKS).use { output ->
+                            hooks.created(path)
                             val buffer = ByteArray(65536); var bytes = 0L
                             while (true) {
                                 cancelled(); val count = tar.read(buffer); if (count < 0) break
@@ -113,19 +126,44 @@ class RootfsArchive(private val budget: RootfsBudget = RootfsBudget()) {
                 }
             }
             require(seen == indexed.keys)
+            plan.filter { it.kind == "hardlink" }.forEach { directory(target.resolve(it.path).parent) }
+            if (hooks.hardlinks != null) hooks.hardlinks.invoke() else materializeHardlinks(target, plan, hooks.created)
             plan.filter { it.kind == "hardlink" }.forEach { entry ->
-                cancelled(); val path = target.resolve(entry.path); Files.createDirectories(path.parent)
-                Files.createLink(path, target.resolve(rootfsLinkDestination(entry.path, entry.target, false)))
+                val path = target.resolve(entry.path)
+                val original = target.resolve(rootfsLinkDestination(entry.path, entry.target, false))
+                require(Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS) && Files.isSameFile(path, original)) { "Hardlink batch incomplete" }
             }
             plan.filter { it.kind == "symlink" }.forEach { entry ->
-                cancelled(); val path = target.resolve(entry.path); Files.createDirectories(path.parent)
+                cancelled(); val path = target.resolve(entry.path); directory(path.parent)
                 Files.createSymbolicLink(path, Path.of(entry.target))
+                hooks.created(path)
             }
             plan.filter { it.kind == "directory" }.sortedByDescending { it.path.count { c -> c == '/' } }
                 .forEach { mode(target.resolve(it.path), it.mode) }
         } catch (failure: Throwable) {
-            try { removeSkillTree(target) } catch (cleanup: Throwable) { failure.addSuppressed(cleanup) }
+            try { hooks.cleanup(target) } catch (cleanup: Throwable) { failure.addSuppressed(cleanup) }
             throw failure
+        }
+    }
+
+    /** A separate privileged batch can use the same validated paths and link rules. */
+    fun materializeHardlinks(root: Path, plan: List<RootfsEntry>, created: (Path) -> Unit = {}, inspect: (Path) -> Unit = {}) {
+        validate(plan)
+        require(root.isAbsolute && Files.isDirectory(root, LinkOption.NOFOLLOW_LINKS))
+        plan.filter { it.kind == "hardlink" }.forEach { entry ->
+            cancelled()
+            val path = root.resolve(entry.path)
+            val source = root.resolve(rootfsLinkDestination(entry.path, entry.target, false))
+            listOf(path.parent, source).forEach { candidate ->
+                var current = root
+                for (part in root.relativize(candidate)) {
+                    current = current.resolve(part)
+                    require(!Files.isSymbolicLink(current)) { "Hardlink path contains a physical symlink" }
+                }
+            }
+            inspect(path.parent); inspect(source)
+            require(Files.isDirectory(path.parent, LinkOption.NOFOLLOW_LINKS) && Files.isRegularFile(source, LinkOption.NOFOLLOW_LINKS))
+            Files.createLink(path, source); created(path)
         }
     }
 

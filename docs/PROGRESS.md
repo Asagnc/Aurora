@@ -2,6 +2,12 @@
 
 更新时间：2026-10-22。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 0.1.22 Root 辅助安装（2026-10-22，优先接续）
+
+Root 批量硬链接安装已接：App 解压普通文件保留标签，Root 一次请求复核官方镜像并补链接，App 复核后原子发布。增加服务进程身份票据、取消 join、失联暂存保留及显式 Root 恢复；不盲删、不重放。见 ROOT_LINUX_INSTALL.md。普通硬链接不支持时仍在下载前失败。
+
+核心136项；新增Android普通5项和Root镜像安装1项，普通门槛72。本轮没有新增手机运行证据，测试包编译不等于真机通过。完整构建与校验结果见 evidence/0.1.22。Root chroot、任务cgroup原生监督/事件恢复、Linux命令/PTY仍待接，PRoot guest仍待实跑，executionReady=false。下一步继续已批准 LINUX_CGROUP_PROPOSAL.md，不需重复确认。手机不必一直连接。
+
 ## 0.1.21 Linux 真机资格与修订（2026-10-22，优先接续）
 
 保留数据更新真机，最终普通3+Root3共6项通过。详见DEVICE_LINUX_2026-10-22.md及evidence/0.1.21。发现并修复Files.getFileStore在Android抛SecurityException（改StatFs）；普通硬链接被拒，增加下载前能力预检和结构化失败/暂存清理，不复制或link2symlink冒充。Root链接实际成功且保持App属主，但Root安装器仍未接。

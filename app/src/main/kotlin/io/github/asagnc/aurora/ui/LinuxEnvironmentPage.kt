@@ -18,6 +18,7 @@ import kotlinx.coroutines.*
     val manager = app.linux
     val revision by manager.revision.collectAsStateWithLifecycle()
     val status by manager.status.collectAsStateWithLifecycle()
+    val rootState by app.root.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     var versions by remember { mutableStateOf(emptyList<LinuxVersion>()) }
     var current by remember { mutableStateOf<String?>(null) }
@@ -45,6 +46,9 @@ import kotlinx.coroutines.*
             Text("Ubuntu Base 26.10", style = MaterialTheme.typography.headlineSmall)
             Text("共享基础环境与已发布版本；会话文件和输出独立保存。基础包不包含完整编译及逆向工具。", color = AuroraMuted)
             Text(status, style = MaterialTheme.typography.titleMedium)
+            Text(if (app.root.linuxAvailable && rootState.phase == io.github.asagnc.aurora.root.RootPhase.READY)
+                "本次安装由已连接的 Root 补齐硬链接，文件与会话仍由 Aurora 管理。"
+                else "本机需要支持硬链接，或先在设置连接 Root；安装不会自动申请授权。", color = AuroraMuted)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilledTonalButton({ run { manager.install() } }, enabled = !busy) { Text(if (current == null) "安装基础环境" else "检查基础环境") }
                 if (busy) TextButton({ work?.cancel() }) { Text("取消") }

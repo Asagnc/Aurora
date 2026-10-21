@@ -1,5 +1,7 @@
 # Aurora 功能与接续清单
 
+0.1.22：Root辅助安装、批量硬链接、取消确认与失联暂存恢复已实现；普通文件保留App标签。新增Android5普通+1Root镜像用例仅编译，普通门槛72；尚无该版本真机安装/guest执行证据。完整cgroup监督/chroot/Linux命令/PTY仍待继续，见ROOT_LINUX_INSTALL.md。
+
 0.1.21：小范围真机6项通过，已修StatFs/下载前硬链接预检；Root链接/cgroup基本操作/私有挂载资格通过。用户批准任务cgroup替代必需PID空间。Root安装与完整Linux执行仍未接，PRoot guest尚未实跑，见DEVICE_LINUX_2026-10-22.md。
 
 0.1.20：增加已确认的Root私有PID/挂载空间固定探测与Agent probe_root，PRoot固定探测接环境版本租约；仍未开放任意Linux命令/PTY/chroot。Android新增3项只编译（1项镜像专项须显式选择），普通门槛67。见LINUX_ROOT_LIFECYCLE.md。

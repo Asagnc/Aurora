@@ -27,8 +27,11 @@ class RootController(private val context: Context) {
     private val main = Handler(Looper.getMainLooper())
     private var connection: ServiceConnection? = null
     @Volatile private var remote: IRootControl? = null
+    @Volatile private var linuxIdentity: io.github.asagnc.aurora.core.LinuxRootIdentity? = null
     internal val commandClient get() = remote?.let { RootCommandClient(it, context) }
     internal val terminalClient get() = remote?.let { RootTerminalClient(it) }
+    internal val linuxClient get() = remote?.let { endpoint -> linuxIdentity?.let { RootLinuxClient(endpoint, it, context) } }
+    internal val linuxAvailable get() = remote != null && linuxIdentity != null
     private val lifecycle = Mutex()
 
     suspend fun connect() = withContext(Dispatchers.Main.immediate) {
@@ -48,6 +51,11 @@ class RootController(private val context: Context) {
                 require(snapshot.getInt("commandProtocol") == 2)
                 require(snapshot.getInt("terminalProtocol") == 1)
                 val detail = describe(snapshot)
+                linuxIdentity = if (snapshot.getInt("linuxPrepareProtocol") == 1) runCatching {
+                    val identity = io.github.asagnc.aurora.core.WireJson.decodeFromString<io.github.asagnc.aurora.core.LinuxRootIdentity>(
+                        requireNotNull(snapshot.getString("linuxIdentity")).also { require(it.length <= 1024) })
+                    identity.validate(); require(identity.pid == snapshot.getInt("pid")); identity
+                }.getOrNull() else null
                 this@RootController.remote = remote
                 mutable.value = RootState(RootPhase.READY, detail)
             }
@@ -70,6 +78,7 @@ class RootController(private val context: Context) {
             override fun onServiceDisconnected(name: ComponentName) {
                 if (connection === this) {
                     remote = null
+                    linuxIdentity = null
                     connection = null
                     mutable.value = RootState(RootPhase.UNAVAILABLE, "Root 服务已退出；普通功能仍可使用")
                 }
@@ -91,6 +100,7 @@ class RootController(private val context: Context) {
     private suspend fun disconnectLocked() = withContext(NonCancellable) {
         val endpoint = remote
         remote = null
+        linuxIdentity = null
         withContext(Dispatchers.IO) { runCatching { endpoint?.closeCommands() } }
         connection?.let { RootService.unbind(it) }
         connection = null

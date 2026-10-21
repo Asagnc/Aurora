@@ -1,3 +1,7 @@
+# 0.1.22 Root 辅助安装（2026-10-22）
+
+普通文件由App创建保留标签，Root单次批量补硬链接；固定镜像独立复核、身份票据、取消确认后清理、失联保留与恢复已接。见 ROOT_LINUX_INSTALL.md。核心136，Android新增普通5+Root镜像专项1，仅编译；普通门槛72。本轮无新真机/guest/chroot性能结论。完整Linux执行及cgroup原生监督仍待继续。
+
 # 0.1.21 真机Linux资格（2026-10-22）
 
 普通3+Root3共6项真机通过，失败记录保留。Android空间查询改StatFs，硬链接能力改下载前检查并明确Root安装尚未接；Root硬链接/cgroup基本操作/私有挂载实测成功。PID空间本机缺失，用户批准任务专属cgroup方案替代必需PID空间。Root probe只查挂载，完整执行仍未就绪。见DEVICE_LINUX_2026-10-22.md及LINUX_CGROUP_PROPOSAL.md。完整本地Android构建/R8/testAPK/lint通过，不扩展为guest/chroot/事件恢复或性能验收。

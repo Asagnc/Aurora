@@ -1,0 +1,2 @@
+{'tests': 136, 'failures': 0, 'errors': 0, 'skipped': 5}
+Windows; fixed official ARM64 image sample configured. POSIX-only cases skipped here; CI runs them on Linux.

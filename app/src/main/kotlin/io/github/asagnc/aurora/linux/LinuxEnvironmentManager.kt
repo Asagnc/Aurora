@@ -17,7 +17,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.encodeToString
 
 internal class LinuxInstallCapabilityException(cause: Throwable) : java.io.IOException(
-    "Linux rootfs requires hardlinks; Root installation backend is not yet connected", cause)
+    "Linux rootfs requires hardlinks; connect the Root installation backend", cause)
 
 /** Shared image generations, separate from conversation homes and from native Android executors. */
 internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
@@ -39,18 +39,21 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
             if (registry.versions().none { it.id == id }) removeSkillTree(directory(id))
             registry.clear(operation)
         } }
-        Files.newDirectoryStream(staging).use { entries -> entries.forEach { removeSkillTree(it) } }
-        status.value = if (registry.current() == null) "尚未安装 Linux 环境" else "基础环境已安装，执行能力待探测"
+        val retained = LinuxPreparationState.recover(staging, null)
+        status.value = if (retained > 0) "有未确认的 Root 安装，连接 Root 后可清理恢复"
+            else if (registry.current() == null) "尚未安装 Linux 环境" else "基础环境已安装，执行能力待探测"
     } }
 
     suspend fun install(): LinuxVersion = installer.withLock { withContext(Dispatchers.IO) {
         val source = image
+        val privileged = app.root.linuxClient
+        val retained = LinuxPreparationState.recover(staging, privileged)
         val installed = catalog.withLock {
             registry.versions().firstOrNull { it.id == source.sha256 }?.also { version ->
                 LinuxElf.validateRootfs(directory(version.id).resolve("rootfs"), source.architecture)
                 withContext(NonCancellable) {
                     registry.select(version.id); revision.update { it + 1 }
-                    status.value = "基础环境已安装，执行能力待探测"
+                    status.value = if (retained > 0) "有未确认的 Root 安装，连接 Root 后可清理恢复" else "基础环境已安装，执行能力待探测"
                 }
             }
         }
@@ -61,7 +64,7 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
         var original: Throwable? = null
         try {
             require(android.os.StatFs(stage.toString()).availableBytes >= 128L * 1024 * 1024) { "Insufficient download space" }
-            runInterruptible { checkHardlinks(stage) }
+            if (privileged == null) runInterruptible { checkHardlinks(stage) }
             status.value = "下载 Ubuntu ${source.version} ${source.architecture.imageName}…"
             val archive = stage.resolve("base.tar.gz"); network.download(source.url, archive)
             runInterruptible { verifyArchive(archive, source.sha256) }
@@ -71,12 +74,15 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
             val bytes = plan.sumOf { it.bytes }
             require(android.os.StatFs(stage.toString()).availableBytes >= bytes + plan.size * 4096L + 64L * 1024 * 1024) { "Insufficient expanded space" }
             val prepared = Files.createDirectory(stage.resolve("prepared"))
-            status.value = "解压基础环境…"
-            runInterruptible {
-                unpacker.extract(archive, prepared.resolve("rootfs"), plan) { path, mode -> android.system.Os.chmod(path.toString(), mode) }
-                LinuxElf.validateRootfs(prepared.resolve("rootfs"), source.architecture)
-            }
             val manifest = LinuxRootfsManifest(source, plan.size, bytes)
+            status.value = "解压基础环境…"
+            val hooks = privileged?.let { client -> LinuxRootLinkBatch(client, stage,
+                LinuxPreparationTicket(operation, client.identity, source.sha256, app.applicationInfo.uid), manifest).hooks() }
+                ?: RootfsExtractionHooks()
+            runInterruptible {
+                unpacker.extract(archive, prepared.resolve("rootfs"), plan, hooks) { path, mode -> android.system.Os.chmod(path.toString(), mode) }
+            }
+            runInterruptible { LinuxElf.validateRootfs(prepared.resolve("rootfs"), source.architecture) }
             writeMetadata(prepared.resolve("entries.json"), WireJson.encodeToString(plan))
             writeMetadata(prepared.resolve("manifest.json"), WireJson.encodeToString(manifest))
             val version = LinuxVersion(source.sha256, manifest, System.currentTimeMillis())
@@ -91,7 +97,7 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
             version
         } catch (failure: Throwable) {
             original = failure
-            status.value = if (failure is LinuxInstallCapabilityException) "当前环境无法创建硬链接，Root 安装后端尚未接入"
+            status.value = if (failure is LinuxInstallCapabilityException) "当前权限无法创建硬链接，请先连接 Root 再安装"
                 else if (committed) "基础环境已安装，执行能力待探测"
                 else if (failure is CancellationException) "Linux 安装已取消" else "Linux 安装失败，原有环境保留"
             throw failure
@@ -101,19 +107,26 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
                     if (registry.versions().none { it.id == id }) removeSkillTree(directory(id))
                     registry.clear(operation)
                 } }
-                removeSkillTree(stage)
-            } catch (cleanup: Throwable) { if (original != null) original.addSuppressed(cleanup) else throw cleanup }
+                if (LinuxPreparationState.pending(stage)) privileged?.discard(operation) else removeSkillTree(stage)
+            } catch (cleanup: Throwable) {
+                if (LinuxPreparationState.pending(stage)) status.value = "Root 安装状态未确认，暂存已保留；重新连接 Root 后清理"
+                if (original != null) original.addSuppressed(cleanup) else throw cleanup
+            }
         } }
     } }
 
-    suspend fun cleanup(): Int = catalog.withLock { withContext(Dispatchers.IO) {
+    suspend fun cleanup(): Int = installer.withLock { withContext(Dispatchers.IO) {
+        val retained = LinuxPreparationState.recover(staging, app.root.linuxClient)
+        catalog.withLock {
         var count = 0
         registry.unused().forEach { id -> withContext(NonCancellable) {
             val operation = UUID.randomUUID().toString()
             registry.reserveRemoval(operation, id); removeSkillTree(directory(id)); registry.clear(operation); count++
         } }
+        status.value = if (retained > 0) "有未确认的 Root 安装，连接 Root 后可清理恢复"
+            else if (registry.current() == null) "尚未安装 Linux 环境" else "基础环境已安装，执行能力待探测"
         revision.update { it + 1 }; count
-    } }
+    } } }
     suspend fun probe(owner: String? = null): kotlinx.serialization.json.JsonObject {
         if (owner == null) return catalog.withLock {
             val current = requireNotNull(registry.current()) { "Install a Linux base first" }

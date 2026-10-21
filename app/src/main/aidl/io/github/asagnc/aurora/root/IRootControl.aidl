@@ -11,4 +11,6 @@ interface IRootControl {
     Bundle openTerminal(String id, String conversation, in Bundle request, IRootResult callback);
     void activateTerminal(String id);
     void stopTerminal(String id);
+    void prepareLinux(String operation, IRootResult callback);
+    void discardLinux(String operation);
 }

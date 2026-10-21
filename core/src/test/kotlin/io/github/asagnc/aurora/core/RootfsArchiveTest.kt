@@ -94,6 +94,39 @@ class RootfsArchiveTest {
         GZIPOutputStream(Files.newOutputStream(source)).use { it.write(header) }
         assertFailsWith<IllegalArgumentException> { RootfsArchive().scan(source) }
     }
+    @Test fun batchPhaseRunsAfterFileWritesBeforeSymlinksAndKeepsInodes() = fixture { root ->
+        assumeTrue(Files.getFileStore(root).supportsFileAttributeView("posix"))
+        val source = archive(root, listOf(file("usr/bin/tool"), link("usr/alias", "usr/bin/tool", false), link("bin", "usr/bin")))
+        val unpacker = RootfsArchive(); val plan = unpacker.scan(source); val target = root.resolve("batch")
+        val created = mutableSetOf<Path>()
+        unpacker.extract(source, target, plan, RootfsExtractionHooks(created = { created.add(it) }, hardlinks = {
+            assertEquals(5L, Files.size(target.resolve("usr/bin/tool")))
+            assertFalse(Files.exists(target.resolve("bin"), LinkOption.NOFOLLOW_LINKS))
+            unpacker.materializeHardlinks(target, plan)
+        }))
+        assertTrue(created.containsAll(listOf(target, target.resolve("usr"), target.resolve("usr/bin"), target.resolve("usr/bin/tool"))))
+        assertTrue(Files.isSameFile(target.resolve("usr/alias"), target.resolve("usr/bin/tool")))
+    }
+    @Test fun failedBatchRetainsTreeOnlyWhenCallerOwnsUnconfirmedCleanup() = fixture { root ->
+        assumeTrue(Files.getFileStore(root).supportsFileAttributeView("posix"))
+        val source = archive(root, listOf(file("value"), link("alias", "value", false)))
+        val unpacker = RootfsArchive(); val plan = unpacker.scan(source); val target = root.resolve("retained")
+        assertFails { unpacker.extract(source, target, plan, RootfsExtractionHooks(hardlinks = { error("Binder lost") }, cleanup = {})) }
+        assertTrue(Files.isRegularFile(target.resolve("value")))
+        val removed = root.resolve("removed")
+        assertFails { unpacker.extract(source, removed, plan, RootfsExtractionHooks(hardlinks = { error("stopped") })) }
+        assertFalse(Files.exists(removed))
+    }
+    @Test fun incompleteBatchAndPhysicalSymlinkCannotPublishHardlinks() = fixture { root ->
+        assumeTrue(Files.getFileStore(root).supportsFileAttributeView("posix"))
+        val source = archive(root, listOf(file("usr/value"), link("alias", "usr/value", false)))
+        val unpacker = RootfsArchive(); val plan = unpacker.scan(source)
+        assertFails { unpacker.extract(source, root.resolve("incomplete"), plan, RootfsExtractionHooks(hardlinks = {})) }
+        val target = Files.createDirectory(root.resolve("physical")); val outside = Files.createDirectory(root.resolve("outside"))
+        Files.write(outside.resolve("value"), byteArrayOf(42)); Files.createSymbolicLink(target.resolve("usr"), outside)
+        assertFails { unpacker.materializeHardlinks(target, plan) }
+        assertFalse(Files.exists(target.resolve("alias"), LinkOption.NOFOLLOW_LINKS))
+    }
     @Test fun pinsSupportedArchitecturesAndRejectsEmulationFallback() {
         assertEquals(LinuxArchitecture.ARM64, LinuxArchitecture.fromAbi("arm64-v8a"))
         assertFails { LinuxArchitecture.fromAbi("armeabi-v7a") }

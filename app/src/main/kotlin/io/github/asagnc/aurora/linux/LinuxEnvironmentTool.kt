@@ -29,7 +29,7 @@ internal class LinuxEnvironmentTool(private val manager: LinuxEnvironmentManager
     catch (failure: Exception) { objectOf("error" to string(if (failure is LinuxInstallCapabilityException)
             "linux_hardlinks_unavailable" else "linux_environment_unavailable"),
         "hint" to string(if (failure is LinuxInstallCapabilityException)
-            "This UID cannot create rootfs hardlinks. Root installation is not yet connected; no image was downloaded or copied as a substitute."
+            "This UID cannot create rootfs hardlinks. Explicitly connect Root before installing; no image was downloaded or copied as a substitute."
             else "Inspect ABI, storage, source and image integrity. Installed base images do not imply an executable Linux backend.")).toString() }
     private suspend fun status(): JsonObject = objectOf("stage" to string(manager.status.value), "executionReady" to JsonPrimitive(false),
         "current" to (manager.registry.current()?.let(::string) ?: JsonNull),
