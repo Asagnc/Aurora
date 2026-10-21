@@ -1,6 +1,12 @@
 # Aurora 接续记录
 
-更新时间：2026-10-21。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
+更新时间：2026-10-22。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
+
+## Linux 底座研究待确认（2026-10-22）
+
+0.1.17最终提交026a2dc完整 [CI39611202577](https://github.com/Asagnc/Aurora/actions/runs/39611202577) 已通过：核心115、Linux主机PTY8/源码12、Debug/R8 Release/testAPK/lint。没有新增设备验收。
+
+用户继续后，已重新查Ubuntu26.10官方Base/26.04.1 LTS、Debian13.7、Alpine3.24.2、Termux PRoot5.1.107.98、bxroot0.2.4、远程Eta/DSHA源码及Android/NDK/挂载限制。推荐方案见 [LINUX_PROPOSAL.md](LINUX_PROPOSAL.md)：Ubuntu26.10同架构、Root私有挂载命名空间chroot优先、普通按需PRoot、共享环境代与缓存/会话HOME分离。新原生依赖、Linux安装与SQLite元数据尚未接入，等待用户确认。没有降低target、全局挂载/SELinux修改、重新安装Studio/模拟器或付费模型调用。新对话不要把研究方案误当实现，也不要重复询问已经批准的原生命令/PTY/Skills架构。
 
 ## 0.1.17 Skills 来源与文件发现（2026-10-21）
 
