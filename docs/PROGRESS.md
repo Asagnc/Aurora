@@ -2,6 +2,12 @@
 
 更新时间：2026-10-22。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 2026-10-22 Linux PTY原生组合（优先接续）
+
+fc3aab6完整CI39773271882成功。新增原生--run-pty：复用PTY帧传输与scope监督，协调进程只释放自己的控制终端，guest新会话以TIOCSCTTY参数0取得终端/前台组，HUP在guest恢复、TERM显式加入。独立guard继续cgroup回收脱离session的子进程，传输退出不代替stopped证明。见LINUX_PTY_NATIVE.md。
+
+新增Root主机5项已接CI，结果待查；本地双ABI Debug/testAPK/R8Release/lint通过（outputs/linux-pty-native-build-20261022.txt）。无新Android运行证据，未接Binder Linux终端与应用租约/终端记录，Agent executionReady=false。下一步取得该组合的CI结果，再复用现有Root终端FD/激活门接Linux票据，不另建守护进程。上轮真实Ubuntu三项Android专项仍仅编译。
+
 ## 2026-10-22 真实guest验收用例（优先接续）
 
 83aa2c1完整CI39755532891已成功。新增RootLinuxRunDeviceTest三项：真实已安装CHROOT非零退出/UTF8续读/导出/版本编辑与旧版本拒绝/删除；超时后台写入停止与租约释放；就绪后取消、活跃编辑拒绝、退出后文件稳定。测试仅创建自身会话，不下载替代环境，缺Root能力或真实代直接失败，恢复失败保留租约。验收命令与范围见LINUX_RUN_QUALIFICATION.md。

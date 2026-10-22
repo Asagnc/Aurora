@@ -1,3 +1,7 @@
+## 2026-10-22 Linux PTY原生组合
+
+新增--run-pty控制终端移交与前台guest组，复用已有PTY传输与独立scope监督。新增Root主机五项待CI；Android双ABI Debug/testAPK/R8Release/lint构建通过。应用Linux终端/Binder票据与租约尚未接通，executionReady=false，无新真机。详见LINUX_PTY_NATIVE.md。
+
 ## 2026-10-22 Root Linux运行验收准备
 
 真实镜像专项新增三项，覆盖guest退出/文件/导出/版本编辑/删除、超时及取消后台子进程与租约。Android测试APK本地编译通过，尚未真机执行；见LINUX_RUN_QUALIFICATION.md。83aa2c1完整CI39755532891成功。无产品行为变更，不递增App版本号。

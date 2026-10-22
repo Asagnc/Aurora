@@ -188,12 +188,12 @@ static int guard(int owner, int hold_ms, int state, int run_lock, const struct f
 
 int main(int argc, char **argv) {
     int hold_ms = 0;
-    if (argc < 4 || (strcmp(argv[1], "--probe") && strcmp(argv[1], "--recover") && strcmp(argv[1], "--run")) ||
+    if (argc < 4 || (strcmp(argv[1], "--probe") && strcmp(argv[1], "--recover") && strcmp(argv[1], "--run") && strcmp(argv[1], "--run-pty")) ||
         strcmp(argv[2], "--state-dir")) return 64;
     int recovering = !strcmp(argv[1], "--recover");
     struct fixture fixture = {0};
     int next = 4;
-    int running = !strcmp(argv[1], "--run");
+    int running = !strcmp(argv[1], "--run") || !strcmp(argv[1], "--run-pty");
     if (running) {
         if (guest_run_parse(argc, argv, &fixture.run) < 0) return 64;
         next = argc;
@@ -214,6 +214,7 @@ int main(int argc, char **argv) {
     if (sigprocmask(SIG_SETMASK, &mask, NULL) < 0) return failure("signal_mask");
     signal(SIGTERM, SIG_DFL); signal(SIGINT, SIG_DFL);
     signal(SIGCHLD, SIG_DFL); signal(SIGPIPE, SIG_IGN);
+    if (fixture.run.terminal && guest_terminal_release() < 0) return failure("guest_terminal_release");
     int state = scope_state_open(argv[3]);
     if (state < 0) return failure("state_directory");
     int run_lock = guest_run_lock(state);

@@ -10,6 +10,8 @@
 #include <sys/syscall.h>
 #include <sys/file.h>
 #include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <termios.h>
 #include <unistd.h>
 
 /* Inherited by the guard before it can create a scope. Workers must close it
@@ -45,7 +47,7 @@ int guest_run_parse(int argc, char **argv, struct guest_run *run) {
     char *end;
     long timeout = strtol(argv[13], &end, 10);
     if (!*argv[13] || *end || timeout < 1 || timeout > 300000) return -1;
-    *run = (struct guest_run){argv[5], argv[7], argv[9], argv[11], argv + 15, (int)timeout};
+    *run = (struct guest_run){argv[5], argv[7], argv[9], argv[11], argv + 15, (int)timeout, !strcmp(argv[1], "--run-pty")};
     return 0;
 }
 
@@ -82,9 +84,31 @@ int guest_run_finish(int state, int exit_code, int interrupted) {
 
 int guest_run_exec(const struct guest_run *run) {
     char *const environment[] = {"HOME=/root", "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
-        "TMPDIR=/tmp", "LANG=C.UTF-8", NULL};
+        "TMPDIR=/tmp", "LANG=C.UTF-8", run->terminal ? "TERM=xterm-256color" : NULL, NULL};
+    if (run->terminal) {
+        /* The coordinator released only its own PTY before forking. Never steal
+         * a terminal from another session (TIOCSCTTY arg must remain zero). */
+        if (setsid() < 0 || ioctl(STDIN_FILENO, TIOCSCTTY, 0) < 0 ||
+            tcsetpgrp(STDIN_FILENO, getpgrp()) < 0) return 125;
+        signal(SIGHUP, SIG_DFL);
+    }
     if (chdir("/mnt") < 0 || syscall(SYS_close_range, 3u, UINT_MAX, 4u /* CLOSE_RANGE_CLOEXEC */) < 0) return 125;
     signal(SIGPIPE, SIG_DFL);
     execve(run->argv[0], run->argv, environment);
     return errno == ENOENT ? 127 : 126;
+}
+
+int guest_terminal_release(void) {
+    struct stat terminal, other;
+    if (fstat(STDIN_FILENO, &terminal) < 0 || !S_ISCHR(terminal.st_mode)) return -1;
+    for (int fd = 1; fd <= 2; ++fd) {
+        if (fstat(fd, &other) < 0 || terminal.st_rdev != other.st_rdev || !isatty(fd)) { errno = ENOTTY; return -1; }
+    }
+    if (getsid(0) != getpid() || tcgetsid(STDIN_FILENO) != getpid() || tcgetpgrp(STDIN_FILENO) != getpgrp()) {
+        errno = EPERM; return -1;
+    }
+    /* TIOCNOTTY sends HUP to the foreground group. Keep the coordinator alive;
+     * the admitted guest resets it after acquiring the now unowned terminal. */
+    if (signal(SIGHUP, SIG_IGN) == SIG_ERR) return -1;
+    return ioctl(STDIN_FILENO, TIOCNOTTY);
 }
