@@ -2,6 +2,14 @@
 
 更新时间：2026-10-22。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 0.1.25 chroot挂载资格（2026-10-22，优先接续）
+
+用户已确认LINUX_OWNERSHIP_PROPOSAL.md：Root用户默认只准备原始Linux属主Root代；PRoot的App UID代按需另建，各代会话间共享，不逐会话复制、不强依赖OverlayFS。两种同存约多108MiB基础文件加块开销，Root清理需Root，不能重复询问此选择。
+
+已接固定C chroot fixture：FD克隆/属性/挂接、只读根、可写HOME/tmp/project、只读proc/dev、关闭host目录FD；复用cgroup监督与恢复。新增Linux主机5项，旧13项继续；没有运行Ubuntu ELF、不接任意命令或变更现有镜像属主。见LINUX_CHROOT_MOUNTS.md及evidence/0.1.25。Android普通门槛73，无新增真机证据，executionReady=false。
+
+上一版5ff4b8a完整[CI39734462398](https://github.com/Asagnc/Aurora/actions/runs/39734462398)成功。下一步按已确认方案实现Root代属主发布/Root清理和空间展示、生产租约与真实guest执行；PRoot guest仍未实跑。手机不必一直连接。
+
 ## 0.1.24 scope恢复（2026-10-22，优先接续）
 
 Root专属持久记录、boot/PID启动时间/pidfd/父与scope inode身份验证、损坏拒绝、协调进程兜底和独立恢复已接；工作进程父死亡保护补齐入组前竞态。Agent新增recover_root，probe先恢复，活跃或不明确记录不干扰。见LINUX_SCOPE_RECOVERY.md。新增主机7项故障，原6项继续；Android现有Root用例补持久恢复，仅编译，普通门槛73。

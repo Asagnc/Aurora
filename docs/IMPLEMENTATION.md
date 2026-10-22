@@ -1,3 +1,7 @@
+# 0.1.25 chroot挂载资格（2026-10-22）
+
+Root/PRoot后端共享属主代方案已获确认。新增固定C chroot/只读根/可写会话绑定/FD挂载与cgroup收尾测试，主机新增5项，旧13项继续；见LINUX_CHROOT_MOUNTS.md。未运行真实Ubuntu ELF，未接属主代发布与业务租约/命令/PTY，executionReady=false，无新真机证据。
+
 # 0.1.24 scope恢复（2026-10-22）
 
 新增Root专属持久记录和身份复核、协调兜底/两层死亡后独立恢复、入组前父死亡保护及Agent recover_root。见LINUX_SCOPE_RECOVERY.md。新增主机7故障+既有6生命周期；Android正常恢复用例仅编译，普通门槛73。业务chroot/PTY/租约及Android撤权仍待验证，不标记完整执行就绪。

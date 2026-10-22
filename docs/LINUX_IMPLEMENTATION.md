@@ -1,6 +1,10 @@
 # Linux 环境实施记录
 
-2026-10-22。用户已批准LINUX_PROPOSAL.md及真机后的cgroup生命周期修订，后者替代必需PID空间。当前0.1.24已接Root安装、固定cgroup监督及持久恢复，完整运行时尚未就绪。
+2026-10-22。用户已批准LINUX_PROPOSAL.md及真机后的cgroup生命周期修订，后者替代必需PID空间。当前0.1.25已接Root安装、固定cgroup监督/恢复及原生chroot挂载资格，完整运行时尚未就绪。
+
+## 0.1.25 挂载资格与属主代确认
+
+已确认Root原始属主代/PRoot App UID代按需共享，见LINUX_OWNERSHIP_PROPOSAL.md，不重复审批。固定C chroot fixture与FD只读/可写绑定、强杀恢复/视图隔离主机5项已接CI，见LINUX_CHROOT_MOUNTS.md。生产代发布/Root清理/租约/实际Ubuntu ELF与PTY仍待继续；不改现有镜像属主，executionReady=false。
 
 ## 0.1.24 持久恢复
 

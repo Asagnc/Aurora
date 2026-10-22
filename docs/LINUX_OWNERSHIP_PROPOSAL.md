@@ -1,4 +1,4 @@
-# chroot/PRoot 环境属主方案（待确认）
+# chroot/PRoot 环境属主方案（已确认）
 
 2026-10-22。现有Ubuntu解包保持App UID，目的是保留Android标签和普通UID管理能力；entries.json保存原始UID/GID，但尚未恢复。这不是可直接宣称完整chroot语义的状态。
 
@@ -20,6 +20,6 @@
 - OverlayFS metacopy：可减少元数据修改的数据复制，仍依赖实际内核/xattr/文件系统及清理资格。按既有方案保留未来可选优化，不升级成所有设备硬前置。
 - 两种后端按需各自共享代：固定语义、没有逐会话复制，也能明确报告空间/权限成本；推荐。
 
-此项改变共享环境的后端布局与Root清理要求，按用户最初要求等待确认后实施。私有挂载/只读bind/chroot与退出清理的独立资格测试可先继续，不修改现有镜像属主、不开放业务命令。
+用户已确认“采用推荐方案”；此项不需重复确认。改变共享环境后端布局与Root清理要求按分阶段实现验收，未完成前不声明可用。私有挂载/只读bind/chroot与退出清理的独立资格测试可先继续，不修改现有镜像属主、不开放业务命令。
 
 一手依据：[idmapping](https://docs.kernel.org/filesystems/idmappings.html)、[OverlayFS上层条件/metacopy](https://docs.kernel.org/filesystems/overlayfs.html)、[chroot工作目录与FD边界](https://man7.org/linux/man-pages/man2/chroot.2.html)。样本计数来自已校验的固定官方包。

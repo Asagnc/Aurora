@@ -8,6 +8,8 @@ Research date: 2026-10-12.
 
 ## Approved architecture
 
+- 2026-10-22 confirmed: on-demand shared backend generations: Root chroot preserves original Linux ownership, ordinary PRoot preserves App ownership; Root users default to only the Root generation. No per-conversation rootfs copies, no mandatory OverlayFS; explicit dual-generation storage costs and Root cleanup requirements. See LINUX_OWNERSHIP_PROPOSAL.md.
+
 - 2026-10-22 superseding confirmation after device qualification: Root Linux uses task-owned cgroup v2 scopes for lifecycle teardown, alongside private mount namespaces and subreaper/pidfd/event observation. PID namespaces are optional because the tested Android kernel does not expose them. No resident daemon or global resource-policy changes. See LINUX_CGROUP_PROPOSAL.md. Full execution remains unfinished.
 
 - 2026-10-22 confirmed: Ubuntu Base26.10 same-architecture environment, Root-qualified private-mount-namespace chroot preferred, PRoot5.1.107.98 on demand for ordinary UID, shared version generations/cache and conversation-owned writable homes. See LINUX_PROPOSAL.md. Qualification and runtime implementation are separate from downloading a rootfs.

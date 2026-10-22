@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 #include "task_scope.h"
 #include "scope_state.h"
+#include "mount_probe.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <poll.h>
@@ -15,6 +16,8 @@
 #include <sys/syscall.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
+struct fixture { const char *rootfs, *workspace; };
 
 static int failure(const char *operation) {
     int saved = errno;
@@ -39,7 +42,7 @@ static int read_ready(int pipe, int timeout_ms) {
 
 /* No arbitrary command or caller-supplied PID is accepted by this qualification
  * binary. Descendants deliberately detach and ignore TERM to test cgroup kill. */
-static int workload(const struct task_scope *scope, int report, int hold_ms) {
+static int workload(const struct task_scope *scope, int report, int hold_ms, const struct fixture *fixture) {
     if (task_scope_enter(scope) < 0) return failure("scope_enter");
     close(scope->processes); close(scope->directory); close(scope->parent);
     close(scope->events); close(scope->kill);
@@ -48,6 +51,7 @@ static int workload(const struct task_scope *scope, int report, int hold_ms) {
         mount(NULL, "/", NULL, MS_REC | MS_PRIVATE, NULL) < 0 || stat("/proc/self/ns/mnt", &after) < 0)
         return failure("private_mount_namespace");
     if (before.st_ino == after.st_ino) { errno = EINVAL; return failure("unchanged_mount_namespace"); }
+    if (fixture->rootfs && scope_chroot_fixture(fixture->rootfs, fixture->workspace) < 0) return failure("chroot_fixture");
     int ready[2];
     if (pipe2(ready, O_CLOEXEC) < 0) return failure("detached_pipe");
     pid_t child = fork();
@@ -119,7 +123,7 @@ static int cleanup(struct task_scope *scope, pid_t worker, int *exit_code) {
     return 0;
 }
 
-static int guard(int owner, int hold_ms, int state) {
+static int guard(int owner, int hold_ms, int state, const struct fixture *fixture) {
     /* A separate session survives the command supervisor's group cancellation.
      * This guard ends after this one bounded probe; it is not a daemon. */
     if (setsid() < 0 || prctl(PR_SET_CHILD_SUBREAPER, 1) < 0) return failure("guard_setup");
@@ -142,7 +146,7 @@ static int guard(int owner, int hold_ms, int state) {
         /* Close the pre-admission fork race if the guard dies before this
          * process can join its recorded group. Descendants remain group-owned. */
         if (prctl(PR_SET_PDEATHSIG, SIGKILL) < 0 || getppid() != guard_pid) _exit(125);
-        _exit(workload(&scope, report[1], hold_ms));
+        _exit(workload(&scope, report[1], hold_ms, fixture));
     }
     close(report[1]);
     int worker_fd = (int)syscall(SYS_pidfd_open, worker, 0);
@@ -163,20 +167,26 @@ static int guard(int owner, int hold_ms, int state) {
     if (observed < 0) { errno = saved; return failure("owner_or_worker_observation"); }
     if (exit_code || populated != 1) { errno = EINVAL; return failure("workload_or_population"); }
     if (poll(&alive, 1, 0) != 0) { errno = EPIPE; return failure("owner_exited"); }
-    puts("{\"protocol\":1,\"privateMountNamespace\":true,\"taskCgroup\":true,\"pidfdObserved\":true,\"subreaperDrained\":true,\"populatedThenEmpty\":true,\"scopeRemoved\":true}");
+    printf("{\"protocol\":1,\"privateMountNamespace\":true,\"taskCgroup\":true,\"pidfdObserved\":true,\"subreaperDrained\":true,\"populatedThenEmpty\":true,\"scopeRemoved\":true,\"chrootWorkload\":%s}\n",
+        fixture->rootfs ? "true" : "false");
     return 0;
 }
 
 int main(int argc, char **argv) {
     int hold_ms = 0;
-    if ((argc != 4 && argc != 6) || (strcmp(argv[1], "--probe") && strcmp(argv[1], "--recover")) ||
+    if (argc < 4 || (strcmp(argv[1], "--probe") && strcmp(argv[1], "--recover")) ||
         strcmp(argv[2], "--state-dir")) return 64;
     int recovering = !strcmp(argv[1], "--recover");
-    if (argc == 6) {
-        if (recovering || strcmp(argv[4], "--hold-ms")) return 64;
+    struct fixture fixture = {0};
+    int next = 4;
+    if (!recovering && argc >= 7 && !strcmp(argv[4], "--chroot-fixture")) {
+        fixture.rootfs = argv[5]; fixture.workspace = argv[6]; next = 7;
+    }
+    if (argc != next) {
+        if (recovering || argc != next + 2 || strcmp(argv[next], "--hold-ms")) return 64;
         char *end;
-        long value = strtol(argv[5], &end, 10);
-        if (!*argv[5] || *end || value < 1 || value > 5000) return 64;
+        long value = strtol(argv[next + 1], &end, 10);
+        if (!*argv[next + 1] || *end || value < 1 || value > 5000) return 64;
         hold_ms = (int)value;
     }
     if (geteuid() != 0) { errno = EPERM; return failure("root_required"); }
@@ -193,7 +203,7 @@ int main(int argc, char **argv) {
     if (owner < 0) return failure("owner_pidfd");
     pid_t child = fork();
     if (child < 0) { close(owner); return failure("guard_fork"); }
-    if (child == 0) { int code = guard(owner, hold_ms, state); close(owner); close(state); exit(code); }
+    if (child == 0) { int code = guard(owner, hold_ms, state, &fixture); close(owner); close(state); exit(code); }
     close(owner);
     int code = wait_child(child);
     if (scope_state_recover(state) < 0) { close(state); return failure("coordinator_recovery"); }

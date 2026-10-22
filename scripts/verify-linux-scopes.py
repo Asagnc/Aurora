@@ -41,7 +41,8 @@ class ScopeTest(unittest.TestCase):
         source = Path(__file__).resolve().parents[1] / 'app/src/main/cpp/linux'
         subprocess.run(['cc', '-std=c11', '-O2', '-DNDEBUG', '-Wall', '-Wextra', '-Werror',
                         str(source / 'scope_probe.c'), str(source / 'task_scope.c'), str(source / 'scope_identity.c'),
-                        str(source / 'scope_state.c'), str(source / 'scope_process.c'), '-o', cls.binary], check=True)
+                        str(source / 'scope_state.c'), str(source / 'scope_process.c'),
+                        str(source / 'mount_probe.c'), '-o', cls.binary], check=True)
 
     @classmethod
     def tearDownClass(cls):
@@ -49,7 +50,8 @@ class ScopeTest(unittest.TestCase):
 
     def start(self, hold=5000):
         self.state = Path(self.directory.name) / ('state-' + str(time.monotonic_ns()))
-        process = subprocess.Popen([self.binary, '--probe', '--state-dir', str(self.state), '--hold-ms', str(hold)],
+        process = subprocess.Popen([self.binary, '--probe', '--state-dir', str(self.state)] +
+                                   getattr(self, 'mount_args', []) + ['--hold-ms', str(hold)],
                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
         self.addCleanup(self.stop, process)
         deadline = time.monotonic() + 3

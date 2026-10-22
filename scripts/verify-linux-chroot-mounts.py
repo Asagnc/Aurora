@@ -1,0 +1,135 @@
+#!/usr/bin/env python3
+"""Fixed native chroot/bind tests, not an Ubuntu guest/Android execution claim."""
+import importlib.util
+import json
+import os
+from pathlib import Path
+import signal
+import subprocess
+import tempfile
+import unittest
+
+spec = importlib.util.spec_from_file_location('scope_tests', Path(__file__).with_name('verify-linux-scopes.py'))
+base = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(base)
+
+
+class MountTest(base.ScopeTest):
+    def recover_state(self, state):
+        result = subprocess.run([self.binary, '--recover', '--state-dir', str(state)], capture_output=True, timeout=8)
+        self.assertEqual(0, result.returncode, result.stderr.decode())
+
+    def fixture(self, root=None):
+        directory = Path(tempfile.mkdtemp(prefix='mount-fixture-', dir=self.directory.name))
+        if root is None:
+            root = directory / 'rootfs'
+            root.mkdir()
+            for name in ('root', 'tmp', 'mnt', 'proc', 'dev'):
+                (root / name).mkdir()
+            (root / 'aurora-fixture').write_text('aurora-chroot-fixture-v1\n')
+        work = directory / 'work'
+        work.mkdir()
+        for name in ('view', 'home', 'tmp', 'project'):
+            (work / name).mkdir()
+        self.mount_args = ['--chroot-fixture', str(root), str(work)]
+        return root, work
+
+    def assert_host_unchanged(self, root, work):
+        self.assertEqual('aurora-chroot-fixture-v1\n', (root / 'aurora-fixture').read_text())
+        self.assertFalse((root / 'must-remain-readonly').exists())
+        for name in ('root', 'tmp', 'mnt', 'proc', 'dev'):
+            self.assertEqual([], list((root / name).iterdir()))
+        self.assertEqual([], list((work / 'view').iterdir()))
+        self.assertFalse(os.path.ismount(work / 'view'))
+
+    def assert_outputs(self, work):
+        self.assertEqual('home', (work / 'home/home.txt').read_text())
+        self.assertEqual('project', (work / 'project/project.txt').read_text())
+        self.assertEqual('temporary', (work / 'tmp/source').read_text())
+        self.assertEqual(os.stat(work / 'tmp/source').st_ino, os.stat(work / 'tmp/hardlink').st_ino)
+
+    def test_readonly_guest_root_writable_bindings_and_host_mounts(self):
+        root, work = self.fixture()
+        before_mount = os.stat('/proc/self/ns/mnt').st_ino
+        before_owner = os.stat(root / 'aurora-fixture').st_uid
+        process, detached, scope = self.start(300)
+        mountinfo = Path(f'/proc/{detached}/mountinfo').read_text()
+        roots = [line.split() for line in mountinfo.splitlines() if line.split()[4] == '/']
+        self.assertEqual(1, len(roots))
+        self.assertIn('ro', roots[0][5].split(','))
+        out, err = process.communicate(timeout=8)
+        self.assertEqual(0, process.returncode, err.decode())
+        self.assertTrue(json.loads(out)['chrootWorkload'])
+        self.assert_gone(detached)
+        self.assert_scope_removed(scope)
+        self.assert_outputs(work)
+        self.assert_host_unchanged(root, work)
+        self.assertEqual(before_owner, os.stat(root / 'aurora-fixture').st_uid)
+        self.assertEqual(before_mount, os.stat('/proc/self/ns/mnt').st_ino)
+
+    def test_guard_sigkill_releases_mounted_descendants_without_success(self):
+        root, work = self.fixture()
+        process, detached, scope = self.start()
+        os.kill(base.children(process.pid)[0], signal.SIGKILL)
+        out, _ = process.communicate(timeout=8)
+        self.assertNotEqual(0, process.returncode)
+        self.assertEqual(b'', out)
+        self.assert_gone(detached)
+        self.assert_scope_removed(scope)
+        self.assert_outputs(work)
+        self.assert_host_unchanged(root, work)
+
+    def test_fresh_recovery_after_both_supervisors_die_preserves_outputs(self):
+        root, work = self.fixture()
+        process, detached, scope = self.start()
+        guard, = base.children(process.pid)
+        os.kill(guard, signal.SIGSTOP)
+        os.kill(process.pid, signal.SIGKILL)
+        os.kill(guard, signal.SIGKILL)
+        process.communicate(timeout=8)
+        self.addCleanup(self.recover_state, self.state)
+        self.recover_state(self.state)
+        self.assert_gone(detached)
+        self.assert_scope_removed(scope)
+        self.assert_outputs(work)
+        self.assert_host_unchanged(root, work)
+
+    def test_guest_target_symlink_fails_without_following_or_host_mounts(self):
+        root, work = self.fixture()
+        (root / 'tmp').rmdir()
+        (root / 'tmp').symlink_to(work / 'tmp')
+        state = work / 'state'
+        result = subprocess.run([self.binary, '--probe', '--state-dir', str(state)] + self.mount_args,
+                                capture_output=True, timeout=8)
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(b'', result.stdout)
+        self.assertEqual([], list(state.glob('*.state')))
+        self.assertEqual([], list((work / 'tmp').iterdir()))
+        self.assertEqual([], list((work / 'view').iterdir()))
+        self.assertTrue((root / 'tmp').is_symlink())
+
+    def test_two_private_views_share_base_without_sharing_writable_homes(self):
+        root, first = self.fixture()
+        one, detached_one, scope_one = self.start()
+        (first / 'home/home.txt').write_text('first-private-home')
+        _, second = self.fixture(root)
+        two, detached_two, scope_two = self.start()
+        self.assert_outputs(second)
+        self.assertEqual('first-private-home', (first / 'home/home.txt').read_text())
+        one.kill()
+        one.communicate(timeout=8)
+        self.assert_gone(detached_one)
+        self.assert_scope_removed(scope_one)
+        self.assertTrue(Path(f'/proc/{detached_two}').exists())
+        two.kill()
+        two.communicate(timeout=8)
+        self.assert_gone(detached_two)
+        self.assert_scope_removed(scope_two)
+        self.assert_host_unchanged(root, first)
+        self.assert_host_unchanged(root, second)
+
+
+if __name__ == '__main__':
+    suite = unittest.TestSuite(MountTest(name) for name in MountTest.__dict__ if name.startswith('test_'))
+    outcome = unittest.TextTestRunner(verbosity=2).run(suite)
+    raise SystemExit(not outcome.wasSuccessful())
