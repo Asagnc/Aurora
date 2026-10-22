@@ -34,4 +34,19 @@ class Utf8FileSliceTest {
             assertEquals("极光😀", text.toString())
         } finally { removeSkillTree(root) }
     }
+    @Test fun everyIncompleteScalarBoundaryRetainsExactlyTheVisiblePrefix() {
+        for (scalar in listOf("¢", "极", "😀", "\u0800", "\uD7FF", "\uDBFF\uDFFF")) {
+            val bytes = scalar.toByteArray(Charsets.UTF_8)
+            for (cut in 1 until bytes.size) {
+                assertEquals(Utf8FileSlice("A", 1), decodeUtf8FileSlice(byteArrayOf(65) + bytes.copyOf(cut)))
+            }
+        }
+    }
+    @Test fun malformedPartialTailsCannotBeHiddenByBoundaryTrimming() {
+        for (tail in listOf(listOf(0xe0, 0x80), listOf(0xed, 0xa0), listOf(0xf0, 0x80), listOf(0xf4, 0x90),
+            listOf(0xc0), listOf(0xf5), listOf(0x80, 0x80, 0x80, 0x80))) {
+            val bytes = byteArrayOf(65) + tail.map(Int::toByte).toByteArray()
+            assertNull(decodeUtf8FileSlice(bytes).text)
+        }
+    }
 }

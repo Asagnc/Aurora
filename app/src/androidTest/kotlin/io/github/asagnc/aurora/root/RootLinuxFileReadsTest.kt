@@ -17,13 +17,13 @@ class RootLinuxFileReadsTest {
     @Test fun boundedReadReportsContinuationAndVersionForEdits() = runBlocking {
         val root = Files.createTempDirectory(InstrumentationRegistry.getInstrumentation().targetContext.cacheDir.toPath(), "linux-read-")
         try {
-            Files.createDirectory(root.resolve("project")); Files.writeString(root.resolve("project/file"), "abcdef")
+            Files.createDirectory(root.resolve("project")); Files.write(root.resolve("project/file"), "abcdef".toByteArray(Charsets.UTF_8))
             val result = RootLinuxFileReads.batch(root, JsonArray(listOf(objectOf("path" to string("project/file"),
                 "offset" to JsonPrimitive(1), "limit" to JsonPrimitive(2)))))
             val file = result.array("files").single().jsonObject
             assertEquals("bc", file.text("text")); assertEquals(3L, file.number("next"))
             assertEquals(64, requireNotNull(file.text("version")).length)
-            Files.writeString(root.resolve("project/file"), "极光")
+            Files.write(root.resolve("project/file"), "极光".toByteArray(Charsets.UTF_8))
             val unicode = RootLinuxFileReads.batch(root, JsonArray(listOf(objectOf("path" to string("project/file"), "limit" to JsonPrimitive(4)))))
                 .array("files").single().jsonObject
             assertEquals("极", unicode.text("text")); assertEquals(3L, unicode.number("next"))

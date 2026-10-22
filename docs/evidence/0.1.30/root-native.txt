@@ -1,0 +1,8 @@
+
+io.github.asagnc.aurora.root.RootCommandDeviceTest:.....
+
+Time: 8.561
+
+OK (5 tests)
+
+

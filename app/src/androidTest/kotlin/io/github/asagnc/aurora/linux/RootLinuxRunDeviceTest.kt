@@ -31,7 +31,7 @@ class RootLinuxRunDeviceTest {
             val root = app.spaces.commandRoot(owner)
             val path = requireNotNull(exported.text("path"))
             assertTrue(path.matches(Regex("exports/root-[0-9a-f-]{36}\\.bin")))
-            assertEquals("极光😀", Files.readString(root.resolve(path)))
+            assertEquals("极光😀", String(Files.readAllBytes(root.resolve(path)), Charsets.UTF_8))
             val edit = objectOf("edits" to JsonArray(listOf(objectOf("path" to string("project/result.txt"),
                 "expectedVersion" to requireNotNull(first["version"]), "text" to string("updated")))))
             assertEquals("committed", client.invoke(owner, "files_edit_batch", edit).text("status"))
@@ -99,6 +99,7 @@ class RootLinuxRunDeviceTest {
         app.ready.await()
         app.root.connect()
         var owner: String? = null
+        var original: Throwable? = null
         try {
             check(app.root.linuxRunClient != null && app.root.linuxFileClient != null) { "Reconnect current Root service" }
             val current = app.linux.registry.current()
@@ -107,10 +108,12 @@ class RootLinuxRunDeviceTest {
             }
             owner = app.conversations.create("Linux qualification")
             block(app, owner)
+        } catch (failure: Throwable) { original = failure; throw failure
         } finally {
             // Failed recovery must retain the owner and its lease for diagnosis.
             withContext(NonCancellable) { try {
-                owner?.let { app.spaces.delete(it, {}) }
+                try { owner?.let { app.spaces.delete(it, {}) } }
+                catch (cleanup: Throwable) { if (original != null) original.addSuppressed(cleanup) else throw cleanup }
             } finally { app.root.disconnect() } }
         }
     }

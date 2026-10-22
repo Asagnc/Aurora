@@ -1,0 +1,8 @@
+
+io.github.asagnc.aurora.linux.LinuxQualificationRecoveryDeviceTest:.
+
+Time: 1.978
+
+OK (1 test)
+
+

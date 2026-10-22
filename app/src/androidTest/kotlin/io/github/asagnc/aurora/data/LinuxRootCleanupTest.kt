@@ -26,7 +26,7 @@ class LinuxRootCleanupTest {
         }
         val owner = store.create("cleanup")
         root = spaces.commandRoot(owner)
-        Files.writeString(root.resolve("ordinary.txt"), "preserved")
+        Files.write(root.resolve("ordinary.txt"), "preserved".toByteArray(Charsets.UTF_8))
         Files.createDirectory(root.resolve(".aurora-linux"))
         try {
             try { spaces.delete(owner, {}); fail("Unavailable Root discarded data") } catch (_: LinuxFilesPendingException) { }

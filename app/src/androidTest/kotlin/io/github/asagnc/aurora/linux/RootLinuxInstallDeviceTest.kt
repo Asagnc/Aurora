@@ -21,15 +21,16 @@ class RootLinuxInstallDeviceTest {
         val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as AuroraApplication
         app.ready.await()
         val previous = app.linux.registry.versions()
-        org.junit.Assume.assumeTrue("A fresh Root generation is required", previous.none { it.manifest.backend == LinuxBackend.CHROOT })
         app.root.connect()
         try {
             assertTrue("Root Linux ownership protocol unavailable", app.root.rootImagesAvailable)
-            val version = app.linux.install()
+            val version = if (arguments.getString("auroraLinuxOffline") == "true") {
+                app.linux.installFromArchive(app.cacheDir.toPath().resolve("linux-qualification/base.tar.gz"), LinuxBackend.CHROOT)
+            } else app.linux.install()
             assertEquals(LinuxBackend.CHROOT, version.manifest.backend)
             assertEquals(version.manifest.generationId(), version.id)
             val directory = app.linux.directory(version.id)
-            val plan = WireJson.decodeFromString<List<RootfsEntry>>(Files.readString(directory.resolve("entries.json")))
+            val plan = WireJson.decodeFromString<List<RootfsEntry>>(String(Files.readAllBytes(directory.resolve("entries.json")), Charsets.UTF_8))
             val root = directory.resolve("rootfs")
             val links = plan.filter { it.kind == "hardlink" }
             assertTrue("Official image has no hardlinks to exercise", links.isNotEmpty())
@@ -43,7 +44,8 @@ class RootLinuxInstallDeviceTest {
             assertEquals(version.id, app.linux.registry.current())
             previous.forEach { old ->
                 assertTrue(app.linux.registry.versions().any { it.id == old.id })
-                assertEquals(app.applicationInfo.uid, Os.lstat(app.linux.directory(old.id).resolve("rootfs").toString()).st_uid)
+                assertEquals(if (old.manifest.backend == LinuxBackend.CHROOT) 0 else app.applicationInfo.uid,
+                    Os.lstat(app.linux.directory(old.id).resolve("rootfs").toString()).st_uid)
             }
             assertEquals(0, Os.lstat(root.toString()).st_uid)
             val stage = app.filesDir.toPath().resolve("spaces/resources/.linux-staging")

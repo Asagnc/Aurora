@@ -1,3 +1,7 @@
+## 0.1.30 Android16实际Linux与PTY资格（2026-10-22）
+
+GT6SE实际Ubuntu命令3/PTY3/Root服务强杀恢复不重放1、Root原生命令终端5、连接+原属主镜像复核2、限定owner恢复1、普通88和浏览器恢复1通过。修复Context根目录canonical路径及Android ICU UTF8续读；测试禁用不可用JDK Files文本便利方法，清理不掩盖原错。手机联网镜像下载超时，改用同SHA官方离线归档的内部验收输入，保留失败记录。核心161：154通过/7POSIX跳过，Android构建/lint/ELF通过。Agent/UI Linux仍internal，PRoot/GC/外部撤权等未完。见DEVICE_LINUX_2026-10-22_FINAL.md和evidence/0.1.30。
+
 ## 2026-10-22 CI源码传输修复
 
 39782148102的核心及Linux主机阶段成功，Android因Samba HTTP2 REFUSED_STREAM源码下载失败。CI预下载talloc一次，以HTTP1.1有界重试两个官方端点，原SHA在脚本和CMake均保留；绝对本地归档输入不改变依赖版本。本机实际下载/校验/全Android构建通过，新CI另查。ADB无手机，已请求连接后开展用户授权的专项，无新设备通过结论。

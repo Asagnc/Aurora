@@ -7,10 +7,13 @@ import io.github.asagnc.aurora.AuroraApplication
 import io.github.asagnc.aurora.MainActivity
 import io.github.asagnc.aurora.core.*
 import io.github.asagnc.aurora.root.RootRequired
+import io.github.asagnc.aurora.root.RootPhase
+import io.github.asagnc.aurora.runtime.CommandRequest
 import io.github.asagnc.aurora.terminal.*
 import java.nio.file.Files
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
+import kotlinx.serialization.json.*
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -73,6 +76,33 @@ class RootLinuxTerminalDeviceTest {
         }
     }
 
+    @RootRequired @LinuxImageRequired @Test fun rootServiceDeathRetainsLeaseUntilFreshServiceProofWithoutReplay() = runBlocking {
+        fixture { owner ->
+            check(app.linux.runs.pendingCount() == 0) { "Service-death qualification requires no other pending Linux tasks" }
+            val record = app.terminals.startLinux(owner, PtyRequest(listOf("/bin/sh", "-c",
+                "printf x >> /mnt/invocations; printf ready; read value"), timeoutMs = 60_000))
+            val session = requireNotNull(app.terminals.session(owner, record.id))
+            withTimeout(15_000) { session.version.first { session.bytes.sequence > 0 || !session.job.isActive } }
+            assertTrue(app.terminals.read(owner, record.id).text("text").orEmpty().contains("ready"))
+            val previous = requireNotNull(app.root.linuxClient).identity
+            val commands = requireNotNull(app.root.commandClient)
+            // Kill only Aurora's verified Root-service PID, never an external/system process.
+            runCatching { commands.execute(owner, CommandRequest(listOf("/system/bin/kill", "-9", previous.pid.toString()), timeoutMs = 5_000)) }
+            withTimeout(20_000) { app.root.state.first { it.phase == RootPhase.UNAVAILABLE } }
+            withTimeout(20_000) { session.job.join() }
+            assertNotEquals("exited", session.record.state)
+            assertEquals(1, app.linux.runs.pendingCount())
+            app.root.connect()
+            assertNotEquals(previous, requireNotNull(app.root.linuxClient).identity)
+            val recovered = app.linux.runs.recover()
+            assertEquals(recovered.toString(), 0L, recovered.number("retained"))
+            assertEquals(0, app.linux.runs.pendingCount())
+            val files = requireNotNull(app.root.linuxFileClient).invoke(owner, "files_read_batch",
+                objectOf("files" to JsonArray(listOf(objectOf("path" to string("project/invocations"))))))
+            assertEquals("x", files.array("files").single().jsonObject.text("text"))
+        }
+    }
+
     private suspend fun fixture(block: suspend (String) -> Unit) {
         val args = InstrumentationRegistry.getArguments()
         check(args.getString("auroraRootTest") == "true" && args.getString("auroraLinuxImageTest") == "true")
@@ -81,15 +111,18 @@ class RootLinuxTerminalDeviceTest {
         instrumentation.waitForIdleSync()
         app.root.connect()
         var owner: String? = null
+        var original: Throwable? = null
         try {
             check(app.root.linuxTerminalClient != null) { "Reconnect current Root service" }
             val current = app.linux.registry.current()
             check(app.linux.registry.versions().any { it.id == current && it.manifest.backend == LinuxBackend.CHROOT })
             owner = app.conversations.create("Linux PTY qualification")
             block(owner)
+        } catch (failure: Throwable) { original = failure; throw failure
         } finally {
             withContext(NonCancellable) { try {
-                owner?.let { app.terminals.forget(it); app.spaces.delete(it, app.tasks::quiesce) }
+                try { owner?.let { app.terminals.forget(it); app.spaces.delete(it, app.tasks::quiesce) } }
+                catch (cleanup: Throwable) { if (original != null) original.addSuppressed(cleanup) else throw cleanup }
             } finally { app.root.disconnect() } }
         }
     }

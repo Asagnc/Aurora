@@ -2,6 +2,14 @@
 
 更新时间：2026-10-22。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 0.1.30 真机Linux与PTY资格（2026-10-22，优先接续）
+
+真我GT6SE API36/FolkPatch保留数据更新完成。普通88、浏览器独立恢复1、Root原生命令/PTY5、Root连接与镜像复核2、实际Ubuntu命令3、实际Ubuntu PTY3、Root服务强杀/新epoch恢复不重放1、限定测试owner租约恢复1通过。详见DEVICE_LINUX_2026-10-22_FINAL.md和evidence/0.1.30。手机留0.1.30/code31主应用和共享Root环境；仅卸载test辅助包，临时传输镜像两份已删，无主应用卸载/清数据。
+
+修复：Context应用基目录先toRealPath再逐组件拒绝链接，解决native state_directory ENOTDIR；UTF8只严格解码显式完整前缀，避免Android ICU内部消费残字节导致next丢字；Android测试去Files.readString/writeString；测试清理不掩盖主错误。手机下载镜像超时未通过，使用电脑已验证的同一官方归档走内部限额流式输入和原SHA/解包/属主发布链；不冒充手机联网成功。原失败证据保留。核心161：154通过/7POSIX跳过；本地Debug/testAPK/R8Release/lint/双ABI ELF/16KiB和源码打包通过。上一版CI39784460008完整成功，本提交CI另查。
+
+下一步：Agent/UI Linux后端选择及工具接入、PRoot完整生命周期、Root元数据GC；仍未验证管理器外部撤权、手机联网镜像下载成功、Root图片实际解码、长期功耗/压力与真实模型缓存。Linux执行入口仍internal、executionReady=false，不需要重问已确认的架构。手机本轮专项已完成，不反复要求重连；后续确需设备新项目再明确说明。
+
 ## 2026-10-22 CI下载修复与真机专项准备（优先接续）
 
 694ad43的CI39782148102：核心/签名镜像/PTY8/namespace4/cgroup与挂载31主机检查均通过，Android阶段因Samba下载talloc发生HTTP2 REFUSED_STREAM失败，不记完整CI通过。新增CI一次预下载：官方download.samba.org/pub优先、www.samba.org/ftp传输失败后备用，HTTPS/HTTP1.1、有界重试和原固定SHA256；CMake每ABI/构建类型仍核验同一哈希，只接受绝对本地归档路径。无新依赖或产品行为变化。

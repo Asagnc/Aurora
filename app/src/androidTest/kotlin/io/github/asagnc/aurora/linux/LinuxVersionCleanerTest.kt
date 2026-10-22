@@ -21,7 +21,7 @@ class LinuxVersionCleanerTest {
             val manifests = listOf(LinuxRootfsManifest(image, 1, 1), LinuxRootfsManifest(image, 1, 1, LinuxBackend.CHROOT))
             manifests.forEach { manifest ->
                 val directory = Files.createDirectory(root.resolve(manifest.generationId()))
-                Files.writeString(directory.resolve("manifest.json"), WireJson.encodeToString(manifest))
+                Files.write(directory.resolve("manifest.json"), WireJson.encodeToString(manifest).toByteArray(Charsets.UTF_8))
             }
             val cleaner = LinuxVersionCleaner(app, root) { null }
             val ordinary = manifests[0].generationId(); val privileged = manifests[1].generationId()

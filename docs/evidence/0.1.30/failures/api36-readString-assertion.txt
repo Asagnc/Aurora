@@ -1,0 +1,39 @@
+
+io.github.asagnc.aurora.linux.RootLinuxInstallDeviceTest:
+Error in rootBatchPublishesOriginalOwnershipWithoutConvertingOrdinaryGeneration(io.github.asagnc.aurora.linux.RootLinuxInstallDeviceTest):
+java.lang.NoSuchMethodError: No static method readString(Ljava/nio/file/Path;)Ljava/lang/String; in class Ljava/nio/file/Files; or its super classes (declaration of 'java.nio.file.Files' appears in /apex/com.android.art/javalib/core-oj.jar)
+	at io.github.asagnc.aurora.linux.RootLinuxInstallDeviceTest$rootBatchPublishesOriginalOwnershipWithoutConvertingOrdinaryGeneration$1.invokeSuspend(RootLinuxInstallDeviceTest.kt:34)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:34)
+	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)
+	at kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:256)
+	at kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:54)
+	at kotlinx.coroutines.BuildersKt__BuildersKt.runBlockingImpl(Builders.kt:30)
+	at kotlinx.coroutines.BuildersKt.runBlockingImpl(Unknown Source:1)
+	at kotlinx.coroutines.BuildersKt__Builders_concurrentKt.runBlockingK(Builders.concurrent.kt:172)
+	at kotlinx.coroutines.BuildersKt.runBlockingK(Unknown Source:1)
+	at kotlinx.coroutines.BuildersKt__Builders_concurrentKt.runBlockingK$default(Builders.concurrent.kt:157)
+	at kotlinx.coroutines.BuildersKt.runBlockingK$default(Unknown Source:1)
+	at io.github.asagnc.aurora.linux.RootLinuxInstallDeviceTest.rootBatchPublishesOriginalOwnershipWithoutConvertingOrdinaryGeneration(RootLinuxInstallDeviceTest.kt:18)
+
+
+Time: 13.591
+There was 1 failure:
+1) rootBatchPublishesOriginalOwnershipWithoutConvertingOrdinaryGeneration(io.github.asagnc.aurora.linux.RootLinuxInstallDeviceTest)
+java.lang.NoSuchMethodError: No static method readString(Ljava/nio/file/Path;)Ljava/lang/String; in class Ljava/nio/file/Files; or its super classes (declaration of 'java.nio.file.Files' appears in /apex/com.android.art/javalib/core-oj.jar)
+	at io.github.asagnc.aurora.linux.RootLinuxInstallDeviceTest$rootBatchPublishesOriginalOwnershipWithoutConvertingOrdinaryGeneration$1.invokeSuspend(RootLinuxInstallDeviceTest.kt:34)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:34)
+	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)
+	at kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:256)
+	at kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:54)
+	at kotlinx.coroutines.BuildersKt__BuildersKt.runBlockingImpl(Builders.kt:30)
+	at kotlinx.coroutines.BuildersKt.runBlockingImpl(Unknown Source:1)
+	at kotlinx.coroutines.BuildersKt__Builders_concurrentKt.runBlockingK(Builders.concurrent.kt:172)
+	at kotlinx.coroutines.BuildersKt.runBlockingK(Unknown Source:1)
+	at kotlinx.coroutines.BuildersKt__Builders_concurrentKt.runBlockingK$default(Builders.concurrent.kt:157)
+	at kotlinx.coroutines.BuildersKt.runBlockingK$default(Unknown Source:1)
+	at io.github.asagnc.aurora.linux.RootLinuxInstallDeviceTest.rootBatchPublishesOriginalOwnershipWithoutConvertingOrdinaryGeneration(RootLinuxInstallDeviceTest.kt:18)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+

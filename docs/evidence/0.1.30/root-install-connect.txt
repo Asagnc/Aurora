@@ -1,0 +1,9 @@
+
+io.github.asagnc.aurora.root.RootConnectionTest:.
+io.github.asagnc.aurora.linux.RootLinuxInstallDeviceTest:.
+
+Time: 3.188
+
+OK (2 tests)
+
+

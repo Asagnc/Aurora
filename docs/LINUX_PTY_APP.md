@@ -1,5 +1,10 @@
 # Linux PTY application integration
 
+0.1.30 supersedes the device-pending statements below: actual Android16 Root
+Ubuntu command/PTY/Root-service-death recovery tests pass on GT6SE, after path
+canonicalization and UTF8 cursor fixes. See DEVICE_LINUX_2026-10-22_FINAL.md.
+Agent/UI Linux launch selection remains internal; PRoot and GC remain pending.
+
 0.1.29/code30, 2026-10-22. Uses the approved SQLite run ledger, Root service,
 native PTY socket transport, cgroup scopes, foreground task service and terminal
 records. No new dependency, database schema or resident process.

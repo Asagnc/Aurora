@@ -42,7 +42,10 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
             else if (registry.current() == null) "尚未安装 Linux 环境" else "基础环境已安装，执行能力待探测"
     } }
 
-    suspend fun install(requested: LinuxBackend? = null): LinuxVersion = installer.withLock { withContext(Dispatchers.IO) {
+    suspend fun install(requested: LinuxBackend? = null): LinuxVersion = installImage(requested, null)
+    /** Internal qualification path; the same fixed image digest and installation transaction apply. */
+    internal suspend fun installFromArchive(archive: Path, backend: LinuxBackend): LinuxVersion = installImage(backend, archive)
+    private suspend fun installImage(requested: LinuxBackend?, localArchive: Path?): LinuxVersion = installer.withLock { withContext(Dispatchers.IO) {
         val source = image
         val privileged = app.root.linuxClient
         val backend = requested ?: if (privileged != null) LinuxBackend.CHROOT else LinuxBackend.PROOT
@@ -69,7 +72,8 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
             require(android.os.StatFs(stage.toString()).availableBytes >= 128L * 1024 * 1024) { "Insufficient download space" }
             if (privileged == null) runInterruptible { checkHardlinks(stage) }
             status.value = "下载 Ubuntu ${source.version} ${source.architecture.imageName}…"
-            val archive = stage.resolve("base.tar.gz"); network.download(source.url, archive)
+            val archive = stage.resolve("base.tar.gz")
+            if (localArchive == null) network.download(source.url, archive) else runInterruptible { copyArchive(localArchive, archive) }
             runInterruptible { verifyArchive(archive, source.sha256) }
             status.value = "校验 Linux 布局、链接与可用空间…"
             val unpacker = RootfsArchive()
@@ -212,6 +216,20 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
         finally {
             try { Files.deleteIfExists(target); Files.deleteIfExists(source) }
             catch (cleanup: Throwable) { if (original != null) original.addSuppressed(cleanup) else throw cleanup }
+        }
+    }
+    private fun copyArchive(source: Path, target: Path) {
+        require(Files.isRegularFile(source, LinkOption.NOFOLLOW_LINKS) && Files.size(source) in 1..64L * 1024 * 1024)
+        Files.newInputStream(source, LinkOption.NOFOLLOW_LINKS).use { input ->
+            Files.newOutputStream(target, StandardOpenOption.CREATE_NEW, LinkOption.NOFOLLOW_LINKS).use { output ->
+                val buffer = ByteArray(65536); var total = 0L
+                while (true) {
+                    if (Thread.currentThread().isInterrupted) throw InterruptedException()
+                    val count = input.read(buffer); if (count < 0) break
+                    total += count; require(total <= 64L * 1024 * 1024) { "Linux archive exceeds 64 MiB" }
+                    output.write(buffer, 0, count)
+                }
+            }
         }
     }
     private fun verifyArchive(path: Path, expected: String) {

@@ -14,7 +14,9 @@ import kotlinx.serialization.encodeToString
 internal class RootLinuxRunFiles(private val context: Context) {
     private val uid get() = context.applicationInfo.uid
     private fun privatePath(parts: List<String>): Path {
-        var path = context.filesDir.toPath()
+        // Android's trusted Context path may contain /data/user/0 -> /data/data.
+        // Canonicalize that base once; still reject every link below it.
+        var path = context.filesDir.toPath().toRealPath()
         for (part in parts) {
             path = path.resolve(part)
             require(Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS) && !Files.isSymbolicLink(path))

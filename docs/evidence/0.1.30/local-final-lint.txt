@@ -1,0 +1,93 @@
+Calculating task graph as configuration cache cannot be reused because file 'settings.gradle.kts' has changed.
+> Task :app:preBuild UP-TO-DATE
+> Task :terminal:generateDebugAssets UP-TO-DATE
+> Task :core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :terminal:preBuild UP-TO-DATE
+> Task :core:processResources NO-SOURCE
+> Task :terminal:prepareLintJarForPublish UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:preDebugAndroidTestBuild SKIPPED
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :terminal:preDebugBuild UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :terminal:checkDebugAarMetadata UP-TO-DATE
+> Task :terminal:javaPreCompileDebug UP-TO-DATE
+> Task :terminal:generateDebugResources UP-TO-DATE
+> Task :terminal:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :terminal:processDebugNavigationResources UP-TO-DATE
+> Task :terminal:prepareDebugArtProfile UP-TO-DATE
+> Task :core:compileKotlin UP-TO-DATE
+> Task :terminal:writeDebugAarMetadata UP-TO-DATE
+> Task :terminal:processDebugManifest UP-TO-DATE
+> Task :terminal:packageDebugResources UP-TO-DATE
+> Task :terminal:extractDeepLinksDebug UP-TO-DATE
+> Task :terminal:parseDebugLocalResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :core:compileJava NO-SOURCE
+> Task :core:classes UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :core:jar UP-TO-DATE
+> Task :terminal:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :terminal:compileDebugLibraryResources UP-TO-DATE
+> Task :app:extractProguardFiles UP-TO-DATE
+> Task :terminal:generateDebugRFile UP-TO-DATE
+> Task :terminal:writeDebugLintModelMetadata UP-TO-DATE
+> Task :app:compileDebugAidl UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :terminal:extractProguardFiles UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :terminal:preDebugAndroidTestBuild UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :terminal:preDebugUnitTestBuild UP-TO-DATE
+> Task :terminal:mergeDebugAssets UP-TO-DATE
+> Task :app:generateDebugRFile UP-TO-DATE
+> Task :terminal:compileDebugKotlin NO-SOURCE
+> Task :terminal:extractDebugAnnotations UP-TO-DATE
+> Task :terminal:processDebugJavaRes NO-SOURCE
+> Task :terminal:compileDebugJavaWithJavac UP-TO-DATE
+> Task :terminal:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :terminal:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :terminal:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :terminal:generateDebugLintModel UP-TO-DATE
+> Task :terminal:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :terminal:createFullJarDebug UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :terminal:lintAnalyzeDebug UP-TO-DATE
+> Task :terminal:mergeDebugJavaResource UP-TO-DATE
+> Task :terminal:syncDebugLibJars UP-TO-DATE
+> Task :terminal:bundleDebugLocalLintAar UP-TO-DATE
+> Task :terminal:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :terminal:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :terminal:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :terminal:lintAnalyzeDebugAndroidTest UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :app:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :app:generateDebugLintReportModel UP-TO-DATE
+> Task :app:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :app:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :app:lintAnalyzeDebug UP-TO-DATE
+> Task :app:generateDebugAndroidTestLintModel
+> Task :app:lintAnalyzeDebugAndroidTest
+> Task :app:lintReportDebug UP-TO-DATE
+> Task :app:lintDebug
+
+[Incubating] Problems report is available at: file:///C:/Users/Admin/Documents/Codex/2026-10-12/e/work/Aurora/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.8.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 4s
+65 actionable tasks: 3 executed, 62 up-to-date
+Configuration cache entry stored.

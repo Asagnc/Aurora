@@ -1,5 +1,13 @@
 # Root Linux runtime qualification
 
+0.1.30 current evidence: command suite3 and initial PTY suite3 pass on Android16
+GT6SE; the added PTY Root-service-death test also passes separately (class now4).
+See DEVICE_LINUX_2026-10-22_FINAL.md. The image test can explicitly use
+`-e auroraLinuxOffline true` with the exact official archive at App cache
+`linux-qualification/base.tar.gz`; this follows the same digest and publication
+chain and does not count as a public network-download pass. All other bounds
+below remain, with historical pending statements superseded by the device report.
+
 2026-10-22: `RootLinuxRunDeviceTest` compiles in the Android test APK. It has
 **not run on Android**. Previous full CI 39755532891 succeeded; that evidence
 does not qualify an actual Ubuntu guest or these new tests.

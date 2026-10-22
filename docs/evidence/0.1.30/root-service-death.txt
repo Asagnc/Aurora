@@ -1,0 +1,8 @@
+
+io.github.asagnc.aurora.linux.RootLinuxTerminalDeviceTest:.
+
+Time: 3.456
+
+OK (1 test)
+
+

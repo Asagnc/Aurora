@@ -29,14 +29,14 @@ class LinuxSpaceDeletionTest {
         registry.begin("publish", version.id); registry.publish("publish", version)
         val token = registry.lease(owner, version.id)
         val root = spaces.commandRoot(owner)
-        Files.writeString(root.resolve("preserved.txt"), "keep")
+        Files.write(root.resolve("preserved.txt"), "keep".toByteArray(Charsets.UTF_8))
         try {
             if (recovery) store.write { it.update("conversations", values("deleting" to 1), "id=?", arrayOf(owner)) }
             if (recovery) assertEquals(1, spaces.recoverDeletes()) else {
                 try { spaces.delete(owner, {}); fail("Unconfirmed Linux lease was ignored") }
                 catch (_: LinuxRunPendingException) { }
             }
-            assertEquals("keep", Files.readString(root.resolve("preserved.txt")))
+            assertEquals("keep", String(Files.readAllBytes(root.resolve("preserved.txt")), Charsets.UTF_8))
             assertTrue(store.read { db -> db.rawQuery("SELECT 1 FROM linux_leases WHERE token=?", arrayOf(token)).use { it.moveToFirst() } })
             registry.release(token)
             if (recovery) spaces.recoverDeletes() else spaces.delete(owner, {})
