@@ -9,7 +9,7 @@ internal class PacketCaptureTool(private val client: RootPacketClient, private v
     private val prepared: suspend (String, String) -> Unit = { _, _ -> }) : ToolExecutor {
     override val definitions = listOf(ToolDefinition("packet_capture_root",
         "Capture real network packets using Aurora's bounded libpcap Root worker. Root only, no VPN. " +
-            "interface defaults to any; filter is a literal BPF expression. Defaults: 15 seconds, 16 MiB, 100000 packets. " +
+            "interface defaults to any; filter is a literal BPF expression. Prefer numeric addresses/ports: named BPF hosts/services can trigger resolution during compilation. Defaults: 15 seconds, 16 MiB, 100000 packets. " +
             "Stop on the first duration/whole-packet byte/packet-count budget; bytes include the PCAP headers. " +
             "Returns a conversation-relative capture.path for packet_inspect and final stored/received/dropped counts. " +
             "snapshotTruncated counts stored packets shorter than their reported original length; a valid record alone does not guarantee full packet bytes. " +

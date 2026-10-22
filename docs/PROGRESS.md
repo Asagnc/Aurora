@@ -1,3 +1,9 @@
+## 2026-10-23 0.1.36 抓包主机资格完整通过，最终真机用例就绪
+
+9ba73c9完整CI39837102395成功：原生组件/离线外层12项，私有netns内部10项全部通过，包含any标准cooked格式、截短统计和空闲CPU预算。证据evidence/0.1.36/packet-snapshot-host-ten-passed.txt。Android Debug/Release/testAPK/lint、核心/既有Linux验证和ELF/对应源码全部通过。
+
+另补Root真机专项至7项，新增取消、断连重连和删除会话；仅编译通过，未连接手机。BPF命名主机/服务可能在编译期解析，已修正Agent工具措辞并建议数字地址/端口；这版Debug/Release/testAPK/lint也本地通过。最终验收步骤已写ROOT_CAPTURE_ACCEPTANCE.md，不卸载Aurora、不清用户数据，手机仍0.1.32。未完成项是Android实际Root发布/生命周期/熄屏与性能对照，不要将主机结果代替手机证据。
+
 ## 2026-10-23 0.1.36 主机采集生命周期已通过
 
 ec6a727的完整CI39836086203成功：组件/离线外层12项、私有netns内部9项（空闲截止、严格预算、包数、取消、SIGKILL、非法过滤、接口down、符号链接）、既有Linux/PRoot/核心及Android构建全部通过，证据evidence/0.1.36/packet-root-host-lifecycle-passed.txt。随后补齐上游标准262144抓取长度、snapshotTruncated显式统计、字节预算完成原因一致性，新增any接口与空闲CPU预算检查；本地核心179项（172通过/7跳过）、Debug/Release/testAPK/lint及双ABI ELF/源码包通过，这些新增主机项等下一CI。

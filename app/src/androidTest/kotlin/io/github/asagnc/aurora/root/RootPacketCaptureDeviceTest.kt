@@ -86,6 +86,61 @@ class RootPacketCaptureDeviceTest {
         assertEquals("unchanged", Files.readString(sentinel))
     } }
 
+    @RootRequired @Test fun cancellationWaitsForNativeStopWithoutPublishingSuccess() = runBlocking { fixture { owner ->
+        activeCapture(owner) { id, capture ->
+            capture.cancelAndJoin()
+            assertTrue(capture.isCancelled)
+            stopped(owner, id)
+        }
+    } }
+
+    @RootRequired @Test fun disconnectStopsCaptureAndReconnectDoesNotReplayIt() = runBlocking { fixture { owner ->
+        activeCapture(owner) { id, capture ->
+            app.root.disconnect()
+            val result = withTimeout(5000) { capture.await() }
+            assertNotNull(result.toString(), result["error"])
+            assertNull(result["capture"])
+            stopped(owner, id)
+            app.root.connect()
+            assertEquals(RootPhase.READY, app.root.state.value.phase)
+            val fresh = invoke(owner, UUID.randomUUID().toString(), PacketCaptureRequest.parse(objectOf("bytes" to JsonPrimitive(24))))
+            assertNull(fresh.toString(), fresh["error"])
+            assertEquals("byte_budget", fresh.getValue("capture").jsonObject.text("reason"))
+        }
+    } }
+
+    @RootRequired @Test fun conversationDeletionCancelsCaptureBeforeRemovingArtifacts() = runBlocking { fixture { owner ->
+        activeCapture(owner) { _, capture ->
+            val root = app.spaces.commandRoot(owner)
+            withTimeout(10000) { app.spaces.delete(owner, app.tasks::quiesce) }
+            assertTrue(capture.isCancelled)
+            assertFalse(Files.exists(root))
+            assertNull(app.conversations.header(owner))
+        }
+    } }
+
+    private suspend fun stopped(owner: String, id: String) {
+        val directory = app.spaces.commandRoot(owner).resolve("runs/$id")
+        val metadata = WireJson.parseToJsonElement(Files.readString(directory.resolve("result.json"))).jsonObject
+        assertEquals(metadata.toString(), JsonPrimitive(true), metadata["stopped"])
+        assertEquals(metadata.toString(), JsonPrimitive(true), metadata["captureComplete"])
+        assertFalse(Files.exists(directory.resolve("capture-status.json")))
+    }
+
+    private suspend fun activeCapture(owner: String, block: suspend (String, Deferred<JsonObject>) -> Unit) = coroutineScope {
+        val id = UUID.randomUUID().toString()
+        val ready = CompletableDeferred<Unit>()
+        val watch = launch { CommandLogObserver(app).observe(owner, "runs/$id", true).collect {
+            if (it.stderr.text.contains("aurora_capture_ready")) ready.complete(Unit)
+        } }
+        val capture = async { app.tasks.run(owner) {
+            invoke(owner, id, PacketCaptureRequest.parse(objectOf("interface" to string("lo"),
+                "seconds" to JsonPrimitive(30), "filter" to string("udp dst port 60999"))))
+        } }
+        try { withTimeout(5000) { ready.await() }; block(id, capture) }
+        finally { capture.cancelAndJoin(); watch.cancelAndJoin() }
+    }
+
     private suspend fun invoke(owner: String, id: String, request: PacketCaptureRequest) =
         WireJson.parseToJsonElement(requireNotNull(app.root.packetClient).execute(owner, id, request)).jsonObject
 
@@ -96,7 +151,7 @@ class RootPacketCaptureDeviceTest {
         val owner = app.conversations.create("Root packet qualification")
         try { block(owner) } finally {
             withContext(NonCancellable) {
-                try { app.spaces.delete(owner, app.tasks::quiesce) } finally { app.root.disconnect() }
+                try { if (app.conversations.header(owner) != null) app.spaces.delete(owner, app.tasks::quiesce) } finally { app.root.disconnect() }
             }
         }
     }

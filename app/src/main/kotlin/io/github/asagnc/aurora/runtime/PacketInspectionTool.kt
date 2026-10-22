@@ -19,7 +19,8 @@ internal class PacketInspectionTool(context: Context, private val root: Path,
         "Read a conversation-owned PCAP/PCAPNG using packaged tcpdump 4.99.7/libpcap 1.10.7. " +
             "Offline only: no Root or live network capture. path is relative to the conversation; links are rejected. " +
             "filter is an optional literal BPF expression. count limits matching packets, not bytes scanned; " +
-            "work is bounded to 30 seconds and a 512 MiB input. No DNS/service lookups. " +
+            "work is bounded to 30 seconds and a 512 MiB input. Decoded output does not resolve addresses or service names. " +
+            "BPF compilation can resolve named hosts/services; prefer numeric addresses/ports to avoid that latency. " +
             "stdout/stderr preview and artifacts are bounded; output may be partial on timeout. " +
             "Does not decrypt TLS or infer application identity. Inspect exitCode/error before treating decoding as successful.",
         objectOf("type" to string("object"), "properties" to objectOf(

@@ -16,10 +16,12 @@
 
 - 先前76eb16a CI39833896207完整成功：原有离线十项 + worker整包预算/I/O项，共11项主机用例；其中四个预算边界和/dev/full缓冲失败实际运行。证据见 evidence/0.1.36/packet-worker-host-eleven-passed.txt。
 - 本轮本地核心179项：172通过、7项POSIX在Windows跳过；已提供签名Ubuntu归档实际运行镜像检查。新增6项覆盖参数、字面过滤、UTF8预算、完成证明、取消/超时与未知统计。
-- Android Debug/Release R8/测试APK/lint全部编译通过；两种ABI的Debug和Release ELF依赖、16KiB页及对应源码包检查通过。Debug APK SHA256：554d0b6391df5af85d6b2d713d9f02e718f18733de9c3bb3b3181c4ca23c50fd。
-- 本轮新增私有网络命名空间内10项受控测试：空闲截止、24字节预算、下一包放不下、包数预算、空闲取消、SIGKILL、非法过滤、接口down、输出符号链接、any接口的标准cooked链路格式。ec6a727的CI39836086203中，原9项的主机步骤和完整CI均成功（外层组件/离线套件12项，内部网络生命周期9项），证据evidence/0.1.36/packet-root-host-lifecycle-passed.txt；新增any/截短统计/空闲CPU预算仍待下一CI。不把Windows编译代替Linux运行。
-- Android新增普通UID拒绝和产物cwd检查、Root专项4项（仅头文件发布与离线读、空闲截止、loopback受控流量、非法过滤），加上扩展后的账本映射与普通Binder拒绝测试，目前仅编译。仍须最终集中真机检查Root断连/取消、属主、会话删除、熄屏、吞吐/CPU/丢包/内存与功耗。手机未连接、更新或操作，仍为此前0.1.32。
+- Android Debug/Release R8/测试APK/lint全部编译通过；两种ABI的Debug和Release ELF依赖、16KiB页及对应源码包检查通过。Debug APK SHA256：2e2fc36d6e50ecf181353edbc4f3689737d74d06d23cd41b4e1d9c7e8b62a881。
+- 本轮新增私有网络命名空间内10项受控测试：空闲截止、24字节预算、下一包放不下、包数预算、空闲取消、SIGKILL、非法过滤、接口down、输出符号链接、any接口的标准cooked链路格式。ec6a727的CI39836086203中，原9项的主机步骤和完整CI均成功（外层组件/离线套件12项，内部网络生命周期9项），证据evidence/0.1.36/packet-root-host-lifecycle-passed.txt；9ba73c9的CI39837102395也已完整成功，新增any/截短统计/空闲CPU预算已实际通过，证据evidence/0.1.36/packet-snapshot-host-ten-passed.txt。不把Windows编译代替Linux运行。
+- Android新增普通UID拒绝和产物cwd检查、Root专项7项（仅头文件发布与离线读、空闲截止、loopback受控流量、非法过滤、取消等待原生收尾、断连重连不重放、删除会话取消采集），加上扩展后的账本映射与普通Binder拒绝测试，目前仅编译。仍须最终集中真机检查Root断连/取消、属主、会话删除、熄屏、吞吐/CPU/丢包/内存与功耗。手机未连接、更新或操作，仍为此前0.1.32。
 
 ## 后续边界
 
-未增加VPN、UID归属、TLS解密、发包引擎、长时轮转或按应用流量隔离。上述能力不能由“已接libpcap”推断已完成。浏览器/代理与模型连接也不因本轮变更而获得未测保证。
+未增加VPN、UID归属、TLS解密、发包引擎、长时轮转或按应用流量隔离。上述能力不能由“已接libpcap”推断已完成。浏览器/代理与模型连接也不因本轮变更而获得未测保证。BPF中的命名主机/服务可触发编译期解析，工具已明确建议优先数字地址/端口；-nn只关闭输出反查，不能承诺过滤表达式也不解析。
+
+最终真机执行顺序见ROOT_CAPTURE_ACCEPTANCE.md；当前不执行手机命令。

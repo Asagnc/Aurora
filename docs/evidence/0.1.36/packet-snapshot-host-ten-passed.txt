@@ -1,0 +1,26 @@
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:07:59.1779602Z test_agent_style_literal_filter_and_packet_limit (__main__.PacketToolsTest.test_agent_style_literal_filter_and_packet_limit) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:07:59.1788644Z test_exact_stable_versions (__main__.PacketToolsTest.test_exact_stable_versions) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:07:59.1797811Z test_filter_cannot_be_reinterpreted_as_version_flag (__main__.PacketToolsTest.test_filter_cannot_be_reinterpreted_as_version_flag) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:07:59.1806834Z test_full_output_device_cannot_report_success (__main__.PacketToolsTest.test_full_output_device_cannot_report_success) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:07:59.1815286Z test_invalid_filter_fails (__main__.PacketToolsTest.test_invalid_filter_fails) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:07:59.1934732Z test_matching_filter_preserves_packet (__main__.PacketToolsTest.test_matching_filter_preserves_packet) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:07:59.1948453Z test_nonmatching_filter_writes_only_file_header (__main__.PacketToolsTest.test_nonmatching_filter_writes_only_file_header) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:07:59.1958263Z test_nonregular_output_does_not_require_fsync (__main__.PacketToolsTest.test_nonregular_output_does_not_require_fsync) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:07:59.2278169Z test_rotation_closes_and_preserves_both_segments (__main__.PacketToolsTest.test_rotation_closes_and_preserves_both_segments) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:07:59.2288611Z test_truncated_input_fails (__main__.PacketToolsTest.test_truncated_input_fails) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:07:59.3001021Z Worker: four complete-packet budget boundaries and buffered write failure passed
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:07:59.3006173Z test_worker_complete_packet_boundaries_and_write_error (__main__.PacketToolsTest.test_worker_complete_packet_boundaries_and_write_error) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:07:59.5705224Z test_worker_private_network_namespace_lifecycle (__main__.PacketToolsTest.test_worker_private_network_namespace_lifecycle) ... test_any_interface_uses_standard_cooked_link_type (__main__.LiveCaptureTest.test_any_interface_uses_standard_cooked_link_type) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:07:59.6113305Z test_cancel_during_idle_flushes_but_is_not_success (__main__.LiveCaptureTest.test_cancel_during_idle_flushes_but_is_not_success) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:07:59.6452305Z test_exact_header_budget_stops_without_traffic (__main__.LiveCaptureTest.test_exact_header_budget_stops_without_traffic) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:07:59.6709245Z test_hard_kill_cannot_emit_completion (__main__.LiveCaptureTest.test_hard_kill_cannot_emit_completion) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:08:00.6844530Z test_idle_deadline_has_no_packet_dependency (__main__.LiveCaptureTest.test_idle_deadline_has_no_packet_dependency) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:08:00.7245502Z test_interface_down_is_failure_instead_of_idle_spin (__main__.LiveCaptureTest.test_interface_down_is_failure_instead_of_idle_spin) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:08:00.7582340Z test_invalid_filter_is_explicit_setup_error (__main__.LiveCaptureTest.test_invalid_filter_is_explicit_setup_error) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:08:00.7822149Z test_output_symlink_is_not_followed (__main__.LiveCaptureTest.test_output_symlink_is_not_followed) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:08:00.9104658Z test_packet_count_budget_preserves_complete_packets (__main__.LiveCaptureTest.test_packet_count_budget_preserves_complete_packets) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:08:01.0384517Z test_packet_that_does_not_fit_is_never_truncated (__main__.LiveCaptureTest.test_packet_that_does_not_fit_is_never_truncated) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:08:01.0386171Z Ran 10 tests in 1.614s
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:08:01.0386488Z OK
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:08:01.1268377Z Ran 12 tests in 26.500s
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T19:08:01.1268721Z OK
