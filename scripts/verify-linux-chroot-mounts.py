@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Fixed native chroot/bind tests, not an Ubuntu guest/Android execution claim."""
 import importlib.util
+import fcntl
 import json
 import os
 from pathlib import Path
@@ -167,6 +168,20 @@ class MountTest(base.ScopeTest):
         self.assert_gone(worker)
         self.assert_scope_removed(scope)
         self.assert_host_unchanged(root, work)
+
+    def test_recovery_refuses_held_startup_lock_even_before_scope_record(self):
+        _, work = self.fixture()
+        state = work / 'startup-state'
+        state.mkdir(mode=0o700)
+        with open(state / '.run.lock', 'w') as lock:
+            os.chmod(state / '.run.lock', 0o600)
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            result = subprocess.run([self.binary, '--recover', '--state-dir', str(state)],
+                                    capture_output=True, timeout=8)
+            self.assertNotEqual(0, result.returncode)
+            self.assertEqual(b'', result.stdout)
+            self.assertEqual([], list(state.glob('*.state')))
+        self.recover_state(state)
 
     def assert_host_unchanged(self, root, work):
         self.assertEqual('aurora-chroot-fixture-v1\n', (root / 'aurora-fixture').read_text())

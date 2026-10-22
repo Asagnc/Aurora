@@ -8,7 +8,22 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/syscall.h>
+#include <sys/file.h>
+#include <sys/stat.h>
 #include <unistd.h>
+
+/* Inherited by the guard before it can create a scope. Workers must close it
+ * before admission so orphan cleanup can acquire it after both supervisors die. */
+int guest_run_lock(int state) {
+    int file = openat(state, ".run.lock", O_RDWR | O_CREAT | O_CLOEXEC | O_NOFOLLOW, 0600);
+    if (file < 0) return -1;
+    struct stat info;
+    if (fstat(file, &info) < 0 || !S_ISREG(info.st_mode) || info.st_uid != 0 ||
+        (info.st_mode & 077) || info.st_nlink != 1 || flock(file, LOCK_EX | LOCK_NB) < 0) {
+        int saved = errno ? errno : EPERM; close(file); errno = saved; return -1;
+    }
+    return file;
+}
 
 static int identifier(const char *text, int uuid) {
     size_t length = uuid ? 36 : 64;

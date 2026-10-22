@@ -15,3 +15,5 @@ Platform basis: Linux execve closes only CLOEXEC descriptors and uses the guest 
 Descriptor handling basis: https://man7.org/linux/man-pages/man2/close_range.2.html (CLOSE_RANGE_CLOEXEC, Linux5.11+).
 
 Conversation deletion barrier: SpaceStore refuses both initial deletion and recovery file deletion while linux_leases has the owner. Marking deleting and checking leases share the database transaction; requireActive rejects new leases for a deleting conversation. Two Android tests cover data/lease retention and successful deletion only after explicit release. They have been compiled, not device-run.
+
+Startup barrier: coordinator acquires .run.lock before any recovery or fork; guard inherits it and worker explicitly closes it before admission. Recovery must acquire the same exclusive nonblocking lock. Thus an empty journal during guard startup cannot be misread as quiescence; both supervisors dying releases it without an orphan worker blocking recovery. Added held-lock/no-record rejection test; host mount/command group now12.

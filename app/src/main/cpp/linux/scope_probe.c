@@ -131,7 +131,7 @@ static int cleanup(struct task_scope *scope, pid_t worker, int *exit_code) {
     return 0;
 }
 
-static int guard(int owner, int hold_ms, int state, const struct fixture *fixture) {
+static int guard(int owner, int hold_ms, int state, int run_lock, const struct fixture *fixture) {
     /* A separate session survives the command supervisor's group cancellation.
      * This guard ends after this one bounded job; it is not a daemon. */
     if (setsid() < 0 || prctl(PR_SET_CHILD_SUBREAPER, 1) < 0) return failure("guard_setup");
@@ -150,7 +150,7 @@ static int guard(int owner, int hold_ms, int state, const struct fixture *fixtur
     pid_t worker = fork();
     if (worker < 0) { close(report[0]); close(report[1]); task_scope_remove(&scope); return failure("worker_fork"); }
     if (worker == 0) {
-        close(report[0]); close(owner); close(state);
+        close(report[0]); close(owner); close(state); close(run_lock);
         /* Close the pre-admission fork race if the guard dies before this
          * process can join its recorded group. Descendants remain group-owned. */
         if (prctl(PR_SET_PDEATHSIG, SIGKILL) < 0 || getppid() != guard_pid) _exit(125);
@@ -216,6 +216,8 @@ int main(int argc, char **argv) {
     signal(SIGCHLD, SIG_DFL); signal(SIGPIPE, SIG_IGN);
     int state = scope_state_open(argv[3]);
     if (state < 0) return failure("state_directory");
+    int run_lock = guest_run_lock(state);
+    if (run_lock < 0) { close(state); return failure("run_lock"); }
     if (scope_state_recover(state) < 0) { close(state); return failure("state_recovery"); }
     if (recovering) { close(state); puts("{\"protocol\":1,\"recovered\":true}"); return 0; }
     if (running && guest_run_begin(state, &fixture.run) < 0) { close(state); return failure("guest_run_identity"); }
@@ -224,7 +226,7 @@ int main(int argc, char **argv) {
     if (owner < 0) return failure("owner_pidfd");
     pid_t child = fork();
     if (child < 0) { close(owner); return failure("guard_fork"); }
-    if (child == 0) { int code = guard(owner, hold_ms, state, &fixture); close(owner); close(state); exit(code); }
+    if (child == 0) { int code = guard(owner, hold_ms, state, run_lock, &fixture); close(owner); close(state); exit(code); }
     close(owner);
     int code = wait_child(child);
     if (scope_state_recover(state) < 0) { close(state); return failure("coordinator_recovery"); }
