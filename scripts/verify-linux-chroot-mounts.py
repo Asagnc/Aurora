@@ -120,11 +120,12 @@ class MountTest(base.ScopeTest):
     def test_guest_timeout_kills_background_descendants_before_completion(self):
         root, work = self.shell_fixture()
         result = subprocess.run(self.run_arguments(root, work,
-            'trap "" TERM; (while :; do :; done) & while :; do :; done', 100),
+            'trap "" TERM; (while :; do :; done) & printf %s $! > /mnt/child; while :; do :; done', 1000),
             capture_output=True, timeout=8)
         self.assertNotEqual(0, result.returncode)
         state = work / 'run-state'
         completion = json.loads((state / 'completed.json').read_text())
+        self.assert_gone(int((work / 'project/child').read_text()))
         self.assertTrue(completion['interrupted'])
         self.assertTrue(completion['scopeRemoved'])
         self.assertEqual([], list(state.glob('*.state')))
