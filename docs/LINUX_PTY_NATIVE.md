@@ -34,10 +34,11 @@ lock after transport exit; failed recovery means retain, never assume stopped.
 ## Verification status
 
 Local Android Debug/test APK/R8 Release/lint builds pass with both ABIs. The new
-Root-host suite `scripts/verify-linux-pty.py` is wired into CI. The initial five
-tests passed in run39779288350; its Android stage was still running at that
-check. A sixth both-supervisors-killed recovery test was then added and awaits
-CI. It composes real binaries with a host shell and matching host
+Root-host suite `scripts/verify-linux-pty.py` is wired into CI. All six tests,
+the existing25 cgroup/mount/recovery tests, eight ordinary PTY tests and four
+namespace tests passed in run39779614901. Its Android build stage was still
+running at that check. The superseded run39779288350 was cancelled by the
+newer commit. This composes real binaries with a host shell and matching host
 libraries; it is not Ubuntu26.10 or Android evidence.
 
 Six assertions: guest TTY/Unicode/resize/nonzero exit; Ctrl-C reaches the

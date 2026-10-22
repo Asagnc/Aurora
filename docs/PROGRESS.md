@@ -6,7 +6,7 @@
 
 fc3aab6完整CI39773271882成功。新增原生--run-pty：复用PTY帧传输与scope监督，协调进程只释放自己的控制终端，guest新会话以TIOCSCTTY参数0取得终端/前台组，HUP在guest恢复、TERM显式加入。独立guard继续cgroup回收脱离session的子进程，传输退出不代替stopped证明。见LINUX_PTY_NATIVE.md。
 
-新增Root主机前5项及原有25项在CI39779288350通过，完整Android阶段仍运行；随后追加第6项双监督SIGKILL后新进程恢复，不伪造completion，待新CI。本地双ABI Debug/testAPK/R8Release/lint通过（outputs/linux-pty-native-build-20261022.txt），双ABI ELF/16KiB和对应源码打包通过。无新Android运行证据，未接Binder Linux终端与应用租约/终端记录，Agent executionReady=false。下一步确认第6项与完整CI，再复用现有Root终端FD/激活门接Linux票据，不另建守护进程。上轮真实Ubuntu三项Android专项仍仅编译。
+新增Root主机6项及原有25项在CI39779614901通过，包括双监督SIGKILL后新进程恢复、不伪造completion；普通PTY8/namespace4也通过，完整Android阶段仍运行。旧CI39779288350被新提交取消。本地双ABI Debug/testAPK/R8Release/lint通过（outputs/linux-pty-native-build-20261022.txt），双ABI ELF/16KiB和对应源码打包通过。无新Android运行证据，未接Binder Linux终端与应用租约/终端记录，Agent executionReady=false。下一步核对完整CI，再复用现有Root终端FD/激活门接Linux票据，不另建守护进程。上轮真实Ubuntu三项Android专项仍仅编译。
 
 ## 2026-10-22 真实guest验收用例（优先接续）
 
