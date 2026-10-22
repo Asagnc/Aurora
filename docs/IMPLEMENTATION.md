@@ -1,3 +1,11 @@
+## 2026-10-23 0.1.34 本地与主机资格完成，手机留最终集中验收
+
+07adcd8 的 CI39825123468 最终完整成功，包括固定签名镜像/POSIX提取、现有 PTY/namespace/scope/恢复/挂载/GC、5项 ptrace 内核先决条件、4项实际派生 PRoot 生命周期、Android Debug/testAPK/Release/lint、双 ABI ELF/16KiB和对应源码包。实际 PRoot 四项覆盖启用/禁用 seccomp 的 tracer SIGKILL，以及 guest 正常退出37后两层 setsid 后代停止；使用 pidfd 验证原进程退出，不靠 PID 字符串轮询猜测。证据 evidence/0.1.34/proot-host-lifecycle-passed.txt；首次 host memset_explicit 构建失败保留。主机用 glibc、非 Android shmem、独立 fixture，不等于 Android 实际 Ubuntu/PRoot 或持久恢复已通过；PRoot executionReady仍 false。
+
+本地173核心：166通过/7 Windows POSIX跳过，已带固定实际 Ubuntu 镜像重跑；Debug/Release/testAPK/lint通过。当前 Debug SHA256 88960c0af5f93fd200ef6bdc0896f739162e370dc7534784d0794e7eddb4d74c。Root 连接不可变快照修复、命令输出非法尾字节分类修复与新 Android 断言均仅编译，未更新手机；手机仍已验收0.1.32。最终补 RootMetadataDeviceTest4、RootConnectionTest和NativeCommandTest及既有Agent/Linux/PTY/恢复回归。无真实供应商调用。
+
+用户对抓包提案要求“多处对比给我最好的”，尚非组件审批。已补 Linux/libpcap/tcpdump/PCAPdroid/Termux/Eta/DSHA 的来源与取舍，仍推荐 tcpdump4.99.7+libpcap1.10.7；1.11.0官网为testing。详见 ROOT_CAPTURE_PROPOSAL.md，等待对补充比较的确认，不先接入依赖或抓包二进制。五分钟是复用现有命令的第一阶段边界，不能写成最终长期抓包已完成。
+
 ## 2026-10-23 命令输出预览 UTF-8 修正（0.1.34）
 
 NativeCommandRunner 旧逻辑在截断预览时反复移除末尾 1–3 字节并重试解码，可能把 0xff 等损坏字节隐藏成正常文本。改为复用 core 的 RFC3629 尾部边界检查，仅省略合法但未完整的 UTF-8 尾部；二进制/非法序列继续返回 text=null，原始产物不改变。去掉重复 decoder 与异常重试。新增 core 三项覆盖各宽度标量、非法尾部和 ANSI/空白；新增 Android 原生命令一项保留非法尾字节与精确产物，已编译待最终手机验收。
