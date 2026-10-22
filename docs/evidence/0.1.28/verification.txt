@@ -1,2 +1,2 @@
 Debug/Release dual-ABI ELF and16KiB verification passed. Native sources unchanged from0.1.27.
-Android4 new ordinary tests compiled only; no device run. Core5 new tests passed.
+Android4 new ordinary tests compiled only; no device run. Core8 new tests passed, including UTF8 boundaries.

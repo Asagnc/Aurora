@@ -8,7 +8,6 @@ import io.github.asagnc.aurora.data.SessionHeader
 import io.github.asagnc.aurora.data.ToolRun
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.serialization.json.*
 
 data class ChatState(
     val sessions: List<SessionHeader> = emptyList(), val current: SessionHeader? = null,
@@ -138,28 +137,18 @@ internal class ChatController(application: Application,
         "workspace" -> inspect(app.spaces.sharedWorkspace())
         else -> error("Unknown space")
     }
-    suspend fun listSpace(name: String, path: String): List<Pair<String, Boolean>> {
-        if (name != "conversation" || !LinuxFileToolRouter.isLinux(path)) return inspectSpace(name) { it.list(path) }
-        return rootFiles("files_list", objectOf("path" to string(LinuxFileToolRouter.relative(path)))).array("entries").map {
-            ".aurora-linux/" + requireNotNull(it.jsonObject.text("path")) to (it.jsonObject["directory"] == JsonPrimitive(true))
-        }
-    }
-    suspend fun readSpace(name: String, path: String): FileSlice {
-        if (name != "conversation" || !LinuxFileToolRouter.isLinux(path)) return inspectSpace(name) { it.readBatch(listOf(FileRead(path))).single() }
-        val file = rootFiles("files_read_batch", objectOf("files" to JsonArray(listOf(objectOf("path" to string(LinuxFileToolRouter.relative(path)))))))
-            .array("files").single().jsonObject
-        val text = file.text("text")
-        return FileSlice(path, text, text?.toByteArray(Charsets.UTF_8) ?: byteArrayOf(), file.number("size") ?: 0,
-            file.number("next"), file.text("version"), file.text("error"))
-    }
-    private suspend fun rootFiles(operation: String, arguments: JsonObject): JsonObject {
-        val owner = requireNotNull(state.value.current?.id) { "请先创建会话" }
-        return app.tasks.run(owner) {
-            requireNotNull(app.root.linuxFileClient) { "请先连接 Root" }.invoke(owner, operation, arguments)
-        }
-    }
+    suspend fun listSpace(name: String, path: String): List<Pair<String, Boolean>> =
+        if (name == "conversation" && LinuxFileToolRouter.isLinux(path)) rootBrowser().list(path) else inspectSpace(name) { it.list(path) }
+    suspend fun readSpace(name: String, path: String): FileSlice =
+        if (name == "conversation" && LinuxFileToolRouter.isLinux(path)) rootBrowser().read(path)
+        else inspectSpace(name) { it.readBatch(listOf(FileRead(path))).single() }
+    private fun rootBrowser() = RootFileBrowser(app, requireNotNull(state.value.current?.id) { "请先创建会话" })
     fun enableRoot() {
-        if (rootRequest?.isActive != true) rootRequest = action { app.root.connect() }
+        if (rootRequest?.isActive != true) rootRequest = action {
+            app.root.connect()
+            app.spaces.recoverDeletes(app.browser::deleteOwner)
+            refresh()
+        }
     }
     fun disableRoot() = action { rootRequest?.cancelAndJoin(); app.root.disconnect() }
     fun stop() { if (app.agentTasks.busy) app.agentTasks.stop() else preparing?.cancel() }
@@ -292,6 +281,8 @@ internal class ChatController(application: Application,
     private fun safeError(failure: Exception): String = when (failure) {
         is ModelNetworkException -> failure.message.orEmpty()
         is ConfigurationException -> failure.message.orEmpty()
+        is io.github.asagnc.aurora.data.LinuxFilesPendingException -> "Root 文件待清理，请重新连接 Root 后继续"
+        is io.github.asagnc.aurora.data.LinuxRunPendingException -> "Linux 任务尚未确认退出，请在 Linux 环境中恢复"
         is IllegalArgumentException -> "配置或文件版本不符合要求，请检查连接和任务状态"
         else -> "操作失败（${failure.javaClass.simpleName}），已保留会话和恢复记录"
     }

@@ -23,6 +23,10 @@ class RootLinuxFileReadsTest {
             val file = result.array("files").single().jsonObject
             assertEquals("bc", file.text("text")); assertEquals(3L, file.number("next"))
             assertEquals(64, requireNotNull(file.text("version")).length)
+            Files.writeString(root.resolve("project/file"), "极光")
+            val unicode = RootLinuxFileReads.batch(root, JsonArray(listOf(objectOf("path" to string("project/file"), "limit" to JsonPrimitive(4)))))
+                .array("files").single().jsonObject
+            assertEquals("极", unicode.text("text")); assertEquals(3L, unicode.number("next"))
         } finally { removeSkillTree(root) }
     }
     @Test fun fifoDoesNotBlockAndLinksCannotBeFileTargets() = runBlocking {

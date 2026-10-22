@@ -3,8 +3,6 @@ package io.github.asagnc.aurora.root
 import android.system.Os
 import android.system.OsConstants
 import io.github.asagnc.aurora.core.*
-import java.nio.ByteBuffer
-import java.nio.charset.CodingErrorAction
 import java.nio.file.*
 import java.security.MessageDigest
 import kotlinx.coroutines.*
@@ -51,11 +49,11 @@ internal object RootLinuxFileReads {
             } else null
             val after = Os.fstat(file)
             require(after.st_size == info.st_size && after.st_mtime == info.st_mtime && after.st_ctime == info.st_ctime && after.st_mtim.tv_nsec == info.st_mtim.tv_nsec && after.st_ctim.tv_nsec == info.st_ctim.tv_nsec) { "File changed during read" }
-            val text = runCatching { Charsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
-                .onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(bytes)).toString() }.getOrNull()
-            val next = offset + bytes.size
+            val decoded = decodeUtf8FileSlice(bytes, offset + bytes.size < info.st_size)
+            val text = decoded.text
+            val next = offset + decoded.consumed
             objectOf("path" to string(name), "text" to (text?.let(::string) ?: JsonNull), "size" to JsonPrimitive(info.st_size),
-                "bytesRead" to JsonPrimitive(bytes.size), "version" to (version?.let(::string) ?: JsonNull),
+                "bytesRead" to JsonPrimitive(decoded.consumed), "version" to (version?.let(::string) ?: JsonNull),
                 "next" to if (next < info.st_size) JsonPrimitive(next) else JsonNull,
                 "encoding" to string(if (text == null) "binary-or-partial-UTF8" else "UTF-8"), "error" to JsonNull)
         } finally { Os.close(file) }

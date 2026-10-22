@@ -2,7 +2,6 @@ package io.github.asagnc.aurora.core
 
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
-import java.nio.charset.CodingErrorAction
 import java.nio.file.*
 import java.security.MessageDigest
 import java.util.UUID
@@ -89,11 +88,9 @@ class OwnedFiles(private val root: Path, private val writable: Boolean = true) {
             channel.position(request.offset)
             while (buffer.hasRemaining() && channel.read(buffer) >= 0) { }
             val bytes = buffer.array().copyOf(buffer.position())
-            val decoder = Charsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
-                .onUnmappableCharacter(CodingErrorAction.REPORT)
-            val text = try { decoder.decode(ByteBuffer.wrap(bytes)).toString() } catch (_: java.nio.charset.CharacterCodingException) { null }
-            val end = request.offset + bytes.size
-            FileSlice(request.path, text, bytes, size, end.takeIf { it < size },
+            val decoded = decodeUtf8FileSlice(bytes, request.offset + bytes.size < size)
+            val end = request.offset + decoded.consumed
+            FileSlice(request.path, decoded.text, if (decoded.consumed == bytes.size) bytes else bytes.copyOf(decoded.consumed), size, end.takeIf { it < size },
                 if (size <= MAX_EDIT_BYTES) digest(Files.readAllBytes(path)) else null)
         }
     } catch (failure: Exception) {
