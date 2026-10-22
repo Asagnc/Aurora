@@ -50,7 +50,12 @@ static int output_open(struct capture *capture) {
     FILE *file = fdopen(fd, "wb");
     if (!file) { close(fd); return -1; }
     capture->dump = pcap_dump_fopen(capture->pcap, file);
-    if (!capture->dump) { fclose(file); return -1; }
+    if (!capture->dump) {
+        /* libpcap closes FILE on header-write failure, but retains it for an
+         * unsupported link type. This worker is single-threaded: no fd reuse. */
+        if (fcntl(fd, F_GETFD) >= 0) fclose(file);
+        return -1;
+    }
     capture->bytes = 24;
     return 0;
 }
