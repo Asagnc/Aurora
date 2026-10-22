@@ -5,14 +5,12 @@ import android.system.Os
 import android.system.OsConstants
 import java.nio.channels.FileChannel
 import java.nio.file.*
-import java.util.concurrent.ConcurrentHashMap
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import io.github.asagnc.aurora.core.KeyedMutex
 
 /** Coroutine mutex plus kernel file lock also serialize old/new Root processes. */
 internal object RootWorkspaceLocks {
-    private val locks = ConcurrentHashMap<String, Mutex>()
-    suspend fun <T> use(context: Context, owner: String, action: suspend () -> T): T = locks.computeIfAbsent(owner) { Mutex() }.withLock {
+    private val locks = KeyedMutex()
+    suspend fun <T> use(context: Context, owner: String, action: suspend () -> T): T = locks.withLock(owner) {
         var parent = context.filesDir.toPath()
         for (part in listOf("spaces", "resources")) {
             parent = parent.resolve(part)

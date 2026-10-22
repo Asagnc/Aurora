@@ -1,3 +1,8 @@
+## 2026-10-22 Root会话锁内存清理与磁盘GC提案（优先接续）
+
+修复RootWorkspaceLocks按owner永久保留Mutex的内存增长：复用新core KeyedMutex，注册时统计持有者及等待者，正常/异常/取消后引用归零才移除；不删除磁盘FileChannel锁文件，也不把等待者留在旧锁、后续调用放到新锁。3项JVM测试含已持有时取消等待者、其他key不阻塞、1000个结束key释放、取消/异常收尾及8线程4000次跨key交错。核心170：163通过/7POSIX跳过，Debug/testAPK/Release R8/lint通过。无新依赖/schema，无新真机结果；手机仍上次已验收0.1.32，不安装当前未专项验证APK。
+
+磁盘回收属于新的持久化清理策略，比较方案已写LINUX_METADATA_GC_PROPOSAL.md：建议仅回收已证明死亡的旧Root epoch、无SQLite待处理意图并通过native清理证明的运行目录，保留当前epoch/不明记录、owner退役屏障和workspace锁inode；有界显式维护，不逐命令全盘扫，不引入新常驻进程/新tombstone索引。清理尚未实现或执行，按最初要求提案推送后异步请求确认；等待期间不擅自删已有Root元数据。接续从用户对该方案的答复继续，另有PRoot生命周期/Root撤权/联网镜像/长期性能功耗/供应商缓存等既有待办。
 ## 0.1.32 真机并发恢复专项完成（2026-10-22，优先接续）
 
 用户连接GT6SE后，保留数据覆盖0.1.32/code33；AgentLinuxDeviceTest5、LinuxRunRegistryTest5、CommandLogDeviceTest5共15项全部通过。实际验证：恢复本会话不停止另一会话的Linux PTY；显式恢复与终端完成回调共享同一证明不误报失败；Root探测输出关联、owner筛选/计数、SQLite重复完成与四类日志映射持久化通过，原批命令/PTY/超时/Root图片Agent场景同时回归。详见DEVICE_LINUX_RECOVERY_2026-10-22.md和evidence/0.1.32/device-scoped-recovery.txt。
