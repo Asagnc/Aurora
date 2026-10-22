@@ -1,3 +1,12 @@
+## 0.1.31 Agent Linux 真机接通与同轮环境固定（2026-10-22，优先接续）
+
+已在GT6SE/FolkPatch保留数据覆盖0.1.31/code32。生产AgentExecution +脚本ModelTransport（无网络、无真实密钥）实际调用Root Linux批命令、交互PTY读写、图片发布、SQLite工具记录/协议历史：3项通过；环境固定/取消释放/启动清理保留未确认native租约：3项；最终构建再跑以上6+日志映射5=11项通过。普通91项在本轮环境固定实现后通过，最终状态展示/异常保留修正后针对性11项复验；不冒充最新构建重复跑全套。初始2项失败仅为fixture错把AgentExecution的UI临时投影当成已刷新消息；改查实际SQLite已持久消息后通过，原失败保留。见DEVICE_AGENT_LINUX_2026-10-22.md和evidence/0.1.31。
+
+实现：首个Linux工具调用时懒固定共享Root代，用现有lease保护到整轮结束；每个命令/PTY另有原持久票据/租约，PTY可超出Agent轮次继续，未确认native run不因进程重启被释放。启动ready前仅回收没有linux_runs引用的进程内pin。命令任务卡片采用guest退出状态及有界stdout/stderr投影，超时/中断/未知不误标成功，原始JSON仍保留。Root图片选定导出/Bitmap解码/再次导出通过，传输临时副本已删，guest原图仍UID0。无依赖或schema变更。
+
+核心167：160通过/7POSIX跳过；Debug/testAPK/Release R8/lint通过；双ABI ELF/16KiB与对应源码包通过。CI39790590613失败在Samba源码超时/503，非测试失败；新增官方actions/cache6.1.0精确SHA键的restore→原SHA校验→save，缓存命中和损坏拒绝本机已测，缓存未命中仍依赖有界官方网络。新提交CI另查，不宣称已修复全部外网问题。
+
+下一步：PRoot完整生命周期、Root元数据GC、管理器外部撤权、手机官方镜像下载成功、长期压力功耗/真实性能与供应商缓存验证；不重复询问已批准架构。最终手机留主应用0.1.31，测试辅助包验收后移除；不清用户数据。用户要求常规进度少汇报，持续推进；仅新底层确认/阻碍/验收联系，工具进行中仍必要简短更新。
 ## 2026-10-22 Agent Linux 交互终端入口
 
 新增稳定 terminal_start_linux 工具，默认/bin/sh、固定guest目录/环境、期限最多270秒、awakeMs默认0且不得超过期限。复用TerminalManager已验证的Root Linux PTY/SQLite租约/前台服务/VT/持久日志；后续由terminal_read/write/resize/stop/list操作，用户在现有终端页观看。与Android terminal_start分别命名，不偷偷切换后端。不新增依赖/服务/数据库schema。修正terminal_stop描述，区分Android进程组与Linux任务cgroup的清理边界。

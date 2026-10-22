@@ -5,6 +5,12 @@ set -euo pipefail
 aurora_native_dir="${RUNNER_TEMP:?}/aurora-native-downloads"
 aurora_talloc_archive="$aurora_native_dir/talloc-2.5.0.tar.gz"
 mkdir -p "$aurora_native_dir"
+aurora_talloc_sha=912afa237510ae542a7733998eb18a12bcda35ab6729c8e2ddb43e8d0ebab007
+if [[ -f "$aurora_talloc_archive" ]]; then
+  printf '%s  %s\n' "$aurora_talloc_sha" "$aurora_talloc_archive" | sha256sum --check
+  printf 'AURORA_TALLOC_ARCHIVE=%s\n' "$aurora_talloc_archive" >>"${GITHUB_ENV:?}"
+  exit 0
+fi
 trap 'rm -f "$aurora_talloc_archive.partial"' EXIT
 aurora_downloaded=false
 for aurora_url in https://download.samba.org/pub/talloc/talloc-2.5.0.tar.gz \
@@ -17,7 +23,7 @@ for aurora_url in https://download.samba.org/pub/talloc/talloc-2.5.0.tar.gz \
   fi
 done
 if [[ "$aurora_downloaded" != true ]]; then exit 1; fi
-printf '%s  %s\n' 912afa237510ae542a7733998eb18a12bcda35ab6729c8e2ddb43e8d0ebab007 \
+printf '%s  %s\n' "$aurora_talloc_sha" \
   "$aurora_talloc_archive.partial" | sha256sum --check
 mv "$aurora_talloc_archive.partial" "$aurora_talloc_archive"
 printf 'AURORA_TALLOC_ARCHIVE=%s\n' "$aurora_talloc_archive" >>"${GITHUB_ENV:?}"

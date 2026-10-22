@@ -15,9 +15,9 @@ import kotlinx.serialization.json.*
 internal class LinuxRunManager(private val app: AuroraApplication, private val environments: LinuxEnvironmentManager) {
     private val records = LinuxRunRegistry(app.conversations)
     suspend fun execute(owner: String, argv: List<String>, timeoutMs: Long = 60_000,
-        runId: String = UUID.randomUUID().toString()): JsonObject {
+        runId: String = UUID.randomUUID().toString(), generation: String? = null): JsonObject {
         val client = requireNotNull(app.root.linuxRunClient) { "Reconnect a current Root service for Linux execution" }
-        val ticket = reserve(owner, runId, argv, timeoutMs)
+        val ticket = reserve(owner, runId, argv, timeoutMs, generation)
         try {
             app.spaces.commandRoot(owner)
             currentCoroutineContext().ensureActive()
@@ -31,12 +31,12 @@ internal class LinuxRunManager(private val app: AuroraApplication, private val e
         }
     }
     suspend fun terminal(owner: String, id: String, request: PtyRequest,
-        run: suspend (suspend () -> PtyEndpoint) -> Unit) {
+        run: suspend (suspend () -> PtyEndpoint) -> Unit, generation: String? = null) {
         request.validate()
         require(request.directory.isEmpty() && request.environment.isEmpty())
         val terminal = requireNotNull(app.root.linuxTerminalClient) { "Reconnect a current Root service for Linux PTY" }
         val recovery = requireNotNull(app.root.linuxRunClient)
-        val ticket = reserve(owner, id, request.argv, request.timeoutMs)
+        val ticket = reserve(owner, id, request.argv, request.timeoutMs, generation)
         try {
             run {
                 currentCoroutineContext().ensureActive()
@@ -44,10 +44,10 @@ internal class LinuxRunManager(private val app: AuroraApplication, private val e
             }
         } finally { recoverPending(ticket, recovery) }
     }
-    private suspend fun reserve(owner: String, runId: String, argv: List<String>, timeoutMs: Long): LinuxRunTicket {
+    private suspend fun reserve(owner: String, runId: String, argv: List<String>, timeoutMs: Long, pinned: String?): LinuxRunTicket {
         val identity = requireNotNull(app.root.linuxClient).identity
         return withContext(NonCancellable) { environments.catalog.withLock {
-            val generation = requireNotNull(environments.registry.current()) { "Install a Root Linux generation first" }
+            val generation = pinned ?: requireNotNull(environments.registry.current()) { "Install a Root Linux generation first" }
             LinuxRunTicket(runId, owner, generation, identity, Process.myUid(), argv.toList(), timeoutMs).also { records.begin(it) }
         } }
     }

@@ -7,7 +7,7 @@ import kotlinx.serialization.json.*
 class LinuxCommandTool(private val run: suspend (String, List<String>, Long) -> JsonObject,
     private val prepared: suspend (String, String) -> Unit) : ToolExecutor {
     override val definitions = listOf(ToolDefinition("command_execute_linux",
-        "Execute a batch command inside the installed shared Root Linux generation. Requires connected Root and supported task cgroup/private mounts; no PRoot fallback. " +
+        "Execute a batch command inside the installed shared Root Linux generation, pinned on first Linux use for this Agent run. Requires connected Root and supported task cgroup/private mounts; no PRoot fallback. " +
             "argv is literal, begins with an absolute guest executable; use /bin/sh -c explicitly for shell syntax. " +
             "Guest cwd=/mnt, HOME=/root, TMPDIR=/tmp map to this conversation's .aurora-linux/project, home and tmp. " +
             "Base image is read-only; conversation files retain guest ownership and are accessed through file tools. " +

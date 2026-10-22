@@ -43,6 +43,10 @@ internal class LinuxRegistry(private val conversations: ConversationStore) {
         db.insertOrThrow("linux_leases", null, values("token" to token, "owner" to owner, "version_id" to version)); token
     }
     suspend fun release(token: String) = conversations.write { it.delete("linux_leases", "token=?", arrayOf(token)); Unit }
+    /** Startup only, before task admission. Native dispatch intents retain their own leases. */
+    suspend fun recoverProcessPins() = conversations.write { db ->
+        db.delete("linux_leases", "token NOT IN (SELECT id FROM linux_runs)", null)
+    }
     suspend fun unused(): List<String> = conversations.read { db ->
         db.rawQuery("SELECT id FROM linux_versions WHERE id NOT IN (SELECT current_id FROM linux_settings) AND id NOT IN (SELECT version_id FROM linux_leases)", null)
             .use { cursor -> buildList { while (cursor.moveToNext()) add(cursor.getString(0)) } }

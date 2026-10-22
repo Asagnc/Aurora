@@ -1,0 +1,21 @@
+test	Prefetch verified native source with bounded transport retries	﻿2026-10-22T13:54:13.1106579Z ##[group]Run bash scripts/prefetch-native-source.sh
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:54:13.1107680Z ^[[36;1mbash scripts/prefetch-native-source.sh^[[0m
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:54:13.1181381Z shell: /usr/bin/bash -e {0}
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:54:13.1181884Z env:
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:54:13.1182485Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/25.0.4-1/x64
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:54:13.1183405Z   JAVA_HOME_25_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/25.0.4-1/x64
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:54:13.1184176Z   MAVEN_ARGS: -ntp
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:54:13.1184704Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:54:13.1185333Z   GRADLE_USER_HOME: /home/runner/.gradle
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:54:13.1185911Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:54:13.1187052Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:54:13.1188011Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:54:13.1188647Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:54:13.1189254Z   ANDROID_HOME: /home/runner/work/_temp/aurora-sdk
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:54:13.1189893Z   ANDROID_SDK_ROOT: /home/runner/work/_temp/aurora-sdk
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:54:13.1190405Z ##[endgroup]
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:55:13.1442185Z curl: (28) Operation timed out after 60002 milliseconds with 0 bytes received
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:56:14.1499840Z curl: (28) Operation timed out after 60002 milliseconds with 0 bytes received
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:56:23.5569204Z curl: (22) The requested URL returned error: 503
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:56:33.8565784Z curl: (22) The requested URL returned error: 503
+test	Prefetch verified native source with bounded transport retries	2026-10-22T13:56:33.8615778Z ##[error]Process completed with exit code 1.

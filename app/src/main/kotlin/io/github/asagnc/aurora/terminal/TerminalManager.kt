@@ -44,10 +44,10 @@ internal class TerminalManager(private val app: AuroraApplication) {
         startBackend(owner, request, if (root) "android-root" else "android-native")
 
     /** Linux shares terminal transport/records; its durable lease controls guest cleanup. */
-    internal suspend fun startLinux(owner: String, request: PtyRequest = PtyRequest(argv = listOf("/bin/sh"), timeoutMs = 270_000)): TerminalRecord =
-        startBackend(owner, request, "linux-root")
+    internal suspend fun startLinux(owner: String, request: PtyRequest = PtyRequest(argv = listOf("/bin/sh"), timeoutMs = 270_000),
+        generation: String? = null): TerminalRecord = startBackend(owner, request, "linux-root", generation)
 
-    private suspend fun startBackend(owner: String, supplied: PtyRequest, backend: String): TerminalRecord = withContext(Dispatchers.IO) {
+    private suspend fun startBackend(owner: String, supplied: PtyRequest, backend: String, generation: String? = null): TerminalRecord = withContext(Dispatchers.IO) {
         val request = supplied.copy(argv = supplied.argv.toList(), environment = supplied.environment.toMap())
         request.validate()
         if (backend == "linux-root") {
@@ -71,7 +71,7 @@ internal class TerminalManager(private val app: AuroraApplication) {
                                 if (request.awakeMs > 0) lease = awake.acquire(request.awakeMs)
                                 open()
                             }
-                            if (backend == "linux-root") app.linux.runs.terminal(owner, id, request, ::consume)
+                            if (backend == "linux-root") app.linux.runs.terminal(owner, id, request, ::consume, generation)
                             else consume { remote?.open(id, owner, request) ?: process.open(directory, request) }
                         } finally { lease?.let { if (it.held) it.close() } }
                     }

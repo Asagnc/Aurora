@@ -1,0 +1,10 @@
+
+io.github.asagnc.aurora.runtime.AgentLinuxDeviceTest:...
+io.github.asagnc.aurora.linux.LinuxAgentEnvironmentTest:...
+io.github.asagnc.aurora.runtime.CommandLogDeviceTest:.....
+
+Time: 9.031
+
+OK (11 tests)
+
+

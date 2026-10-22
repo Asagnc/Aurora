@@ -39,6 +39,7 @@ class AuroraApplication : Application() {
         conversations.recoverInterruptedRuns()
         terminals.recover()
         skills.recover()
+        linux.registry.recoverProcessPins()
         linux.recover()
         spaces.recoverDeletes(browser::deleteOwner)
         val owners = withContext(Dispatchers.Main) { browser.profileOwners() }

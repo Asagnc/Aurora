@@ -1,0 +1,3 @@
+C:/Users/Admin/Documents/Codex/2026-10-12/e/outputs/native-cache-check/aurora-native-downloads/talloc-2.5.0.tar.gz: OK
+C:/Users/Admin/Documents/Codex/2026-10-12/e/outputs/native-cache-check/aurora-native-downloads/talloc-2.5.0.tar.gz: FAILED
+sha256sum: WARNING: 1 computed checksum did NOT match

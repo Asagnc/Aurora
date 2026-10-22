@@ -11,7 +11,7 @@ class LinuxTerminalTool(private val start: suspend (LinuxTerminalOptions) -> Jso
         "minimum" to JsonPrimitive(min), "maximum" to JsonPrimitive(max))
     override val definitions = listOf(ToolDefinition("terminal_start_linux",
         "Start an interactive Root Linux PTY only when a program requires a terminal; prefer command_execute_linux for batch work. " +
-            "Requires installed Root generation and supported task cgroup/private mounts; no PRoot fallback. " +
+            "Requires installed Root generation and supported task cgroup/private mounts; no PRoot fallback. Generation is pinned on first Linux use for this Agent run; a live PTY keeps its own lease afterward. " +
             "Default argv=/bin/sh; absolute guest executable and literal arguments. Fixed cwd=/mnt, HOME=/root, TMPDIR=/tmp use conversation Linux files. " +
             "Read-only shared base. One unresolved Linux run per conversation. Use terminal_read/write/resize/stop/list with the returned id. " +
             "Output is merged, persisted first 16 MiB, live ring last 64 KiB. Persists across turns/pages until stopped/deadline/process death. " +

@@ -12,6 +12,17 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
     private val transportFactory: (String) -> ModelTransport = { token -> HttpModelTransport { token } }) {
     private val state = mutable
     suspend fun execute(id: String, text: String, connection: Connection, started: Long) {
+        val linux = io.github.asagnc.aurora.linux.LinuxAgentEnvironment(app.linux, id)
+        var failure: Throwable? = null
+        try { executeWithEnvironment(id, text, connection, started, linux) }
+        catch (caught: Throwable) { failure = caught; throw caught }
+        finally { try { linux.close() }
+            catch (cleanup: Throwable) { if (failure != null) failure.addSuppressed(cleanup) else throw cleanup }
+        }
+    }
+
+    private suspend fun executeWithEnvironment(id: String, text: String, connection: Connection, started: Long,
+        linux: io.github.asagnc.aurora.linux.LinuxAgentEnvironment) {
         val ordinaryFiles = FileToolExecutor(linkedMapOf("conversation" to app.spaces.conversation(id),
             "resources" to app.spaces.sharedResources(), "workspace" to app.spaces.sharedWorkspace()))
         val files = LinuxFileToolRouter(ordinaryFiles) { operation, arguments ->
@@ -27,10 +38,10 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
             io.github.asagnc.aurora.linux.LinuxEnvironmentTool(app.linux, id, prepared), BrowserToolExecutor(app.browser, id), ImageToolExecutor(app.images, id),
             io.github.asagnc.aurora.terminal.TerminalToolExecutor(app.terminals, id, app.root.terminalClient != null),
             CommandToolExecutor(app.commands, directory, prepared = prepared),
-            LinuxCommandTool({ runId, argv, timeout -> app.linux.runs.execute(id, argv, timeout, runId) }, prepared),
+            LinuxCommandTool({ runId, argv, timeout -> app.linux.runs.execute(id, argv, timeout, runId, linux.generation()) }, prepared),
             LinuxTerminalTool { options -> app.terminals.startLinux(id, io.github.asagnc.aurora.terminal.PtyRequest(
                 argv = options.argv, columns = options.columns, rows = options.rows,
-                timeoutMs = options.timeoutMs, awakeMs = options.awakeMs)).json() },
+                timeoutMs = options.timeoutMs, awakeMs = options.awakeMs), linux.generation()).json() },
             app.root.commandClient?.let { CommandToolExecutor(app.commands, directory, it, prepared) }))
         val fingerprint = requestFingerprint(SYSTEM, tools.definitions)
         val credential = requireNotNull(app.credentials.get(connection.id)) { "API 密钥不存在" }
