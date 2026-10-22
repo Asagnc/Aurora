@@ -1,3 +1,8 @@
+## 0.1.32 真机并发恢复专项完成（2026-10-22，优先接续）
+
+用户连接GT6SE后，保留数据覆盖0.1.32/code33；AgentLinuxDeviceTest5、LinuxRunRegistryTest5、CommandLogDeviceTest5共15项全部通过。实际验证：恢复本会话不停止另一会话的Linux PTY；显式恢复与终端完成回调共享同一证明不误报失败；Root探测输出关联、owner筛选/计数、SQLite重复完成与四类日志映射持久化通过，原批命令/PTY/超时/Root图片Agent场景同时回归。详见DEVICE_LINUX_RECOVERY_2026-10-22.md和evidence/0.1.32/device-scoped-recovery.txt。
+
+Debug APK SHA256：4086f9f306620b4930441c2f160a6eaf1490e196be36ecc133e8036caa06f554。手机留主应用0.1.32，测试辅助包已卸载并打开MainActivity；未清数据/卸载主应用，未使用付费模型或修改Root授权。上一提交60fee70完整CI39793142166成功；f3f4e51的CI39794753012最后仍queued，证据提交不改变应用代码。下一步仍为PRoot完整生命周期、Root元数据GC、外部Root撤权、手机官方镜像联网下载、长时性能功耗和真实供应商缓存等，不把15项专项当全部功能已完成。
 ## 0.1.32 会话恢复范围与重复完成确认（2026-10-22，优先接续）
 
 修复Agent linux_environment recover_runs原先遍历全局待处理项、可能停止其他会话终端的问题：SQLite按owner通过现有唯一索引选取/计数，Agent只恢复和显示本会话任务；设置页用户显式全局恢复入口保持原语义。修复probe_root/recover_root的任务输出关联被ToolRunStore白名单拒绝，加入linux_environment并仍禁止非命令类图片工具关联。修复显式恢复与PTY退出回调同时收到同一stopped证明时第二次完成误报失败：有活动记录仍严格匹配完整ticket；已完成记录幂等返回，不触碰其他租约。

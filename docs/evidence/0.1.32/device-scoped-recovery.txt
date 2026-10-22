@@ -1,0 +1,10 @@
+
+io.github.asagnc.aurora.runtime.AgentLinuxDeviceTest:.....
+io.github.asagnc.aurora.data.LinuxRunRegistryTest:.....
+io.github.asagnc.aurora.runtime.CommandLogDeviceTest:.....
+
+Time: 13.043
+
+OK (15 tests)
+
+
