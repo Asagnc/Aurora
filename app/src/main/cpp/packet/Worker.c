@@ -79,19 +79,25 @@ int main(int argc, char **argv) {
     if (signals < 0 || timer < 0 || timerfd_settime(timer, 0, &deadline, NULL)) goto finish;
     capture.pcap = open_capture(argv[1], argv[5]);
     if (!capture.pcap || output_open(&capture)) goto finish;
+    fputs("aurora_capture_ready\n", stderr);
+    fflush(stderr);
     if (capture.budget == 24) capture.reason = "byte_budget";
     if (capture_loop(&capture, signals, timer)) {
         capture.reason = "capture_error";
         capture.failed = 1;
     }
     status = capture.failed ? 1 : 0;
-finish:
-    if (capture_close(&capture)) { capture.reason = "write_error"; status = 1; }
+finish:;
+    int file_complete = capture.dump && capture_close(&capture) == 0;
+    if (!file_complete && capture.bytes) { capture.reason = "write_error"; status = 1; }
     struct pcap_stat stats;
     int known = capture.pcap && pcap_stats(capture.pcap, &stats) == 0;
     printf("{\"protocol\":1,\"reason\":\"%s\",\"packets\":%llu,\"bytes\":%llu,",
            capture.reason ? capture.reason : "setup_error",
            (unsigned long long)capture.packets, (unsigned long long)capture.bytes);
+    printf("\"fileComplete\":%s,\"device\":%llu,\"inode\":%llu,",
+           file_complete ? "true" : "false", (unsigned long long)capture.device,
+           (unsigned long long)capture.inode);
     if (known) printf("\"received\":%u,\"dropped\":%u}", stats.ps_recv, stats.ps_drop);
     else printf("\"received\":null,\"dropped\":null}");
     putchar('\n');

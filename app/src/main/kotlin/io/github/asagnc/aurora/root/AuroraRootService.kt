@@ -17,6 +17,7 @@ import kotlinx.coroutines.runBlocking
 
 class AuroraRootService : RootService() {
     private val commands = RootCommandSession()
+    private val packets by lazy { RootPacketCapture(this) }
     private val terminals by lazy { RootTerminalSessions(this) }
     private val linuxFiles by lazy { RootLinuxFiles(this) }
     private val linuxRuns by lazy { RootLinuxRuns(this) { linux.identity } }
@@ -46,6 +47,14 @@ class AuroraRootService : RootService() {
                 NativeCommandRunner(this@AuroraRootService, applicationInfo.uid)
                     .execute(conversationRoot(conversation), decoded, id).toString()
             }
+        }
+
+        override fun capturePackets(id: String, conversation: String, request: Bundle, callback: IRootResult) {
+            verifyCaller()
+            val encoded = requireNotNull(request.getString("arguments")).also { require(it.length <= 8192) }
+            val args = io.github.asagnc.aurora.core.WireJson.parseToJsonElement(encoded) as kotlinx.serialization.json.JsonObject
+            val options = io.github.asagnc.aurora.core.PacketCaptureRequest.parse(args)
+            commands.start(id, callback) { packets.execute(conversationRoot(conversation), id, options) }
         }
 
         override fun cancelAndWait(id: String) {
@@ -112,6 +121,7 @@ class AuroraRootService : RootService() {
             return Bundle().apply {
                 putInt("protocol", 1)
                 putInt("commandProtocol", 2)
+                putInt("packetCaptureProtocol", 1)
                 putInt("terminalProtocol", 1)
                 putInt("linuxRunProtocol", 2)
                 putInt("linuxFileProtocol", 1)

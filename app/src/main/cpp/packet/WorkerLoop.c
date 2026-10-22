@@ -37,8 +37,13 @@ int capture_close(struct capture *capture) {
     FILE *file = pcap_dump_file(capture->dump);
     struct stat info;
     int failed = pcap_dump_flush(capture->dump) < 0 || ferror(file);
-    if (fstat(fileno(file), &info) < 0 || !S_ISREG(info.st_mode) ||
-        (uint64_t)info.st_size != capture->bytes) failed = 1;
+    if (fstat(fileno(file), &info) < 0) failed = 1;
+    else {
+        capture->device = (uint64_t)info.st_dev;
+        capture->inode = (uint64_t)info.st_ino;
+        if (!S_ISREG(info.st_mode) || info.st_nlink != 1 ||
+            (uint64_t)info.st_size != capture->bytes) failed = 1;
+    }
     if (!failed && fsync(fileno(file)) < 0) failed = 1;
     pcap_dump_close(capture->dump);
     capture->dump = NULL;

@@ -23,6 +23,8 @@ class RootCommandProtocolTest {
         val callback = object : IRootResult.Stub() { override fun complete(result: String) {} }
         try { remote.prepareLinux(operation, callback); fail("Ordinary fixture prepared Root links") }
         catch (_: SecurityException) {}
+        try { remote.capturePackets(operation, UUID.randomUUID().toString(), Bundle(), callback); fail("Ordinary fixture captured packets") }
+        catch (_: SecurityException) {}
         try { remote.discardLinux(operation); fail("Ordinary fixture discarded Root staging") }
         catch (_: SecurityException) {}
         val ticket = LinuxRunTicket(operation, UUID.randomUUID().toString(), "a".repeat(64),
@@ -204,7 +206,8 @@ class RootCommandProtocolTest {
             override fun stopTerminal(id: String) {}
             override fun prepareLinux(operation: String, callback: IRootResult) { error("Must not prepare") }
             override fun linuxFiles(id: String, owner: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
-            override fun maintainLinuxMetadata(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture has no metadata capability") }
+            override fun capturePackets(id: String, conversation: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture has no packet capability") }
+        override fun maintainLinuxMetadata(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture has no metadata capability") }
             override fun openLinuxTerminal(id: String, request: android.os.Bundle, callback: IRootResult): android.os.Bundle { throw SecurityException("Fixture is not Root") }
             override fun startLinuxRun(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
             override fun recoverLinuxRun(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }

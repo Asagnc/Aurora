@@ -9,7 +9,10 @@ static void budget_case(uint64_t budget, uint64_t count, uint64_t expected,
     struct capture capture = { .budget = budget, .count = count, .bytes = 24 };
     capture.pcap = pcap_open_dead(DLT_EN10MB, 65535);
     assert(capture.pcap);
-    FILE *file = tmpfile();
+    char path[] = "/tmp/aurora-packet-boundary-XXXXXX";
+    int fd = mkstemp(path);
+    assert(fd >= 0);
+    FILE *file = fdopen(fd, "wb");
     assert(file);
     capture.dump = pcap_dump_fopen(capture.pcap, file);
     assert(capture.dump);
@@ -22,6 +25,7 @@ static void budget_case(uint64_t budget, uint64_t count, uint64_t expected,
     assert(capture.reason && !strcmp(capture.reason, reason));
     assert(!capture_close(&capture));
     pcap_close(capture.pcap);
+    assert(!remove(path));
 }
 
 int main(void) {

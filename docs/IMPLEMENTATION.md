@@ -1,3 +1,9 @@
+## 2026-10-23 0.1.36 Root 抓包与 Agent 接入
+
+已实现 packet_capture_root 的严格双端合同、追加Binder协议与原子端点能力、现有Root会话派发/监督/有界唤醒锁、固定运行cwd、worker文件身份/完成状态、选定PCAP属主发布与状态文件持久化、工具账本/日志/中文标题。离线保持普通UID，不扫描或递归chown会话。采集文件完整与任务成功分别检查，取消、硬超时、未知死亡、发布失败不当成功。
+
+本地核心179项（172通过/7个POSIX跳过），Debug/Release/testAPK/lint、双ABI ELF/16KiB与源码包通过。新增6核心项已实跑；新增私有网络空间9项控制场景待CI，Android普通与Root专项4项仅编译，最终集中真机不变。先前76eb16a CI39833896207完整成功，主机离线/worker共11项证据已归档。详细合同与尚未验收项见ROOT_CAPTURE_IMPLEMENTATION.md，手机仍0.1.32。
+
 ## 2026-10-23 Root 采集 worker 第一阶段
 
 用户已确认 ROOT_CAPTURE_RUNTIME_PROPOSAL 分工。新增独立 libpcap worker：Root UID 限制、固定 capture.pcap 排他且不跟随链接创建、整包前置字节预算、包数预算、CLOCK_BOOTTIME 截止、signalfd 取消、非阻塞 pcap/poll、有界分批、最终 flush/ferror/fsync 与大小检查、结构化保存量和未知可区分的内核统计。非混杂、4MiB 内核缓冲和100ms缓冲交付是待性能资格验证的初始值，不宣称最优。

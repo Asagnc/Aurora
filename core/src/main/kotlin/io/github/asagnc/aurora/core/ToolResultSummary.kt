@@ -13,7 +13,7 @@ fun summarizeToolResult(result: String?): ToolResultSummary? {
     val record = runCatching { WireJson.parseToJsonElement(result) as? JsonObject }.getOrNull() ?: return null
     val error = (record["error"] as? JsonPrimitive)?.takeUnless { it is JsonNull }?.content
     return ToolResultSummary(error, (record["exitCode"] as? JsonPrimitive)?.longOrNull,
-        error == "command_outcome_uncertain", outputSummary(record["stdout"]), outputSummary(record["stderr"]))
+        error in setOf("command_outcome_uncertain", "capture_outcome_uncertain"), outputSummary(record["stdout"]), outputSummary(record["stderr"]))
 }
 
 private fun outputSummary(value: JsonElement?): CommandOutputSummary? {

@@ -5,6 +5,7 @@ from pathlib import Path
 import shutil
 import struct
 import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -73,6 +74,16 @@ class PacketToolsTest(unittest.TestCase):
                         str(module / 'WorkerLoop.c'), str(prefix / 'lib/libpcap.a'),
                         '-o', str(binary)], check=True)
         subprocess.run([str(binary)], check=True, timeout=10)
+
+    def test_worker_private_network_namespace_lifecycle(self):
+        prefix = self.root / 'prefix'
+        module = ROOT / 'app/src/main/cpp/packet'
+        binary = self.root / 'capture-worker'
+        subprocess.run(['cc', '-Wall', '-Wextra', '-Werror', '-I' + str(prefix / 'include'),
+                        str(module / 'Worker.c'), str(module / 'WorkerLoop.c'),
+                        str(prefix / 'lib/libpcap.a'), '-o', str(binary)], check=True)
+        subprocess.run(['sudo', '-n', 'unshare', '--net', '--', sys.executable,
+                        str(ROOT / 'scripts/verify-packet-capture.py'), str(binary)], check=True, timeout=60)
 
     def test_exact_stable_versions(self):
         result = self.run_tool('--version')

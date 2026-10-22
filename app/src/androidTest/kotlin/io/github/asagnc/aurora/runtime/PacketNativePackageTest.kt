@@ -64,6 +64,21 @@ class PacketNativePackageTest {
         assertFalse(dispatched)
     } }
 
+    @Test fun liveWorkerRejectsOrdinaryUidAndArtifactCwdIsRunScoped() = runBlocking { fixture { root ->
+        val id = java.util.UUID.randomUUID().toString()
+        val runner = NativeCommandRunner(context, artifactWorkingDirectory = true)
+        val worker = Path.of(context.applicationInfo.nativeLibraryDir, "libaurora_packet_worker.so")
+        val request = PacketCaptureRequest.parse(objectOf("bytes" to kotlinx.serialization.json.JsonPrimitive(24)))
+        val result = runner.execute(root, CommandRequest(request.argv(worker.toString())), id)
+        assertEquals(result.toString(), 64L, result.number("exitCode"))
+        assertFalse(Files.exists(root.resolve("runs/$id/capture.pcap")))
+        val cwdId = java.util.UUID.randomUUID().toString()
+        val cwd = runner.execute(root, CommandRequest(listOf("/system/bin/sh", "-c", "printf scoped > marker")), cwdId)
+        assertEquals(cwd.toString(), 0L, cwd.number("exitCode"))
+        assertEquals("scoped", Files.readString(root.resolve("runs/$cwdId/marker")))
+        assertFalse(Files.exists(root.resolve("marker")))
+    } }
+
     private suspend fun fixture(block: suspend (Path) -> Unit) {
         val root = Files.createTempDirectory(context.cacheDir.toPath(), "packet-offline-")
         try { block(root) } finally { removeSkillTree(root) }

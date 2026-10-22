@@ -14,7 +14,8 @@ data class CommandRequest(val argv: List<String>, val directory: String = "", va
     val outputLimit: Int = 8192, val environment: Map<String, String> = emptyMap())
 
 /** Foreground command scope, not a sandbox for programs running under Aurora's UID. */
-class NativeCommandRunner(context: Context, private val artifactOwner: Int = android.os.Process.myUid()) {
+class NativeCommandRunner(context: Context, private val artifactOwner: Int = android.os.Process.myUid(),
+    private val artifactWorkingDirectory: Boolean = false) {
     private val executable = File(context.applicationInfo.nativeLibraryDir, "libaurora_runner.so")
     private val permits = Semaphore(2)
     private val awake = CommandWakeLock(context, "NativeCommand")
@@ -39,20 +40,33 @@ class NativeCommandRunner(context: Context, private val artifactOwner: Int = and
         restoreOwner(directory)
         val log = Files.createFile(directory.resolve("supervisor.log"))
         restoreOwner(log)
-        val process = ProcessBuilder(listOf(executable.absolutePath, directory.toString(), "--") + request.argv)
-            .directory(cwd.toFile()).redirectErrorStream(true).redirectOutput(directory.resolve("supervisor.log").toFile())
-            .apply { environment().apply { clear(); put("PATH", "/system/bin:/system/xbin"); put("HOME", root.toString()); put("TMPDIR", cwd.toString()); putAll(request.environment) } }
-            .start()
+        val handle = if (artifactWorkingDirectory) pinDirectory(directory) else null
         try {
-            process.outputStream.close()
-            val finished = process.waitFor(request.timeoutMs, java.util.concurrent.TimeUnit.MILLISECONDS)
-            if (!finished) stop(process)
-            return result(root, directory, request.outputLimit, !finished, process.exitValue())
-        } finally {
-            // Conversation deletion waits for this cleanup through its OwnedTasks lease.
-            stop(process)
-            process.inputStream.close(); process.errorStream.close()
-        }
+            val working = handle?.let { File("/proc/${android.os.Process.myPid()}/fd/${it.fd}") } ?: cwd.toFile()
+            val process = ProcessBuilder(listOf(executable.absolutePath, directory.toString(), "--") + request.argv)
+                .directory(working).redirectErrorStream(true).redirectOutput(directory.resolve("supervisor.log").toFile())
+                .apply { environment().apply { clear(); put("PATH", "/system/bin:/system/xbin"); put("HOME", root.toString()); put("TMPDIR", cwd.toString()); putAll(request.environment) } }
+                .start()
+            try {
+                process.outputStream.close()
+                val finished = process.waitFor(request.timeoutMs, java.util.concurrent.TimeUnit.MILLISECONDS)
+                if (!finished) stop(process)
+                return result(root, directory, request.outputLimit, !finished, process.exitValue())
+            } finally {
+                // Conversation deletion waits for this cleanup through its OwnedTasks lease.
+                stop(process)
+                process.inputStream.close(); process.errorStream.close()
+            }
+        } finally { handle?.close() }
+    }
+
+    private fun pinDirectory(path: Path): android.os.ParcelFileDescriptor {
+        val fd = android.system.Os.open(path.toString(), android.system.OsConstants.O_RDONLY or
+            android.system.OsConstants.O_NONBLOCK or android.system.OsConstants.O_NOFOLLOW or android.system.OsConstants.O_CLOEXEC, 0)
+        return try {
+            require(android.system.OsConstants.S_ISDIR(android.system.Os.fstat(fd).st_mode))
+            android.os.ParcelFileDescriptor.dup(fd)
+        } finally { android.system.Os.close(fd) }
     }
 
     private fun restoreOwner(path: Path) {

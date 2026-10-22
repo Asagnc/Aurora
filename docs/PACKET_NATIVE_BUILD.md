@@ -49,4 +49,4 @@ Android普通UID检查现为3项：准确版本、真实PCAP过滤及Agent字面
 
 下一步接结构化 Agent 实时抓包参数、实际 Root 任务/预算、停止/异常落盘、会话捕获产物归属和按需详情；之后做受控流量与吞吐/丢包/功耗对照。离线解码保持普通UID独立进程，Root采集时只走过滤/写盘链路。长时抓包仍需完整运行时设计；第一阶段沿用现有五分钟命令上限。无 VPN、PRoot 或逐包 JNI/模型传输。
 
-实时控制的新worker分工待确认，见ROOT_CAPTURE_RUNTIME_PROPOSAL.md；当前不改变已实现组件或宣称实时采集完成。
+实时控制worker分工已确认并在0.1.36接入，当前实现与真实验证状态以ROOT_CAPTURE_IMPLEMENTATION.md为准。设备/性能仍待集中验收。
