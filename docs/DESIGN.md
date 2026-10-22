@@ -8,6 +8,8 @@ Research date: 2026-10-12.
 
 ## Approved architecture
 
+- 2026-10-22 confirmed: preserve Root Linux conversation file ownership; route on-demand batch file access, selected image/export publication and deletion through Aurora's built-in Root service. Do not recursively chown the workspace after every command. Keep deletion pending when Root is unavailable. See LINUX_WORKSPACE_ACCESS_PROPOSAL.md and LINUX_ROOT_FILES.md.
+
 - 2026-10-22 confirmed: on-demand shared backend generations: Root chroot preserves original Linux ownership, ordinary PRoot preserves App ownership; Root users default to only the Root generation. No per-conversation rootfs copies, no mandatory OverlayFS; explicit dual-generation storage costs and Root cleanup requirements. See LINUX_OWNERSHIP_PROPOSAL.md.
 
 - 2026-10-22 superseding confirmation after device qualification: Root Linux uses task-owned cgroup v2 scopes for lifecycle teardown, alongside private mount namespaces and subreaper/pidfd/event observation. PID namespaces are optional because the tested Android kernel does not expose them. No resident daemon or global resource-policy changes. See LINUX_CGROUP_PROPOSAL.md. Full execution remains unfinished.

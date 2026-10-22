@@ -1,4 +1,6 @@
-# Root Linux 会话文件访问方案（待确认，2026-10-22）
+# Root Linux 会话文件访问方案（已确认，2026-10-22）
+
+用户已于2026-10-22明确选择“采用推荐的Root批量文件通道”。0.1.28已替换0.1.27验证路径；当前实现与限制见LINUX_ROOT_FILES.md。下文比较保留为决策依据。
 
 ## 问题与当前实现
 
@@ -33,4 +35,4 @@
 - Linux flock：https://man7.org/linux/man-pages/man2/flock.2.html 。当前启动锁复用继承的open file description，作为scope日志出现前的恢复屏障。
 - SQLite外键：https://www.sqlite.org/foreignkeys.html 。运行记录与租约在既有SQLite事务中一起写入，外键阻止提前删除租约。
 
-推荐第三项是针对Aurora的工程判断；尚无真实工作负载的领先性能结论。等待用户确认后实施，当前不把递归属主恢复路径作为已达成的最优方案。
+推荐第三项是针对Aurora的工程判断；尚无真实工作负载的领先性能结论。用户确认后已实施Root批量文件通道，已删除每条命令收尾的递归属主恢复；尚待Root真机资格和性能测量。

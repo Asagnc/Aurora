@@ -72,7 +72,7 @@ import kotlinx.coroutines.*
                     pendingRuns = manager.runs.pendingCount()
                     app.spaces.recoverDeletes(app.browser::deleteOwner)
                     notice = "恢复结果：$result"
-                } }, enabled = !busy && app.root.linuxRunClient != null) { Text("确认退出并恢复文件访问") }
+                } }, enabled = !busy && app.root.linuxRunClient != null) { Text("确认退出并恢复任务") }
             }
             if (busy) {
                 LinearProgressIndicator(Modifier.fillMaxWidth())

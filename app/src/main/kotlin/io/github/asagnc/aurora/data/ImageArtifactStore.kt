@@ -21,8 +21,17 @@ internal class ImageArtifactStore(private val app: AuroraApplication) {
     private val stripes = List(16) { Mutex() }
 
     suspend fun publish(owner: String, path: String, description: String): ImageArtifact = owned(owner) {
-        val bytes = app.spaces.conversation(owner).readBinary(path, MAX_BYTES)
-        persist(owner, UUID.randomUUID().toString(), bytes, description)
+        val exported = if (path.startsWith(".aurora-linux/")) {
+            val client = requireNotNull(app.root.linuxFileClient) { "Connect Root to publish this Linux image" }
+            requireNotNull(client.invoke(owner, "export", objectOf("path" to string(path.removePrefix(".aurora-linux/")))).text("path"))
+                .also { require(it.matches(Regex("exports/root-[a-f0-9-]{36}\\.bin"))) }
+        } else null
+        try {
+            val bytes = app.spaces.conversation(owner).readBinary(exported ?: path, MAX_BYTES)
+            persist(owner, UUID.randomUUID().toString(), bytes, description)
+        } finally { if (exported != null) withContext(NonCancellable + Dispatchers.IO) {
+            Files.deleteIfExists(app.spaces.commandRoot(owner).resolve(exported))
+        } }
     }
 
     suspend fun resolve(owner: String, source: String): ImageArtifact = owned(owner) {

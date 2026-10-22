@@ -18,6 +18,7 @@ import kotlinx.coroutines.runBlocking
 class AuroraRootService : RootService() {
     private val commands = RootCommandSession()
     private val terminals by lazy { RootTerminalSessions(this) }
+    private val linuxFiles by lazy { RootLinuxFiles(this) }
     private val linuxRuns by lazy { RootLinuxRuns(this) { linux.identity } }
     private val linux by lazy { RootLinuxPreparation(this) }
 
@@ -73,6 +74,13 @@ class AuroraRootService : RootService() {
             runBlocking(kotlinx.coroutines.Dispatchers.IO) { commands.cancelAndWait(id) }
             commands.start(id, callback) { linuxRuns.recover(ticket) }
         }
+        override fun linuxFiles(id: String, owner: String, request: Bundle, callback: IRootResult) {
+            verifyCaller()
+            val operation = requireNotNull(request.getString("operation"))
+            val encoded = requireNotNull(request.getString("arguments")).also { require(it.length <= 262144) }
+            val arguments = io.github.asagnc.aurora.core.WireJson.parseToJsonElement(encoded) as kotlinx.serialization.json.JsonObject
+            commands.start(id, callback) { linuxFiles.execute(owner, operation, arguments) }
+        }
         override fun prepareLinux(operation: String, callback: IRootResult) {
             verifyCaller()
             commands.start(operation, callback) { linux.prepare(operation) }
@@ -92,7 +100,8 @@ class AuroraRootService : RootService() {
                 putInt("protocol", 1)
                 putInt("commandProtocol", 2)
                 putInt("terminalProtocol", 1)
-                putInt("linuxRunProtocol", 1)
+                putInt("linuxRunProtocol", 2)
+                putInt("linuxFileProtocol", 1)
                 runCatching {
                     val encoded = io.github.asagnc.aurora.core.WireJson.encodeToString(
                         io.github.asagnc.aurora.core.LinuxRootIdentity.serializer(), linux.identity)

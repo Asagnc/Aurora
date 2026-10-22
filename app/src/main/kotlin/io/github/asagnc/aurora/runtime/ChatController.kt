@@ -8,6 +8,7 @@ import io.github.asagnc.aurora.data.SessionHeader
 import io.github.asagnc.aurora.data.ToolRun
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import kotlinx.serialization.json.*
 
 data class ChatState(
     val sessions: List<SessionHeader> = emptyList(), val current: SessionHeader? = null,
@@ -137,8 +138,26 @@ internal class ChatController(application: Application,
         "workspace" -> inspect(app.spaces.sharedWorkspace())
         else -> error("Unknown space")
     }
-    suspend fun listSpace(name: String, path: String) = inspectSpace(name) { it.list(path) }
-    suspend fun readSpace(name: String, path: String) = inspectSpace(name) { it.readBatch(listOf(FileRead(path))).single() }
+    suspend fun listSpace(name: String, path: String): List<Pair<String, Boolean>> {
+        if (name != "conversation" || !LinuxFileToolRouter.isLinux(path)) return inspectSpace(name) { it.list(path) }
+        return rootFiles("files_list", objectOf("path" to string(LinuxFileToolRouter.relative(path)))).array("entries").map {
+            ".aurora-linux/" + requireNotNull(it.jsonObject.text("path")) to (it.jsonObject["directory"] == JsonPrimitive(true))
+        }
+    }
+    suspend fun readSpace(name: String, path: String): FileSlice {
+        if (name != "conversation" || !LinuxFileToolRouter.isLinux(path)) return inspectSpace(name) { it.readBatch(listOf(FileRead(path))).single() }
+        val file = rootFiles("files_read_batch", objectOf("files" to JsonArray(listOf(objectOf("path" to string(LinuxFileToolRouter.relative(path)))))))
+            .array("files").single().jsonObject
+        val text = file.text("text")
+        return FileSlice(path, text, text?.toByteArray(Charsets.UTF_8) ?: byteArrayOf(), file.number("size") ?: 0,
+            file.number("next"), file.text("version"), file.text("error"))
+    }
+    private suspend fun rootFiles(operation: String, arguments: JsonObject): JsonObject {
+        val owner = requireNotNull(state.value.current?.id) { "请先创建会话" }
+        return app.tasks.run(owner) {
+            requireNotNull(app.root.linuxFileClient) { "请先连接 Root" }.invoke(owner, operation, arguments)
+        }
+    }
     fun enableRoot() {
         if (rootRequest?.isActive != true) rootRequest = action { app.root.connect() }
     }

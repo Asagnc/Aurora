@@ -1,6 +1,6 @@
 # 0.1.27 Root guest dispatch and durable run ledger
 
-Implemented internally, not exposed as arbitrary Agent Linux execution. No new device qualification. Workspace access optimization awaits LINUX_WORKSPACE_ACCESS_PROPOSAL.md confirmation; Linux PTY and ordinary PRoot lifecycle remain unfinished.
+Implemented internally, not exposed as arbitrary Agent Linux execution. No new device qualification. 0.1.28 supersedes the provisional ownership-restoration path below with the user-approved Root batch file channel (LINUX_ROOT_FILES.md); new run capability2 prevents old services from silently using the previous scan. Linux PTY and ordinary PRoot lifecycle remain unfinished.
 
 SQLite schema6 adds linux_runs. Its dispatch intent (exact ticket, Root PID/start/boot/epoch, owner, generation, argv/deadline) and linux_leases row commit in one transaction. One outstanding Root run per conversation prevents writable workspace reuse. Invalid generations, deleting owners or duplicate runs roll back both inserts. Foreign keys prevent releasing a lease while its run record remains. Confirmation validates protocol, run UUID, generation and stopped=true, then deletes intent and lease in one transaction. No replay on restart. Status/count use SQL queries, without parsing every ticket on normal command completion.
 

@@ -8,7 +8,6 @@ import io.github.asagnc.aurora.linux.LinuxDurability
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.file.*
-import java.nio.file.attribute.BasicFileAttributes
 import kotlinx.serialization.encodeToString
 
 /** Root journals are separate from App-owned installation staging. */
@@ -53,9 +52,10 @@ internal class RootLinuxRunFiles(private val context: Context) {
         LinuxElf.validateRootfs(root, manifest.image.architecture)
         return root
     }
-    fun conversation(ticket: LinuxRunTicket) = privatePath(listOf("spaces", "conversations", ticket.owner))
-    fun workspace(ticket: LinuxRunTicket, claim: Boolean): Path {
-        val parent = conversation(ticket)
+    fun conversation(owner: String) = privatePath(listOf("spaces", "conversations", owner))
+    fun workspace(ownerId: String, claimRun: String? = null, allowRetired: Boolean = false): Path {
+        if (!allowRetired) require(!Files.exists(retirement(ownerId), LinkOption.NOFOLLOW_LINKS)) { "Conversation Root files are retired" }
+        val parent = conversation(ownerId)
         val work = parent.resolve(".aurora-linux")
         if (!Files.exists(work, LinkOption.NOFOLLOW_LINKS)) {
             Os.mkdir(work.toString(), 448); Os.chown(work.toString(), uid, uid)
@@ -64,48 +64,38 @@ internal class RootLinuxRunFiles(private val context: Context) {
         val owner = work.resolve(".workspace-owner")
         if (!Files.exists(owner, LinkOption.NOFOLLOW_LINKS)) {
             require(Files.newDirectoryStream(work).use { !it.iterator().hasNext() }) { "Unrecognized Linux workspace retained" }
-            write(owner, ticket.owner)
+            write(owner, ownerId)
         }
-        require(text(owner, 64) == ticket.owner)
+        require(text(owner, 64) == ownerId)
         val active = work.resolve(".active-run")
-        if (claim) {
+        if (claimRun != null) {
             require(!Files.exists(active, LinkOption.NOFOLLOW_LINKS)) { "Conversation Linux workspace needs recovery" }
-            write(active, ticket.runId)
+            write(active, claimRun)
             Os.chown(work.toString(), 0, 0); Os.chmod(work.toString(), 448)
-            for (name in listOf("view", "home", "tmp", "project")) {
-                val child = work.resolve(name)
-                if (!Files.exists(child, LinkOption.NOFOLLOW_LINKS)) Os.mkdir(child.toString(), 448)
-                require(Files.isDirectory(child, LinkOption.NOFOLLOW_LINKS) && !Files.isSymbolicLink(child))
-            }
             LinuxDurability.directory(work)
+        }
+        for (name in listOf("view", "home", "tmp", "project")) {
+            val child = work.resolve(name)
+            if (!Files.exists(child, LinkOption.NOFOLLOW_LINKS)) Os.mkdir(child.toString(), 448)
+            require(Files.isDirectory(child, LinkOption.NOFOLLOW_LINKS) && !Files.isSymbolicLink(child))
         }
         return work
     }
-    fun restore(ticket: LinuxRunTicket) {
-        val work = workspace(ticket, false)
+    private fun retirement(owner: String) = privatePath(listOf("spaces", "resources")).resolve("linux-file-retired").resolve(owner)
+    fun retire(owner: String) {
+        val resources = privatePath(listOf("spaces", "resources"))
+        val directory = rootDirectory(resources, "linux-file-retired")
+        val marker = directory.resolve(owner)
+        if (!Files.exists(marker, LinkOption.NOFOLLOW_LINKS)) write(marker, owner)
+    }
+    /** O(1) lifecycle metadata only; guest ownership is deliberately retained. */
+    fun settle(ticket: LinuxRunTicket) {
+        val work = workspace(ticket.owner)
         val active = work.resolve(".active-run")
-        if (Files.exists(active, LinkOption.NOFOLLOW_LINKS)) require(text(active, 64) == ticket.runId)
-        else {
-            require(Files.newDirectoryStream(work).use { !it.iterator().hasNext() } || Os.lstat(work.toString()).st_uid == uid)
-            Os.chown(work.toString(), uid, uid); Os.chmod(work.toString(), 448); return
+        if (Files.exists(active, LinkOption.NOFOLLOW_LINKS)) {
+            require(text(active, 64) == ticket.runId)
+            Files.delete(active); LinuxDurability.directory(work)
         }
-        val mounted = Files.readAllLines(Path.of("/proc/self/mountinfo")).mapNotNull { it.split(' ').getOrNull(4) }
-        require(mounted.none { Path.of(it.replace("\\040", " ").replace("\\011", "\t").replace("\\134", "\\")).startsWith(work) })
-        Files.walkFileTree(work, object : SimpleFileVisitor<Path>() {
-            override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
-                if (file != active) {
-                    Os.lchown(file.toString(), uid, uid)
-                    if (!attrs.isSymbolicLink) Os.chmod(file.toString(), Os.lstat(file.toString()).st_mode and 511 or 256)
-                }
-                return FileVisitResult.CONTINUE
-            }
-            override fun postVisitDirectory(dir: Path, error: java.io.IOException?): FileVisitResult {
-                if (error != null) throw error
-                Os.chown(dir.toString(), uid, uid); Os.chmod(dir.toString(), Os.lstat(dir.toString()).st_mode and 511 or 448)
-                return FileVisitResult.CONTINUE
-            }
-        })
-        Files.delete(active); LinuxDurability.directory(work)
     }
     fun text(path: Path, limit: Long): String {
         require(Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS) && Files.size(path) in 1..limit)

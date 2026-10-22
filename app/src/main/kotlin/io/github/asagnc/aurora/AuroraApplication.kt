@@ -15,7 +15,10 @@ class AuroraApplication : Application() {
     val conversations by lazy { ConversationStore(database) }
     val credentials by lazy { CredentialVault(this) }
     val nativeHistory by lazy { NativeHistoryStore(conversations) }
-    val spaces by lazy { SpaceStore(this, conversations) }
+    val spaces by lazy { SpaceStore(this, conversations) { owner ->
+        val client = requireNotNull(root.linuxFileClient) { "Connect Root to delete Linux files" }
+        check(client.invoke(owner, "remove")["removed"] == kotlinx.serialization.json.JsonPrimitive(true))
+    } }
     internal val images by lazy { io.github.asagnc.aurora.data.ImageArtifactStore(this) }
     internal val imageLoader by lazy { coil3.ImageLoader.Builder(this)
         .memoryCache { coil3.memory.MemoryCache.Builder().maxSizeBytes(48L * 1024 * 1024).build() }.diskCache(null).build() }

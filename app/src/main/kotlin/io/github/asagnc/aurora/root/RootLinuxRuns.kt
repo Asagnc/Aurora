@@ -17,11 +17,11 @@ internal class RootLinuxRuns(private val context: Context, private val identity:
         val state = files.state(ticket)
         files.bind(state, ticket, starting = true)
         val rootfs = files.rootfs(ticket)
-        val workspace = files.workspace(ticket, claim = true)
+        val workspace = RootWorkspaceLocks.use(context, ticket.owner) { files.workspace(ticket.owner, claimRun = ticket.runId) }
         val helper = helper()
         var command: JsonObject? = null
         try {
-            command = NativeCommandRunner(context, ticket.appUid).execute(files.conversation(ticket), CommandRequest(
+            command = NativeCommandRunner(context, ticket.appUid).execute(files.conversation(ticket.owner), CommandRequest(
                 listOf(helper, "--run", "--state-dir", state.toString(), "--generation", ticket.generation,
                     "--run-id", ticket.runId, "--rootfs", rootfs.toString(), "--workspace", workspace.toString(),
                     "--timeout-ms", ticket.timeoutMs.toString(), "--") + ticket.argv,
@@ -40,12 +40,12 @@ internal class RootLinuxRuns(private val context: Context, private val identity:
         response(ticket, state, null).toString()
     }
     private suspend fun recoverStopped(ticket: LinuxRunTicket, state: Path) {
-        val result = NativeCommandRunner(context, ticket.appUid).execute(files.conversation(ticket), CommandRequest(
+        val result = NativeCommandRunner(context, ticket.appUid).execute(files.conversation(ticket.owner), CommandRequest(
             listOf(helper(), "--recover", "--state-dir", state.toString()), timeoutMs = 20_000), UUID.randomUUID().toString())
         val observed = result["stdout"]?.jsonObject?.text("text")?.let { WireJson.parseToJsonElement(it).jsonObject }
         require(result.number("exitCode") == 0L && result["error"] == null && observed?.get("recovered") == JsonPrimitive(true))
-        files.restore(ticket)
-        // Root marker is published only after both process and writable-file barriers.
+        RootWorkspaceLocks.use(context, ticket.owner) { files.settle(ticket) }
+        // Root marker is published only after the process barrier and active-workspace marker.
         val marker = state.resolve("stopped")
         if (!Files.exists(marker, LinkOption.NOFOLLOW_LINKS)) {
             java.nio.channels.FileChannel.open(marker, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE).use { it.force(true) }

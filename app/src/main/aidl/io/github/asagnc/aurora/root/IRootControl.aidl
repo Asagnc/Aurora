@@ -15,4 +15,5 @@ interface IRootControl {
     void discardLinux(String operation);
     void startLinuxRun(String id, in Bundle request, IRootResult callback);
     void recoverLinuxRun(String id, in Bundle request, IRootResult callback);
+    void linuxFiles(String id, String owner, in Bundle request, IRootResult callback);
 }

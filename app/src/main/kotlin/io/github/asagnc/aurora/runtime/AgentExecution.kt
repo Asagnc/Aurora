@@ -12,8 +12,11 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
     private val transportFactory: (String) -> ModelTransport = { token -> HttpModelTransport { token } }) {
     private val state = mutable
     suspend fun execute(id: String, text: String, connection: Connection, started: Long) {
-        val files = FileToolExecutor(linkedMapOf("conversation" to app.spaces.conversation(id),
+        val ordinaryFiles = FileToolExecutor(linkedMapOf("conversation" to app.spaces.conversation(id),
             "resources" to app.spaces.sharedResources(), "workspace" to app.spaces.sharedWorkspace()))
+        val files = LinuxFileToolRouter(ordinaryFiles) { operation, arguments ->
+            requireNotNull(app.root.linuxFileClient) { "Connect Root to access Linux files" }.invoke(id, operation, arguments)
+        }
         val directory = app.spaces.commandRoot(id)
         val prepared: suspend (String, String) -> Unit = { callId, path ->
             val event = app.toolRuns.attachArtifact(id, callId, path)

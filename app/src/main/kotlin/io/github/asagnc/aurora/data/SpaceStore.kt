@@ -14,9 +14,12 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 
+internal class LinuxFilesPendingException(cause: Throwable) : java.io.IOException("Root file cleanup remains pending", cause)
+
 internal class LinuxRunPendingException : IllegalArgumentException("Linux task exit must be confirmed before deleting this conversation")
 
-class SpaceStore(private val context: Context, private val conversations: ConversationStore) {
+class SpaceStore(private val context: Context, private val conversations: ConversationStore,
+    private val releaseRoot: suspend (String) -> Unit = {}) {
     private val root = context.filesDir.toPath().resolve("spaces")
     private val openSpaces = ConcurrentHashMap<Path, OwnedFiles>()
 
@@ -80,6 +83,7 @@ class SpaceStore(private val context: Context, private val conversations: Conver
                 conversations.read { requireNoLinuxLeases(it, id) }
                 releaseBrowser(id); finishDelete(id)
             } catch (_: LinuxRunPendingException) { retained++ }
+            catch (_: LinuxFilesPendingException) { retained++ }
         }
         return retained
     }
@@ -92,6 +96,14 @@ class SpaceStore(private val context: Context, private val conversations: Conver
     private suspend fun finishDelete(id: String) = withContext(Dispatchers.IO) {
         conversations.read { requireNoLinuxLeases(it, id) }
         val target = path(id)
+        val linux = target.resolve(".aurora-linux")
+        if (Files.exists(linux, LinkOption.NOFOLLOW_LINKS)) {
+            try {
+                releaseRoot(id)
+                require(!Files.exists(linux, LinkOption.NOFOLLOW_LINKS)) { "Connect Root to finish deleting Linux conversation files" }
+            } catch (cancel: kotlinx.coroutines.CancellationException) { throw cancel }
+            catch (failure: Exception) { throw LinuxFilesPendingException(failure) }
+        }
         require(!Files.isSymbolicLink(root) && !Files.isSymbolicLink(target.parent))
         if (Files.exists(target, LinkOption.NOFOLLOW_LINKS)) {
             if (Files.isSymbolicLink(target)) Files.delete(target) else {

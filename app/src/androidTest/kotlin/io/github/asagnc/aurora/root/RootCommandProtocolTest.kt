@@ -28,6 +28,8 @@ class RootCommandProtocolTest {
         val ticket = LinuxRunTicket(operation, UUID.randomUUID().toString(), "a".repeat(64),
             LinuxRootIdentity(123, 456, UUID.randomUUID().toString(), UUID.randomUUID().toString()),
             context.applicationInfo.uid, listOf("/bin/sh"))
+        try { RootLinuxFileClient(remote, context).invoke(ticket.owner, "files_list"); fail("Ordinary fixture accepted Root file access") }
+        catch (_: SecurityException) { }
         for (recover in listOf(false, true)) {
             try { RootLinuxRunClient(remote, context).invoke(ticket, recover); fail("Ordinary fixture accepted a Root Linux run") }
             catch (_: SecurityException) { }
@@ -194,6 +196,7 @@ class RootCommandProtocolTest {
             override fun activateTerminal(id: String) {}
             override fun stopTerminal(id: String) {}
             override fun prepareLinux(operation: String, callback: IRootResult) { error("Must not prepare") }
+            override fun linuxFiles(id: String, owner: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
             override fun startLinuxRun(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
             override fun recoverLinuxRun(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
             override fun discardLinux(operation: String) {}
