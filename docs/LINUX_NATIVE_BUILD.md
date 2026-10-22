@@ -52,9 +52,21 @@ To rebuild offline, add these CMake definitions, using absolute paths:
   death. Rejected options fail startup. The upstream tree stays unchanged and
   an unexpected patch location fails configuration. See the Linux
   [ptrace contract](https://man7.org/linux/man-pages/man2/ptrace.2.html).
+  The initial child also requires PR_SET_PDEATHSIG(SIGKILL) and checks its
+  parent against the PID captured before fork, covering tracer death before
+  the first ptrace options are installed. Parent-death signals do not survive
+  fork, so this guard complements rather than replaces inherited EXITKILL;
+  see [PR_SET_PDEATHSIG](https://man7.org/linux/man-pages/man2/PR_SET_PDEATHSIG.2const.html).
   This is only one lifecycle prerequisite: descendant teardown, startup races,
   Android qualification and durable recovery still need verification before
   enabling ordinary-UID Linux execution.
+
+`scripts/verify-ptrace-exitkill.py` exercises the Linux kernel prerequisite
+with an independent native tracer: child and two setsid generations, tracer
+SIGKILL with/without the seccomp option, tracer SIGTERM, and controlled parent
+death before/after the startup guard. It uses a subreaper to reap its fixtures
+and does not require Root. Passing it does not verify upstream PRoot syscall
+translation, Android SELinux, hardlinks or the application recovery protocol.
 - ARM64 loader linking explicitly retains pokedata_workaround; otherwise
   Release section garbage collection can discard the tracer's external entry.
 - libandroid-shmem is built from a checked derived copy. Key files use the

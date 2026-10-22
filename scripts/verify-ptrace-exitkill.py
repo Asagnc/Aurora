@@ -17,6 +17,7 @@ SOURCE = r'''
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/prctl.h>
 #include <sys/ptrace.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -44,7 +45,26 @@ static void workload(const char *path) {
     for (;;) pause();
 }
 
+static int startup(const char *path, int early) {
+    const pid_t parent = getpid();
+    pid_t child = fork();
+    if (child < 0) return 10;
+    if (!child) {
+        if (early) raise(SIGSTOP);
+        if (prctl(PR_SET_PDEATHSIG, SIGKILL) < 0 || getppid() != parent) _exit(31);
+        raise(SIGSTOP);
+        for (;;) pause();
+    }
+    int status;
+    if (waitpid(child, &status, WUNTRACED) != child || !WIFSTOPPED(status)) return 11;
+    int fd = open(path, O_WRONLY | O_CREAT | O_EXCL, 0600);
+    if (fd < 0 || dprintf(fd, "%d\n", child) < 0) return 12;
+    close(fd);
+    for (;;) pause();
+}
+
 int main(int argc, char **argv) {
+    if (argc == 4) return startup(argv[1], atoi(argv[3]));
     if (argc != 3) return 2;
     pid_t leader = fork();
     if (leader < 0) return 3;
@@ -148,6 +168,58 @@ class ExitKillTest(unittest.TestCase):
 
     def test_sigterm_without_signal_handler(self):
         self.check_death(0, signal.SIGTERM)
+
+    def check_startup(self, early):
+        record = Path(self.directory.name) / f'startup-{early}'
+        tracer = subprocess.Popen([self.binary, str(record), '0', str(int(early))])
+        child = None
+        try:
+            deadline = time.monotonic() + 5
+            while time.monotonic() < deadline:
+                if record.exists() and record.read_text().endswith('\n'):
+                    child = int(record.read_text())
+                    break
+                self.assertIsNone(tracer.poll())
+                time.sleep(.01)
+            self.assertIsNotNone(child, 'Startup barrier not reached')
+            tracer.kill()
+            tracer.wait(timeout=5)
+            if early:
+                os.kill(child, signal.SIGCONT)
+            deadline = time.monotonic() + 5
+            while time.monotonic() < deadline:
+                waited, status = os.waitpid(child, os.WNOHANG)
+                if waited:
+                    child = None
+                    if early:
+                        self.assertTrue(os.WIFEXITED(status))
+                        self.assertEqual(os.WEXITSTATUS(status), 31)
+                    else:
+                        self.assertTrue(os.WIFSIGNALED(status))
+                        self.assertEqual(os.WTERMSIG(status), signal.SIGKILL)
+                    return
+                time.sleep(.01)
+            self.fail('Startup child survived parent death')
+        finally:
+            if tracer.poll() is None:
+                tracer.kill()
+            tracer.wait(timeout=5)
+            if child is None and record.exists():
+                child = int(record.read_text())
+            if child is not None:
+                try:
+                    waited, _ = os.waitpid(child, os.WNOHANG)
+                    if not waited:
+                        os.kill(child, signal.SIGKILL)
+                        os.waitpid(child, 0)
+                except ChildProcessError:
+                    pass
+
+    def test_parent_dies_before_startup_guard(self):
+        self.check_startup(True)
+
+    def test_parent_dies_after_startup_guard_before_ptrace_options(self):
+        self.check_startup(False)
 
 
 if __name__ == '__main__':

@@ -69,6 +69,21 @@ foreach(object IN LISTS objects)
         # kernels rejecting it fail startup rather than weakening cleanup.
         string(REPLACE "${exit_option}" "PTRACE_O_TRACEEXIT | PTRACE_O_EXITKILL);"
             event_source "${event_source}")
+        foreach(anchor IN ITEMS "#include <sched.h>" "pid = fork();" "case 0: /* child */")
+            string(FIND "${event_source}" "${anchor}" position)
+            if(position EQUAL -1)
+                message(FATAL_ERROR "PRoot startup parent-death patch no longer applies")
+            endif()
+        endforeach()
+        # EXITKILL is not installed until the first tracing stop. Cover the
+        # initial fork-to-stop window too, including death before prctl runs.
+        string(REPLACE "#include <sched.h>" "#include <sys/prctl.h>\n#include <sched.h>"
+            event_source "${event_source}")
+        string(REPLACE "pid = fork();" "const pid_t aurora_parent = getpid();\n\tpid = fork();"
+            event_source "${event_source}")
+        string(REPLACE "case 0: /* child */"
+            "case 0: /* child */\n\t\tif (prctl(PR_SET_PDEATHSIG, SIGKILL) < 0 || getppid() != aurora_parent)\n\t\t\t_exit(EXIT_FAILURE);"
+            event_source "${event_source}")
         file(WRITE "${LINUX_CONFIG}/proot-event.c" "${event_source}")
         list(APPEND proot_sources "${LINUX_CONFIG}/proot-event.c")
     else()
