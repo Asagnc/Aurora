@@ -155,6 +155,69 @@ class AgentLinuxDeviceTest {
         assertNotNull(app.nativeHistory.load(owner, requireNotNull(header.activeScope)))
     }
 
+    @RootRequired @LinuxImageRequired @Test fun agentProbeRecordsArtifactsAndRecoveryLeavesOtherConversationRunning() = runBlocking {
+        fixture { owner, connection ->
+            val other = app.conversations.create("other conversation terminal")
+            try {
+                val record = app.terminals.startLinux(other, io.github.asagnc.aurora.terminal.PtyRequest(
+                    listOf("/bin/sh", "-c", "printf ready; read value"), timeoutMs = 60_000))
+                val session = requireNotNull(app.terminals.session(other, record.id))
+                var turn = 0
+                val transport = object : ModelTransport {
+                    override suspend fun generate(request: ModelRequest, onText: suspend (String) -> Unit): ModelTurn = when (val step = turn++) {
+                        0 -> call(step, "linux_environment", objectOf("action" to string("probe_root")))
+                        1 -> {
+                            assertEquals(JsonPrimitive(true), output(request)["workloadPassed"])
+                            call(step, "linux_environment", objectOf("action" to string("recover_runs")))
+                        }
+                        2 -> {
+                            assertEquals(0L, output(request).number("recovered"))
+                            assertEquals(0L, output(request).number("retained"))
+                            call(step, "linux_environment", objectOf("action" to string("status")))
+                        }
+                        else -> { assertEquals(0L, output(request).number("pendingRuns")); done() }
+                    }
+                }
+                execute(owner, connection, transport)
+                assertTrue(session.job.isActive)
+                assertEquals("running", session.record.state)
+                assertEquals(1, app.linux.runs.pendingCount(other))
+                val probe = app.toolRuns.list(owner).first()
+                assertNotNull(probe.artifactDirectory)
+                assertEquals("linux_environment", probe.tool)
+            } finally {
+                app.terminals.forget(other)
+                app.spaces.delete(other, app.tasks::quiesce)
+            }
+        }
+    }
+
+    @RootRequired @LinuxImageRequired @Test fun explicitAgentRecoveryAndPtyCompletionAcceptTheSameProof() = runBlocking {
+        fixture { owner, connection ->
+            var terminal = ""
+            var turn = 0
+            val transport = object : ModelTransport {
+                override suspend fun generate(request: ModelRequest, onText: suspend (String) -> Unit): ModelTurn = when (val step = turn++) {
+                    0 -> call(step, "terminal_start_linux", argv("printf ready; read value"))
+                    1 -> {
+                        terminal = requireNotNull(output(request).text("id"))
+                        call(step, "linux_environment", objectOf("action" to string("recover_runs")))
+                    }
+                    else -> {
+                        assertEquals(1L, output(request).number("recovered"))
+                        assertEquals(0L, output(request).number("retained"))
+                        done()
+                    }
+                }
+            }
+            execute(owner, connection, transport)
+            val session = requireNotNull(app.terminals.session(owner, terminal))
+            withTimeout(10_000) { session.job.join() }
+            assertEquals("interrupted", session.record.state)
+            assertEquals(0, app.linux.runs.pendingCount(owner))
+        }
+    }
+
     private fun argv(script: String) = objectOf("argv" to JsonArray(listOf("/bin/sh", "-c", script).map(::string)))
     private fun output(request: ModelRequest) = WireJson.parseToJsonElement(requireNotNull(request.history.last().text("content"))).jsonObject
     private fun call(step: Int, name: String, args: JsonObject) = ModelTurn("", emptyList(),

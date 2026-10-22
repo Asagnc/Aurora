@@ -22,18 +22,23 @@ internal class LinuxRunRegistry(private val conversations: ConversationStore) {
     suspend fun contains(id: String): Boolean = conversations.read { db ->
         db.rawQuery("SELECT 1 FROM linux_runs WHERE id=?", arrayOf(id)).use { it.moveToFirst() }
     }
-    suspend fun count(): Long = conversations.read { db ->
-        android.database.DatabaseUtils.longForQuery(db, "SELECT COUNT(*) FROM linux_runs", null)
+    suspend fun count(owner: String? = null): Long = conversations.read { db ->
+        android.database.DatabaseUtils.longForQuery(db, "SELECT COUNT(*) FROM linux_runs" +
+            (if (owner == null) "" else " WHERE owner=?"), owner?.let { arrayOf(it) })
     }
-    suspend fun pending(): List<LinuxRunTicket> = conversations.read { db ->
-        db.rawQuery("SELECT ticket FROM linux_runs ORDER BY id", null).use { cursor -> buildList {
+    suspend fun pending(owner: String? = null): List<LinuxRunTicket> = conversations.read { db ->
+        db.rawQuery("SELECT ticket FROM linux_runs" + (if (owner == null) "" else " WHERE owner=?") + " ORDER BY id",
+            owner?.let { arrayOf(it) }).use { cursor -> buildList {
             while (cursor.moveToNext()) add(WireJson.decodeFromString<LinuxRunTicket>(cursor.getString(0)).also { it.validate() })
         } }
     }
     suspend fun finish(ticket: LinuxRunTicket, response: JsonObject) = conversations.write { db ->
         require(ticket.confirms(response)) { "Linux exit is not confirmed" }
         db.rawQuery("SELECT ticket FROM linux_runs WHERE id=?", arrayOf(ticket.runId)).use {
-            require(it.moveToFirst() && WireJson.decodeFromString<LinuxRunTicket>(it.getString(0)) == ticket)
+            // PTY completion and explicit recovery may independently receive the same proof.
+            // A previous exact completion removed the intent; do not touch any other lease.
+            if (!it.moveToFirst()) return@write Unit
+            require(WireJson.decodeFromString<LinuxRunTicket>(it.getString(0)) == ticket)
         }
         db.delete("linux_runs", "id=?", arrayOf(ticket.runId))
         db.delete("linux_leases", "token=?", arrayOf(ticket.runId)); Unit

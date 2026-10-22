@@ -60,14 +60,25 @@ class CommandLogDeviceTest {
             val conversations = ConversationStore(database)
             val owner = conversations.create("fixture")
             val store = ToolRunStore(conversations)
-            val id = store.start(owner, ToolCall("call", "command_execute", objectOf()))
-            val directory = "runs/${UUID.randomUUID()}"
-            assertEquals(directory, store.attachArtifact(owner, "call", directory).artifactDirectory)
-            assertTrue(runCatching { store.attachArtifact(owner, "call", "runs/../secret") }.isFailure)
-            assertEquals(directory, store.finish(id, "{}").artifactDirectory)
+            val mappings = listOf("command_execute", "command_execute_root", "command_execute_linux", "linux_environment").associateWith { tool ->
+                val id = store.start(owner, ToolCall(tool, tool, objectOf()))
+                val directory = "runs/${UUID.randomUUID()}"
+                assertEquals(directory, store.attachArtifact(owner, tool, directory).artifactDirectory)
+                assertTrue(runCatching { store.attachArtifact(owner, tool, "runs/../secret") }.isFailure)
+                assertTrue(runCatching { store.attachArtifact(owner, tool, "runs/${UUID.randomUUID()}") }.isFailure)
+                assertEquals(directory, store.finish(id, "{}").artifactDirectory)
+                directory
+            }
+            val image = store.start(owner, ToolCall("image", "images_publish", objectOf()))
+            assertTrue(runCatching { store.attachArtifact(owner, "image", "runs/${UUID.randomUUID()}") }.isFailure)
+            store.finish(image, "{}")
             database.close()
             val reopened = AuroraDatabase(app, name)
-            try { assertEquals(directory, ToolRunStore(ConversationStore(reopened)).recent(owner).single().artifactDirectory) }
+            try {
+                val records = ToolRunStore(ConversationStore(reopened)).recent(owner).associateBy { it.tool }
+                mappings.forEach { (tool, directory) -> assertEquals(directory, records[tool]!!.artifactDirectory) }
+                assertNull(records["images_publish"]!!.artifactDirectory)
+            }
             finally { reopened.close() }
         } finally { database.close(); app.deleteDatabase(name) }
     }

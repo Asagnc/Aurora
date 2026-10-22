@@ -4,7 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import io.github.asagnc.aurora.core.*
 import java.util.UUID
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import kotlinx.serialization.json.*
 import org.junit.Assert.*
 import org.junit.Test
@@ -37,7 +37,9 @@ class LinuxRunRegistryTest {
             assertEquals(listOf(ticket), runs.pending())
         }
         try { LinuxRegistry(store).release(ticket.runId); fail("Run record lost its lease") } catch (_: android.database.sqlite.SQLiteConstraintException) { }
-        runs.finish(ticket, confirmation(ticket))
+        coroutineScope {
+            List(2) { async(Dispatchers.IO) { runs.finish(ticket, confirmation(ticket)) } }.awaitAll()
+        }
         assertTrue(runs.pending().isEmpty())
         assertEquals(0L, store.read { db -> android.database.DatabaseUtils.longForQuery(db, "SELECT COUNT(*) FROM linux_leases", null) })
     } }
@@ -47,6 +49,20 @@ class LinuxRunRegistryTest {
         catch (_: android.database.sqlite.SQLiteConstraintException) { }
         assertEquals(listOf(ticket), runs.pending())
         assertEquals(1L, store.read { db -> android.database.DatabaseUtils.longForQuery(db, "SELECT COUNT(*) FROM linux_leases", null) })
+    } }
+    @Test fun ownerFilteredRecoverySelectionDoesNotIncludeAnotherConversation() = runBlocking { fixture { store, runs, ticket ->
+        val other = store.create("another active conversation")
+        val another = ticket.copy(runId = UUID.randomUUID().toString(), owner = other)
+        runs.begin(ticket); runs.begin(another)
+        assertEquals(2L, runs.count())
+        assertEquals(listOf(ticket), runs.pending(ticket.owner))
+        assertEquals(listOf(another), runs.pending(other))
+        assertEquals(1L, runs.count(ticket.owner))
+        assertEquals(0L, runs.count("unknown"))
+        assertTrue(runs.pending("unknown").isEmpty())
+        runs.finish(ticket, confirmation(ticket))
+        assertEquals(listOf(another), runs.pending())
+        assertEquals(1L, runs.count(other))
     } }
     @Test fun deletingConversationCannotAcquireRunOrLease() = runBlocking { fixture { store, runs, ticket ->
         store.write { it.update("conversations", values("deleting" to 1), "id=?", arrayOf(ticket.owner)) }

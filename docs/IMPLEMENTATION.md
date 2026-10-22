@@ -1,3 +1,10 @@
+## 0.1.32 会话恢复范围与重复完成确认（2026-10-22，优先接续）
+
+修复Agent linux_environment recover_runs原先遍历全局待处理项、可能停止其他会话终端的问题：SQLite按owner通过现有唯一索引选取/计数，Agent只恢复和显示本会话任务；设置页用户显式全局恢复入口保持原语义。修复probe_root/recover_root的任务输出关联被ToolRunStore白名单拒绝，加入linux_environment并仍禁止非命令类图片工具关联。修复显式恢复与PTY退出回调同时收到同一stopped证明时第二次完成误报失败：有活动记录仍严格匹配完整ticket；已完成记录幂等返回，不触碰其他租约。
+
+0.1.32/code33本地core、Debug/testAPK、Release R8和lint通过；双ABI ELF/16KiB通过。新增SQLite双owner筛选和并发完成测试，扩展日志映射持久化覆盖四种工具/重复写拒绝，新增两项真实Agent/PTY的跨会话保护与同会话显式恢复测试。仅编译，尚未运行新增设备项；ADB无设备，已异步请求连接，待用户回复，不重复索要授权。手机仍为已验收0.1.31，未安装新APK。证据evidence/0.1.32。
+
+上一提交60fee70的CI39793142166：已观察所有步骤成功，包括官方源码下载/缓存保存、Android构建/lint、原生资格与源码包；服务聚合状态最后仍in_progress，不能提前记完整成功。新提交CI另查。下一步手机连接后只install-r并执行AgentLinuxDeviceTest、LinuxRunRegistryTest、CommandLogDeviceTest；不使用付费模型，不卸载主应用/清数据。其后PRoot生命周期、Root元数据GC等既有待办仍未完成。
 ## 0.1.31 Agent Linux 真机接通与同轮环境固定（2026-10-22，优先接续）
 
 已在GT6SE/FolkPatch保留数据覆盖0.1.31/code32。生产AgentExecution +脚本ModelTransport（无网络、无真实密钥）实际调用Root Linux批命令、交互PTY读写、图片发布、SQLite工具记录/协议历史：3项通过；环境固定/取消释放/启动清理保留未确认native租约：3项；最终构建再跑以上6+日志映射5=11项通过。普通91项在本轮环境固定实现后通过，最终状态展示/异常保留修正后针对性11项复验；不冒充最新构建重复跑全套。初始2项失败仅为fixture错把AgentExecution的UI临时投影当成已刷新消息；改查实际SQLite已持久消息后通过，原失败保留。见DEVICE_AGENT_LINUX_2026-10-22.md和evidence/0.1.31。

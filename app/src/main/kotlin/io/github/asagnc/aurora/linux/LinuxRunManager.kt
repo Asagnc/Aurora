@@ -60,11 +60,11 @@ internal class LinuxRunManager(private val app: AuroraApplication, private val e
         }
         Unit
     }
-    suspend fun recover(): JsonObject {
+    suspend fun recover(owner: String? = null): JsonObject {
         val client = requireNotNull(app.root.linuxRunClient) { "Connect Root to recover Linux runs" }
         var recovered = 0
         var retained = 0
-        records.pending().forEach { ticket ->
+        records.pending(owner).forEach { ticket ->
             try {
                 val result = client.invoke(ticket, recover = true)
                 if (ticket.confirms(result)) { records.finish(ticket, result); recovered++ } else retained++
@@ -73,5 +73,5 @@ internal class LinuxRunManager(private val app: AuroraApplication, private val e
         }
         return objectOf("recovered" to JsonPrimitive(recovered), "retained" to JsonPrimitive(retained))
     }
-    suspend fun pendingCount() = records.count().toInt()
+    suspend fun pendingCount(owner: String? = null) = records.count(owner).toInt()
 }
