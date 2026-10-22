@@ -28,7 +28,7 @@ class RootMetadataDeviceTest {
 
     @RootRequired @LinuxImageRequired @Test fun stoppedOldEpochIsCollectedAndLateStartCannotRecreateIt() = runBlocking {
         fixture { owner, ticket ->
-            restart()
+            restart(owner)
             assertEquals(1L, app.linux.metadata.collect(setOf(ticket.runId)).number("collected"))
             assertFalse(exists(owner, ticket))
             val reply = requireNotNull(app.root.linuxRunClient).invoke(ticket, recover = false)
@@ -42,7 +42,7 @@ class RootMetadataDeviceTest {
     @RootRequired @LinuxImageRequired @Test fun pendingIntentIsPreservedUntilExplicitStoppedProof() = runBlocking {
         fixture { owner, ticket ->
             LinuxRunRegistry(app.conversations).begin(ticket)
-            restart()
+            restart(owner)
             assertEquals(0L, app.linux.metadata.collect(setOf(ticket.runId)).number("collected"))
             assertTrue(exists(owner, ticket))
             assertEquals(1, app.linux.runs.pendingCount(owner))
@@ -51,16 +51,37 @@ class RootMetadataDeviceTest {
         }
     }
 
-    private suspend fun restart() {
+    @RootRequired @LinuxImageRequired @Test fun quarantinedPartialDeletionIsRevisitedByInventory() = runBlocking {
+        fixture { owner, ticket ->
+            restart(owner)
+            val resources = app.filesDir.toPath().toRealPath().resolve("spaces/resources")
+            val source = resources.resolve("linux-runtime/${ticket.runId}")
+            val parent = resources.resolve("linux-runtime-gc")
+            val partial = parent.resolve(ticket.runId)
+            require(source.startsWith(resources) && partial.startsWith(resources))
+            for (argv in listOf(listOf("/system/bin/mkdir", "-p", parent.toString()),
+                listOf("/system/bin/chmod", "700", parent.toString()),
+                listOf("/system/bin/mv", source.toString(), partial.toString()),
+                listOf("/system/bin/rm", partial.resolve("ticket.json").toString()))) {
+                val response = requireNotNull(app.root.commandClient).execute(owner, CommandRequest(argv))
+                assertEquals(response, 0L, WireJson.parseToJsonElement(response).jsonObject.number("exitCode"))
+            }
+            assertEquals(1L, app.linux.metadata.collect(setOf(ticket.runId)).number("collected"))
+            val check = requireNotNull(app.root.commandClient).execute(owner,
+                CommandRequest(listOf("/system/bin/test", "-d", partial.toString())))
+            assertEquals(1L, WireJson.parseToJsonElement(check).jsonObject.number("exitCode"))
+        }
+    }
+
+    private suspend fun restart(owner: String) {
         val old = requireNotNull(app.root.linuxClient).identity
-        runCatching { requireNotNull(app.root.commandClient).execute(appOwner, CommandRequest(
+        runCatching { requireNotNull(app.root.commandClient).execute(owner, CommandRequest(
             listOf("/system/bin/kill", "-9", old.pid.toString()), timeoutMs = 5000)) }
         withTimeout(20_000) { app.root.state.first { it.phase == RootPhase.UNAVAILABLE } }
         app.root.connect()
         check(app.root.metadataClient != null)
         assertNotEquals(old, requireNotNull(app.root.linuxClient).identity)
     }
-    private var appOwner = ""
     private suspend fun exists(owner: String, ticket: LinuxRunTicket): Boolean {
         val path = app.filesDir.toPath().toRealPath().resolve("spaces/resources/linux-runtime/${ticket.runId}/ticket.json")
         val reply = requireNotNull(app.root.commandClient).execute(owner, CommandRequest(listOf("/system/bin/test", "-f", path.toString())))
@@ -74,7 +95,6 @@ class RootMetadataDeviceTest {
         check(app.root.metadataClient != null)
         check(app.linux.runs.pendingCount() == 0) { "Root-service restart requires no pending Linux tasks" }
         val owner = app.conversations.create("metadata GC qualification")
-        appOwner = owner
         var failure: Throwable? = null
         try {
             val argv = listOf("/bin/sh", "-c", "printf metadata-fixture")

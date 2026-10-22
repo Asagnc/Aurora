@@ -1,0 +1,5 @@
+> Task :app:createDebugAndroidTestApkListingFileRedirect UP-TO-DATE
+
+BUILD SUCCESSFUL in 2s
+77 actionable tasks: 9 executed, 68 up-to-date
+Configuration cache entry reused.

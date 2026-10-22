@@ -30,6 +30,8 @@ class RootCommandProtocolTest {
             context.applicationInfo.uid, listOf("/bin/sh"))
         try { RootLinuxFileClient(remote, context).invoke(ticket.owner, "files_list"); fail("Ordinary fixture accepted Root file access") }
         catch (_: SecurityException) { }
+        try { RootMetadataClient(remote, context).invoke(objectOf("action" to string("begin"))); fail("Ordinary fixture accepted Root metadata maintenance") }
+        catch (_: SecurityException) { }
         try {
             RootTerminalClient(remote).openLinux(ticket,
                 io.github.asagnc.aurora.terminal.PtyRequest(ticket.argv, timeoutMs = ticket.timeoutMs)) { fail("Ordinary fixture confirmed Root exit") }

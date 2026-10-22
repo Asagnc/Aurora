@@ -1,3 +1,10 @@
+## 2026-10-23 0.1.33元数据回收主机资格完成，手机最后集中验收
+
+23dd228完整CI39818966808成功：原scope/recovery/mount/guest-PTY31与新增GC11项通过；普通PTY8/namespace4、核心/实际签名镜像、Android Debug/testAPK/Release/lint及双ABI源码打包同样通过。原缺.recovery.lock导致4项拒绝回收的失败记录保留。见LINUX_METADATA_GC.md和evidence/0.1.33。Native已验证不等于Android Root/SQLite完整链路验收。
+
+后续应用侧修正：扫描异常立刻关闭/清除游标，过期/关闭先移除登记，临时输出清理错误不掩盖原始失败；每个候选在扫描和删除前各读取解析一次，减少同阶段重复读取但仍重新校验hash/epoch。普通Binder拒绝新接口及Root部分暂存续清测试已补，Root专用共4项，全部只编译待真机；本地170核心（163通过/7POSIX跳过）、Debug/testAPK/Release R8/lint通过。Debug SHA256 84c690bcb6088917fdf474a56bec00c540b922aa6e713f487d7e891666925e3a，双ABI ELF/16KiB与对应源码包通过。应用侧后续修改的新CI另查。
+
+用户最新要求手机最后集中验收，覆盖前面请求连接的安排；不要再为GC/小改逐轮索要连接，不操作或更新手机。目前设备仍上次已验收0.1.32。最终集中跑RootMetadataDeviceTest4、普通Binder/SQL、既有Agent/Linux/PTY/恢复回归；测试仅指定fixture记录、无付费API。继续PRoot完整生命周期/外部Root撤权/手机联网镜像/长时功耗压力/供应商缓存等剩余项；不能把GC主机通过写成所有功能完成。
 ## 2026-10-23 回收主机首次失败修正，真机留最后
 
 用户最新决定：真机最后集中验收，不再为本轮GC请求连接或更新手机。d05d5f4的CI39804584434：原31项scope/recovery/mount/PTY通过；新GC11项中4项正常回收失败，原因是scope_state_recover会创建.recovery.lock，GC平面白名单漏列。补齐已知原生锁文件并让主机夹具显式包含它；原失败保留evidence/0.1.33。没有把拒绝回收记为成功，也没有降低未知/链接/挂载保护。

@@ -1,0 +1,5 @@
+> Task :app:lintDebug
+
+BUILD SUCCESSFUL in 39s
+214 actionable tasks: 35 executed, 179 up-to-date
+Configuration cache entry reused.
