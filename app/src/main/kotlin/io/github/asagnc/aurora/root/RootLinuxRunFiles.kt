@@ -13,6 +13,7 @@ import kotlinx.serialization.encodeToString
 /** Root journals are separate from App-owned installation staging. */
 internal class RootLinuxRunFiles(private val context: Context) {
     private val uid get() = context.applicationInfo.uid
+    fun resources(): Path = privatePath(listOf("spaces", "resources"))
     private fun privatePath(parts: List<String>): Path {
         // Android's trusted Context path may contain /data/user/0 -> /data/data.
         // Canonicalize that base once; still reject every link below it.

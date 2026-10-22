@@ -65,6 +65,10 @@ import kotlinx.coroutines.*
             if (app.root.rootImagesAvailable) TextButton({ run { manager.install(io.github.asagnc.aurora.core.LinuxBackend.PROOT) } }, enabled = !busy) {
                 Text("按需准备普通 PRoot 环境（额外存储）")
             }
+            OutlinedButton({ run {
+                val result = manager.metadata.collect()
+                notice = "已回收 ${result["collected"]} 条旧运行记录；保留 ${result["retained"]} 条当前或待确认记录。"
+            } }, enabled = !busy && app.root.metadataClient != null) { Text("清理已确认的旧运行记录") }
             if (pendingRuns > 0) {
                 Text("有 $pendingRuns 个 Linux 任务等待确认退出，相关会话和环境暂时保留。", color = AuroraMuted)
                 OutlinedButton({ run {
@@ -76,7 +80,7 @@ import kotlinx.coroutines.*
             }
             if (busy) {
                 LinearProgressIndicator(Modifier.fillMaxWidth())
-                Text("离开页面会取消未完成的安装；也可以让 Agent 安装并在任务中查看进度。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
+                Text("离开页面会取消当前操作，已完成的安装或清理会保留。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
             }
             notice?.let { Text(it) }
             versions.forEach { version ->

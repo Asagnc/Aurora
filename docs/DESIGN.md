@@ -8,6 +8,11 @@ Research date: 2026-10-12.
 
 ## Approved architecture
 
+- 2026-10-22 confirmed: explicit bounded Root runtime metadata maintenance, only
+  for proven-dead old service epochs without pending SQLite run intents and with
+  native stopped proof; retain current/ambiguous state and owner/workspace lock
+  barriers. See LINUX_METADATA_GC_PROPOSAL.md; qualification is tracked separately.
+
 - 2026-10-22 confirmed: preserve Root Linux conversation file ownership; route on-demand batch file access, selected image/export publication and deletion through Aurora's built-in Root service. Do not recursively chown the workspace after every command. Keep deletion pending when Root is unavailable. See LINUX_WORKSPACE_ACCESS_PROPOSAL.md and LINUX_ROOT_FILES.md.
 
 - 2026-10-22 confirmed: on-demand shared backend generations: Root chroot preserves original Linux ownership, ordinary PRoot preserves App ownership; Root users default to only the Root generation. No per-conversation rootfs copies, no mandatory OverlayFS; explicit dual-generation storage costs and Root cleanup requirements. See LINUX_OWNERSHIP_PROPOSAL.md.

@@ -1,7 +1,7 @@
 # Root Linux runtime metadata collection proposal
 
-Status: proposed, awaiting confirmation. Existing runtime journals and retirement
-barriers are retained until this protocol is implemented and qualified.
+Status: user approved the recommended policy on2026-10-22. Implementation and
+host/device qualification are tracked separately; approval is not test evidence.
 
 ## Problem and comparison
 
@@ -50,6 +50,14 @@ The resumable inventory lifetime/cancellation, native lock ownership through
 unlink, and partially deleted-directory retry must be specified and tested before
 enabling collection. This proposal is not permission to delete existing records
 using a generic recursive filesystem command.
+
+Implementation refinement: one service cursor,16 directory entries per inventory
+page, passive30s idle expiry and explicit close in the App finally path. Eligible
+directories move atomically to Root-private linux-runtime-gc before deletion;
+remaining recognized flat metadata can resume there after interruption. A stable
+GC-parent native flock serializes collectors through the final child-lock unlink
+and rmdir; workspace and GC-parent lock inodes are retained. Per-run flock remains
+held from native scope recovery through removal. No new permanent tombstone index.
 
 ## Verification required
 

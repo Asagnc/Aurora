@@ -202,6 +202,7 @@ class RootCommandProtocolTest {
             override fun stopTerminal(id: String) {}
             override fun prepareLinux(operation: String, callback: IRootResult) { error("Must not prepare") }
             override fun linuxFiles(id: String, owner: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
+            override fun maintainLinuxMetadata(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture has no metadata capability") }
             override fun openLinuxTerminal(id: String, request: android.os.Bundle, callback: IRootResult): android.os.Bundle { throw SecurityException("Fixture is not Root") }
             override fun startLinuxRun(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
             override fun recoverLinuxRun(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }

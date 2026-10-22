@@ -1,3 +1,10 @@
+## 0.1.33 Root元数据回收实现，待主机/真机资格（2026-10-22，优先接续）
+
+用户已确认LINUX_METADATA_GC_PROPOSAL推荐策略。接入AIDL末尾可选linuxMetadataProtocol1、Root单游标16项分页/30秒被动过期/显式finally关闭、App SQLite按候选ID筛除未确认run、Linux设置显式清理按钮。只选择已证明死亡的旧epoch，保留当前/未知记录。原生--gc持run flock验证scope恢复及stopped，原子移入Root私有linux-runtime-gc暂存后平面白名单删除；--gc-trash续做部分删除。稳定GC父目录锁不删除，防止child锁unlink/rmdir窗口让新旧收集器分锁；statx挂载ID拒绝目录/文件绑定挂载，不遍历未知树、链接或多硬链接。owner退役标记及workspace锁inode不删，不逐命令全局扫，不新增依赖/schema/常驻进程。
+
+本地core、Debug/testAPK、Release R8和lint通过；新增原生主机11项（完整/部分删除、锁占用、未知/链接/硬链接/目录、模式、缺证明、文件/目录挂载、缺失路径等）及Root真机3项（当前epoch保留、旧已停记录删除且迟到请求不重建、SQL待确认保护后恢复再删），仅编译未运行，不能记GC已验收。已异步请求连接手机，当前ADB无设备；等待用户回复，手机仍已验收0.1.32。真机用选定fixture IDs，不扫用户历史；测试中只强杀已验证的Aurora自身Root服务PID以建立旧epoch，不动外部进程。运行前确认没有其他pending Linux任务。
+
+上一内存锁提交2d3135d的CI39796653039完整成功，证据提交a63e109的CI39795463257成功。当前新增GC需自己的CI/native资格；Linux host脚本含mount/unshare测试，Windows本地不能冒充已运行。下一步先查新CI，再手机install-r运行RootMetadataDeviceTest/普通Binder与SQL相关回归；资格通过后再称可用。RootMetadataMaintenance取消时临时输出目录NonCancellable清理，App finally关闭游标；未知/不确定情况保留。PRoot/外部撤权/网络镜像/长期性能与真实供应商缓存仍未完。
 ## 2026-10-22 Root会话锁内存清理与磁盘GC提案（优先接续）
 
 修复RootWorkspaceLocks按owner永久保留Mutex的内存增长：复用新core KeyedMutex，注册时统计持有者及等待者，正常/异常/取消后引用归零才移除；不删除磁盘FileChannel锁文件，也不把等待者留在旧锁、后续调用放到新锁。3项JVM测试含已持有时取消等待者、其他key不阻塞、1000个结束key释放、取消/异常收尾及8线程4000次跨key交错。核心170：163通过/7POSIX跳过，Debug/testAPK/Release R8/lint通过。无新依赖/schema，无新真机结果；手机仍上次已验收0.1.32，不安装当前未专项验证APK。

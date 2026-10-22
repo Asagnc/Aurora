@@ -17,4 +17,5 @@ interface IRootControl {
     void recoverLinuxRun(String id, in Bundle request, IRootResult callback);
     void linuxFiles(String id, String owner, in Bundle request, IRootResult callback);
     Bundle openLinuxTerminal(String id, in Bundle request, IRootResult callback);
+    void maintainLinuxMetadata(String id, in Bundle request, IRootResult callback);
 }

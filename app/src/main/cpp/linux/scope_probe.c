@@ -3,6 +3,7 @@
 #include "scope_state.h"
 #include "mount_probe.h"
 #include "guest_run.h"
+#include "scope_gc.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <poll.h>
@@ -187,6 +188,13 @@ static int guard(int owner, int hold_ms, int state, int run_lock, const struct f
 }
 
 int main(int argc, char **argv) {
+    if (argc >= 4 && (!strcmp(argv[1], "--gc") || !strcmp(argv[1], "--gc-trash"))) {
+        int resume = !strcmp(argv[1], "--gc-trash");
+        if (strcmp(argv[2], "--state-dir") || (resume ? argc != 4 : argc != 6 || strcmp(argv[4], "--trash-dir"))) return 64;
+        signal(SIGTERM, SIG_DFL); signal(SIGINT, SIG_DFL); signal(SIGPIPE, SIG_IGN);
+        if (scope_gc(argv[3], resume ? NULL : argv[5]) < 0) return failure("metadata_gc");
+        puts("{\"protocol\":1,\"collected\":true}"); return 0;
+    }
     int hold_ms = 0;
     if (argc < 4 || (strcmp(argv[1], "--probe") && strcmp(argv[1], "--recover") && strcmp(argv[1], "--run") && strcmp(argv[1], "--run-pty")) ||
         strcmp(argv[2], "--state-dir")) return 64;

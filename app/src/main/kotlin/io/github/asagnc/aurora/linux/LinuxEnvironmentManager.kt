@@ -22,6 +22,7 @@ internal class LinuxInstallCapabilityException(cause: Throwable) : java.io.IOExc
 /** Shared image generations, separate from conversation homes and from native Android executors. */
 internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
     internal val runs by lazy { LinuxRunManager(app, this) }
+    internal val metadata by lazy { LinuxMetadataCleaner(app) }
     internal val registry = LinuxRegistry(app.conversations)
     internal val catalog = Mutex()
     private val installer = Mutex()

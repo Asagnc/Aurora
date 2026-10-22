@@ -54,6 +54,8 @@ class LinuxRunRegistryTest {
         val other = store.create("another active conversation")
         val another = ticket.copy(runId = UUID.randomUUID().toString(), owner = other)
         runs.begin(ticket); runs.begin(another)
+        assertEquals(setOf(ticket.runId, another.runId), runs.pendingIds(listOf(ticket.runId, another.runId, "unknown")))
+        assertTrue(runs.pendingIds(emptyList()).isEmpty())
         assertEquals(2L, runs.count())
         assertEquals(listOf(ticket), runs.pending(ticket.owner))
         assertEquals(listOf(another), runs.pending(other))
@@ -62,6 +64,7 @@ class LinuxRunRegistryTest {
         assertTrue(runs.pending("unknown").isEmpty())
         runs.finish(ticket, confirmation(ticket))
         assertEquals(listOf(another), runs.pending())
+        assertEquals(setOf(another.runId), runs.pendingIds(listOf(ticket.runId, another.runId)))
         assertEquals(1L, runs.count(other))
     } }
     @Test fun deletingConversationCannotAcquireRunOrLease() = runBlocking { fixture { store, runs, ticket ->

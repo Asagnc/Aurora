@@ -21,6 +21,7 @@ class AuroraRootService : RootService() {
     private val linuxFiles by lazy { RootLinuxFiles(this) }
     private val linuxRuns by lazy { RootLinuxRuns(this) { linux.identity } }
     private val linux by lazy { RootLinuxPreparation(this) }
+    private val metadata by lazy { RootMetadataMaintenance(this) { linux.identity } }
 
     private fun verifyCaller() {
         check(Binder.getCallingUid() == applicationInfo.uid) { "Caller is outside Aurora" }
@@ -54,7 +55,7 @@ class AuroraRootService : RootService() {
 
         override fun closeCommands() {
             verifyCaller()
-            runBlocking { commands.close(); terminals.close() }
+            runBlocking { commands.close(); terminals.close(); metadata.close() }
         }
 
         override fun openTerminal(id: String, conversation: String, request: Bundle, callback: IRootResult): Bundle {
@@ -91,6 +92,12 @@ class AuroraRootService : RootService() {
             verifyCaller()
             commands.start(operation, callback) { linux.prepare(operation) }
         }
+        override fun maintainLinuxMetadata(id: String, request: Bundle, callback: IRootResult) {
+            verifyCaller()
+            val encoded = requireNotNull(request.getString("arguments")).also { require(it.length <= 8192) }
+            val args = io.github.asagnc.aurora.core.WireJson.parseToJsonElement(encoded) as kotlinx.serialization.json.JsonObject
+            commands.start(id, callback) { metadata.invoke(args) }
+        }
         override fun discardLinux(operation: String) {
             verifyCaller()
             runBlocking(kotlinx.coroutines.Dispatchers.IO) {
@@ -109,6 +116,7 @@ class AuroraRootService : RootService() {
                 putInt("linuxRunProtocol", 2)
                 putInt("linuxFileProtocol", 1)
                 putInt("linuxTerminalProtocol", 1)
+                putInt("linuxMetadataProtocol", 1)
                 runCatching {
                     val encoded = io.github.asagnc.aurora.core.WireJson.encodeToString(
                         io.github.asagnc.aurora.core.LinuxRootIdentity.serializer(), linux.identity)
@@ -133,5 +141,5 @@ class AuroraRootService : RootService() {
         }
     }
 
-    override fun onDestroy() { runBlocking { commands.close(); terminals.close() } }
+    override fun onDestroy() { runBlocking { commands.close(); terminals.close(); metadata.close() } }
 }

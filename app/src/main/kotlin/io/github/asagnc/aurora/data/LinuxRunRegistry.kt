@@ -22,6 +22,13 @@ internal class LinuxRunRegistry(private val conversations: ConversationStore) {
     suspend fun contains(id: String): Boolean = conversations.read { db ->
         db.rawQuery("SELECT 1 FROM linux_runs WHERE id=?", arrayOf(id)).use { it.moveToFirst() }
     }
+    suspend fun pendingIds(ids: List<String>): Set<String> = conversations.read { db ->
+        require(ids.size <= 16)
+        if (ids.isEmpty()) return@read emptySet()
+        db.rawQuery("SELECT id FROM linux_runs WHERE id IN (${ids.joinToString(",") { "?" }})", ids.toTypedArray()).use { cursor ->
+            buildSet { while (cursor.moveToNext()) add(cursor.getString(0)) }
+        }
+    }
     suspend fun count(owner: String? = null): Long = conversations.read { db ->
         android.database.DatabaseUtils.longForQuery(db, "SELECT COUNT(*) FROM linux_runs" +
             (if (owner == null) "" else " WHERE owner=?"), owner?.let { arrayOf(it) })
