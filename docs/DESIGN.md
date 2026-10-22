@@ -8,7 +8,7 @@ Research date: 2026-10-12.
 
 ## Approved architecture
 
-- 2026-10-23 confirmed combined Root packet stack: pinned official stable libpcap for kernel capture/filtering, tcpdump for mature capture writing/offline reading, Aurora for Agent/task/artifact integration. One active capture chain, no VPN/AF_XDP or extra daemon implied. See ROOT_CAPTURE_PROPOSAL.md; packaging and runtime qualification are separate.
+- 2026-10-23 confirmed combined Root packet stack: pinned official stable libpcap for kernel capture/filtering, Aurora native worker for bounded live PCAP writing, tcpdump for mature offline reading, Aurora for Agent/task/artifact integration. One active capture chain, no VPN/AF_XDP or extra daemon implied. See ROOT_CAPTURE_PROPOSAL.md; packaging and runtime qualification are separate.
 
 - 2026-10-22 confirmed: explicit bounded Root runtime metadata maintenance, only
   for proven-dead old service epochs without pending SQLite run intents and with

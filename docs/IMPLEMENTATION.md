@@ -1,3 +1,9 @@
+## 2026-10-23 Root 采集 worker 第一阶段
+
+用户已确认 ROOT_CAPTURE_RUNTIME_PROPOSAL 分工。新增独立 libpcap worker：Root UID 限制、固定 capture.pcap 排他且不跟随链接创建、整包前置字节预算、包数预算、CLOCK_BOOTTIME 截止、signalfd 取消、非阻塞 pcap/poll、有界分批、最终 flush/ferror/fsync 与大小检查、结构化保存量和未知可区分的内核统计。非混杂、4MiB 内核缓冲和100ms缓冲交付是待性能资格验证的初始值，不宣称最优。
+
+Android arm64/x86_64 Debug、Release、测试APK和lint已编译通过，双ABI ELF/16KiB检查通过，对应源码包已生成。新增主机整包边界和缓冲失败测试待 CI 实跑。当前仅原生组件，尚未接入 Root 专用派发、选定产物属主发布和 Agent live 工具，不属于已可用实时抓包。取消退出2、I/O或采集失败1、预期预算或时长完成0；外层硬截止和未知死亡由现有监督器判定。真机受控流量、熄屏、丢包与CPU对照仍留最后集中验收。
+
 ## 2026-10-23 0.1.35 写盘资格与下一步控制提案
 
 493cc86 CI39831312910最终完整成功：实际组件/离线分析主机10项、既有核心/签名镜像/POSIX/PTY/namespace/scope/恢复/挂载/GC/PRoot及Android Debug/testAPK/Release/lint、ELF/16KiB和对应源码包通过。主机对照实测未修改上游向/dev/full输出返回0；Aurora派生版拒绝成功，非普通/dev/null正常，两段轮转完整保留20000包。证据evidence/0.1.35/packet-host-ten-write-boundary-passed.txt。这是主机I/O及组件资格，不是Android Root实时抓包验收。
