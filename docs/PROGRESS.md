@@ -1,3 +1,9 @@
+## 2026-10-23 命令输出预览 UTF-8 修正（0.1.34）
+
+NativeCommandRunner 旧逻辑在截断预览时反复移除末尾 1–3 字节并重试解码，可能把 0xff 等损坏字节隐藏成正常文本。改为复用 core 的 RFC3629 尾部边界检查，仅省略合法但未完整的 UTF-8 尾部；二进制/非法序列继续返回 text=null，原始产物不改变。去掉重复 decoder 与异常重试。新增 core 三项覆盖各宽度标量、非法尾部和 ANSI/空白；新增 Android 原生命令一项保留非法尾字节与精确产物，已编译待最终手机验收。
+
+本地 core 173项，失败0、错误0、跳过7（Windows POSIX项），已以固定实际 Ubuntu 镜像输入重跑；Debug/Release/testAPK/lint通过。当前 Debug SHA256 88960c0af5f93fd200ef6bdc0896f739162e370dc7534784d0794e7eddb4d74c。CI39823929519 的实际 PRoot 主机测试在构建阶段失败：runner glibc 缺 Bionic 的 memset_explicit，0 项运行，原失败保留。补仅主机测试用 volatile 清零适配与禁止未解析符号检查；将实际 tracer 测试提前至 Android 全量构建前。四项运行结果仍待新 CI，不提前记通过。没有手机或真实供应商调用。
+
 ## 2026-10-23 0.1.34：PRoot 启动边界与 Root 连接一致性
 
 PRoot 派生源码现在同时要求 EXITKILL 与初始子进程 PDEATHSIG/父 PID 复核，覆盖追踪选项安装前后 tracer 死亡；不修改上游缓存。新增 Linux 主机独立 tracer 五项验证，包含两层 setsid 后代、SIGKILL 的两种选项路径、SIGTERM，以及启动保护前/后死亡。1b43db0 的 CI39822710274 已观察这五项步骤成功，原生 PTY、namespace、scope/recovery/mount/guest-PTY/GC 步骤亦成功；该 CI 最终完整成功。它们是内核先决条件证据，不是实际 PRoot/Android 全链路验收，PRoot executionReady 仍 false。

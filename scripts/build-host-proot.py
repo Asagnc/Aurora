@@ -26,8 +26,20 @@ def build(output):
     talloc = cache / '_deps/aurora_talloc_source-src'
     library = output / 'library'
     library.mkdir()
-    shutil.copyfile(ROOT / 'app/src/main/cpp/linux/talloc-replace.h', library / 'replace.h')
+    portable = (ROOT / 'app/src/main/cpp/linux/talloc-replace.h').read_text()
+    # Runner glibc lacks Bionic's C23 function. Host test only: volatile stores
+    # preserve explicit clearing rather than mapping it to optimizable memset.
+    portable += '''
+static inline void *aurora_host_memset_explicit(void *block, int value, size_t size) {
+    volatile unsigned char *cursor = block;
+    while (size--) *cursor++ = (unsigned char)value;
+    return block;
+}
+#define memset_explicit aurora_host_memset_explicit
+'''
+    (library / 'replace.h').write_text(portable)
     subprocess.run(['cc', '-shared', '-fPIC', '-O2', '-D_GNU_SOURCE',
+                    '-Werror=implicit-function-declaration', '-Wl,--no-undefined',
                     '-DTALLOC_BUILD_VERSION_MAJOR=2', '-DTALLOC_BUILD_VERSION_MINOR=5',
                     '-DTALLOC_BUILD_VERSION_RELEASE=0', '-DHAVE_SYS_AUXV_H',
                     '-DHAVE_GETAUXVAL', '-DHAVE_CONSTRUCTOR_ATTRIBUTE', '-DHAVE_INTPTR_T',
@@ -41,7 +53,8 @@ def build(output):
     ashmem = source / 'src/extension/ashmem_memfd/ashmem_memfd.c'
     ashmem.write_text('#include <string.h>\n' + ashmem.read_text())
     subprocess.run(['make', '-C', str(source / 'src'), '-j2',
-                    'CPPFLAGS=-D_FILE_OFFSET_BITS=64 -D_GNU_SOURCE -I. -I' + str(talloc),
+                    'CPPFLAGS=-D_FILE_OFFSET_BITS=64 -D_GNU_SOURCE '
+                    '-DVERSION=\\\"5.1.107.98-aurora-host-test\\\" -I. -I' + str(talloc),
                     'CFLAGS=-Wall -Wextra -O2 -DNDEBUG',
                     'LDFLAGS=-L' + str(library) + ' -Wl,-rpath,' + str(library) + ' -ltalloc -Wl,-z,noexecstack',
                     'proot'], check=True)

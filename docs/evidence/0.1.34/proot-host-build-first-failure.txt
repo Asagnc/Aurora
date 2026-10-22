@@ -1,0 +1,452 @@
+test	Verify actual derived PRoot lifecycle on Linux host	﻿2026-10-22T17:41:13.0367195Z ##[group]Run python3 scripts/verify-proot-lifecycle.py
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.0368118Z ^[[36;1mpython3 scripts/verify-proot-lifecycle.py^[[0m
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.0444747Z shell: /usr/bin/bash -e {0}
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.0445275Z env:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.0445921Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/25.0.4-1/x64
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.0446955Z   JAVA_HOME_25_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/25.0.4-1/x64
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.0447842Z   MAVEN_ARGS: -ntp
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.0448401Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.0449073Z   GRADLE_USER_HOME: /home/runner/.gradle
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.0449717Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.0450640Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.0451989Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.0452998Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.0453683Z   ANDROID_HOME: /home/runner/work/_temp/aurora-sdk
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.0454440Z   ANDROID_SDK_ROOT: /home/runner/work/_temp/aurora-sdk
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.0455407Z   AURORA_TALLOC_ARCHIVE: /home/runner/work/_temp/aurora-native-downloads/talloc-2.5.0.tar.gz
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.0456305Z ##[endgroup]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.1449501Z /home/runner/work/Aurora/Aurora/app/.cxx/Debug/195u3752/x86_64/_deps/aurora_talloc_source-src/talloc.c: In function ‘_talloc_realloc_array_zero’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.1458135Z /home/runner/work/Aurora/Aurora/app/.cxx/Debug/195u3752/x86_64/_deps/aurora_talloc_source-src/talloc.c:2862:17: warning: implicit declaration of function ‘memset_explicit’ [-Wimplicit-function-declaration]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.1459905Z  2862 |                 memset_explicit(((char *)newptr) + existing, 0, to_zero);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.1460623Z       |                 ^~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.7340256Z make: Entering directory '/tmp/aurora-proot-lifecycle-oa62b9ut/build/proot/src'
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.8815560Z   CC	cli/note.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.9291631Z   CC	execve/enter.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.9343379Z   CC	execve/exit.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.9673807Z ./execve/enter.c: In function ‘extract_loader’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.9675281Z ./execve/enter.c:539:9: warning: ‘talloc_autofree_context’ is deprecated [-Wdeprecated-declarations]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.9676521Z   539 |         loader_path = talloc_strdup(talloc_autofree_context(), path);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.9677313Z       |         ^~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.9677899Z In file included from ./execve/enter.c:28:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.9679127Z /home/runner/work/Aurora/Aurora/app/.cxx/Debug/195u3752/x86_64/_deps/aurora_talloc_source-src/talloc.h:1084:16: note: declared here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.9680448Z  1084 | _PUBLIC_ void *talloc_autofree_context(void) _DEPRECATED_;
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:13.9681173Z       |                ^~~~~~~~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.0661594Z   CC	execve/shebang.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.0751636Z   CC	execve/elf.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.1403451Z   CC	execve/ldso.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.1699491Z   CC	execve/auxv.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.2407062Z   CC	path/binding.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.2909138Z   CC	path/glue.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.3210974Z ./path/glue.c: In function ‘set_placeholder_destructor’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.3229532Z ./path/glue.c:76:9: warning: ‘talloc_autofree_context’ is deprecated [-Wdeprecated-declarations]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.3230609Z    76 |         autofreed = talloc_autofree_context();
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.3231231Z       |         ^~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.3231746Z In file included from ./path/glue.c:31:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.3233227Z /home/runner/work/Aurora/Aurora/app/.cxx/Debug/195u3752/x86_64/_deps/aurora_talloc_source-src/talloc.h:1084:16: note: declared here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.3234583Z  1084 | _PUBLIC_ void *talloc_autofree_context(void) _DEPRECATED_;
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.3235389Z       |                ^~~~~~~~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.3477206Z   CC	path/canon.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.3980504Z   CC	path/f2fs-bug.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4460006Z   CC	path/proc.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4670119Z   CC	path/temp.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4819810Z ./path/proc.c: In function ‘readlink_proc’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4821453Z ./path/proc.c:124:25: warning: ‘__builtin_strncpy’ specified bound depends on the length of the source argument [-Wstringop-truncation]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4823037Z   124 |                         strncpy(result, string, status + 1);    \
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4823725Z       |                         ^~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4824549Z ./path/proc.c:130:17: note: in expansion of macro ‘SUBSTITUTE’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4825331Z   130 |                 SUBSTITUTE(exe, known_tracee->exe);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4825948Z       |                 ^~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4826602Z ./path/proc.c:120:34: note: length computed here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4827333Z   120 |                         status = strlen(string);                \
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4828492Z       |                                  ^~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4829393Z ./path/proc.c:130:17: note: in expansion of macro ‘SUBSTITUTE’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4830201Z   130 |                 SUBSTITUTE(exe, known_tracee->exe);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4830834Z       |                 ^~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4832158Z ./path/proc.c:124:25: warning: ‘__builtin_strncpy’ specified bound depends on the length of the source argument [-Wstringop-truncation]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4833703Z   124 |                         strncpy(result, string, status + 1);    \
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4834400Z       |                         ^~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4835231Z ./path/proc.c:131:17: note: in expansion of macro ‘SUBSTITUTE’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4836038Z   131 |                 SUBSTITUTE(cwd, known_tracee->fs->cwd);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4836698Z       |                 ^~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4837301Z ./path/proc.c:120:34: note: length computed here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4838044Z   120 |                         status = strlen(string);                \
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4838755Z       |                                  ^~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4839654Z ./path/proc.c:131:17: note: in expansion of macro ‘SUBSTITUTE’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4840440Z   131 |                 SUBSTITUTE(cwd, known_tracee->fs->cwd);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4841200Z       |                 ^~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4959211Z ./path/temp.c: In function ‘get_temp_directory’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4960596Z ./path/temp.c:37:9: warning: ‘talloc_autofree_context’ is deprecated [-Wdeprecated-declarations]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4961822Z    37 |         temp_directory = talloc_strdup(talloc_autofree_context(), tmp);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4962854Z       |         ^~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4963485Z In file included from ./path/temp.c:9:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4964679Z /home/runner/work/Aurora/Aurora/app/.cxx/Debug/195u3752/x86_64/_deps/aurora_talloc_source-src/talloc.h:1084:16: note: declared here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4966067Z  1084 | _PUBLIC_ void *talloc_autofree_context(void) _DEPRECATED_;
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4966807Z       |                ^~~~~~~~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4970448Z ./path/temp.c: In function ‘create_temp_name’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4971798Z ./path/temp.c:273:17: warning: ‘talloc_autofree_context’ is deprecated [-Wdeprecated-declarations]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4973102Z   273 |                 context = talloc_autofree_context();
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4973777Z       |                 ^~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4974834Z /home/runner/work/Aurora/Aurora/app/.cxx/Debug/195u3752/x86_64/_deps/aurora_talloc_source-src/talloc.h:1084:16: note: declared here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4976097Z  1084 | _PUBLIC_ void *talloc_autofree_context(void) _DEPRECATED_;
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.4976755Z       |                ^~~~~~~~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.5042044Z   CC	syscall/syscall.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.5472996Z   CC	syscall/chain.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.5705872Z   CC	syscall/enter.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.6032411Z   CC	syscall/exit.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.6618314Z ./syscall/exit.c: In function ‘translate_syscall_exit’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.6619725Z ./syscall/exit.c:428:68: warning: comparison of unsigned expression in ‘< 0’ is always false [-Wtype-limits]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.6621297Z   428 |                         if (syscall_number == PR_readlink || dirfd < 0) {
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.6622088Z       |                                                                    ^
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7774168Z   CC	syscall/sysnum.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7888407Z ./syscall/enter.c: In function ‘emulate_pivot_root’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7889301Z ./syscall/enter.c:373:24: warning: ‘get_binding’ reading 4096 bytes from a region of size 2 [-Wstringop-overread]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7890342Z   373 |         root_binding = get_binding(tracee, GUEST, "/");
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7891048Z       |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7906151Z ./syscall/enter.c:373:24: note: referencing argument 3 of type ‘const char[4096]’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7907499Z In file included from ./syscall/enter.c:79:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7908428Z ./path/binding.h:53:17: note: in a call to function ‘get_binding’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7909466Z    53 | extern Binding *get_binding(const Tracee *tracee, Side side, const char path[PATH_MAX]);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7910305Z       |                 ^~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7911425Z ./syscall/enter.c:419:16: warning: ‘insort_binding3’ reading 4096 bytes from a region of size 2 [-Wstringop-overread]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7912587Z   419 |         (void) insort_binding3(tracee, tracee->fs, new_root_host, "/");
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7913706Z       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7914683Z ./syscall/enter.c:419:16: note: referencing argument 4 of type ‘const char[4096]’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7915700Z ./path/binding.h:48:17: note: in a call to function ‘insort_binding3’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7916660Z    48 | extern Binding *insort_binding3(const Tracee *tracee, const TALLOC_CTX *context,
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7917465Z       |                 ^~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7918593Z ./syscall/enter.c:443:32: warning: ‘insort_binding3’ reading 4096 bytes from a region of size 4095 [-Wstringop-overread]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7919753Z   443 |                         (void) insort_binding3(tracee, tracee->fs, b->host.path,
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7920603Z       |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7921440Z   444 |                                                b->guest.path + new_root_len);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7922222Z       |                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7923607Z ./syscall/enter.c:443:32: note: referencing argument 4 of type ‘const char[4096]’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7924767Z ./path/binding.h:48:17: note: in a call to function ‘insort_binding3’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7925782Z    48 | extern Binding *insort_binding3(const Tracee *tracee, const TALLOC_CTX *context,
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7926636Z       |                 ^~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7927449Z ./syscall/enter.c: In function ‘maybe_redirect_userns_file’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7931169Z ./syscall/enter.c:1878:16: warning: ‘set_sysarg_path’ reading 4096 bytes from a region of size 10 [-Wstringop-overread]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7932918Z  1878 |         (void) set_sysarg_path(tracee, "/dev/null", reg);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7933923Z       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7935204Z ./syscall/enter.c:1878:16: note: referencing argument 2 of type ‘const char[4096]’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7936349Z In file included from ./syscall/enter.c:64:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7937363Z ./syscall/syscall.h:53:12: note: in a call to function ‘set_sysarg_path’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7938396Z    53 | extern int set_sysarg_path(Tracee *tracee, const char path[PATH_MAX], Reg reg);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.7939240Z       |            ^~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8131965Z ./syscall/sysnum.c: In function ‘detranslate_sysnum’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8133649Z ./syscall/sysnum.c:115:23: warning: ‘sysnums.length’ may be used uninitialized [-Wmaybe-uninitialized]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8135212Z   115 |         for (i = 0; i < sysnums.length; i++) {
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8135898Z       |                     ~~^~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8136855Z ./syscall/sysnum.c:106:17: note: ‘sysnums.length’ was declared here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8137626Z   106 |         Sysnums sysnums;
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8138164Z       |                 ^~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8139253Z ./syscall/sysnum.c:116:34: warning: ‘sysnums.table’ may be used uninitialized [-Wmaybe-uninitialized]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8140304Z   116 |                 if (sysnums.table[i] != sysnum)
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8140933Z       |                     ~~~~~~~~~~~~~^~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8141825Z ./syscall/sysnum.c:106:17: note: ‘sysnums.table’ was declared here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8143152Z   106 |         Sysnums sysnums;
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8143709Z       |                 ^~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8144887Z ./syscall/sysnum.c:119:26: warning: ‘sysnums.offset’ may be used uninitialized [-Wmaybe-uninitialized]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8145998Z   119 |                 return i + sysnums.offset;
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8146670Z       |                        ~~^~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8147597Z ./syscall/sysnum.c:106:17: note: ‘sysnums.offset’ was declared here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8148383Z   106 |         Sysnums sysnums;
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8148932Z       |                 ^~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8305478Z   CC	syscall/socket.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8883409Z ./syscall/socket.c: In function ‘push_sockaddr_un’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8885468Z ./syscall/socket.c:103:9: warning: ‘__builtin_strncpy’ specified bound 108 equals destination size [-Wstringop-truncation]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8887129Z   103 |         strncpy(sockaddr->sun_path, host_path, sizeof_path);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.8888142Z       |         ^
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:14.9527594Z   CC	syscall/heap.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.0135182Z   CC	syscall/rlimit.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.0379268Z In file included from ./syscall/rlimit.c:31:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.0380730Z ./syscall/rlimit.c: In function ‘translate_setrlimit_exit’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.0382898Z ./cli/note.h:46:54: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 5 has type ‘rlim64_t’ {aka ‘long unsigned int’} [-Wformat=]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.0384563Z    46 |                         note(tracee, INFO, INTERNAL, (message), ## args); \
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.0385456Z       |                                                      ^~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.0386531Z ./syscall/rlimit.c:115:9: note: in expansion of macro ‘VERBOSE’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.0387709Z   115 |         VERBOSE(tracee, 1, "stack soft limit increased to %llu bytes", proot_stack.rlim_cur);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.0388714Z       |         ^~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.0573256Z   CC	syscall/pipe_shadow.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.1251813Z   CC	tracee/tracee.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.2364118Z   CC	tracee/reg.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.2631112Z ./tracee/reg.c: In function ‘push_specific_regs’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.2632464Z ./tracee/reg.c:291:45: warning: unused parameter ‘including_sysnum’ [-Wunused-parameter]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.2634884Z   291 | int push_specific_regs(Tracee *tracee, bool including_sysnum)
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.2635683Z       |                                             ^
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.2860661Z   CC	tracee/event.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.3179645Z   CC	tracee/seccomp.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.3546907Z ./tracee/seccomp.c: In function ‘handle_seccomp_event_common’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.3548716Z ./tracee/seccomp.c:311:21: warning: variable ‘status’ set but not used [-Wunused-but-set-variable]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.3549821Z   311 |                 int status;
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.3550430Z       |                     ^~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.3560252Z ./tracee/seccomp.c:619:43: warning: comparison of integer expressions of different signedness: ‘gid_t’ {aka ‘unsigned int’} and ‘int’ [-Wsign-compare]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.3562116Z   619 |                 if (rxid != rxid_ && rxid != -1)
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.3563765Z       |                                           ^~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.3565424Z ./tracee/seccomp.c:621:43: warning: comparison of integer expressions of different signedness: ‘gid_t’ {aka ‘unsigned int’} and ‘int’ [-Wsign-compare]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.3566989Z   621 |                 if (exid != exid_ && exid != -1)
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.3567716Z       |                                           ^~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.3591348Z ./tracee/seccomp.c:623:43: warning: comparison of integer expressions of different signedness: ‘gid_t’ {aka ‘unsigned int’} and ‘int’ [-Wsign-compare]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.3593322Z   623 |                 if (sxid != sxid_ && sxid != -1)
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.3594052Z       |                                           ^~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.4275018Z   CC	tracee/statx.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.4481985Z   CC	ptrace/ptrace.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.4949226Z   CC	ptrace/user.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.5357532Z   CC	ptrace/wait.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.5644135Z   CC	extension/ashmem_memfd/ashmem_memfd.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.5788844Z   CC	extension/kompat/kompat.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.6105484Z   CC	extension/fake_id0/chown.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.6584024Z   CC	extension/fake_id0/chroot.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.6830733Z ./extension/fake_id0/chroot.c: In function ‘handle_chroot_exit_end’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.6832528Z ./extension/fake_id0/chroot.c:54:9: warning: ignoring return value of ‘realpath’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.6834130Z    54 |         realpath(path, path_host_absolute);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.6834782Z       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.6912803Z ./extension/kompat/kompat.c: In function ‘parse_utsname’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.6916469Z ./extension/kompat/kompat.c:939:17: warning: ‘__builtin_strncpy’ specified bound depends on the length of the source argument [-Wstringop-truncation]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.6917968Z   939 |                 strncpy(config->utsname.release, string, length);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.6918681Z       |                 ^
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.6919321Z In file included from ./extension/kompat/kompat.c:35:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.6920130Z ./extension/kompat/kompat.c:938:30: note: length computed here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.6921069Z   938 |                 length = MIN(strlen(string), sizeof(config->utsname.release) - 1);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.6921900Z       |                              ^
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.7100859Z   CC	extension/fake_id0/getsockopt.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.7579319Z   CC	extension/fake_id0/sendmsg.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.7783211Z   CC	extension/fake_id0/socket.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.8120115Z   CC	extension/fake_id0/open.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.8287160Z   CC	extension/fake_id0/unlink.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.8568535Z   CC	extension/fake_id0/rename.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.8822064Z   CC	extension/fake_id0/chmod.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.9113457Z   CC	extension/fake_id0/utimensat.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.9126793Z   CC	extension/fake_id0/access.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.9544570Z   CC	extension/fake_id0/exec.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.9568862Z   CC	extension/fake_id0/link.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.9766435Z ./extension/fake_id0/exec.c: In function ‘handle_exec_enter_end’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.9768440Z ./extension/fake_id0/exec.c:36:18: warning: ‘check_dir_perms’ accessing 4096 bytes in a region of size 2 [-Wstringop-overflow=]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.9770132Z    36 |         status = check_dir_perms(tracee, 'r', meta_path, "/", config);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.9771336Z       |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.9772972Z ./extension/fake_id0/exec.c:36:18: note: referencing argument 4 of type ‘char[4096]’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.9773984Z In file included from ./extension/fake_id0/exec.c:7:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.9775125Z ./extension/fake_id0/helper_functions.h:15:5: note: in a call to function ‘check_dir_perms’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.9776490Z    15 | int check_dir_perms(Tracee *tracee, char type, char path[PATH_MAX], char rel_path[PATH_MAX], Config *config);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.9777447Z       |     ^~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.9920811Z   CC	extension/fake_id0/symlink.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:15.9923337Z   CC	extension/fake_id0/mk.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0263281Z   CC	extension/fake_id0/stat.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0270582Z   CC	extension/fake_id0/helper_functions.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0574545Z ./extension/fake_id0/helper_functions.c: In function ‘get_permissions’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0576146Z ./extension/fake_id0/helper_functions.c:207:9: warning: this ‘else’ clause does not guard... [-Wmisleading-indentation]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0577215Z   207 |         else
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0577669Z       |         ^~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0578982Z ./extension/fake_id0/helper_functions.c:209:17: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘else’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0580280Z   209 |                 emulated_gid = config->egid;
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0581377Z       |                 ^~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0598694Z ./extension/fake_id0/helper_functions.c:221:23: warning: this statement may fall through [-Wimplicit-fallthrough=]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0599791Z   221 |                 omode /= 10;
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0600359Z       |                 ~~~~~~^~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0601038Z ./extension/fake_id0/helper_functions.c:222:9: note: here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0601737Z   222 |         case GROUP_PERMS:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0602256Z       |         ^~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0603403Z ./extension/fake_id0/helper_functions.c:223:23: warning: this statement may fall through [-Wimplicit-fallthrough=]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0604420Z   223 |                 omode /= 10;
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0604943Z       |                 ~~~~~~^~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0605578Z ./extension/fake_id0/helper_functions.c:224:9: note: here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0606218Z   224 |         case OTHER_PERMS:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0606743Z       |         ^~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0607646Z ./extension/fake_id0/helper_functions.c: In function ‘read_meta_file’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0609420Z ./extension/fake_id0/helper_functions.c:357:9: warning: ignoring return value of ‘fscanf’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0610909Z   357 |         fscanf(fp, "%d %d %d ", &lcl_mode, owner, group);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0611696Z       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.0855206Z   CC	extension/fake_id0/fake_id0.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.1270525Z ./extension/fake_id0/fake_id0.c: In function ‘handle_sysenter_end’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.1272174Z ./extension/fake_id0/fake_id0.c:807:28: warning: this statement may fall through [-Wimplicit-fallthrough=]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.1273745Z   807 |                 gid_sysarg = SYSARG_4;
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.1274597Z       |                 ~~~~~~~~~~~^~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.1275772Z ./extension/fake_id0/fake_id0.c:808:9: note: here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.1303512Z   808 |         case PR_chown:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.1313708Z       |         ^~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.1314792Z ./extension/fake_id0/fake_id0.c: In function ‘handle_sysexit_end’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.1316215Z ./extension/fake_id0/fake_id0.c:1165:29: warning: this statement may fall through [-Wimplicit-fallthrough=]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.1317433Z  1165 |                 stat_sysarg = SYSARG_3;
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.1318216Z       |                 ~~~~~~~~~~~~^~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.1319011Z ./extension/fake_id0/fake_id0.c:1166:9: note: here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.1319764Z  1166 |         case PR_stat64:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.1320405Z       |         ^~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.1443657Z   CC	extension/hidden_files/hidden_files.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.2071170Z   CC	extension/mountinfo/mountinfo.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.2507471Z ./extension/mountinfo/mountinfo.c: In function ‘mountinfo_check_open_path’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.2509370Z ./extension/mountinfo/mountinfo.c:184:25: warning: ‘__builtin_strncpy’ specified bound 4096 equals destination size [-Wstringop-truncation]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.2510795Z   184 |                         strncpy(path, new_path, PATH_MAX);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.2511522Z       |                         ^
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.2792189Z   CC	extension/port_switch/port_switch.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3089177Z ./extension/port_switch/port_switch.c: In function ‘mod_port’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3091077Z ./extension/port_switch/port_switch.c:174:100: warning: ‘sizeof’ on array function parameter ‘socketcall_arg2’ will return size of ‘long int *’ [-Wsizeof-array-argument]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3093163Z   174 |                     write_data(tracee, peek_reg(tracee, CURRENT, SYSARG_2), socketcall_arg2, sizeof(socketcall_arg2));
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3094352Z       |                                                                                                    ^
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3095248Z ./extension/port_switch/port_switch.c:145:121: note: declared here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3096554Z   145 | void mod_port(Tracee *tracee, bool is_socketcall, bool is_bind, bool is_udp, struct sockaddr_storage *my_sockaddr, long socketcall_arg2[]) {
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3098324Z       |                                                                                                                    ~~~~~^~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3100220Z ./extension/port_switch/port_switch.c:182:100: warning: ‘sizeof’ on array function parameter ‘socketcall_arg2’ will return size of ‘long int *’ [-Wsizeof-array-argument]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3102076Z   182 |                     write_data(tracee, peek_reg(tracee, CURRENT, SYSARG_2), socketcall_arg2, sizeof(socketcall_arg2));
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3103417Z       |                                                                                                    ^
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3104351Z ./extension/port_switch/port_switch.c:145:121: note: declared here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3105715Z   145 | void mod_port(Tracee *tracee, bool is_socketcall, bool is_bind, bool is_udp, struct sockaddr_storage *my_sockaddr, long socketcall_arg2[]) {
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3107139Z       |                                                                                                                    ~~~~~^~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3109012Z ./extension/port_switch/port_switch.c:204:100: warning: ‘sizeof’ on array function parameter ‘socketcall_arg2’ will return size of ‘long int *’ [-Wsizeof-array-argument]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3110841Z   204 |                     write_data(tracee, peek_reg(tracee, CURRENT, SYSARG_2), socketcall_arg2, sizeof(socketcall_arg2));
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3112024Z       |                                                                                                    ^
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3113190Z ./extension/port_switch/port_switch.c:145:121: note: declared here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3114568Z   145 | void mod_port(Tracee *tracee, bool is_socketcall, bool is_bind, bool is_udp, struct sockaddr_storage *my_sockaddr, long socketcall_arg2[]) {
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3115990Z       |                                                                                                                    ~~~~~^~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3117910Z ./extension/port_switch/port_switch.c:212:100: warning: ‘sizeof’ on array function parameter ‘socketcall_arg2’ will return size of ‘long int *’ [-Wsizeof-array-argument]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3119711Z   212 |                     write_data(tracee, peek_reg(tracee, CURRENT, SYSARG_2), socketcall_arg2, sizeof(socketcall_arg2));
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3120865Z       |                                                                                                    ^
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3121819Z ./extension/port_switch/port_switch.c:145:121: note: declared here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3123415Z   145 | void mod_port(Tracee *tracee, bool is_socketcall, bool is_bind, bool is_udp, struct sockaddr_storage *my_sockaddr, long socketcall_arg2[]) {
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3124757Z       |                                                                                                                    ~~~~~^~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3469051Z   CC	extension/sysvipc/sysvipc.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3490114Z   CC	extension/sysvipc/sysvipc_msg.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3844030Z ./extension/sysvipc/sysvipc.c: In function ‘sysvipc_callback’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3845405Z ./extension/sysvipc/sysvipc.c:238:17: warning: this statement may fall through [-Wimplicit-fallthrough=]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3846538Z   238 |                 default:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3847204Z       |                 ^~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3847906Z ./extension/sysvipc/sysvipc.c:243:9: note: here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3848664Z   243 |         case SIGSYS_OCC:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3849330Z       |         ^~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3850345Z ./extension/sysvipc/sysvipc.c:291:17: warning: this statement may fall through [-Wimplicit-fallthrough=]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3851467Z   291 |                 default:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3852111Z       |                 ^~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3853032Z ./extension/sysvipc/sysvipc.c:296:9: note: here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3854270Z   296 |         case SYSCALL_CHAINED_ENTER:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3854934Z       |         ^~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3855893Z ./extension/sysvipc/sysvipc.c: In function ‘sysvipc_syscall_common’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3857420Z ./extension/sysvipc/sysvipc.c:60:27: warning: this statement may fall through [-Wimplicit-fallthrough=]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3858830Z    60 |                 timeout = peek_reg(tracee, CURRENT, SYSARG_4);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3859829Z       |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3860626Z ./extension/sysvipc/sysvipc.c:62:9: note: here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3861284Z    62 |         case PR_semop:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.3861820Z       |         ^~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.4304617Z   CC	extension/sysvipc/sysvipc_sem.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.4554537Z ./extension/sysvipc/sysvipc_sem.c: In function ‘sysvipc_semop’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.4556177Z ./extension/sysvipc/sysvipc_sem.c:149:37: warning: comparison is always false due to limited range of data type [-Wtype-limits]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.4557776Z   149 |                 if (sops[i].sem_num < 0 || sops[i].sem_num >= semaphore->nsems) {
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.4558766Z       |                                     ^
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.4615032Z   CC	extension/sysvipc/sysvipc_shm.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.5031172Z ./extension/sysvipc/sysvipc_shm.c: In function ‘sysvipc_shm_send_helper_request’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.5033753Z ./extension/sysvipc/sysvipc_shm.c:188:9: warning: ignoring return value of ‘write’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.5035459Z   188 |         write(proot2helper, request, sizeof(*request));
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.5036441Z       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.5052232Z ./extension/sysvipc/sysvipc_shm.c: In function ‘sysvipc_shm_helper_main’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.5054142Z ./extension/sysvipc/sysvipc_shm.c:858:9: warning: ignoring return value of ‘write’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.5063701Z   858 |         write(1, addr.sun_path, SYSVIPC_SHMHELPER_SOCKET_LEN);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.5084083Z       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.5085865Z ./extension/sysvipc/sysvipc_shm.c:877:25: warning: ignoring return value of ‘write’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.5087361Z   877 |                         write(1, &fd, sizeof(int));
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.5088182Z       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.5295892Z   CC	extension/link2symlink/link2symlink.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.6507263Z ./extension/sysvipc/sysvipc_shm.c:837:17: warning: ‘__builtin_strncpy’ specified bound 108 equals destination size [-Wstringop-truncation]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.6509169Z   837 |                 strncpy(addr.sun_path, path, sizeof(addr.sun_path));
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.6510289Z       |                 ^
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.6723613Z   CC	extension/fix_symlink_size/fix_symlink_size.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.6868072Z ./extension/link2symlink/link2symlink.c: In function ‘decrement_link_count’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.6871406Z ./extension/link2symlink/link2symlink.c:805:17: warning: ‘__builtin___strncpy_chk’ specified bound depends on the length of the source argument [-Wstringop-truncation]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.6873073Z   805 |                 strncpy(new_final, final, strlen(final) - 4);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.6873713Z       |                 ^
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.6875013Z ./extension/link2symlink/link2symlink.c:805:43: note: length computed here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.6875985Z   805 |                 strncpy(new_final, final, strlen(final) - 4);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.6876768Z       |                                           ^~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7040942Z ./extension/link2symlink/link2symlink.c: In function ‘move_and_symlink_path’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7043403Z ./extension/link2symlink/link2symlink.c:666:25: warning: ‘__builtin___strncpy_chk’ specified bound depends on the length of the source argument [-Wstringop-truncation]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7045609Z   666 |                         strncpy(intermediate, original, strlen(original) - strlen(name));
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7046775Z       |                         ^
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7047848Z ./extension/link2symlink/link2symlink.c:663:46: note: length computed here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7048890Z   663 |                         if (strlen(PREFIX) + strlen(original) + 5 >= PATH_MAX)
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7049697Z       |                                              ^~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7051471Z ./extension/link2symlink/link2symlink.c:708:17: warning: ‘__builtin___strncpy_chk’ specified bound depends on the length of the source argument [-Wstringop-truncation]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7053254Z   708 |                 strncpy(new_final, final, strlen(final) - 4);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7053946Z       |                 ^
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7054730Z ./extension/link2symlink/link2symlink.c:708:43: note: length computed here
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7055737Z   708 |                 strncpy(new_final, final, strlen(final) - 4);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7056519Z       |                                           ^~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7267589Z   CC	loader/loader.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7547383Z In file included from ./loader/loader.c:31:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7548628Z ./loader/loader.c: In function ‘_start’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7550145Z ./loader/assembly-x86_64.h:32:9: warning: listing the stack pointer register ‘rsp’ in a clobber list is deprecated [-Wdeprecated]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7551549Z    32 |         asm volatile (                                          \
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7552327Z       |         ^~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7553516Z ./loader/loader.c:253:33: note: in expansion of macro ‘BRANCH’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7554808Z   253 |                                 BRANCH(stmt->start.stack_pointer, stmt->start.entry_point);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7555899Z       |                                 ^~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7557632Z ./loader/assembly-x86_64.h:32:9: note: the value of the stack pointer after an ‘asm’ statement must be the same as it was before the statement
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7559003Z    32 |         asm volatile (                                          \
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7559685Z       |         ^~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7560445Z ./loader/loader.c:253:33: note: in expansion of macro ‘BRANCH’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7561373Z   253 |                                 BRANCH(stmt->start.stack_pointer, stmt->start.entry_point);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7562206Z       |                                 ^~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7601185Z   CC	loader/assembly.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7697675Z   CC	loader/loader-m32.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7725285Z   CC	loader/assembly-m32.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7965699Z In file included from ./loader/loader.c:35:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7967012Z ./loader/loader.c: In function ‘_start’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7968043Z ./loader/assembly-x86.h:32:9: warning: listing the stack pointer register ‘esp’ in a clobber list is deprecated [-Wdeprecated]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7968884Z    32 |         asm volatile (                                          \
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7970288Z       |         ^~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7971132Z ./loader/loader.c:253:33: note: in expansion of macro ‘BRANCH’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7971765Z   253 |                                 BRANCH(stmt->start.stack_pointer, stmt->start.entry_point);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7972283Z       |                                 ^~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7973830Z ./loader/assembly-x86.h:32:9: note: the value of the stack pointer after an ‘asm’ statement must be the same as it was before the statement
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7974906Z    32 |         asm volatile (                                          \
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7975508Z       |         ^~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7976682Z ./loader/loader.c:253:33: note: in expansion of macro ‘BRANCH’
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7977305Z   253 |                                 BRANCH(stmt->start.stack_pointer, stmt->start.entry_point);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.7978046Z       |                                 ^~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.8177376Z   LD	loader/loader
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.8236223Z   LD	loader/loader-m32
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.8239111Z   GEN	build.h
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.8374843Z   CC	cli/cli.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.8523120Z   CC	cli/proot.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.8864725Z ./cli/proot.c: In function ‘handle_option_V’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.8866479Z ./cli/proot.c:226:17: warning: ignoring return value of ‘write’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.8867898Z   226 |                 write(1, &_binary_licenses_start, size);
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.8868783Z       |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.9507951Z   CC	execve/aoxp.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:16.9750089Z   CC	path/path.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.0485687Z   CC	syscall/seccomp.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.1183357Z   CC	tracee/mem.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.1424326Z   CC	extension/extension.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.1511796Z ./tracee/mem.c: In function ‘mem_prepare_after_execve’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.1513250Z ./tracee/mem.c:199:39: warning: unused parameter ‘tracee’ [-Wunused-parameter]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.1514194Z   199 | void mem_prepare_after_execve(Tracee *tracee)
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.1514835Z       |                               ~~~~~~~~^~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.1515660Z ./tracee/mem.c: In function ‘mem_prepare_before_first_execve’:
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.1516746Z ./tracee/mem.c:206:46: warning: unused parameter ‘tracee’ [-Wunused-parameter]
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.1517641Z   206 | void mem_prepare_before_first_execve(Tracee *tracee)
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.1518338Z       |                                      ~~~~~~~~^~~~~~
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.1914036Z   GEN	loader/loader-wrapped.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2090656Z   GEN	loader/loader-m32-wrapped.o
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2367692Z   LD	proot
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2474449Z /usr/bin/ld: syscall/socket.o: in function `translate_socketcall_enter':
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2475323Z socket.c:(.text+0x249): warning: the use of `mktemp' is dangerous, better use `mkstemp' or `mkdtemp'
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2611153Z /usr/bin/ld: /tmp/aurora-proot-lifecycle-oa62b9ut/build/library/libtalloc.so: undefined reference to `memset_explicit'
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2632164Z collect2: error: ld returned 1 exit status
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2638346Z make: *** [GNUmakefile:193: proot] Error 1
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2643044Z rm loader.exe loader-m32.exe .check_seccomp_filter.o .check_process_vm.o .check_seccomp_filter .check_process_vm
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2643975Z make: Leaving directory '/tmp/aurora-proot-lifecycle-oa62b9ut/build/proot/src'
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2661323Z setUpClass (__main__.ProotLifecycleTest) ... ERROR
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2661789Z 
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2662053Z ======================================================================
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2662928Z ERROR: setUpClass (__main__.ProotLifecycleTest)
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2663592Z ----------------------------------------------------------------------
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2664084Z Traceback (most recent call last):
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2664640Z   File "/home/runner/work/Aurora/Aurora/scripts/verify-proot-lifecycle.py", line 58, in setUpClass
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2665491Z     cls.proot = builder.build(root / 'build')
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2665837Z                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2666316Z   File "/home/runner/work/Aurora/Aurora/scripts/build-host-proot.py", line 43, in build
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2666882Z     subprocess.run(['make', '-C', str(source / 'src'), '-j2',
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2667336Z   File "/usr/lib/python3.12/subprocess.py", line 571, in run
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2667752Z     raise CalledProcessError(retcode, process.args,
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2669735Z subprocess.CalledProcessError: Command '['make', '-C', '/tmp/aurora-proot-lifecycle-oa62b9ut/build/proot/src', '-j2', 'CPPFLAGS=-D_FILE_OFFSET_BITS=64 -D_GNU_SOURCE -I. -I/home/runner/work/Aurora/Aurora/app/.cxx/Debug/195u3752/x86_64/_deps/aurora_talloc_source-src', 'CFLAGS=-Wall -Wextra -O2 -DNDEBUG', 'LDFLAGS=-L/tmp/aurora-proot-lifecycle-oa62b9ut/build/library -Wl,-rpath,/tmp/aurora-proot-lifecycle-oa62b9ut/build/library -ltalloc -Wl,-z,noexecstack', 'proot']' returned non-zero exit status 2.
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2671709Z 
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2671900Z ----------------------------------------------------------------------
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2672293Z Ran 0 tests in 4.164s
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2672466Z 
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2672577Z FAILED (errors=1)
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-22T17:41:17.2869084Z ##[error]Process completed with exit code 5.

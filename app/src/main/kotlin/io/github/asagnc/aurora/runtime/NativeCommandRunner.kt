@@ -3,8 +3,6 @@ package io.github.asagnc.aurora.runtime
 import android.content.Context
 import io.github.asagnc.aurora.core.*
 import java.io.File
-import java.nio.ByteBuffer
-import java.nio.charset.CodingErrorAction
 import java.nio.file.*
 import java.util.UUID
 import kotlinx.coroutines.*
@@ -132,19 +130,10 @@ class NativeCommandRunner(context: Context, private val artifactOwner: Int = and
         val bytes = Files.newInputStream(file, LinkOption.NOFOLLOW_LINKS).use { it.readNBytes(limit) }
         val total = requireNotNull(record.number("${name}Bytes"))
         val stored = requireNotNull(record.number("${name}Stored"))
-        val text = decodeText(bytes, stored > bytes.size)
+        val text = commandOutputText(bytes, stored > bytes.size)
         return objectOf("text" to (text?.let(::string) ?: JsonNull), "bytes" to JsonPrimitive(total), "storedBytes" to JsonPrimitive(stored),
             "previewTruncated" to JsonPrimitive(total > bytes.size), "artifactTruncated" to JsonPrimitive(total > stored),
             "artifact" to string(root.relativize(file).toString()), "encoding" to string(if (text == null) "binary-or-partial-UTF8" else "UTF-8"))
     }
 
-    private fun decodeText(bytes: ByteArray, truncated: Boolean): String? {
-        if (bytes.any { val value = it.toInt(); value in 0..31 && value != 9 && value != 10 && value != 13 && value != 27 }) return null
-        for (tail in 0..if (truncated) minOf(3, bytes.size) else 0) {
-            val text = runCatching { Charsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
-                .onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(bytes, 0, bytes.size - tail)).toString() }.getOrNull()
-            if (text != null) return text
-        }
-        return null
-    }
 }

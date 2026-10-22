@@ -53,6 +53,10 @@ jobs:
         with:
           path: ${{ runner.temp }}/aurora-native-downloads/talloc-2.5.0.tar.gz
           key: talloc-source-912afa237510ae542a7733998eb18a12bcda35ab6729c8e2ddb43e8d0ebab007
+      - name: Prepare verified source and generated PRoot adapter
+        run: ./gradlew ':app:configureCMakeDebug[x86_64]' --console=plain
+      - name: Verify actual derived PRoot lifecycle on Linux host
+        run: python3 scripts/verify-proot-lifecycle.py
       - name: Build Android application and run lint
         run: ./gradlew :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :app:lintDebug --console=plain
       - name: Verify packaged Linux ELF dependencies and corresponding source
@@ -60,8 +64,6 @@ jobs:
           python3 scripts/verify-linux-native.py app/build/outputs/apk/debug/app-debug.apk
           python3 scripts/verify-linux-native.py app/build/outputs/apk/release/app-release-unsigned.apk
           python3 scripts/package-linux-sources.py
-      - name: Verify actual derived PRoot lifecycle on Linux host
-        run: python3 scripts/verify-proot-lifecycle.py
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: aurora-development-builds

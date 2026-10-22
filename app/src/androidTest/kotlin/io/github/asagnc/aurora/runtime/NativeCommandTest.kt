@@ -39,6 +39,18 @@ class NativeCommandTest {
         assertEquals("problem", failed["stderr"]!!.jsonObject.text("text"))
     } }
 
+    @Test fun clippedInvalidUtf8RemainsBinaryAndArtifactIsExact() = runBlocking { fixture { root ->
+        val bytes = "a".repeat(1023).toByteArray() + byteArrayOf(0xff.toByte()) + "tail".toByteArray()
+        Files.write(root.resolve("binary-input"), bytes)
+        val result = runner.execute(root, CommandRequest(listOf("/system/bin/cat", "binary-input"), outputLimit = 1024))
+        assertEquals(0L, result.number("exitCode"))
+        val output = result["stdout"]!!.jsonObject
+        assertEquals(JsonNull, output["text"])
+        assertEquals(JsonPrimitive(true), output["previewTruncated"])
+        assertEquals(bytes.size.toLong(), output.number("storedBytes"))
+        assertArrayEquals(bytes, Files.readAllBytes(root.resolve(requireNotNull(output.text("artifact")))))
+    } }
+
     @Test fun largeOutputIsDrainedAndArtifactBudgetIsExplicit() = runBlocking { fixture { root ->
         val result = runner.execute(root, CommandRequest(listOf("/system/bin/sh", "-c",
             "head -c 9437184 /dev/zero; head -c 9437184 /dev/zero >&2"), outputLimit = 1024))
