@@ -16,6 +16,7 @@ internal fun presentTool(event: ToolRun): ToolPresentation {
         "command_execute" -> "执行原生命令"
         "command_execute_root" -> "执行 Root 命令"
         "command_execute_linux" -> "执行 Linux 命令"
+        "packet_inspect" -> "分析网络数据包"
         "terminal_start_linux" -> "启动 Linux 终端"
         "files_list" -> "查看文件列表"
         "files_read_batch" -> "批量读取文件"

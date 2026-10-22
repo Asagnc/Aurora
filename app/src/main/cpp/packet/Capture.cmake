@@ -24,6 +24,8 @@ set(pcap_source "${aurora_pcap_source_SOURCE_DIR}")
 set(tcpdump_source "${CMAKE_CURRENT_BINARY_DIR}/packet-tcpdump-source")
 file(COPY "${aurora_tcpdump_source_SOURCE_DIR}/" DESTINATION "${tcpdump_source}")
 configure_file("${capture_module}/FindPCAP.cmake" "${tcpdump_source}/cmake/Modules/FindPCAP.cmake" COPYONLY)
+set(SOURCE_DIR "${tcpdump_source}")
+include("${capture_module}/PatchTcpdump.cmake")
 if(CMAKE_HOST_WIN32)
     # Upstream's generator runs on the host even while targeting Android.
     # Use a derived tree; never change the verified cached upstream sources.
