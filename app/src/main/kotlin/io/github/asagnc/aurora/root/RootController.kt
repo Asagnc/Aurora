@@ -26,22 +26,27 @@ class RootController(private val context: Context) {
     val state = mutable.asStateFlow()
     private val main = Handler(Looper.getMainLooper())
     private var connection: ServiceConnection? = null
-    @Volatile private var remote: IRootControl? = null
-    @Volatile private var linuxIdentity: io.github.asagnc.aurora.core.LinuxRootIdentity? = null
-    @Volatile private var linuxProtocol = 0
-    @Volatile private var linuxRunProtocol = 0
-    @Volatile private var linuxFileProtocol = 0
-    @Volatile private var linuxTerminalProtocol = 0
-    @Volatile private var metadataProtocol = 0
-    internal val metadataClient get() = remote?.takeIf { metadataProtocol == 1 }?.let { RootMetadataClient(it, context) }
-    internal val linuxTerminalClient get() = remote?.takeIf { linuxTerminalProtocol == 1 && linuxRunProtocol == 2 }?.let { RootTerminalClient(it) }
-    internal val linuxFileClient get() = remote?.takeIf { linuxFileProtocol == 1 }?.let { RootLinuxFileClient(it, context) }
-    internal val linuxRunClient get() = remote?.takeIf { linuxRunProtocol == 2 }?.let { RootLinuxRunClient(it, context) }
-    internal val commandClient get() = remote?.let { RootCommandClient(it, context) }
-    internal val terminalClient get() = remote?.let { RootTerminalClient(it) }
-    internal val linuxClient get() = remote?.let { endpoint -> linuxIdentity?.let { RootLinuxClient(endpoint, it, context, linuxProtocol) } }
-    internal val linuxAvailable get() = remote != null && linuxIdentity != null
-    internal val rootImagesAvailable get() = linuxAvailable && linuxProtocol >= 2
+    private data class Endpoint(
+        val remote: IRootControl,
+        val identity: io.github.asagnc.aurora.core.LinuxRootIdentity?,
+        val prepare: Int, val run: Int, val file: Int, val terminal: Int, val metadata: Int,
+    )
+    @Volatile private var endpoint: Endpoint? = null
+    internal val metadataClient get() = endpoint?.takeIf { it.metadata == 1 }?.let { RootMetadataClient(it.remote, context) }
+    internal val linuxTerminalClient get() = endpoint?.takeIf { it.terminal == 1 && it.run == 2 }?.let { RootTerminalClient(it.remote) }
+    internal val linuxFileClient get() = endpoint?.takeIf { it.file == 1 }?.let { RootLinuxFileClient(it.remote, context) }
+    internal val linuxRunClient get() = endpoint?.takeIf { it.run == 2 }?.let { RootLinuxRunClient(it.remote, context) }
+    internal val commandClient get() = endpoint?.let { RootCommandClient(it.remote, context) }
+    internal val terminalClient get() = endpoint?.let { RootTerminalClient(it.remote) }
+    internal val linuxClient get() = endpoint?.let { current -> current.identity?.let {
+        RootLinuxClient(current.remote, it, context, current.prepare)
+    } }
+    internal val linuxAvailable get() = endpoint?.identity != null
+    internal val rootImagesAvailable get() = endpoint?.let { it.identity != null && it.prepare >= 2 } == true
+    internal val linuxExecution get() = endpoint?.takeIf { it.run == 2 }?.let { current ->
+        current.identity?.let { RootLinuxExecution(it, RootLinuxRunClient(current.remote, context),
+            if (current.terminal == 1) RootTerminalClient(current.remote) else null) }
+    }
     private val lifecycle = Mutex()
 
     suspend fun connect() = withContext(Dispatchers.Main.immediate) {
@@ -61,17 +66,15 @@ class RootController(private val context: Context) {
                 require(snapshot.getInt("commandProtocol") == 2)
                 require(snapshot.getInt("terminalProtocol") == 1)
                 val detail = describe(snapshot)
-                linuxIdentity = if (snapshot.getInt("linuxPrepareProtocol") in 1..2) runCatching {
+                val identity = if (snapshot.getInt("linuxPrepareProtocol") in 1..2) runCatching {
                     val identity = io.github.asagnc.aurora.core.WireJson.decodeFromString<io.github.asagnc.aurora.core.LinuxRootIdentity>(
                         requireNotNull(snapshot.getString("linuxIdentity")).also { require(it.length <= 1024) })
                     identity.validate(); require(identity.pid == snapshot.getInt("pid")); identity
                 }.getOrNull() else null
-                linuxRunProtocol = snapshot.getInt("linuxRunProtocol")
-                linuxFileProtocol = snapshot.getInt("linuxFileProtocol")
-                linuxTerminalProtocol = snapshot.getInt("linuxTerminalProtocol")
-                metadataProtocol = snapshot.getInt("linuxMetadataProtocol")
-                linuxProtocol = if (linuxIdentity != null) snapshot.getInt("linuxPrepareProtocol") else 0
-                this@RootController.remote = remote
+                endpoint = Endpoint(remote, identity,
+                    if (identity != null) snapshot.getInt("linuxPrepareProtocol") else 0,
+                    snapshot.getInt("linuxRunProtocol"), snapshot.getInt("linuxFileProtocol"),
+                    snapshot.getInt("linuxTerminalProtocol"), snapshot.getInt("linuxMetadataProtocol"))
                 mutable.value = RootState(RootPhase.READY, detail)
             }
         } catch (cancel: CancellationException) {
@@ -92,8 +95,7 @@ class RootController(private val context: Context) {
             }
             override fun onServiceDisconnected(name: ComponentName) {
                 if (connection === this) {
-                    remote = null
-                    linuxIdentity = null; linuxProtocol = 0; linuxRunProtocol = 0; linuxFileProtocol = 0; linuxTerminalProtocol = 0; metadataProtocol = 0
+                    endpoint = null
                     connection = null
                     mutable.value = RootState(RootPhase.UNAVAILABLE, "Root 服务已退出；普通功能仍可使用")
                 }
@@ -113,10 +115,9 @@ class RootController(private val context: Context) {
     }
 
     private suspend fun disconnectLocked() = withContext(NonCancellable) {
-        val endpoint = remote
-        remote = null
-        linuxIdentity = null; linuxProtocol = 0; linuxRunProtocol = 0; linuxFileProtocol = 0; linuxTerminalProtocol = 0; metadataProtocol = 0
-        withContext(Dispatchers.IO) { runCatching { endpoint?.closeCommands() } }
+        val previous = endpoint
+        endpoint = null
+        withContext(Dispatchers.IO) { runCatching { previous?.remote?.closeCommands() } }
         connection?.let { RootService.unbind(it) }
         connection = null
         withContext(Dispatchers.IO) { runCatching { Shell.getCachedShell()?.close() } }

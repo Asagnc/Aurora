@@ -61,12 +61,6 @@ To rebuild offline, add these CMake definitions, using absolute paths:
   Android qualification and durable recovery still need verification before
   enabling ordinary-UID Linux execution.
 
-`scripts/verify-ptrace-exitkill.py` exercises the Linux kernel prerequisite
-with an independent native tracer: child and two setsid generations, tracer
-SIGKILL with/without the seccomp option, tracer SIGTERM, and controlled parent
-death before/after the startup guard. It uses a subreaper to reap its fixtures
-and does not require Root. Passing it does not verify upstream PRoot syscall
-translation, Android SELinux, hardlinks or the application recovery protocol.
 - ARM64 loader linking explicitly retains pokedata_workaround; otherwise
   Release section garbage collection can discard the tracer's external entry.
 - libandroid-shmem is built from a checked derived copy. Key files use the
@@ -79,6 +73,13 @@ translation, Android SELinux, hardlinks or the application recovery protocol.
   as verified behavior; device runtime qualification remains pending.
 
 ## Verification boundary
+
+`scripts/verify-ptrace-exitkill.py` exercises the Linux kernel prerequisite
+with an independent native tracer: child and two setsid generations, tracer
+SIGKILL with/without the seccomp option, tracer SIGTERM, and controlled parent
+death before/after the startup guard. It uses a subreaper to reap its fixtures
+and does not require Root. Passing it does not verify upstream PRoot syscall
+translation, Android SELinux, hardlinks or the application recovery protocol.
 
 CI prefetches the pinned talloc source once using `scripts/prefetch-native-source.sh`
 with HTTPS/HTTP1.1 and bounded retries, avoiding an observed Samba HTTP2

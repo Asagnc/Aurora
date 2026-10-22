@@ -21,8 +21,17 @@ class RootConnectionTest {
                 assertEquals(root.state.value.detail, RootPhase.READY, root.state.value.phase)
                 assertTrue(root.state.value.detail.contains("UID 0"))
                 assertFalse("Root status must be safe for Android accessibility/XML", root.state.value.detail.contains('\u0000'))
+                val captured = requireNotNull(root.linuxExecution)
+                val identity = requireNotNull(root.linuxClient).identity
+                assertEquals(identity, captured.identity)
+                assertNotNull(captured.terminal)
                 root.disconnect()
                 assertEquals(RootPhase.ORDINARY, root.state.value.phase)
+                assertNull(root.linuxExecution)
+                assertNull(root.linuxClient)
+                assertNull(root.commandClient)
+                assertNull(root.metadataClient)
+                assertEquals("Disconnect must not mutate an already captured identity", identity, captured.identity)
             }
         } finally { root.disconnect() }
     }

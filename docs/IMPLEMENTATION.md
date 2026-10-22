@@ -1,3 +1,11 @@
+## 2026-10-23 0.1.34：PRoot 启动边界与 Root 连接一致性
+
+PRoot 派生源码现在同时要求 EXITKILL 与初始子进程 PDEATHSIG/父 PID 复核，覆盖追踪选项安装前后 tracer 死亡；不修改上游缓存。新增 Linux 主机独立 tracer 五项验证，包含两层 setsid 后代、SIGKILL 的两种选项路径、SIGTERM，以及启动保护前/后死亡。1b43db0 的 CI39822710274 已观察这五项步骤成功，原生 PTY、namespace、scope/recovery/mount/guest-PTY/GC 步骤亦成功；该 CI 最终完整成功。它们是内核先决条件证据，不是实际 PRoot/Android 全链路验收，PRoot executionReady 仍 false。
+
+修复 RootController 多个独立 volatile 字段在断开/重连间可能组合旧 Binder 与新身份/能力的竞态：身份、协议与 Binder 以单个不可变快照发布/清空。Linux 命令和 PTY 一次捕获同一快照的身份、执行与恢复客户端，票据不再二次读取连接。沿用原 Binder/SQLite/恢复协议，无新依赖或持久化格式。RootConnectionTest 补断开后的客户端清空及已捕获身份保留断言；仅编译，留最后集中真机运行。
+
+本地启动保护版 Debug/Release/lint、双 ABI ELF/16KiB与对应源码包通过；Root 连接修改版 Debug/Release/testAPK/lint通过，0.1.34/code35 最终重建亦通过；Debug SHA256 434c717b2cfeda92841bc327ed790d301d6942e1afaf1928fd5619d15fd22066，双 ABI ELF/16KiB与对应源码包通过。新增实际派生 PRoot 的 Linux/glibc 主机编译与四项生命周期测试已接入 CI，当前仅 Python 编译检查，不提前记运行成功。手机仍 0.1.32，未连接、安装或控制手机，无真实供应商调用。下一步继续 PRoot 实际生命周期与普通 UID 能力边界、工具包资格、最终手机与长时性能/真实协议验收；不能把内核测试替代完整产品完成。
+
 ## 2026-10-23 PRoot tracer death prerequisite
 
 Previous head 7c60f65 CI39820489556 completed successfully. PRoot now builds a checked derived tracee/event.c with mandatory PTRACE_O_EXITKILL in both default and seccomp ptrace option paths. Unsupported kernels reject startup instead of dropping this requirement. Upstream source remains unchanged; corresponding source includes the adapter. Local Debug/Release/lint and dual-ABI ELF/16KiB verification passed. This is a prerequisite only: no SIGKILL descendant runtime qualification, startup-race proof or Android PRoot acceptance is claimed; executionReady remains false. No phone actions; final combined device acceptance remains pending.

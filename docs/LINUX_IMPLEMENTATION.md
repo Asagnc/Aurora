@@ -1,5 +1,7 @@
 # Linux 环境实施记录
 
+当前状态优先见 PROGRESS.md / IMPLEMENTATION.md 顶部：Root Ubuntu 命令、PTY、文件通道已在 0.1.32 真机验证；0.1.33 元数据 GC 主机验证、手机待最终集中验收；0.1.34 补 PRoot 退出先决条件与 Root 连接快照一致性。下文按历史版本记录，不能把早期 executionReady=false 套到已验收的 Root 后端；PRoot 仍未开放业务执行。
+
 2026-10-22。用户已批准LINUX_PROPOSAL.md及真机后的cgroup生命周期修订，后者替代必需PID空间。当前0.1.26已接Root/普通属主代发布、cgroup监督/恢复及原生chroot挂载资格，完整运行时尚未就绪。
 
 ## 0.1.26 后端代发布
