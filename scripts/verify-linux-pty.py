@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import signal
 import struct
 import subprocess
 import threading
@@ -169,6 +170,21 @@ class LinuxPtyTest(mounts.MountTest):
         self.assertNotEqual(0, result.returncode)
         self.assertFalse((work / 'run-state').exists())
         self.assertEqual(b'', result.stdout)
+
+    def test_fresh_recovery_after_both_supervisors_die_does_not_invent_completion(self):
+        (child, _, _, reader, root, work), pid, scope = self.detached_writer()
+        guard = int(Path(scope).name.split('-')[2])
+        stat = Path(f'/proc/{guard}/stat').read_text().rsplit(')', 1)[1].split()
+        coordinator = int(stat[1])
+        os.kill(guard, signal.SIGSTOP)
+        os.kill(coordinator, signal.SIGKILL)
+        os.kill(guard, signal.SIGKILL)
+        self.assertNotEqual(0, self.result(child, reader)['exitCode'])
+        self.await_recovery(work / 'run-state')
+        self.assert_gone(pid)
+        self.assert_scope_removed(scope)
+        self.assertFalse((work / 'run-state/completed.json').exists())
+        self.assert_host_unchanged(root, work)
 
 
 if __name__ == '__main__':

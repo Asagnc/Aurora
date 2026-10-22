@@ -34,14 +34,18 @@ lock after transport exit; failed recovery means retain, never assume stopped.
 ## Verification status
 
 Local Android Debug/test APK/R8 Release/lint builds pass with both ABIs. The new
-Root-host suite `scripts/verify-linux-pty.py` is wired into CI and initially
-awaits results. It composes real binaries with a host shell and matching host
+Root-host suite `scripts/verify-linux-pty.py` is wired into CI. The initial five
+tests passed in run39779288350; its Android stage was still running at that
+check. A sixth both-supervisors-killed recovery test was then added and awaits
+CI. It composes real binaries with a host shell and matching host
 libraries; it is not Ubuntu26.10 or Android evidence.
 
-Five new assertions: guest TTY/Unicode/resize/nonzero exit; Ctrl-C reaches the
+Six assertions: guest TTY/Unicode/resize/nonzero exit; Ctrl-C reaches the
 guest without killing supervision; transport stop drains a detached session;
 transport deadline does the same; terminal mode refuses ordinary pipes before
-creating run state. Existing pipe/cgroup/mount suites remain required.
+creating run state; fresh recovery after both supervisors die removes the
+scope without inventing a completed record. Existing pipe/cgroup/mount suites
+remain required.
 
 Still pending: Binder terminal activation linked to the Linux ticket/lease,
 terminal record backend selection and UI/Agent routing, real Android/Ubuntu
