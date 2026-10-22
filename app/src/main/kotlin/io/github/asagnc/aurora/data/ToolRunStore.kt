@@ -35,7 +35,7 @@ class ToolRunStore(private val conversations: ConversationStore) {
         require(commandArtifactId(directory) != null)
         conversations.requireActive(db, owner)
         require(db.update("tool_runs", values("artifact_directory" to directory),
-            "owner = ? AND call_id = ? AND state = 'started' AND artifact_directory IS NULL AND tool IN ('command_execute','command_execute_root','command_execute_linux','linux_environment')",
+            "owner = ? AND call_id = ? AND state = 'started' AND artifact_directory IS NULL AND tool IN ('command_execute','command_execute_root','command_execute_linux','linux_environment','packet_inspect')",
             arrayOf(owner, callId)) == 1)
         db.rawQuery("SELECT id, call_id, tool, state, result, artifact_directory, presentation FROM tool_runs WHERE owner = ? AND call_id = ?", arrayOf(owner, callId))
             .use { require(it.moveToFirst()); it.toolRun() }
@@ -77,7 +77,7 @@ class ToolRunStore(private val conversations: ConversationStore) {
 private fun Cursor.toolRun() = ToolRun(getString(0), getString(1), getString(2), getString(3), getString(4), getString(5), getString(6))
 
 private fun commandProjection(tool: String, result: String): String? = when (tool) {
-    "command_execute", "command_execute_root" -> compactCommandResult(result)
+    "command_execute", "command_execute_root", "packet_inspect" -> compactCommandResult(result)
     "command_execute_linux" -> compactLinuxCommandResult(result)
     else -> null
 }

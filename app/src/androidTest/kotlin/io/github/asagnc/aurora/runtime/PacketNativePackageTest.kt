@@ -43,6 +43,25 @@ class PacketNativePackageTest {
             assertEquals(if (expected == 0) 24 else 40 + expected, output.size)
             if (expected > 0) assertArrayEquals(packet, output.copyOfRange(40, output.size))
         }
+        val tool = PacketInspectionTool(context, root)
+        val inspected = WireJson.parseToJsonElement(tool.execute(ToolCall("inspect", "packet_inspect",
+            objectOf("path" to string("input.pcap"), "count" to kotlinx.serialization.json.JsonPrimitive(1),
+                "filter" to string("udp dst port 4321"))))).jsonObject
+        assertEquals(inspected.toString(), 0L, inspected.number("exitCode"))
+        assertTrue(inspected.toString(), inspected["stdout"]!!.jsonObject.text("text").orEmpty().contains(".4321"))
+        val literal = WireJson.parseToJsonElement(tool.execute(ToolCall("literal", "packet_inspect",
+            objectOf("path" to string("input.pcap"), "filter" to string("--version"))))).jsonObject
+        assertEquals(literal.toString(), "command_exit", literal.text("error"))
+    } }
+
+    @Test fun offlineToolRejectsTraversalBeforeDispatch() = runBlocking { fixture { root ->
+        var dispatched = false
+        val tool = PacketInspectionTool(context, root, prepared = { _, _ -> dispatched = true })
+        try {
+            tool.execute(ToolCall("escape", "packet_inspect", objectOf("path" to string("../outside.pcap"))))
+            fail("Packet tool accepted conversation traversal")
+        } catch (_: IllegalArgumentException) { }
+        assertFalse(dispatched)
     } }
 
     private suspend fun fixture(block: suspend (Path) -> Unit) {

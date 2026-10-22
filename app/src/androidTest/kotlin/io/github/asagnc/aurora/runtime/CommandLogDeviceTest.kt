@@ -60,7 +60,7 @@ class CommandLogDeviceTest {
             val conversations = ConversationStore(database)
             val owner = conversations.create("fixture")
             val store = ToolRunStore(conversations)
-            val mappings = listOf("command_execute", "command_execute_root", "command_execute_linux", "linux_environment").associateWith { tool ->
+            val mappings = listOf("command_execute", "command_execute_root", "command_execute_linux", "linux_environment", "packet_inspect").associateWith { tool ->
                 val id = store.start(owner, ToolCall(tool, tool, objectOf()))
                 val directory = "runs/${UUID.randomUUID()}"
                 assertEquals(directory, store.attachArtifact(owner, tool, directory).artifactDirectory)

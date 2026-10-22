@@ -85,6 +85,16 @@ class PacketToolsTest(unittest.TestCase):
         result = self.run_tool('-nn', '-r', 'truncated.pcap')
         self.assertNotEqual(result.returncode, 0)
 
+    def test_agent_style_literal_filter_and_packet_limit(self):
+        result = self.run_tool('-nn', '-t', '-c', '1', '-r', 'input.pcap', '--', 'udp dst port 4321')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn(b'.4321', result.stdout)
+
+    def test_filter_cannot_be_reinterpreted_as_version_flag(self):
+        result = self.run_tool('-nn', '-t', '-c', '1', '-r', 'input.pcap', '--', '--version')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertNotIn(b'tcpdump version', result.stdout)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

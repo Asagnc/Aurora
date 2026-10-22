@@ -38,6 +38,7 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
             io.github.asagnc.aurora.linux.LinuxEnvironmentTool(app.linux, id, prepared), BrowserToolExecutor(app.browser, id), ImageToolExecutor(app.images, id),
             io.github.asagnc.aurora.terminal.TerminalToolExecutor(app.terminals, id, app.root.terminalClient != null),
             CommandToolExecutor(app.commands, directory, prepared = prepared),
+            PacketInspectionTool(app, directory, app.commands, prepared),
             LinuxCommandTool({ runId, argv, timeout -> app.linux.runs.execute(id, argv, timeout, runId, linux.generation()) }, prepared),
             LinuxTerminalTool { options -> app.terminals.startLinux(id, io.github.asagnc.aurora.terminal.PtyRequest(
                 argv = options.argv, columns = options.columns, rows = options.rows,

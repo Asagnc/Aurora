@@ -1,3 +1,9 @@
+## 2026-10-23 0.1.35 Agent 离线包分析接入
+
+Agent 已注册 packet_inspect，普通UID独立原生进程解析会话PCAP/PCAPNG：字面BPF以--隔离选项，默认100/最多5000个匹配包，512MiB输入和30秒预算，无DNS/服务名查询。复用app.commands全局限流、现有前台任务/取消、工具账本产物关联及简洁详情。输入拒绝越界/符号链接/非普通文件；包数不等于扫描字节，超时及解析错误保留真实状态。没有把实时抓包能力标为已实现，也不为离线解析要求Root。
+
+本地Debug/Release/testAPK/lint再次通过，双ABI ELF/16KiB及对应源码包通过。PacketNativePackageTest当前3项（版本、真实过滤/Agent字面过滤/原包保留、派发前越界拒绝）与CommandLogDeviceTest第五类产物映射仅编译，手机仍0.1.32、最后集中验收。e04bbba CI39828476867的主机五项离线步骤已成功，该CI最终完整成功，证据evidence/0.1.35；新增两项主机Agent参数风格/过滤选项隔离待下一CI。Root实时采集/预算/文件属主/取消/异常落盘/受控流量与性能仍继续。
+
 ## 2026-10-23 0.1.35 组合抓包组件接入（资格分阶段）
 
 用户确认“我觉得可以组合都取最优”：libpcap底层采集/过滤、tcpdump成熟写盘/离线读取、Aurora Agent/任务/产物适配；不并行运行多个采集引擎，不据此引入AF_XDP或常驻服务。ROOT_CAPTURE_PROPOSAL已标组合确认。先接官方stable tcpdump4.99.7/libpcap1.10.7源码与SHA锁、NDK静态链接独立PIE、双ABI nativeLibraryDir分发、许可/源码头告知与对应源码包。Android版本0.1.35/code36。
