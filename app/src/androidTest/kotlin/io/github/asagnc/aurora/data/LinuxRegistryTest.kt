@@ -49,7 +49,7 @@ class LinuxRegistryTest {
             val skill = SkillEntry("skill", "a".repeat(64), true, SkillSource("https://example.org/skill.zip"), SkillMetadata("example", "Read files"), 1)
             skills.begin("skill", listOf(skill.hash)); skills.finish("skill", listOf(skill))
             old.writableDatabase.apply {
-                listOf("linux_leases", "linux_settings", "linux_versions", "linux_operations").forEach { execSQL("DROP TABLE $it") }
+                listOf("linux_runs", "linux_leases", "linux_settings", "linux_versions", "linux_operations").forEach { execSQL("DROP TABLE $it") }
                 version = 4
             }
             old.close()
@@ -59,7 +59,7 @@ class LinuxRegistryTest {
                 assertEquals("saved", store.messages(owner).single().message.text)
                 assertEquals(skill.hash, SkillRegistry(store).entries().single().hash)
                 assertTrue(LinuxRegistry(store).versions().isEmpty())
-                assertEquals(5, upgraded.readableDatabase.version)
+                assertEquals(6, upgraded.readableDatabase.version)
             } finally { upgraded.close() }
         } finally { old.close(); context.deleteDatabase(name) }
     }

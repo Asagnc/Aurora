@@ -4,7 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenHelper(context, name, null, 5) {
+class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenHelper(context, name, null, 6) {
     init { setWriteAheadLoggingEnabled(true) }
 
     override fun onConfigure(db: SQLiteDatabase) { db.setForeignKeyConstraintsEnabled(true) }
@@ -34,6 +34,7 @@ class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenH
         createTaskRuns(db)
         SkillRegistry.create(db)
         LinuxRegistry.create(db)
+        LinuxRunRegistry.create(db)
     }
 
     private fun createTaskRuns(db: SQLiteDatabase) {
@@ -45,7 +46,7 @@ class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenH
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        require(oldVersion in 1..4 && newVersion == 5)
+        require(oldVersion in 1..5 && newVersion == 6)
         if (oldVersion < 2) createTaskRuns(db)
         if (oldVersion < 3) {
             db.execSQL("ALTER TABLE tool_runs ADD COLUMN artifact_directory TEXT")
@@ -53,5 +54,6 @@ class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenH
         }
         SkillRegistry.create(db)
         LinuxRegistry.create(db)
+        LinuxRunRegistry.create(db)
     }
 }

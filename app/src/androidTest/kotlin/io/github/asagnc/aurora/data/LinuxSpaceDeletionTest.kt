@@ -32,10 +32,10 @@ class LinuxSpaceDeletionTest {
         Files.writeString(root.resolve("preserved.txt"), "keep")
         try {
             if (recovery) store.write { it.update("conversations", values("deleting" to 1), "id=?", arrayOf(owner)) }
-            try {
-                if (recovery) spaces.recoverDeletes() else spaces.delete(owner, {})
-                fail("Unconfirmed Linux lease was ignored")
-            } catch (_: IllegalArgumentException) { }
+            if (recovery) assertEquals(1, spaces.recoverDeletes()) else {
+                try { spaces.delete(owner, {}); fail("Unconfirmed Linux lease was ignored") }
+                catch (_: LinuxRunPendingException) { }
+            }
             assertEquals("keep", Files.readString(root.resolve("preserved.txt")))
             assertTrue(store.read { db -> db.rawQuery("SELECT 1 FROM linux_leases WHERE token=?", arrayOf(token)).use { it.moveToFirst() } })
             registry.release(token)

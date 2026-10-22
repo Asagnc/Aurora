@@ -13,4 +13,6 @@ interface IRootControl {
     void stopTerminal(String id);
     void prepareLinux(String operation, IRootResult callback);
     void discardLinux(String operation);
+    void startLinuxRun(String id, in Bundle request, IRootResult callback);
+    void recoverLinuxRun(String id, in Bundle request, IRootResult callback);
 }

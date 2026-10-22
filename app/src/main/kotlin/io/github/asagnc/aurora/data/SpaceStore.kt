@@ -14,6 +14,8 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 
+internal class LinuxRunPendingException : IllegalArgumentException("Linux task exit must be confirmed before deleting this conversation")
+
 class SpaceStore(private val context: Context, private val conversations: ConversationStore) {
     private val root = context.filesDir.toPath().resolve("spaces")
     private val openSpaces = ConcurrentHashMap<Path, OwnedFiles>()
@@ -69,16 +71,22 @@ class SpaceStore(private val context: Context, private val conversations: Conver
         finishDelete(id)
     }
 
-    suspend fun recoverDeletes(releaseBrowser: suspend (String) -> Unit = {}) {
+    suspend fun recoverDeletes(releaseBrowser: suspend (String) -> Unit = {}): Int {
         val pending = conversations.read { db -> db.rawQuery("SELECT id FROM conversations WHERE deleting = 1", null)
             .use { cursor -> buildList { while (cursor.moveToNext()) add(cursor.getString(0)) } } }
-        pending.forEach { releaseBrowser(it); finishDelete(it) }
+        var retained = 0
+        pending.forEach { id ->
+            try {
+                conversations.read { requireNoLinuxLeases(it, id) }
+                releaseBrowser(id); finishDelete(id)
+            } catch (_: LinuxRunPendingException) { retained++ }
+        }
+        return retained
     }
 
     private fun requireNoLinuxLeases(db: SQLiteDatabase, id: String) {
-        require(!db.rawQuery("SELECT 1 FROM linux_leases WHERE owner=? LIMIT 1", arrayOf(id)).use { it.moveToFirst() }) {
-            "Linux task exit must be confirmed before deleting this conversation"
-        }
+        if (db.rawQuery("SELECT 1 FROM linux_leases WHERE owner=? LIMIT 1", arrayOf(id)).use { it.moveToFirst() })
+            throw LinuxRunPendingException()
     }
 
     private suspend fun finishDelete(id: String) = withContext(Dispatchers.IO) {

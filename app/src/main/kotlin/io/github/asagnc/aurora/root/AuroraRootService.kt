@@ -18,6 +18,7 @@ import kotlinx.coroutines.runBlocking
 class AuroraRootService : RootService() {
     private val commands = RootCommandSession()
     private val terminals by lazy { RootTerminalSessions(this) }
+    private val linuxRuns by lazy { RootLinuxRuns(this) { linux.identity } }
     private val linux by lazy { RootLinuxPreparation(this) }
 
     private fun verifyCaller() {
@@ -61,6 +62,17 @@ class AuroraRootService : RootService() {
         }
         override fun activateTerminal(id: String) { verifyCaller(); terminals.activate(id) }
         override fun stopTerminal(id: String) { verifyCaller(); runBlocking { terminals.stop(id) } }
+        override fun startLinuxRun(id: String, request: Bundle, callback: IRootResult) {
+            verifyCaller()
+            val ticket = runTicket(id, request)
+            commands.start(id, callback) { linuxRuns.start(ticket) }
+        }
+        override fun recoverLinuxRun(id: String, request: Bundle, callback: IRootResult) {
+            verifyCaller()
+            val ticket = runTicket(id, request)
+            runBlocking(kotlinx.coroutines.Dispatchers.IO) { commands.cancelAndWait(id) }
+            commands.start(id, callback) { linuxRuns.recover(ticket) }
+        }
         override fun prepareLinux(operation: String, callback: IRootResult) {
             verifyCaller()
             commands.start(operation, callback) { linux.prepare(operation) }
@@ -80,6 +92,7 @@ class AuroraRootService : RootService() {
                 putInt("protocol", 1)
                 putInt("commandProtocol", 2)
                 putInt("terminalProtocol", 1)
+                putInt("linuxRunProtocol", 1)
                 runCatching {
                     val encoded = io.github.asagnc.aurora.core.WireJson.encodeToString(
                         io.github.asagnc.aurora.core.LinuxRootIdentity.serializer(), linux.identity)
@@ -94,6 +107,13 @@ class AuroraRootService : RootService() {
                 putString("selinux", runCatching { File("/proc/self/attr/current").readText()
                     .substringBefore('\u0000').trim().take(128) }.getOrDefault("不可读取"))
             }
+        }
+    }
+
+    private fun runTicket(id: String, request: Bundle): io.github.asagnc.aurora.core.LinuxRunTicket {
+        val encoded = requireNotNull(request.getString("ticket")).also { require(it.length <= 262144) }
+        return io.github.asagnc.aurora.core.WireJson.decodeFromString<io.github.asagnc.aurora.core.LinuxRunTicket>(encoded).also {
+            it.validate(); require(it.runId == id && it.appUid == applicationInfo.uid)
         }
     }
 

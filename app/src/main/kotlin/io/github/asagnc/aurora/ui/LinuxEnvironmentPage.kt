@@ -21,6 +21,7 @@ import kotlinx.coroutines.*
     val rootState by app.root.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     var versions by remember { mutableStateOf(emptyList<LinuxVersion>()) }
+    var pendingRuns by remember { mutableIntStateOf(0) }
     var current by remember { mutableStateOf<String?>(null) }
     var work by remember { mutableStateOf<Job?>(null) }
     var busy by remember { mutableStateOf(false) }
@@ -37,7 +38,7 @@ import kotlinx.coroutines.*
         }
     }
     LaunchedEffect(revision) {
-        try { app.ready.await(); versions = manager.registry.versions(); current = manager.registry.current() }
+        try { app.ready.await(); versions = manager.registry.versions(); current = manager.registry.current(); pendingRuns = manager.runs.pendingCount() }
         catch (cancel: CancellationException) { throw cancel }
         catch (_: Exception) { notice = "环境状态读取失败，请重试。" }
     }
@@ -64,6 +65,15 @@ import kotlinx.coroutines.*
             if (app.root.rootImagesAvailable) TextButton({ run { manager.install(io.github.asagnc.aurora.core.LinuxBackend.PROOT) } }, enabled = !busy) {
                 Text("按需准备普通 PRoot 环境（额外存储）")
             }
+            if (pendingRuns > 0) {
+                Text("有 $pendingRuns 个 Linux 任务等待确认退出，相关会话和环境暂时保留。", color = AuroraMuted)
+                OutlinedButton({ run {
+                    val result = manager.runs.recover()
+                    pendingRuns = manager.runs.pendingCount()
+                    app.spaces.recoverDeletes(app.browser::deleteOwner)
+                    notice = "恢复结果：$result"
+                } }, enabled = !busy && app.root.linuxRunClient != null) { Text("确认退出并恢复文件访问") }
+            }
             if (busy) {
                 LinearProgressIndicator(Modifier.fillMaxWidth())
                 Text("离开页面会取消未完成的安装；也可以让 Agent 安装并在任务中查看进度。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
@@ -80,7 +90,7 @@ import kotlinx.coroutines.*
             }
             HorizontalDivider()
             Text("执行状态", style = MaterialTheme.typography.titleSmall)
-            Text("PRoot 已随应用打包，可检查基础执行能力。完整命令、终端生命周期与 Root chroot 尚未接入。", color = AuroraMuted)
+            Text("PRoot 已随应用打包，可检查基础执行能力。Root 命令内部链路已接，仍待真机资格；Linux 终端尚未接入。", color = AuroraMuted)
             OutlinedButton({ run {
                 val result = manager.probe()
                 notice = if (result["workloadPassed"] == kotlinx.serialization.json.JsonPrimitive(true))

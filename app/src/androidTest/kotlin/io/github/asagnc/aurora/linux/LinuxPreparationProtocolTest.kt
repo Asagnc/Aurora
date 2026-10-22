@@ -126,6 +126,8 @@ class LinuxPreparationProtocolTest {
             if (!acknowledge) error("Binder transport lost")
             joined = true
         }
+        override fun startLinuxRun(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
+        override fun recoverLinuxRun(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
         override fun discardLinux(operation: String) { error("Not a Root filesystem fixture") }
         override fun snapshot() = Bundle()
         override fun start(id: String, conversation: String, request: Bundle, callback: IRootResult) { error("Not a command fixture") }
