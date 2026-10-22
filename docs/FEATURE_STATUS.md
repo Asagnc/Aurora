@@ -1,5 +1,7 @@
 # Aurora 功能与接续清单
 
+2026-10-22 / 0.1.29（优先于下方历史摘要）：Root Linux运行/批量文件通道/内部PTY、SQLite运行租约与停止证明已实现；UI新建与Agent Linux选择仍关闭，需真实Ubuntu/Android资格。PRoot完整生命周期、Root运行元数据GC、逆向/抓包发包/手机构建链和真实供应商缓存基准仍未完成。核心159：本机152通过/7POSIX跳过；Android构建通过；新增批命令3+PTY3专项仅编译。CI39782148102主机阶段成功、Android源码下载失败，修复重跑中。用户授权真机专项，当前待USB连接，不扩展旧手机证据到新版。详见PROGRESS.md、LINUX_PTY_APP.md。
+
 0.1.26：Root/普通独立属主代发布、Root受租约清理、票据恢复/目录同步、UI后端与空间提示已接。核心143；Android新增5普通仅编译，普通门槛78。真实guest/Root命令/PTY运行租约及新真机验收仍待，见LINUX_ROOT_GENERATIONS.md。
 
 0.1.25：Root/PRoot按需后端属主代已获确认；固定原生chroot挂载布局/退出资格已接，新增主机5项。现有环境属主未改，生产代发布/租约/真实guest与PTY仍待接，executionReady=false，见LINUX_CHROOT_MOUNTS.md。
@@ -35,7 +37,7 @@
 | 普通原生命令与终端 | command_execute保持轻量；0.1.13事件日志，0.1.14新增普通/Root PTY与六个终端工具、独立查看页 | 新日志/PTY待设备验收；日志轮转、跨强杀保留原进程、独立守护化完整约束未实现 |
 | Root | 独立 command_execute_root；Android16 ARM64 FolkPatch 通过真实UID0、受控产物归属/读取、取消/超时、断开/重连专项 | 外部管理器撤权、Root服务强杀恢复、挂载与任意Root文件清理、直接系统API工具仍待验收/实现；普通命令不自动升级权限 |
 | Skills | 0.1.17：SKILL.md、ZIP/公共HTTPS安装、哈希/恢复/版本引用、五个Agent工具、显式Git引用、分页资源发现/原生文件浏览、更新管理 | 新版设备验收、私有来源/签名、真实提供器/强杀安装矩阵；工作流所需Linux/执行工具包另行实现 |
-| Linux | 0.1.19：官方Ubuntu基础包校验/安装、共享代/恢复、PRoot双ABI打包、原生页和Agent固定probe | Android实际资格、Root挂载/执行、任意命令/PTY租约和包集合更新；打包与探测入口不等于完整可用 |
+| Linux | 0.1.29：独立Root/PRoot属主代、Root私有挂载/cgroup原生运行、批量文件通道、内部PTY、SQLite运行票据与租约、恢复入口 | 真实Ubuntu/Android运行与PTY资格；Agent/UI Linux选择未开放；PRoot完整执行生命周期、Root元数据GC与包集合更新 |
 | 逆向 | 候选分工已记录，已有文件/浏览器/普通命令基础 | JADX、Apktool、radare2、Frida 插件与 Android ARM64 验收 |
 | 网络 | 模型传输与浏览器代理 | Root 原生抓包、过滤/轮转/丢包统计、HTTP/TCP/UDP/原始发包和重放；不做 VPN 抓包 |
 | 手机编译 | 普通命令入口已接入 | JDK/Android SDK/NDK 工具包安装、APK/Compose/JNI 构建、签名与安装验收 |

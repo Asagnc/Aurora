@@ -4,8 +4,17 @@ FetchContent_Declare(aurora_proot_source
     URL https://codeload.github.com/termux/proot/zip/refs/tags/v5.1.107.98
     URL_HASH SHA256=9de61bddd6f5016d065e2755b72ff4747290e5f992562f031785b107b51d02ba
     DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
+set(AURORA_TALLOC_URL "https://www.samba.org/ftp/talloc/talloc-2.5.0.tar.gz")
+# CI can prefetch once with bounded HTTP/1.1 retries. The same immutable hash
+# remains mandatory here, including every ABI/build type using a local archive.
+if(DEFINED ENV{AURORA_TALLOC_ARCHIVE})
+    set(AURORA_TALLOC_URL "$ENV{AURORA_TALLOC_ARCHIVE}")
+    if(NOT IS_ABSOLUTE "${AURORA_TALLOC_URL}" OR NOT EXISTS "${AURORA_TALLOC_URL}" OR IS_DIRECTORY "${AURORA_TALLOC_URL}")
+        message(FATAL_ERROR "AURORA_TALLOC_ARCHIVE must be an existing absolute archive path")
+    endif()
+endif()
 FetchContent_Declare(aurora_talloc_source
-    URL https://www.samba.org/ftp/talloc/talloc-2.5.0.tar.gz
+    URL "${AURORA_TALLOC_URL}"
     URL_HASH SHA256=912afa237510ae542a7733998eb18a12bcda35ab6729c8e2ddb43e8d0ebab007
     DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
 FetchContent_Declare(aurora_shmem_source

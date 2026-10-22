@@ -2,6 +2,12 @@
 
 更新时间：2026-10-22。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 2026-10-22 CI下载修复与真机专项准备（优先接续）
+
+694ad43的CI39782148102：核心/签名镜像/PTY8/namespace4/cgroup与挂载31主机检查均通过，Android阶段因Samba下载talloc发生HTTP2 REFUSED_STREAM失败，不记完整CI通过。新增CI一次预下载：官方download.samba.org/pub优先、www.samba.org/ftp传输失败后备用，HTTPS/HTTP1.1、有界重试和原固定SHA256；CMake每ABI/构建类型仍核验同一哈希，只接受绝对本地归档路径。无新依赖或产品行为变化。
+
+本机实际脚本下载及SHA通过，使用AURORA_TALLOC_ARCHIVE的Debug/Release/testAPK/lint通过（outputs/ci-source-prefetch-build-20261022.txt）。用户已授权直接开展真机Linux/终端专项；ADB仍无设备，已通过异步问题请求连接并解锁，等用户回覆即可继续，不重复索要Root授权。只install-r、不卸载/清数据；新Root服务连接需协议cap，若FolkPatch授权失效再告知用户。先Root安装资格/批命令3项/PTY3项，失效数据保留诊断，再处理观察到的失败。暂无新真机证据；Agent Linux仍未开放。
+
 ## 0.1.29 Linux PTY应用链路（2026-10-22，优先接续）
 
 上一版7acd39c完整CI39780230312成功。现接AIDL末尾openLinuxTerminal/可选能力1、现有Root终端激活与FD传输、Linux运行票据/租约、guest完成证明校验、取消join后恢复和既有终端记录/UI/前台服务。内部startLinux支持同一套读写/窗口/停止，尚不开放UI新建或Agent后端选择，executionReady=false。原生completion补timedOut区分真正guest期限。无新依赖/数据库迁移/常驻进程。详见LINUX_PTY_APP.md。

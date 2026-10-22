@@ -1,3 +1,7 @@
+## 2026-10-22 CI源码传输修复
+
+39782148102的核心及Linux主机阶段成功，Android因Samba HTTP2 REFUSED_STREAM源码下载失败。CI预下载talloc一次，以HTTP1.1有界重试两个官方端点，原SHA在脚本和CMake均保留；绝对本地归档输入不改变依赖版本。本机实际下载/校验/全Android构建通过，新CI另查。ADB无手机，已请求连接后开展用户授权的专项，无新设备通过结论。
+
 ## 0.1.29 Linux PTY应用链路（2026-10-22）
 
 已接Root Binder可选终端协议1、激活FD传输、SQLite run票据与租约、确认guest完成后才释放、取消join恢复、现有终端记录与Linux标签。原生timedOut明确区分guest期限。无新依赖或schema迁移，内部startLinux尚不暴露UI新建/Agent后端。核心159：152通过/7POSIX跳过；Debug/testAPK/R8Release/lint通过，Root实际PTY3项只编译，普通88门槛未实跑。上一版完整CI39780230312成功，本轮CI另查。见LINUX_PTY_APP.md。executionReady=false；无新手机结果。

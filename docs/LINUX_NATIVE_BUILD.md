@@ -59,6 +59,15 @@ To rebuild offline, add these CMake definitions, using absolute paths:
 
 ## Verification boundary
 
+CI prefetches the pinned talloc source once using `scripts/prefetch-native-source.sh`
+with HTTPS/HTTP1.1 and bounded retries, avoiding an observed Samba HTTP2
+REFUSED_STREAM failure. It exports `AURORA_TALLOC_ARCHIVE`; Sources.cmake accepts
+only an existing absolute archive and retains the same URL_HASH check for every
+ABI/build type. No insecure transport, alternate source or unverified binary is
+substituted. Both download.samba.org/pub and www.samba.org/ftp are official
+archive endpoints; only a transport failure tries the second. Hash mismatch
+fails immediately. Without that variable, ordinary builds retain the official URL.
+
 `scripts/verify-linux-native.py APK` checks both ABI payloads, 16KiB ELF load
 alignment, non-executable stacks, absence of writable/executable segments,
 freestanding loader structure and packaged dynamic dependencies.
