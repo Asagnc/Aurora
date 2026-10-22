@@ -1,6 +1,7 @@
 package io.github.asagnc.aurora.data
 
 import android.content.Context
+import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.provider.OpenableColumns
 import io.github.asagnc.aurora.core.OwnedFiles
@@ -61,6 +62,7 @@ class SpaceStore(private val context: Context, private val conversations: Conver
             val state = db.rawQuery("SELECT run_state FROM conversations WHERE id = ?", arrayOf(id))
                 .use { if (it.moveToFirst()) it.getString(0) else null }
             require(state != "running") { "Conversation tasks must stop before deletion" }
+            requireNoLinuxLeases(db, id)
             db.update("conversations", values("deleting" to 1), "id = ?", arrayOf(id))
         }
         releaseBrowser(id)
@@ -73,7 +75,14 @@ class SpaceStore(private val context: Context, private val conversations: Conver
         pending.forEach { releaseBrowser(it); finishDelete(it) }
     }
 
+    private fun requireNoLinuxLeases(db: SQLiteDatabase, id: String) {
+        require(!db.rawQuery("SELECT 1 FROM linux_leases WHERE owner=? LIMIT 1", arrayOf(id)).use { it.moveToFirst() }) {
+            "Linux task exit must be confirmed before deleting this conversation"
+        }
+    }
+
     private suspend fun finishDelete(id: String) = withContext(Dispatchers.IO) {
+        conversations.read { requireNoLinuxLeases(it, id) }
         val target = path(id)
         require(!Files.isSymbolicLink(root) && !Files.isSymbolicLink(target.parent))
         if (Files.exists(target, LinkOption.NOFOLLOW_LINKS)) {

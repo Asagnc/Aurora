@@ -26,7 +26,7 @@ try {
     Set-Content -LiteralPath (Join-Path $directory 'emulator-check.txt') -Value $text -Encoding utf8
     Write-Output $text
     $count = [regex]::Match($text, 'OK \((\d+) tests?\)')
-    if ($exitCode -ne 0 -or !$count.Success -or [int]$count.Groups[1].Value -lt 78 -or
+    if ($exitCode -ne 0 -or !$count.Success -or [int]$count.Groups[1].Value -lt 80 -or
         $text -match 'FAILURES|INSTRUMENTATION_FAILED|Process crashed') { throw 'Emulator verification did not produce seventy-eight passing tests.' }
     $recovery = & $adb -s $Serial shell am instrument -w -e class io.github.asagnc.aurora.browser.BrowserRecoveryTest io.github.asagnc.aurora.test/androidx.test.runner.AndroidJUnitRunner
     $recoveryExit = $LASTEXITCODE

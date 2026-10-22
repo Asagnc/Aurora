@@ -94,8 +94,14 @@ class MountTest(base.ScopeTest):
 
     def test_guest_command_streams_status_and_durable_completion(self):
         root, work = self.shell_fixture()
-        args = self.run_arguments(root, work, 'printf output; printf error >&2; printf artifact > /mnt/result; exit 23')
-        result = subprocess.run(args, capture_output=True, timeout=8)
+        with tempfile.TemporaryFile() as host_file:
+            command = (f'test ! -e /proc/self/fd/{host_file.fileno()} || exit 92; '
+                       'test -z "$AURORA_HOST_SECRET" || exit 93; '
+                       'test "$HOME" = /root && test "$PWD" = /mnt || exit 94; '
+                       'printf output; printf error >&2; printf artifact > /mnt/result; exit 23')
+            args = self.run_arguments(root, work, command)
+            result = subprocess.run(args, capture_output=True, timeout=8, pass_fds=(host_file.fileno(),),
+                                    env={**os.environ, 'AURORA_HOST_SECRET': 'must-not-enter-guest'})
         self.assertEqual(23, result.returncode, result.stderr.decode())
         self.assertEqual(b'output', result.stdout)
         self.assertEqual(b'error', result.stderr)

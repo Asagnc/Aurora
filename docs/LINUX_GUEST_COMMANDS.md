@@ -8,6 +8,10 @@ A Root-owned one-use state directory retains run.json before worker creation. It
 
 Future application integration must bind this directory to a persisted run/lease before dispatch, join or prove the old Root Binder worker dead before recovery, and block conversation deletion while any run is unconfirmed. A generic command callback or an empty state directory alone is insufficient because a dispatched old worker might not have created its scope yet. Retain unknown leases and files; never infer stopped from service disconnection. Root-created writable conversation files also need tracked privileged cleanup before enabling Agent calls.
 
-Verification: existing fixture group7 plus4 command tests: output/status/artifact/durable identity and reuse rejection; timeout with background child; missing executable; both supervisors killed followed by explicit recovery without fabricated completion. Host /bin/sh and matching dynamic libraries exercise a real ELF, not the pinned Ubuntu26.10 image or Android SELinux. Existing cgroup6 and recovery7 tests remain unchanged.
+Verification: existing fixture group7 plus4 command tests: output/status/artifact/clean environment/host FD noninheritance/durable identity and reuse rejection; timeout with background child; missing executable; both supervisors killed followed by explicit recovery without fabricated completion. Host /bin/sh and matching dynamic libraries exercise a real ELF, not the pinned Ubuntu26.10 image or Android SELinux. Existing cgroup6 and recovery7 tests remain unchanged.
 
 Platform basis: Linux execve closes only CLOEXEC descriptors and uses the guest PT_INTERP for dynamic ELF loading: https://man7.org/linux/man-pages/man2/execve.2.html . No host-shell fallback or inherited host library environment.
+
+Descriptor handling basis: https://man7.org/linux/man-pages/man2/close_range.2.html (CLOSE_RANGE_CLOEXEC, Linux5.11+).
+
+Conversation deletion barrier: SpaceStore refuses both initial deletion and recovery file deletion while linux_leases has the owner. Marking deleting and checking leases share the database transaction; requireActive rejects new leases for a deleting conversation. Two Android tests cover data/lease retention and successful deletion only after explicit release. They have been compiled, not device-run.
