@@ -31,6 +31,7 @@ internal class LinuxRegistry(private val conversations: ConversationStore) {
         db.execSQL("INSERT OR REPLACE INTO linux_settings(singleton,current_id) VALUES(1,?)", arrayOf(version)); Unit
     }
     suspend fun publish(operation: String, version: LinuxVersion) = conversations.write { db ->
+        require(version.id == version.manifest.generationId())
         db.insertWithOnConflict("linux_versions", null, values("id" to version.id, "manifest" to WireJson.encodeToString(version.manifest),
             "installed_at" to version.installedAt), SQLiteDatabase.CONFLICT_IGNORE)
         db.execSQL("INSERT OR REPLACE INTO linux_settings(singleton,current_id) VALUES(1,?)", arrayOf(version.id))

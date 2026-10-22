@@ -11,6 +11,32 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class LinuxRegistryTest {
+    @Test fun rootLeaseProtectsItsGenerationIndependentlyOfOrdinaryBackend() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val name = "root-leases-${UUID.randomUUID()}.db"
+        val database = AuroraDatabase(context, name)
+        try {
+            val store = ConversationStore(database); val registry = LinuxRegistry(store)
+            val owner = store.create("root task")
+            val image = UbuntuBaseImages.current(LinuxArchitecture.ARM64)
+            val ordinary = LinuxRootfsManifest(image, 1, 1)
+            val privileged = LinuxRootfsManifest(image, 1, 1, LinuxBackend.CHROOT)
+            for (manifest in listOf(ordinary, privileged)) {
+                val version = LinuxVersion(manifest.generationId(), manifest, 1)
+                registry.begin(version.id, version.id); registry.publish(version.id, version)
+            }
+            val lease = registry.lease(owner, privileged.generationId())
+            registry.select(ordinary.generationId())
+            assertTrue(registry.unused().isEmpty())
+            try { registry.reserveRemoval("blocked-root", privileged.generationId()); fail("Root lease ignored") }
+            catch (_: IllegalArgumentException) {}
+            registry.release(lease)
+            assertEquals(listOf(privileged.generationId()), registry.unused())
+            registry.reserveRemoval("root-removal", privileged.generationId())
+            assertEquals(listOf("root-removal" to privileged.generationId()), registry.pending())
+            assertEquals(ordinary.generationId(), registry.current())
+        } finally { database.close(); context.deleteDatabase(name) }
+    }
     @Test fun versionFourMigrationPreservesConversationsAndSkills() = runBlocking {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val name = "linux-migration-${UUID.randomUUID()}.db"
@@ -48,7 +74,7 @@ class LinuxRegistryTest {
             val first = LinuxVersion(image.sha256, LinuxRootfsManifest(image, 1, 10), 1)
             registry.begin("first", first.id); registry.publish("first", first)
             val lease = registry.lease(owner, first.id)
-            val next = first.copy(id = "b".repeat(64), installedAt = 2)
+            val next = first.copy(id = "b".repeat(64), manifest = first.manifest.copy(image = image.copy(sha256 = "b".repeat(64))), installedAt = 2)
             registry.begin("next", next.id); registry.publish("next", next)
             assertTrue(registry.unused().isEmpty())
             try { registry.reserveRemoval("blocked", first.id); fail("Active lease removed") } catch (_: IllegalArgumentException) { }

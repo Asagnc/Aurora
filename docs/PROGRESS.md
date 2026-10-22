@@ -2,6 +2,14 @@
 
 更新时间：2026-10-22。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 0.1.26 后端环境代发布（2026-10-22，优先接续）
+
+已实现Root/普通独立代，Root原始UID/GID/权限预检与批量恢复、独立ID/旧manifest兼容、元数据/目录同步与事务发布。Root删除也走票据/取消join；先确认旧文件工作停止再恢复版本操作，Root缺失保留版本与恢复记录。复用SQLite v5租约保护新代，未接Root业务命令/PTY的实际运行租约。见LINUX_ROOT_GENERATIONS.md。
+
+Agent install支持backend=auto/root/proot；显式Root连接默认只准备Root代，UI按需另备普通代/空间提示/后端列表；普通PRoot probe拒绝Root属主代。协议2须更新Root服务，既有协议1硬链接兼容。executionReady=false，未跑真实Ubuntu guest。
+
+核心143（Windows136通过/7POSIX跳过）；Android新增普通5项只编译，普通门槛78，Root镜像专项验证已更新但未运行。本轮证据见evidence/0.1.26，无新真机结果。上一版4411fe7完整[CI39736472325](https://github.com/Asagnc/Aurora/actions/runs/39736472325)通过。下一步真实guest/命令/PTY与scope—版本租约/Root可写会话回收闭环，再约真机；不重复审批后端属主方案。
+
 ## 0.1.25 chroot挂载资格（2026-10-22，优先接续）
 
 用户已确认LINUX_OWNERSHIP_PROPOSAL.md：Root用户默认只准备原始Linux属主Root代；PRoot的App UID代按需另建，各代会话间共享，不逐会话复制、不强依赖OverlayFS。两种同存约多108MiB基础文件加块开销，Root清理需Root，不能重复询问此选择。

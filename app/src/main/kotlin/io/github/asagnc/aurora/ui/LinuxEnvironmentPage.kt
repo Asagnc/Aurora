@@ -46,13 +46,23 @@ import kotlinx.coroutines.*
             Text("Ubuntu Base 26.10", style = MaterialTheme.typography.headlineSmall)
             Text("共享基础环境与已发布版本；会话文件和输出独立保存。基础包不包含完整编译及逆向工具。", color = AuroraMuted)
             Text(status, style = MaterialTheme.typography.titleMedium)
-            Text(if (app.root.linuxAvailable && rootState.phase == io.github.asagnc.aurora.root.RootPhase.READY)
-                "本次安装由已连接的 Root 补齐硬链接，文件与会话仍由 Aurora 管理。"
-                else "本机需要支持硬链接，或先在设置连接 Root；安装不会自动申请授权。", color = AuroraMuted)
+            Text(if (app.root.rootImagesAvailable && rootState.phase == io.github.asagnc.aurora.root.RootPhase.READY)
+                "默认准备共享 Root 环境并保留 Linux 原始属主；清理需要 Root。普通环境只在需要时另备。"
+                else if (app.root.linuxAvailable) "请断开并重新连接 Root，以更新环境安装协议。"
+                else "普通环境需支持硬链接；也可先在设置连接 Root，准备独立的 Root 环境。安装不自动申请授权。", color = AuroraMuted)
+            val targetBackend = if (app.root.rootImagesAvailable) io.github.asagnc.aurora.core.LinuxBackend.CHROOT else io.github.asagnc.aurora.core.LinuxBackend.PROOT
+            if (versions.none { it.manifest.backend == targetBackend && it.manifest.image.sha256 == manager.image.sha256 }) {
+                versions.firstOrNull { it.manifest.image.sha256 == manager.image.sha256 }?.let { existing ->
+                    Text("现有环境会保留；另备环境约增加 ${existing.manifest.expandedBytes / (1024 * 1024)} MiB 文件，另需目录和暂存空间。", color = AuroraMuted)
+                }
+            }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilledTonalButton({ run { manager.install() } }, enabled = !busy) { Text(if (current == null) "安装基础环境" else "检查基础环境") }
                 if (busy) TextButton({ work?.cancel() }) { Text("取消") }
-                else TextButton({ run { notice = "已清理 ${manager.cleanup()} 个未使用版本" } }) { Text("清理旧版") }
+                else TextButton({ run { notice = "已清理 ${manager.cleanup()} 个未使用版本" } }) { Text("清理闲置") }
+            }
+            if (app.root.rootImagesAvailable) TextButton({ run { manager.install(io.github.asagnc.aurora.core.LinuxBackend.PROOT) } }, enabled = !busy) {
+                Text("按需准备普通 PRoot 环境（额外存储）")
             }
             if (busy) {
                 LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -63,7 +73,7 @@ import kotlinx.coroutines.*
                 OutlinedCard(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text("${version.manifest.image.distribution} ${version.manifest.image.version}", style = MaterialTheme.typography.titleMedium)
-                        Text("${version.manifest.image.architecture.abi} · ${version.manifest.expandedBytes / (1024 * 1024)} MiB 文件内容", color = AuroraMuted)
+                        Text("${if (version.manifest.backend == io.github.asagnc.aurora.core.LinuxBackend.CHROOT) "Root" else "PRoot"} · ${version.manifest.image.architecture.abi} · ${version.manifest.expandedBytes / (1024 * 1024)} MiB 文件内容", color = AuroraMuted)
                         Text("${version.id.take(16)}${if (version.id == current) " · 当前版本" else ""}", style = MaterialTheme.typography.bodySmall)
                     }
                 }
@@ -75,7 +85,7 @@ import kotlinx.coroutines.*
                 val result = manager.probe()
                 notice = if (result["workloadPassed"] == kotlinx.serialization.json.JsonPrimitive(true))
                     "基础检查通过；完整执行能力仍待验收。" else "基础检查未通过：$result"
-            } }, enabled = !busy && current != null) { Text("检查 PRoot 执行能力") }
+            } }, enabled = !busy && versions.any { it.id == current && it.manifest.backend == io.github.asagnc.aurora.core.LinuxBackend.PROOT }) { Text("检查 PRoot 执行能力") }
         }
     }
 }

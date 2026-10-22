@@ -7,7 +7,9 @@ import io.github.asagnc.aurora.runtime.CommandWakeLock
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.*
 
-internal class RootLinuxClient(private val remote: IRootControl, val identity: LinuxRootIdentity, context: Context) {
+internal class RootLinuxClient(private val remote: IRootControl, val identity: LinuxRootIdentity, context: Context,
+    val protocol: Int = 1) {
+    val supportsRootImages get() = protocol >= 2
     private val awake = CommandWakeLock(context, "LinuxPreparation")
 
     /** onStopped is called only after the Root worker has been synchronously joined. */

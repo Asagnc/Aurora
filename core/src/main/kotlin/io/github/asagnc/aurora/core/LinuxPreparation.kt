@@ -11,9 +11,10 @@ import kotlinx.serialization.Serializable
 }
 
 @Serializable data class LinuxPreparationTicket(val operation: String, val identity: LinuxRootIdentity,
-    val image: String, val appUid: Int, val protocol: Int = 1) {
+    val image: String, val appUid: Int, val protocol: Int = 1, val purpose: String = "hardlinks") {
     fun validate() {
-        require(protocol == 1 && appUid > 0 && image.matches(Regex("[a-f0-9]{64}")))
+        require((protocol == 1 && purpose == "hardlinks" || protocol == 2 && purpose in setOf("root_ownership", "root_removal")) &&
+            appUid > 0 && image.matches(Regex("[a-f0-9]{64}")))
         require(UUID.fromString(operation).toString() == operation)
         identity.validate()
     }

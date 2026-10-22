@@ -1,3 +1,7 @@
+# 0.1.26 后端环境代发布（2026-10-22）
+
+Root/普通独立代、原始属主恢复、事务发布和受租约保护的Root清理已接，Root文件操作票据/取消屏障复用原协议，新增Linux能力协议2。见LINUX_ROOT_GENERATIONS.md。核心143；Android普通新增5仅编译，普通门槛78。没有新真机或真实guest证据，Root命令/PTY的运行租约与会话回收仍待接，executionReady=false。
+
 # 0.1.25 chroot挂载资格（2026-10-22）
 
 Root/PRoot后端共享属主代方案已获确认。新增固定C chroot/只读根/可写会话绑定/FD挂载与cgroup收尾测试，主机新增5项，旧13项继续；见LINUX_CHROOT_MOUNTS.md。未运行真实Ubuntu ELF，未接属主代发布与业务租约/命令/PTY，executionReady=false，无新真机证据。

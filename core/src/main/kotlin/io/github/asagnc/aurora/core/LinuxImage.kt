@@ -10,7 +10,22 @@ import kotlinx.serialization.Serializable
 }
 @Serializable data class LinuxImage(val distribution: String, val version: String, val architecture: LinuxArchitecture,
     val url: String, val sha256: String)
-@Serializable data class LinuxRootfsManifest(val image: LinuxImage, val entries: Int, val expandedBytes: Long)
+@Serializable enum class LinuxBackend { PROOT, CHROOT }
+@Serializable data class LinuxRootfsManifest(val image: LinuxImage, val entries: Int, val expandedBytes: Long,
+    val backend: LinuxBackend = LinuxBackend.PROOT, val ownershipVersion: Int = if (backend == LinuxBackend.CHROOT) 1 else 0) {
+    fun generationId(): String = linuxGenerationId(image.sha256, backend).also {
+        require(ownershipVersion == if (backend == LinuxBackend.CHROOT) 1 else 0)
+        require(entries in 0..50000 && expandedBytes in 0..2L * 1024 * 1024 * 1024)
+    }
+}
+
+/** Preserve ordinary legacy IDs; Root ownership is a distinct immutable generation. */
+fun linuxGenerationId(image: String, backend: LinuxBackend): String {
+    require(image.matches(Regex("[a-f0-9]{64}")))
+    if (backend == LinuxBackend.PROOT) return image
+    return java.security.MessageDigest.getInstance("SHA-256")
+        .digest("aurora-linux-chroot-ownership-v1:$image".toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) }
+}
 
 /** Digests checked against the official SHA256SUMS signed by the pinned Ubuntu CD Image key. */
 object UbuntuBaseImages {

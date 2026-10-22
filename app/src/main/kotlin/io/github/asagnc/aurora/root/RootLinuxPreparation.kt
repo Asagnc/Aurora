@@ -5,13 +5,14 @@ import android.os.Build
 import android.os.Process
 import android.system.Os
 import io.github.asagnc.aurora.core.*
+import io.github.asagnc.aurora.linux.LinuxDurability
 import java.nio.file.*
 import java.security.MessageDigest
 import java.util.UUID
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.*
 
-/** Fixed official-image hardlink batch; regular files retain their app-created SELinux labels. */
+/** Fixed-image hardlinks and separate ownership finalization; labels are retained by lchown. */
 internal class RootLinuxPreparation(private val context: Context) {
     val identity = LinuxRootIdentity(Process.myPid(), startTicks(Process.myPid()), bootId(), UUID.randomUUID().toString())
         .also { it.validate() }
@@ -21,6 +22,12 @@ internal class RootLinuxPreparation(private val context: Context) {
         val stage = stage(operation)
         val ticket = ticket(stage)
         require(ticket.identity == identity && ticket.appUid == uid && ticket.operation == operation)
+        if (ticket.purpose == "root_removal") {
+            val generation = linuxGenerationId(ticket.image, LinuxBackend.CHROOT)
+            RootLinuxVersionFiles(context).remove(generation)
+            return@runInterruptible objectOf("protocol" to JsonPrimitive(1), "prepared" to JsonPrimitive(true),
+                "ownership" to string(ticket.purpose), "generation" to string(generation)).toString()
+        }
         val image = UbuntuBaseImages.current(LinuxArchitecture.fromAbi(Build.SUPPORTED_ABIS.first()))
         require(ticket.image == image.sha256)
         val archive = stage.resolve("base.tar.gz")
@@ -31,7 +38,10 @@ internal class RootLinuxPreparation(private val context: Context) {
         require(Files.isDirectory(prepared, LinkOption.NOFOLLOW_LINKS))
         require(Os.lstat(prepared.toString()).st_uid == uid)
         val rootfs = prepared.resolve("rootfs")
-        unpacker.materializeHardlinks(rootfs, plan, inspect = { path ->
+        if (ticket.purpose == "root_ownership") {
+            RootLinuxOwners.restore(rootfs, plan, uid)
+            LinuxElf.validateRootfs(rootfs, image.architecture)
+        } else unpacker.materializeHardlinks(rootfs, plan, inspect = { path ->
             var current = prepared
             require(path.startsWith(rootfs))
             for (part in prepared.relativize(path)) {
@@ -40,7 +50,9 @@ internal class RootLinuxPreparation(private val context: Context) {
             }
         })
         objectOf("protocol" to JsonPrimitive(1), "prepared" to JsonPrimitive(true), "image" to string(image.sha256),
-            "entries" to JsonPrimitive(plan.size), "bytes" to JsonPrimitive(plan.sumOf { it.bytes })).toString()
+            "entries" to JsonPrimitive(plan.size), "bytes" to JsonPrimitive(plan.sumOf { it.bytes }),
+            "ownership" to string(ticket.purpose), "generation" to string(linuxGenerationId(image.sha256,
+                if (ticket.purpose == "root_ownership") LinuxBackend.CHROOT else LinuxBackend.PROOT))).toString()
     }
 
     /** Caller must cancel/join the same-epoch operation before invoking discard. */
@@ -63,7 +75,12 @@ internal class RootLinuxPreparation(private val context: Context) {
         val canonical = stage.toRealPath()
         val mounted = Files.readAllLines(Path.of("/proc/self/mountinfo")).mapNotNull { it.split(' ').getOrNull(4) }
         require(mounted.none { Path.of(it.replace("\\040", " ").replace("\\011", "\t").replace("\\134", "\\")).startsWith(canonical) })
-        removeSkillTree(stage)
+        Files.newDirectoryStream(stage).use { children -> children.forEach { path ->
+            if (path.fileName.toString() != ".root-preparation.json") removeSkillTree(path)
+        } }
+        LinuxDurability.directory(stage)
+        Files.delete(stage.resolve(".root-preparation.json")); Files.delete(stage)
+        LinuxDurability.directory(stage.parent)
     }
 
     fun belongsToCurrent(operation: String) = ticket(stage(operation)).identity == identity

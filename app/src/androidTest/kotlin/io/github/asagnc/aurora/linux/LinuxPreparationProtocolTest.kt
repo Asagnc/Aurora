@@ -18,6 +18,53 @@ class LinuxPreparationProtocolTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val identity get() = LinuxRootIdentity(123, 456, UUID.randomUUID().toString(), UUID.randomUUID().toString())
 
+    @Test fun ownershipCompletionRetainsPrivilegedCleanupTicketEvenAfterJoin() = runBlocking {
+        for (acknowledged in listOf(true, false)) {
+            val parent = Files.createTempDirectory(context.cacheDir.toPath(), "ownership-protocol-")
+            try {
+                val stage = Files.createDirectory(parent.resolve(UUID.randomUUID().toString()))
+                val manifest = LinuxRootfsManifest(UbuntuBaseImages.current(LinuxArchitecture.ARM64), 1, 1, LinuxBackend.CHROOT)
+                val endpoint = Endpoint(acknowledge = acknowledged).apply {
+                    response = """{"protocol":1,"prepared":true,"image":"${manifest.image.sha256}","entries":1,"bytes":1,"ownership":"root_ownership","generation":"${manifest.generationId()}"}"""
+                }
+                val result = runCatching { LinuxRootOwnershipBatch(RootLinuxClient(endpoint, identity, context, 2),
+                    stage, manifest, context.applicationInfo.uid).complete() }
+                assertEquals(acknowledged, result.isSuccess)
+                assertTrue(LinuxPreparationState.pending(stage))
+                assertEquals(1, LinuxPreparationState.recover(parent, null))
+            } finally { removeSkillTree(parent) }
+        }
+    }
+    @Test fun olderRootProtocolIsRejectedBeforeOwnershipTicketOrRequest() = runBlocking {
+        val parent = Files.createTempDirectory(context.cacheDir.toPath(), "old-linux-protocol-")
+        try {
+            val stage = Files.createDirectory(parent.resolve(UUID.randomUUID().toString()))
+            val endpoint = Endpoint()
+            val manifest = LinuxRootfsManifest(UbuntuBaseImages.current(LinuxArchitecture.ARM64), 1, 1, LinuxBackend.CHROOT)
+            assertTrue(runCatching { LinuxRootOwnershipBatch(RootLinuxClient(endpoint, identity, context), stage,
+                manifest, context.applicationInfo.uid).complete() }.isFailure)
+            assertFalse(endpoint.entered.isCompleted)
+            assertFalse(LinuxPreparationState.pending(stage))
+        } finally { removeSkillTree(parent) }
+    }
+    @Test fun deletionTicketIsClearedOnlyAfterItsWorkerJoinIsAcknowledged() = runBlocking {
+        for (acknowledged in listOf(true, false)) {
+            val parent = Files.createTempDirectory(context.cacheDir.toPath(), "removal-protocol-")
+            try {
+                val stage = Files.createDirectory(parent.resolve(UUID.randomUUID().toString()))
+                val manifest = LinuxRootfsManifest(UbuntuBaseImages.current(LinuxArchitecture.ARM64), 1, 1, LinuxBackend.CHROOT)
+                val endpoint = Endpoint(acknowledge = acknowledged).apply {
+                    response = """{"protocol":1,"prepared":true,"ownership":"root_removal","generation":"${manifest.generationId()}"}"""
+                }
+                val result = runCatching { LinuxRootRemovalBatch(RootLinuxClient(endpoint, identity, context, 2),
+                    stage, manifest, context.applicationInfo.uid).complete() }
+                assertEquals(acknowledged, result.isSuccess)
+                assertEquals(!acknowledged, Files.exists(stage))
+                if (!acknowledged) assertTrue(LinuxPreparationState.pending(stage))
+            } finally { removeSkillTree(parent) }
+        }
+    }
+
     @Test fun successfulReplyWaitsForWorkerJoin() = runBlocking {
         val endpoint = Endpoint()
         var stopped = false

@@ -1,5 +1,7 @@
 # Aurora 功能与接续清单
 
+0.1.26：Root/普通独立属主代发布、Root受租约清理、票据恢复/目录同步、UI后端与空间提示已接。核心143；Android新增5普通仅编译，普通门槛78。真实guest/Root命令/PTY运行租约及新真机验收仍待，见LINUX_ROOT_GENERATIONS.md。
+
 0.1.25：Root/PRoot按需后端属主代已获确认；固定原生chroot挂载布局/退出资格已接，新增主机5项。现有环境属主未改，生产代发布/租约/真实guest与PTY仍待接，executionReady=false，见LINUX_CHROOT_MOUNTS.md。
 
 0.1.24：scope持久记录/身份复核/监督强杀协调兜底/独立恢复及Agent recover_root已接。新增主机7故障，Android仅编译无新增真机证据，完整Linux执行仍未开放。见LINUX_SCOPE_RECOVERY.md。

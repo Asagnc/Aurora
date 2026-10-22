@@ -84,7 +84,7 @@ class AuroraRootService : RootService() {
                     val encoded = io.github.asagnc.aurora.core.WireJson.encodeToString(
                         io.github.asagnc.aurora.core.LinuxRootIdentity.serializer(), linux.identity)
                     putString("linuxIdentity", encoded)
-                    putInt("linuxPrepareProtocol", 1)
+                    putInt("linuxPrepareProtocol", 2)
                 }
                 putInt("uid", Process.myUid())
                 putInt("pid", Process.myPid())

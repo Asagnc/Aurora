@@ -1,6 +1,10 @@
 # Linux 环境实施记录
 
-2026-10-22。用户已批准LINUX_PROPOSAL.md及真机后的cgroup生命周期修订，后者替代必需PID空间。当前0.1.25已接Root安装、固定cgroup监督/恢复及原生chroot挂载资格，完整运行时尚未就绪。
+2026-10-22。用户已批准LINUX_PROPOSAL.md及真机后的cgroup生命周期修订，后者替代必需PID空间。当前0.1.26已接Root/普通属主代发布、cgroup监督/恢复及原生chroot挂载资格，完整运行时尚未就绪。
+
+## 0.1.26 后端代发布
+
+Root原始属主代/普通App属主代独立ID与发布、Root受租约清理、票据停止屏障/恢复与目录同步、UI和Agent后端选择已接；见LINUX_ROOT_GENERATIONS.md。核心143，新增Android普通5仅编译，普通门槛78，无新真机证据。真实guest/Root命令/PTY运行租约及Root会话可写文件回收仍待接，executionReady=false。
 
 ## 0.1.25 挂载资格与属主代确认
 

@@ -1,0 +1,2 @@
+{'tests': 143, 'failures': 0, 'errors': 0, 'skipped': 7}
+Windows; official fixed ARM64 sample configured. POSIX-only tests execute on Linux CI.

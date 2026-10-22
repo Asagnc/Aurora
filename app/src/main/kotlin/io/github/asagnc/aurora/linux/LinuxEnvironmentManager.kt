@@ -26,6 +26,7 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
     private val installer = Mutex()
     private val root = app.filesDir.toPath().resolve("spaces/resources/linux")
     private val staging = app.filesDir.toPath().resolve("spaces/resources/.linux-staging")
+    private val cleaner = LinuxVersionCleaner(app, root)
     private val network = SkillNetwork()
     val revision = MutableStateFlow(0L)
     val status = MutableStateFlow("尚未安装 Linux 环境")
@@ -35,25 +36,26 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
         app.spaces.sharedResources()
         require(!Files.isSymbolicLink(root) && !Files.isSymbolicLink(staging))
         Files.createDirectories(root); Files.createDirectories(staging)
-        catalog.withLock { registry.pending().forEach { (operation, id) ->
-            if (registry.versions().none { it.id == id }) removeSkillTree(directory(id))
-            registry.clear(operation)
-        } }
-        val retained = LinuxPreparationState.recover(staging, null)
-        status.value = if (retained > 0) "有未确认的 Root 安装，连接 Root 后可清理恢复"
+        val retained = recoverBeforeOperations(null)
+        status.value = if (retained > 0) "有 Root 安装或环境待清理，连接 Root 后可恢复"
             else if (registry.current() == null) "尚未安装 Linux 环境" else "基础环境已安装，执行能力待探测"
     } }
 
-    suspend fun install(): LinuxVersion = installer.withLock { withContext(Dispatchers.IO) {
+    suspend fun install(requested: LinuxBackend? = null): LinuxVersion = installer.withLock { withContext(Dispatchers.IO) {
         val source = image
         val privileged = app.root.linuxClient
-        val retained = LinuxPreparationState.recover(staging, privileged)
+        val backend = requested ?: if (privileged != null) LinuxBackend.CHROOT else LinuxBackend.PROOT
+        if (backend == LinuxBackend.CHROOT) check(privileged?.supportsRootImages == true) { "Connect or reconnect Root before preparing a Root generation" }
+        val id = linuxGenerationId(source.sha256, backend)
+        val retained = recoverBeforeOperations(privileged)
         val installed = catalog.withLock {
-            registry.versions().firstOrNull { it.id == source.sha256 }?.also { version ->
+            registry.versions().firstOrNull { it.id == id }?.also { version ->
+                require(version.manifest.generationId() == id && version.manifest.backend == backend)
+                if (backend == LinuxBackend.CHROOT) require(android.system.Os.lstat(directory(id).resolve("rootfs").toString()).st_uid == 0)
                 LinuxElf.validateRootfs(directory(version.id).resolve("rootfs"), source.architecture)
                 withContext(NonCancellable) {
                     registry.select(version.id); revision.update { it + 1 }
-                    status.value = if (retained > 0) "有未确认的 Root 安装，连接 Root 后可清理恢复" else "基础环境已安装，执行能力待探测"
+                    status.value = if (retained > 0) "有 Root 安装或环境待清理，连接 Root 后可恢复" else "基础环境已安装，执行能力待探测"
                 }
             }
         }
@@ -74,7 +76,7 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
             val bytes = plan.sumOf { it.bytes }
             require(android.os.StatFs(stage.toString()).availableBytes >= bytes + plan.size * 4096L + 64L * 1024 * 1024) { "Insufficient expanded space" }
             val prepared = Files.createDirectory(stage.resolve("prepared"))
-            val manifest = LinuxRootfsManifest(source, plan.size, bytes)
+            val manifest = LinuxRootfsManifest(source, plan.size, bytes, backend)
             status.value = "解压基础环境…"
             val hooks = privileged?.let { client -> LinuxRootLinkBatch(client, stage,
                 LinuxPreparationTicket(operation, client.identity, source.sha256, app.applicationInfo.uid), manifest).hooks() }
@@ -85,13 +87,20 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
             runInterruptible { LinuxElf.validateRootfs(prepared.resolve("rootfs"), source.architecture) }
             writeMetadata(prepared.resolve("entries.json"), WireJson.encodeToString(plan))
             writeMetadata(prepared.resolve("manifest.json"), WireJson.encodeToString(manifest))
-            val version = LinuxVersion(source.sha256, manifest, System.currentTimeMillis())
+            LinuxDurability.directory(prepared)
+            if (backend == LinuxBackend.CHROOT) {
+                status.value = "恢复 Root 环境属主与权限…"
+                LinuxRootOwnershipBatch(requireNotNull(privileged), stage, manifest, app.applicationInfo.uid).complete()
+            }
+            val version = LinuxVersion(manifest.generationId(), manifest, System.currentTimeMillis())
             currentCoroutineContext().ensureActive()
             catalog.withLock { withContext(NonCancellable) {
                 registry.begin(operation, version.id)
                 require(!Files.exists(directory(version.id), LinkOption.NOFOLLOW_LINKS))
                 Files.move(prepared, directory(version.id), StandardCopyOption.ATOMIC_MOVE)
+                LinuxDurability.directory(stage); LinuxDurability.directory(root)
                 registry.publish(operation, version); committed = true
+                if (LinuxPreparationState.pending(stage)) LinuxPreparationState.settled(stage)
                 revision.update { it + 1 }; status.value = "基础环境已安装，执行能力待探测"
             } }
             version
@@ -104,8 +113,8 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
         } finally { withContext(NonCancellable) {
             try {
                 catalog.withLock { registry.pending().firstOrNull { it.first == operation }?.let { (_, id) ->
-                    if (registry.versions().none { it.id == id }) removeSkillTree(directory(id))
-                    registry.clear(operation)
+                    if (registry.versions().any { it.id == id } || cleaner.remove(id)) registry.clear(operation)
+                    else status.value = "有 Root 环境待清理，连接 Root 后可恢复"
                 } }
                 if (LinuxPreparationState.pending(stage)) privileged?.discard(operation) else removeSkillTree(stage)
             } catch (cleanup: Throwable) {
@@ -116,20 +125,22 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
     } }
 
     suspend fun cleanup(): Int = installer.withLock { withContext(Dispatchers.IO) {
-        val retained = LinuxPreparationState.recover(staging, app.root.linuxClient)
+        var retained = recoverBeforeOperations(app.root.linuxClient)
         catalog.withLock {
         var count = 0
         registry.unused().forEach { id -> withContext(NonCancellable) {
+            if (!cleaner.available(id)) { retained++; return@withContext }
             val operation = UUID.randomUUID().toString()
-            registry.reserveRemoval(operation, id); removeSkillTree(directory(id)); registry.clear(operation); count++
+            registry.reserveRemoval(operation, id)
+            if (cleaner.remove(id)) { registry.clear(operation); count++ } else retained++
         } }
-        status.value = if (retained > 0) "有未确认的 Root 安装，连接 Root 后可清理恢复"
+        status.value = if (retained > 0) "有 Root 安装或环境待清理，连接 Root 后可恢复"
             else if (registry.current() == null) "尚未安装 Linux 环境" else "基础环境已安装，执行能力待探测"
         revision.update { it + 1 }; count
     } } }
     suspend fun probe(owner: String? = null): kotlinx.serialization.json.JsonObject {
         if (owner == null) return catalog.withLock {
-            val current = requireNotNull(registry.current()) { "Install a Linux base first" }
+            val current = prootVersion()
             LinuxProotProbe(app).inspect(directory(current).resolve("rootfs"))
         }
         var token: String? = null
@@ -137,7 +148,7 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
         try {
             currentCoroutineContext().ensureActive()
             val current = withContext(NonCancellable) { catalog.withLock {
-                val id = requireNotNull(registry.current()) { "Install a Linux base first" }
+                val id = prootVersion()
                 token = registry.lease(owner, id)
                 id
             } }
@@ -151,6 +162,29 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
     }
     suspend fun probeRoot(owner: String, artifact: String) = LinuxRootProbe(app).inspect(owner, artifact)
     suspend fun recoverRoot(owner: String, artifact: String) = LinuxRootProbe(app).inspect(owner, artifact, recover = true)
+    private suspend fun prootVersion(): String {
+        val current = requireNotNull(registry.current()) { "Install a Linux base first" }
+        require(registry.versions().single { it.id == current }.manifest.backend == LinuxBackend.PROOT) {
+            "The current generation requires Root; explicitly prepare a PRoot generation before probing PRoot"
+        }
+        return current
+    }
+    private suspend fun recoverBeforeOperations(client: io.github.asagnc.aurora.root.RootLinuxClient?): Int {
+        val retained = LinuxPreparationState.recover(staging, client)
+        // Join/prove old file workers stopped before any version operation.
+        return retained + if (retained == 0) recoverOperations() else registry.pending().size
+    }
+    private suspend fun recoverOperations(): Int = catalog.withLock {
+        var retained = 0
+        val published = registry.versions().map { it.id }.toSet()
+        registry.pending().forEach { (operation, id) ->
+            try {
+                if (id in published || cleaner.remove(id)) registry.clear(operation) else retained++
+            } catch (cancel: CancellationException) { throw cancel }
+            catch (_: Exception) { retained++ }
+        }
+        retained
+    }
     internal fun directory(id: String): Path {
         require(id.matches(Regex("[a-f0-9]{64}")) && !Files.isSymbolicLink(root) && !Files.isSymbolicLink(root.resolve(id)))
         return root.resolve(id)

@@ -46,7 +46,7 @@ class RootfsArchive(private val budget: RootfsBudget = RootfsBudget()) {
         return result
     }
 
-    private fun validate(result: List<RootfsEntry>) {
+    internal fun validate(result: List<RootfsEntry>) {
         require(result.isNotEmpty() && result.size <= budget.entries)
         val names = result.associate { it.path to it.kind }
         require(names.size == result.size && result.sumOf { it.bytes } <= budget.expanded)
