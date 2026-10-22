@@ -2,6 +2,12 @@
 
 更新时间：2026-10-22。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 2026-10-22 真实guest验收用例（优先接续）
+
+83aa2c1完整CI39755532891已成功。新增RootLinuxRunDeviceTest三项：真实已安装CHROOT非零退出/UTF8续读/导出/版本编辑与旧版本拒绝/删除；超时后台写入停止与租约释放；就绪后取消、活跃编辑拒绝、退出后文件稳定。测试仅创建自身会话，不下载替代环境，缺Root能力或真实代直接失败，恢复失败保留租约。验收命令与范围见LINUX_RUN_QUALIFICATION.md。
+
+本地:app:assembleDebugAndroidTest通过，记录outputs/linux-run-device-tests-20261022.txt（工作区外）。ADB无设备，三项未实跑，普通门槛仍88，不声称Ubuntu/Android链路已通过。下一步按该专项取得真实Root运行证据，再接Linux PTY与PRoot生命周期；Agent executionReady仍false。无需重问已确认的底层方案。
+
 ## 0.1.28 Root批量文件通道（2026-10-22，优先接续）
 
 用户已确认LINUX_WORKSPACE_ACCESS_PROPOSAL.md推荐方案，不再询问此选择。已删除每命令递归归还属主，收尾只处理固定元数据。新增Root列目录/批量读/版本编辑/选定导出/删除、跨Root进程文件锁及持久retirement防迟到复活。Agent原文件工具按.aurora-linux路径分派，读保持顺序、混合域编辑写前拒绝；文件浏览和图片发布已接。Root丢失时待删记录保留、其他启动恢复继续。详见LINUX_ROOT_FILES.md。

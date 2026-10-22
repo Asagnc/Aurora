@@ -1,3 +1,7 @@
+## 2026-10-22 Root Linux运行验收准备
+
+真实镜像专项新增三项，覆盖guest退出/文件/导出/版本编辑/删除、超时及取消后台子进程与租约。Android测试APK本地编译通过，尚未真机执行；见LINUX_RUN_QUALIFICATION.md。83aa2c1完整CI39755532891成功。无产品行为变更，不递增App版本号。
+
 ## 0.1.28 Root批量文件通道（2026-10-22，优先接续）
 
 用户已确认LINUX_WORKSPACE_ACCESS_PROPOSAL.md推荐方案，不再询问此选择。已删除每命令递归归还属主，收尾只处理固定元数据。新增Root列目录/批量读/版本编辑/选定导出/删除、跨Root进程文件锁及持久retirement防迟到复活。Agent原文件工具按.aurora-linux路径分派，读保持顺序、混合域编辑写前拒绝；文件浏览和图片发布已接。Root丢失时待删记录保留、其他启动恢复继续。详见LINUX_ROOT_FILES.md。
