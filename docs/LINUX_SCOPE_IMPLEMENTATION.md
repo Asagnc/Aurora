@@ -1,6 +1,8 @@
 # cgroup 任务监督资格（0.1.23）
 
-2026-10-22。沿已批准 LINUX_CGROUP_PROPOSAL.md 实施，无新增守护进程、发行版或调度策略。新增双ABI原生 aurora_linux_scope 固定离线资格程序；不接受任意命令、PID或scope路径，不开放业务执行。
+2026-10-22。0.1.24已接持久恢复与强杀兜底，见LINUX_SCOPE_RECOVERY.md；下方0.1.23未实现部分为历史状态。
+
+沿已批准 LINUX_CGROUP_PROPOSAL.md 实施，无新增守护进程、发行版或调度策略。新增双ABI原生 aurora_linux_scope 固定离线资格程序；不接受任意命令、PID或scope路径，不开放业务执行。
 
 ## 已实现
 

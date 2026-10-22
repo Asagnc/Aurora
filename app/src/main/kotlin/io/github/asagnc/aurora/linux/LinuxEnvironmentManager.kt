@@ -150,6 +150,7 @@ internal class LinuxEnvironmentManager(private val app: AuroraApplication) {
         } } }
     }
     suspend fun probeRoot(owner: String, artifact: String) = LinuxRootProbe(app).inspect(owner, artifact)
+    suspend fun recoverRoot(owner: String, artifact: String) = LinuxRootProbe(app).inspect(owner, artifact, recover = true)
     internal fun directory(id: String): Path {
         require(id.matches(Regex("[a-f0-9]{64}")) && !Files.isSymbolicLink(root) && !Files.isSymbolicLink(root.resolve(id)))
         return root.resolve(id)

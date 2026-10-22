@@ -1,6 +1,10 @@
 # Linux 环境实施记录
 
-2026-10-22。用户已批准LINUX_PROPOSAL.md及真机后的cgroup生命周期修订，后者替代必需PID空间。当前0.1.23已接Root安装与固定cgroup监督资格，完整运行时尚未就绪。
+2026-10-22。用户已批准LINUX_PROPOSAL.md及真机后的cgroup生命周期修订，后者替代必需PID空间。当前0.1.24已接Root安装、固定cgroup监督及持久恢复，完整运行时尚未就绪。
+
+## 0.1.24 持久恢复
+
+Root专属记录、boot/PID启动时间/pidfd/目录inode复核、协调兜底及独立恢复已接Agent recover_root。见LINUX_SCOPE_RECOVERY.md；新增主机7故障，Android正常恢复仅编译，普通门槛73。Android强杀/权限变化、业务chroot/命令/PTY/租约仍待接，executionReady=false。
 
 ## 0.1.23 cgroup资格
 

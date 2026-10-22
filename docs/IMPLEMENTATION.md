@@ -1,3 +1,7 @@
+# 0.1.24 scope恢复（2026-10-22）
+
+新增Root专属持久记录和身份复核、协调兜底/两层死亡后独立恢复、入组前父死亡保护及Agent recover_root。见LINUX_SCOPE_RECOVERY.md。新增主机7故障+既有6生命周期；Android正常恢复用例仅编译，普通门槛73。业务chroot/PTY/租约及Android撤权仍待验证，不标记完整执行就绪。
+
 # 0.1.23 cgroup监督资格（2026-10-22）
 
 新增固定任务scope原生程序与Agent probe_root，包含私有mount/pidfd/subreaper/脱离后代/kill空事件及独立监督收尾。新增主机6项和Android普通1+Root1仅编译，普通门槛73。见LINUX_SCOPE_IMPLEMENTATION.md。未开放任意Linux执行，监督强杀持久恢复及chroot/PTY仍待继续。

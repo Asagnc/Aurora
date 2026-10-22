@@ -7,9 +7,9 @@ import kotlinx.serialization.json.*
 internal class LinuxEnvironmentTool(private val manager: LinuxEnvironmentManager, private val owner: String,
     private val prepared: suspend (String, String) -> Unit) : ToolExecutor {
     override val definitions = listOf(ToolDefinition("linux_environment",
-        "Inspect, install, probe or clean shared Linux base images. action=status/install/probe/probe_root/cleanup. probe runs a fixed offline PRoot workload. probe_root qualifies connected Root with a fresh task cgroup, private mount namespace, pidfd/subreaper and kill/empty events; it never mounts a rootfs or changes resource policy. PID namespaces are optional. Does not enable arbitrary Linux commands or install tool packs.",
+        "Inspect, install, probe or clean shared Linux base images. action=status/install/probe/probe_root/recover_root/cleanup. probe runs a fixed offline PRoot workload. probe_root qualifies connected Root task cgroup/mount/pidfd/subreaper/exit events. recover_root recovers only verified Root-owned scope records whose guard has exited; live or ambiguous records are retained. No rootfs mounts or resource policy changes. PID namespaces are optional. Arbitrary Linux execution is not enabled.",
         objectOf("type" to string("object"), "properties" to objectOf("action" to objectOf("type" to string("string"),
-            "enum" to JsonArray(listOf("status", "install", "probe", "probe_root", "cleanup").map(::string)))), "required" to JsonArray(listOf(string("action"))),
+            "enum" to JsonArray(listOf("status", "install", "probe", "probe_root", "recover_root", "cleanup").map(::string)))), "required" to JsonArray(listOf(string("action"))),
             "additionalProperties" to JsonPrimitive(false))))
     override suspend fun execute(call: ToolCall): String = try {
         require(call.name == "linux_environment")
@@ -17,10 +17,11 @@ internal class LinuxEnvironmentTool(private val manager: LinuxEnvironmentManager
             "install" -> { manager.install(); status() }
             "cleanup" -> objectOf("removedVersions" to JsonPrimitive(manager.cleanup()))
             "probe" -> manager.probe(owner)
-            "probe_root" -> {
+            "probe_root", "recover_root" -> {
                 val artifact = java.util.UUID.randomUUID().toString()
                 prepared(call.id, "runs/$artifact")
-                manager.probeRoot(owner, artifact)
+                if (call.arguments.text("action") == "recover_root") manager.recoverRoot(owner, artifact)
+                else manager.probeRoot(owner, artifact)
             }
             "status" -> status()
             else -> error("Unknown Linux environment action")

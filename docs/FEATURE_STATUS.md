@@ -1,5 +1,7 @@
 # Aurora 功能与接续清单
 
+0.1.24：scope持久记录/身份复核/监督强杀协调兜底/独立恢复及Agent recover_root已接。新增主机7故障，Android仅编译无新增真机证据，完整Linux执行仍未开放。见LINUX_SCOPE_RECOVERY.md。
+
 0.1.23：固定任务cgroup/私有挂载/pidfd/subreaper/退出事件资格已接Agent probe_root；任意Linux执行仍关闭。主机新增6项，Android新增1普通+1Root仅编译，普通门槛73。监督自身强杀持久恢复/chroot/PTY仍未完成，见LINUX_SCOPE_IMPLEMENTATION.md。
 
 0.1.22：Root辅助安装、批量硬链接、取消确认与失联暂存恢复已实现；普通文件保留App标签。新增Android5普通+1Root镜像用例仅编译，普通门槛72；尚无该版本真机安装/guest执行证据。完整cgroup监督/chroot/Linux命令/PTY仍待继续，见ROOT_LINUX_INSTALL.md。

@@ -1,5 +1,6 @@
 #define _GNU_SOURCE
 #include "task_scope.h"
+#include "scope_state.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <poll.h>
@@ -118,7 +119,7 @@ static int cleanup(struct task_scope *scope, pid_t worker, int *exit_code) {
     return 0;
 }
 
-static int guard(int owner, int hold_ms) {
+static int guard(int owner, int hold_ms, int state) {
     /* A separate session survives the command supervisor's group cancellation.
      * This guard ends after this one bounded probe; it is not a daemon. */
     if (setsid() < 0 || prctl(PR_SET_CHILD_SUBREAPER, 1) < 0) return failure("guard_setup");
@@ -126,12 +127,21 @@ static int guard(int owner, int hold_ms) {
     if (poll(&alive, 1, 0) != 0) { errno = EPIPE; return failure("owner_already_exited"); }
     struct task_scope scope;
     if (task_scope_create(&scope) < 0) return failure("scope_create");
+    if (scope_state_save(state, &scope) < 0) { int saved = errno; task_scope_remove(&scope); errno = saved; return failure("scope_record"); }
     int report[2];
-    if (pipe2(report, O_CLOEXEC) < 0) { task_scope_remove(&scope); return failure("report_pipe"); }
+    if (pipe2(report, O_CLOEXEC) < 0) {
+        int saved = errno;
+        if (task_scope_remove(&scope) == 0) scope_state_forget(state, scope.name);
+        errno = saved; return failure("report_pipe");
+    }
+    pid_t guard_pid = getpid();
     pid_t worker = fork();
     if (worker < 0) { close(report[0]); close(report[1]); task_scope_remove(&scope); return failure("worker_fork"); }
     if (worker == 0) {
-        close(report[0]); close(owner);
+        close(report[0]); close(owner); close(state);
+        /* Close the pre-admission fork race if the guard dies before this
+         * process can join its recorded group. Descendants remain group-owned. */
+        if (prctl(PR_SET_PDEATHSIG, SIGKILL) < 0 || getppid() != guard_pid) _exit(125);
         _exit(workload(&scope, report[1], hold_ms));
     }
     close(report[1]);
@@ -149,6 +159,7 @@ static int guard(int owner, int hold_ms) {
         fprintf(stderr, "{\"unconfirmedTaskScope\":\"%s\"}\n", scope.name);
         return cleaned;
     }
+    if (scope_state_forget(state, scope.name) < 0) return failure("scope_record_finish");
     if (observed < 0) { errno = saved; return failure("owner_or_worker_observation"); }
     if (exit_code || populated != 1) { errno = EINVAL; return failure("workload_or_population"); }
     if (poll(&alive, 1, 0) != 0) { errno = EPIPE; return failure("owner_exited"); }
@@ -158,12 +169,14 @@ static int guard(int owner, int hold_ms) {
 
 int main(int argc, char **argv) {
     int hold_ms = 0;
-    if ((argc != 2 && argc != 4) || strcmp(argv[1], "--probe")) return 64;
-    if (argc == 4) {
-        if (strcmp(argv[2], "--hold-ms")) return 64;
+    if ((argc != 4 && argc != 6) || (strcmp(argv[1], "--probe") && strcmp(argv[1], "--recover")) ||
+        strcmp(argv[2], "--state-dir")) return 64;
+    int recovering = !strcmp(argv[1], "--recover");
+    if (argc == 6) {
+        if (recovering || strcmp(argv[4], "--hold-ms")) return 64;
         char *end;
-        long value = strtol(argv[3], &end, 10);
-        if (!*argv[3] || *end || value < 1 || value > 5000) return 64;
+        long value = strtol(argv[5], &end, 10);
+        if (!*argv[5] || *end || value < 1 || value > 5000) return 64;
         hold_ms = (int)value;
     }
     if (geteuid() != 0) { errno = EPERM; return failure("root_required"); }
@@ -171,11 +184,23 @@ int main(int argc, char **argv) {
     if (sigprocmask(SIG_SETMASK, &mask, NULL) < 0) return failure("signal_mask");
     signal(SIGTERM, SIG_DFL); signal(SIGINT, SIG_DFL);
     signal(SIGCHLD, SIG_DFL); signal(SIGPIPE, SIG_IGN);
+    int state = scope_state_open(argv[3]);
+    if (state < 0) return failure("state_directory");
+    if (scope_state_recover(state) < 0) { close(state); return failure("state_recovery"); }
+    if (recovering) { close(state); puts("{\"protocol\":1,\"recovered\":true}"); return 0; }
+    if (prctl(PR_SET_CHILD_SUBREAPER, 1) < 0) { close(state); return failure("coordinator_subreaper"); }
     int owner = (int)syscall(SYS_pidfd_open, getpid(), 0);
     if (owner < 0) return failure("owner_pidfd");
     pid_t child = fork();
     if (child < 0) { close(owner); return failure("guard_fork"); }
-    if (child == 0) { int code = guard(owner, hold_ms); close(owner); exit(code); }
+    if (child == 0) { int code = guard(owner, hold_ms, state); close(owner); close(state); exit(code); }
     close(owner);
-    return wait_child(child);
+    int code = wait_child(child);
+    if (scope_state_recover(state) < 0) { close(state); return failure("coordinator_recovery"); }
+    close(state);
+    /* A guard killed by SIGKILL can orphan its workers to this subreaper.
+     * Recovery has confirmed its recorded group empty before this wait. */
+    int status;
+    while (waitpid(-1, &status, 0) >= 0 || errno == EINTR) {}
+    return code;
 }

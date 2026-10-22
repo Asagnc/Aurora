@@ -40,14 +40,16 @@ class ScopeTest(unittest.TestCase):
         cls.binary = str(Path(cls.directory.name) / 'scope')
         source = Path(__file__).resolve().parents[1] / 'app/src/main/cpp/linux'
         subprocess.run(['cc', '-std=c11', '-O2', '-DNDEBUG', '-Wall', '-Wextra', '-Werror',
-                        str(source / 'scope_probe.c'), str(source / 'task_scope.c'), '-o', cls.binary], check=True)
+                        str(source / 'scope_probe.c'), str(source / 'task_scope.c'), str(source / 'scope_identity.c'),
+                        str(source / 'scope_state.c'), str(source / 'scope_process.c'), '-o', cls.binary], check=True)
 
     @classmethod
     def tearDownClass(cls):
         cls.directory.cleanup()
 
     def start(self, hold=5000):
-        process = subprocess.Popen([self.binary, '--probe', '--hold-ms', str(hold)],
+        self.state = Path(self.directory.name) / ('state-' + str(time.monotonic_ns()))
+        process = subprocess.Popen([self.binary, '--probe', '--state-dir', str(self.state), '--hold-ms', str(hold)],
                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
         self.addCleanup(self.stop, process)
         deadline = time.monotonic() + 3
@@ -156,7 +158,7 @@ class ScopeTest(unittest.TestCase):
         def ordinary():
             os.setgid(65534)
             os.setuid(65534)
-        result = subprocess.run([self.binary, '--probe'], preexec_fn=ordinary, capture_output=True, timeout=5)
+        result = subprocess.run([self.binary, '--probe', '--state-dir', str(Path(self.directory.name) / 'denied')], preexec_fn=ordinary, capture_output=True, timeout=5)
         self.assertEqual(126, result.returncode)
         self.assertEqual('root_required', json.loads(result.stderr)['operation'])
         for args in [[], ['--unknown'], ['--probe', '--hold-ms', '9000'], ['--probe', '/sys/fs/cgroup/system']]:

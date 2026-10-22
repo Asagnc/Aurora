@@ -2,6 +2,12 @@
 
 更新时间：2026-10-22。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 0.1.24 scope恢复（2026-10-22，优先接续）
+
+Root专属持久记录、boot/PID启动时间/pidfd/父与scope inode身份验证、损坏拒绝、协调进程兜底和独立恢复已接；工作进程父死亡保护补齐入组前竞态。Agent新增recover_root，probe先恢复，活跃或不明确记录不干扰。见LINUX_SCOPE_RECOVERY.md。新增主机7项故障，原6项继续；Android现有Root用例补持久恢复，仅编译，普通门槛73。
+
+上一版8fe33c4完整[CI39732417088](https://github.com/Asagnc/Aurora/actions/runs/39732417088)通过。本轮证据见evidence/0.1.24。下一步Android强杀/撤权资格及chroot属主/挂载/命令/PTY和业务租约，PRoot guest仍未实跑。executionReady=false；无新增手机验收，不重复确认已批准架构。
+
 ## 0.1.23 cgroup监督资格（2026-10-22，优先接续）
 
 新增固定原生任务scope资格：新建专属组、自入组、私有mount、pidfd、subreaper、独立会话监督、kill/空事件/reap/remove。Agent probe_root接此资格，不要求PID空间，executionReady=false。见LINUX_SCOPE_IMPLEMENTATION.md。新增主机6项CI和Android普通1+Root1仅编译，普通门槛73。

@@ -21,7 +21,7 @@ long long task_scope_now(void) {
 }
 
 /* Walk from a pinned root descriptor; reject symlinks and dot components. */
-static int open_directory(const char *absolute) {
+int scope_open_directory(const char *absolute) {
     if (*absolute != '/') { errno = EINVAL; return -1; }
     char copy[8192];
     if (strlen(absolute) >= sizeof(copy)) { errno = ENAMETOOLONG; return -1; }
@@ -69,7 +69,7 @@ static int self_group(char *path, size_t capacity) {
     return found ? 0 : -1;
 }
 
-static int current_group(void) {
+static int current_group(char *path, size_t capacity) {
     char own[8192];
     if (self_group(own, sizeof(own)) < 0) return -1;
     FILE *file = fopen("/proc/self/mountinfo", "re");
@@ -95,9 +95,10 @@ static int current_group(void) {
         char full[16384];
         int count = snprintf(full, sizeof(full), "%s%s", mount, relative);
         if (count < 0 || (size_t)count >= sizeof(full)) continue;
-        directory = open_directory(full);
+        if (strlen(full) >= capacity) continue;
+        directory = scope_open_directory(full);
         struct statfs fs;
-        if (directory >= 0 && fstatfs(directory, &fs) == 0 && fs.f_type == CGROUP2_MAGIC) break;
+        if (directory >= 0 && fstatfs(directory, &fs) == 0 && fs.f_type == CGROUP2_MAGIC) { strcpy(path, full); break; }
         if (directory >= 0) close(directory);
         directory = -1;
     }
@@ -106,7 +107,7 @@ static int current_group(void) {
     return directory;
 }
 
-static void close_files(struct task_scope *scope) {
+void task_scope_close(struct task_scope *scope) {
     int *files[] = {&scope->kill, &scope->events, &scope->processes, &scope->directory, &scope->parent};
     for (unsigned i = 0; i < sizeof(files) / sizeof(*files); ++i) {
         if (*files[i] >= 0) close(*files[i]);
@@ -116,16 +117,16 @@ static void close_files(struct task_scope *scope) {
 
 int task_scope_create(struct task_scope *scope) {
     *scope = (struct task_scope){.parent = -1, .directory = -1, .processes = -1, .events = -1, .kill = -1};
-    scope->parent = current_group();
+    scope->parent = current_group(scope->parent_path, sizeof(scope->parent_path));
     if (scope->parent < 0) return -1;
     unsigned char random[16];
     ssize_t bytes;
     do { bytes = getrandom(random, sizeof(random), 0); } while (bytes < 0 && errno == EINTR);
-    if (bytes != (ssize_t)sizeof(random)) { int saved = errno ? errno : EIO; close_files(scope); errno = saved; return -1; }
+    if (bytes != (ssize_t)sizeof(random)) { int saved = errno ? errno : EIO; task_scope_close(scope); errno = saved; return -1; }
     char hex[33];
     for (unsigned i = 0; i < sizeof(random); ++i) snprintf(hex + i * 2, 3, "%02x", random[i]);
     snprintf(scope->name, sizeof(scope->name), "aurora-linux-%ld-%s", (long)getpid(), hex);
-    if (mkdirat(scope->parent, scope->name, 0700) < 0) { int saved = errno; close_files(scope); errno = saved; return -1; }
+    if (mkdirat(scope->parent, scope->name, 0700) < 0) { int saved = errno; task_scope_close(scope); errno = saved; return -1; }
     scope->directory = openat(scope->parent, scope->name, O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW);
     if (scope->directory >= 0) {
         scope->processes = openat(scope->directory, "cgroup.procs", O_WRONLY | O_CLOEXEC | O_NOFOLLOW);
@@ -134,7 +135,7 @@ int task_scope_create(struct task_scope *scope) {
     }
     if (scope->directory < 0 || scope->processes < 0 || scope->events < 0 || scope->kill < 0 || task_scope_populated(scope) != 0) {
         int saved = errno ? errno : EBUSY;
-        unlinkat(scope->parent, scope->name, AT_REMOVEDIR); close_files(scope); errno = saved; return -1;
+        unlinkat(scope->parent, scope->name, AT_REMOVEDIR); task_scope_close(scope); errno = saved; return -1;
     }
     return 0;
 }
@@ -186,6 +187,6 @@ int task_scope_remove(struct task_scope *scope) {
         pinned.st_dev == named.st_dev && pinned.st_ino == named.st_ino) {
         result = unlinkat(scope->parent, scope->name, AT_REMOVEDIR);
     } else if (!errno) errno = EBUSY;
-    int saved = errno; close_files(scope); errno = saved;
+    int saved = errno; task_scope_close(scope); errno = saved;
     return result;
 }
