@@ -90,7 +90,7 @@ import kotlinx.coroutines.*
             }
             HorizontalDivider()
             Text("执行状态", style = MaterialTheme.typography.titleSmall)
-            Text("Agent 可通过 Root Linux 工具执行批量命令；需要连接 Root 并安装对应环境。Linux 终端底层已验证，交互入口待接入；PRoot 仅支持基础能力检查。", color = AuroraMuted)
+            Text("Agent 可执行 Root Linux 批量命令或启动交互终端；需要连接 Root 并安装对应环境。可在终端页面查看输出和停止任务；PRoot 仅支持基础能力检查。", color = AuroraMuted)
             OutlinedButton({ run {
                 val result = manager.probe()
                 notice = if (result["workloadPassed"] == kotlinx.serialization.json.JsonPrimitive(true))

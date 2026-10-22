@@ -1,3 +1,8 @@
+## 2026-10-22 Agent Linux 交互终端入口
+
+新增稳定 terminal_start_linux 工具，默认/bin/sh、固定guest目录/环境、期限最多270秒、awakeMs默认0且不得超过期限。复用TerminalManager已验证的Root Linux PTY/SQLite租约/前台服务/VT/持久日志；后续由terminal_read/write/resize/stop/list操作，用户在现有终端页观看。与Android terminal_start分别命名，不偷偷切换后端。不新增依赖/服务/数据库schema。修正terminal_stop描述，区分Android进程组与Linux任务cgroup的清理边界。
+
+新增2项核心测试覆盖默认值、参数字面保留、单次启动、参数/尺寸/期限/唤醒预算和禁止自定义环境；本地core、Debug、Release/R8、lint通过。未新增真机/真实模型验收；Linux PTY底层沿用0.1.30既有设备证据，不等同新Agent入口已验收。上一提交CI39790087660推送前仍运行。下一步仍需Agent端到端本地fixture/真机专项、整轮Linux代固定、PRoot完整生命周期、Root元数据GC；手机不覆盖未经本轮专项的构建。
 ## 2026-10-22 Agent Root Linux 批量工具接入
 
 新增稳定 command_execute_linux 定义，复用已批准/真机验证的 LinuxRunManager、Root task scope、SQLite意图/租约和文件通道。工具在每轮固定列表中提供，运行时重新检查Root及已安装代；缺能力明确失败，无PRoot替代。argv绝对guest路径、最多128参数/64KiB、期限1..270000ms；固定cwd/HOME/tmp；派发前用同一run UUID关联任务输出目录。停止证明与命令成功分别返回，guest非零exit保留，超时/中断/无completion不伪造成功，不自动重放。当前按每条命令预留代及租约，尚未实现整轮Agent固定Linux代。

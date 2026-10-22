@@ -34,7 +34,7 @@ internal class TerminalToolExecutor(private val manager: TerminalManager, privat
             objectOf("id" to text, "text" to text), "id", "text"),
         definition("terminal_resize", "Set interactive terminal dimensions, notifying the foreground process and reflowing the screen.",
             objectOf("id" to text, "columns" to integer(2, 300), "rows" to integer(2, 200)), "id", "columns", "rows"),
-        definition("terminal_stop", "Stop terminal process and session job-control groups, await cleanup; detached new sessions are outside containment. No automatic restart.",
+        definition("terminal_stop", "Stop a terminal and await cleanup. Android backends supervise job-control groups; detached new sessions are outside containment. Linux uses its task cgroup and retains a recovery lease if stopped proof is missing. No automatic restart.",
             objectOf("id" to text), "id"),
         definition("terminal_list", "List this conversation's active and recent persisted terminals, including exit, interruption and truncation state.", objectOf())
     )

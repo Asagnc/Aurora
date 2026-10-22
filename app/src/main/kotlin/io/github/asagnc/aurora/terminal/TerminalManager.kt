@@ -43,7 +43,7 @@ internal class TerminalManager(private val app: AuroraApplication) {
     suspend fun start(owner: String, request: PtyRequest, root: Boolean = false): TerminalRecord =
         startBackend(owner, request, if (root) "android-root" else "android-native")
 
-    /** Internal qualification entry; Agent/UI selection waits for device evidence. */
+    /** Linux shares terminal transport/records; its durable lease controls guest cleanup. */
     internal suspend fun startLinux(owner: String, request: PtyRequest = PtyRequest(argv = listOf("/bin/sh"), timeoutMs = 270_000)): TerminalRecord =
         startBackend(owner, request, "linux-root")
 

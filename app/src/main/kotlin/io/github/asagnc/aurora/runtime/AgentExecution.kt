@@ -28,6 +28,9 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
             io.github.asagnc.aurora.terminal.TerminalToolExecutor(app.terminals, id, app.root.terminalClient != null),
             CommandToolExecutor(app.commands, directory, prepared = prepared),
             LinuxCommandTool({ runId, argv, timeout -> app.linux.runs.execute(id, argv, timeout, runId) }, prepared),
+            LinuxTerminalTool { options -> app.terminals.startLinux(id, io.github.asagnc.aurora.terminal.PtyRequest(
+                argv = options.argv, columns = options.columns, rows = options.rows,
+                timeoutMs = options.timeoutMs, awakeMs = options.awakeMs)).json() },
             app.root.commandClient?.let { CommandToolExecutor(app.commands, directory, it, prepared) }))
         val fingerprint = requestFingerprint(SYSTEM, tools.definitions)
         val credential = requireNotNull(app.credentials.get(connection.id)) { "API 密钥不存在" }
