@@ -64,6 +64,16 @@ class PacketToolsTest(unittest.TestCase):
         return subprocess.run([str(self.binary), *args], cwd=self.root, capture_output=True,
                               timeout=10, env={**os.environ, 'LC_ALL': 'C'})
 
+    def test_worker_complete_packet_boundaries_and_write_error(self):
+        prefix = self.root / 'prefix'
+        module = ROOT / 'app/src/main/cpp/packet'
+        binary = self.root / 'worker-test'
+        subprocess.run(['cc', '-Wall', '-Wextra', '-Werror', '-I' + str(prefix / 'include'),
+                        '-I' + str(module), str(ROOT / 'scripts/packet-worker-test.c'),
+                        str(module / 'WorkerLoop.c'), str(prefix / 'lib/libpcap.a'),
+                        '-o', str(binary)], check=True)
+        subprocess.run([str(binary)], check=True, timeout=10)
+
     def test_exact_stable_versions(self):
         result = self.run_tool('--version')
         self.assertEqual(result.returncode, 0, result.stderr)

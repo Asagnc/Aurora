@@ -10,7 +10,7 @@ android {
     externalNativeBuild { cmake { path = file("src/main/cpp/CMakeLists.txt"); version = "4.1.2" } }
     defaultConfig {
         ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
-        externalNativeBuild { cmake { targets += listOf("aurora_runner", "aurora_pty", "aurora_proot", "aurora_linux_namespace", "aurora_linux_scope", "aurora_tcpdump") } }
+        externalNativeBuild { cmake { targets += listOf("aurora_runner", "aurora_pty", "aurora_proot", "aurora_linux_namespace", "aurora_linux_scope", "aurora_tcpdump", "aurora_packet_worker") } }
         applicationId = "io.github.asagnc.aurora"
         minSdk = 36
         targetSdk = 37
@@ -90,7 +90,7 @@ abstract class StageNativeRunner : DefaultTask() {
         check(binaries.get().asFile.walkTopDown().any { it.isFile && it.name == "aurora_runner" }) { "Native runner was not built" }
         fileOperations.sync {
             from(binaries) {
-                include("*/aurora_runner", "*/aurora_pty", "*/aurora_proot", "*/aurora_proot_loader", "*/aurora_linux_namespace", "*/aurora_linux_scope", "*/aurora_tcpdump")
+                include("*/aurora_runner", "*/aurora_pty", "*/aurora_proot", "*/aurora_proot_loader", "*/aurora_linux_namespace", "*/aurora_linux_scope", "*/aurora_tcpdump", "*/aurora_packet_worker")
                 eachFile { path = "${file.parentFile.name}/lib${file.name}.so" }
                 includeEmptyDirs = false
             }

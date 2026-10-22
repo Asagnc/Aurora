@@ -78,3 +78,9 @@ add_custom_target(aurora_tcpdump ALL
         "${CMAKE_CURRENT_BINARY_DIR}/packet-program/tcpdump" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/aurora_tcpdump"
     DEPENDS aurora_tcpdump_build
     BYPRODUCTS "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/aurora_tcpdump")
+add_executable(aurora_packet_worker "${capture_module}/Worker.c" "${capture_module}/WorkerLoop.c")
+add_dependencies(aurora_packet_worker aurora_pcap_build)
+target_include_directories(aurora_packet_worker PRIVATE "${capture_prefix}/include")
+target_link_libraries(aurora_packet_worker PRIVATE "${capture_prefix}/lib/libpcap.a")
+target_compile_options(aurora_packet_worker PRIVATE -Wall -Wextra -Werror -fstack-protector-strong)
+target_link_options(aurora_packet_worker PRIVATE -Wl,-z,relro,-z,now,-z,noexecstack,-z,max-page-size=16384)
