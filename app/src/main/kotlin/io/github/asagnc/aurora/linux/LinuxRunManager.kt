@@ -11,12 +11,13 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.*
 
-/** Internal runtime; Agent exposure waits for device qualification and PTY. */
+/** Durable execution intent precedes dispatch; only exact stopped proof releases its lease. */
 internal class LinuxRunManager(private val app: AuroraApplication, private val environments: LinuxEnvironmentManager) {
     private val records = LinuxRunRegistry(app.conversations)
-    suspend fun execute(owner: String, argv: List<String>, timeoutMs: Long = 60_000): JsonObject {
+    suspend fun execute(owner: String, argv: List<String>, timeoutMs: Long = 60_000,
+        runId: String = UUID.randomUUID().toString()): JsonObject {
         val client = requireNotNull(app.root.linuxRunClient) { "Reconnect a current Root service for Linux execution" }
-        val ticket = reserve(owner, UUID.randomUUID().toString(), argv, timeoutMs)
+        val ticket = reserve(owner, runId, argv, timeoutMs)
         try {
             app.spaces.commandRoot(owner)
             currentCoroutineContext().ensureActive()

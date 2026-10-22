@@ -29,7 +29,7 @@ internal class LinuxRootProbe(private val app: AuroraApplication) {
         return objectOf("backend" to string("root-task-scope"), "workloadPassed" to JsonPrimitive(passed),
             "pidNamespaceRequired" to JsonPrimitive(false),
             "recoveryOnly" to JsonPrimitive(recover),
-            "scope" to string("Fixed task-scope qualification/recovery only. chroot, arbitrary Linux execution and business environment leases are not connected."),
+            "scope" to string("Fixed task-scope qualification/recovery only; guest image mounts and command execution are validated separately by command_execute_linux."),
             "executionReady" to JsonPrimitive(false), "observation" to (observed ?: JsonNull), "result" to result)
     }
 }

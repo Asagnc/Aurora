@@ -15,6 +15,7 @@ internal fun presentTool(event: ToolRun): ToolPresentation {
         "images_publish" -> "发布图片"
         "command_execute" -> "执行原生命令"
         "command_execute_root" -> "执行 Root 命令"
+        "command_execute_linux" -> "执行 Linux 命令"
         "files_list" -> "查看文件列表"
         "files_read_batch" -> "批量读取文件"
         "files_edit_batch" -> "批量编辑文件"

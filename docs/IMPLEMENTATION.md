@@ -1,3 +1,8 @@
+## 2026-10-22 Agent Root Linux 批量工具接入
+
+新增稳定 command_execute_linux 定义，复用已批准/真机验证的 LinuxRunManager、Root task scope、SQLite意图/租约和文件通道。工具在每轮固定列表中提供，运行时重新检查Root及已安装代；缺能力明确失败，无PRoot替代。argv绝对guest路径、最多128参数/64KiB、期限1..270000ms；固定cwd/HOME/tmp；派发前用同一run UUID关联任务输出目录。停止证明与命令成功分别返回，guest非零exit保留，超时/中断/无completion不伪造成功，不自动重放。当前按每条命令预留代及租约，尚未实现整轮Agent固定Linux代。
+
+本地新增3项核心测试：退出与清理语义、参数拒绝、关联先于单次派发；core全套及Debug/Release R8/lint通过。上一轮CI39788741945完整成功。此次未跑真机或真实模型，不把已验证底层等同于新增Agent端到端验收。UI交互Linux终端入口、整轮版本固定、PRoot全生命周期、Root元数据GC仍待做；当前手机仍保留0.1.30已验收版。
 ## 0.1.30 Android16实际Linux与PTY资格（2026-10-22）
 
 GT6SE实际Ubuntu命令3/PTY3/Root服务强杀恢复不重放1、Root原生命令终端5、连接+原属主镜像复核2、限定owner恢复1、普通88和浏览器恢复1通过。修复Context根目录canonical路径及Android ICU UTF8续读；测试禁用不可用JDK Files文本便利方法，清理不掩盖原错。手机联网镜像下载超时，改用同SHA官方离线归档的内部验收输入，保留失败记录。核心161：154通过/7POSIX跳过，Android构建/lint/ELF通过。Agent/UI Linux仍internal，PRoot/GC/外部撤权等未完。见DEVICE_LINUX_2026-10-22_FINAL.md和evidence/0.1.30。
