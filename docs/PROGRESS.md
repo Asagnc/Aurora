@@ -1,3 +1,11 @@
+## 2026-10-23 0.1.35 写盘资格与下一步控制提案
+
+493cc86 CI39831312910最终完整成功：实际组件/离线分析主机10项、既有核心/签名镜像/POSIX/PTY/namespace/scope/恢复/挂载/GC/PRoot及Android Debug/testAPK/Release/lint、ELF/16KiB和对应源码包通过。主机对照实测未修改上游向/dev/full输出返回0；Aurora派生版拒绝成功，非普通/dev/null正常，两段轮转完整保留20000包。证据evidence/0.1.35/packet-host-ten-write-boundary-passed.txt。这是主机I/O及组件资格，不是Android Root实时抓包验收。
+
+现有组合已接固定组件、Agent packet_inspect、日志/产物、中文任务标签；新增Android3项与日志映射仍仅编译，手机未更新/连接，保持0.1.32，最终集中验收。实时抓包尚未接，不能拿上述10项当作全功能完成。
+
+下一步控制方式已整理ROOT_CAPTURE_RUNTIME_PROPOSAL.md（待确认）：libpcap+小型原生采集worker直接处理整包字节/时长预算、signalfd/timerfd/poll与结构化状态，tcpdump继续成熟离线分析，复用现有Root任务/日志/属主发布，不自写mmap或另建守护进程。此项细化并调整先前“tcpdump实时写盘”的控制职责，属于新增原生worker选择，按用户最初要求先确认，不提前实现。
+
 ## 2026-10-23 0.1.35 写盘结束/轮转边界补强
 
 Agent离线提交6e8500b CI39829765714最终完整成功，含新增的字面过滤/选项隔离，主机离线共7项成功。继续核查真实采集前的写盘边界：派生tcpdump在退出/轮转核实flush/ferror，普通文件fsync后关闭；轮转更新当前dumper，关闭前清空信号处理使用的全局指针，避免复用已关闭dumper。回调仅检查stdio已有错误，不逐包刷盘。原上游缓存不改，替换次数严格验证；非普通输出不要求fsync。工具中文标签“分析网络数据包”已接。

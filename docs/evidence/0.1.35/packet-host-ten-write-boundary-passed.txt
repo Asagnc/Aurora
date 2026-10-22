@@ -1,0 +1,566 @@
+test	Verify pinned packet tools and offline filtering on Linux host	﻿2026-10-22T18:28:18.6464581Z ##[group]Run python3 scripts/verify-packet-tools.py
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:18.6465172Z ^[[36;1mpython3 scripts/verify-packet-tools.py^[[0m
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:18.6531802Z shell: /usr/bin/bash -e {0}
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:18.6532191Z env:
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:18.6532605Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/25.0.4-1/x64
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:18.6533283Z   JAVA_HOME_25_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/25.0.4-1/x64
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:18.6533810Z   MAVEN_ARGS: -ntp
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:18.6534154Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:18.6534568Z   GRADLE_USER_HOME: /home/runner/.gradle
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:18.6534956Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:18.6535554Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:18.6536202Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:18.6536634Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:18.6537085Z   ANDROID_HOME: /home/runner/work/_temp/aurora-sdk
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:18.6537595Z   ANDROID_SDK_ROOT: /home/runner/work/_temp/aurora-sdk
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:18.6538238Z   AURORA_TALLOC_ARCHIVE: /home/runner/work/_temp/aurora-native-downloads/talloc-2.5.0.tar.gz
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:18.6538829Z ##[endgroup]
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.0961615Z -- The C compiler identification is GNU 13.3.0
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.1163521Z -- Detecting C compiler ABI info
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.1844675Z -- Detecting C compiler ABI info - done
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.2016777Z -- Check for working C compiler: /usr/bin/cc - skipped
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.2022580Z -- Detecting C compile features
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.2030817Z -- Detecting C compile features - done
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.2148918Z -- Building 64-bit
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.2381793Z -- Checking C compiler flag -std=gnu99
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.2389416Z -- Performing Test std-gnu99
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.2922516Z -- Performing Test std-gnu99 - Success
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.3757243Z -- Use DYNAMIC runtime
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.4053418Z -- Looking for inttypes.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.4570057Z -- Looking for inttypes.h - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.4570845Z -- Looking for stdint.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.5100161Z -- Looking for stdint.h - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.5101050Z -- Looking for unistd.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.5646204Z -- Looking for unistd.h - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.5646920Z -- Looking for bitypes.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.5980579Z -- Looking for bitypes.h - not found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.5981798Z -- Looking for sys/ioccom.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.6245105Z -- Looking for sys/ioccom.h - not found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.6245909Z -- Looking for sys/sockio.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.6497671Z -- Looking for sys/sockio.h - not found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.6498480Z -- Looking for sys/select.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.7012209Z -- Looking for sys/select.h - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.7013076Z -- Looking for netpacket/packet.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.7494916Z -- Looking for netpacket/packet.h - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.7495883Z -- Looking for netinet/if_ether.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.8083393Z -- Looking for netinet/if_ether.h - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.8084368Z -- Performing Test HAVE___ATOMIC_LOAD_N
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.8570474Z -- Performing Test HAVE___ATOMIC_LOAD_N - Success
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.8571397Z -- Performing Test HAVE___ATOMIC_STORE_N
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.9061272Z -- Performing Test HAVE___ATOMIC_STORE_N - Success
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.9062093Z -- Looking for strerror_r
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.9606503Z -- Looking for strerror_r - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:19.9607434Z -- Performing Test HAVE_GNU_STRERROR_R
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.0122300Z -- Performing Test HAVE_GNU_STRERROR_R - Success
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.0124101Z -- Looking for vsnprintf
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.0663796Z -- Looking for vsnprintf - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.0665907Z -- Looking for snprintf
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.1210855Z -- Looking for snprintf - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.1211526Z -- Looking for strlcpy
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.1729075Z -- Looking for strlcpy - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.1730046Z -- Looking for strlcat
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.2283660Z -- Looking for strlcat - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.2284175Z -- Looking for asprintf
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.2796866Z -- Looking for asprintf - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.2797552Z -- Looking for vasprintf
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.3295963Z -- Looking for vasprintf - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.3296480Z -- Looking for strtok_r
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.3799643Z -- Looking for strtok_r - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.3800362Z -- Looking for vsyslog
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.4303405Z -- Looking for vsyslog - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.4308393Z -- Looking for getaddrinfo
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.4806412Z -- Looking for getaddrinfo - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.4807154Z -- Looking for putmsg
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.5306405Z -- Looking for putmsg - not found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.5307108Z -- Looking for putmsg in str
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.5714709Z -- Looking for putmsg in str - not found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.5715495Z -- Looking for getpass
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.6231809Z -- Looking for getpass - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.6234502Z -- Looking for getnetbyname_r
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.6812688Z -- Looking for getnetbyname_r - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.6814243Z -- Performing Test HAVE_LINUX_GETNETBYNAME_R
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.7364589Z -- Performing Test HAVE_LINUX_GETNETBYNAME_R - Success
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.7367899Z -- Looking for getprotobyname_r
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.7929522Z -- Looking for getprotobyname_r - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.7931315Z -- Performing Test HAVE_LINUX_GETPROTOBYNAME_R
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.8498929Z -- Performing Test HAVE_LINUX_GETPROTOBYNAME_R - Success
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.8502055Z -- Looking for sys/types.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.9041465Z -- Looking for sys/types.h - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.9042776Z -- Looking for stddef.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.9549790Z -- Looking for stddef.h - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:20.9550508Z -- Check size of struct sockaddr_storage
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.0148027Z -- Check size of struct sockaddr_storage - done
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.0151828Z -- Check size of socklen_t
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.0743347Z -- Check size of socklen_t - done
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.0746499Z -- Performing Test HAVE_STRUCT_SOCKADDR_SA_LEN
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.1068563Z -- Performing Test HAVE_STRUCT_SOCKADDR_SA_LEN - Failed
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.1069660Z -- Looking for ffs
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.1589940Z -- Looking for ffs - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.1591744Z -- Looking for ffs
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.2124683Z -- Looking for ffs - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.2126554Z -- Looking for ether_hostton
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.2630433Z -- Looking for ether_hostton - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.2632355Z -- Looking for ether_hostton
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.2940105Z -- Looking for ether_hostton - not found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.2942215Z -- Looking for ether_hostton
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.3510645Z -- Looking for ether_hostton - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.3617469Z -- Looking for native LFS support
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.4165002Z -- Looking for native LFS support - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.4166698Z -- Found LFS: TRUE
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.4177966Z -- Looking for native fseeko support
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.4721030Z -- Looking for native fseeko support - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.4723177Z -- Found FSEEKO: TRUE
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.4727047Z -- Check size of time_t
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.5294196Z -- Check size of time_t - done
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.5294884Z -- 64-bit time_t
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.5295346Z -- Support IPv6
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.5359176Z -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.5944695Z -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.5955307Z -- Found Threads: TRUE
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.5956854Z -- Not enabling sanitizers
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.5957876Z -- Packet capture mechanism type: linux
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.6019579Z -- Performing Test HAVE_STRUCT_TPACKET_AUXDATA_TP_VLAN_TCI
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.6667063Z -- Performing Test HAVE_STRUCT_TPACKET_AUXDATA_TP_VLAN_TCI - Success
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.6668637Z -- Looking for getifaddrs
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.7183676Z -- Looking for getifaddrs - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.7186318Z -- Looking for include files sys/types.h, ifaddrs.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.7730475Z -- Looking for include files sys/types.h, ifaddrs.h - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.7731333Z -- Find-interfaces mechanism type: getad
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.7732382Z -- Looking for linux/net_tstamp.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.8320766Z -- Looking for linux/net_tstamp.h - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.8322104Z -- Performing Test PCAP_SUPPORT_NETFILTER
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.9305729Z -- Performing Test PCAP_SUPPORT_NETFILTER - Success
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.9308091Z -- Looking for msg.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.9591704Z -- Looking for msg.h - not found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.9706691Z -- Could NOT find AirPcap (missing: AirPcap_INCLUDE_DIR AirPcap_LIBRARY) 
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.9725071Z -- Could NOT find TC (missing: TC_INCLUDE_DIR TC_LIBRARY) 
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.9728919Z -- Checking C compiler flag -fvisibility=hidden
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:21.9736770Z -- Performing Test fvisibility-hidden
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:22.0255401Z -- Performing Test fvisibility-hidden - Success
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:22.0259185Z -- Lexical analyzer generator: /usr/bin/flex
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:22.0602570Z -- Parser generator: /usr/bin/bison
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:22.0762790Z -- Configuring done (3.3s)
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:22.0913619Z -- Generating done (0.0s)
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:22.0918796Z -- Build files have been written to: /tmp/aurora-packet-tools-_upg9igi/pcap-build
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:22.1303435Z [1/22] Generating scanner.c, scanner.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:22.3473176Z [2/22] Generating grammar.c, grammar.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:22.3842409Z [3/22] Building C object CMakeFiles/pcap_static.dir/bpf_dump.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:22.4444221Z [4/22] Building C object CMakeFiles/pcap_static.dir/bpf_image.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:22.4720017Z [5/22] Building C object CMakeFiles/pcap_static.dir/bpf_filter.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:22.5018458Z [6/22] Building C object CMakeFiles/pcap_static.dir/etherent.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:22.5173954Z [7/22] Building C object CMakeFiles/pcap_static.dir/fmtutils.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:22.6933660Z [8/22] Building C object CMakeFiles/pcap_static.dir/nametoaddr.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:23.6845777Z [9/22] Building C object CMakeFiles/pcap_static.dir/optimize.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:23.7202374Z [10/22] Building C object CMakeFiles/pcap_static.dir/pcap-common.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:23.8030005Z [11/22] Building C object CMakeFiles/pcap_static.dir/pcap-util.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:24.1375341Z [12/22] Building C object CMakeFiles/pcap_static.dir/pcap.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:24.1771478Z [13/22] Building C object CMakeFiles/pcap_static.dir/gencode.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:24.2086483Z [14/22] Building C object CMakeFiles/pcap_static.dir/savefile.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:24.3207116Z [15/22] Building C object CMakeFiles/pcap_static.dir/sf-pcapng.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:24.3416230Z [16/22] Building C object CMakeFiles/pcap_static.dir/sf-pcap.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:24.3918528Z [17/22] Building C object CMakeFiles/pcap_static.dir/fad-getad.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:24.5377795Z [18/22] Building C object CMakeFiles/pcap_static.dir/pcap-netfilter-linux.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:24.7975165Z [19/22] Building C object CMakeFiles/pcap_static.dir/grammar.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:24.9374389Z [20/22] Building C object CMakeFiles/pcap_static.dir/pcap-linux.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.1154875Z [21/22] Building C object CMakeFiles/pcap_static.dir/scanner.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7569681Z [22/22] Linking C static library libpcap.a
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7607573Z -- Install configuration: "Release"
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7617911Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/lib/libpcap.a
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7626357Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7627678Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap/pcap.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7629959Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap/bpf.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7631777Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap/usb.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7633336Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap/sll.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7634934Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap/bluetooth.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7636468Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap/dlt.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7638829Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap/socket.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7640368Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap/namedb.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7642223Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap/compiler-tests.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7643772Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap/pcap-inttypes.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7645278Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap/funcattrs.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7646906Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap/nflog.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7648410Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap/ipnet.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7650317Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap/can_socketcan.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7651807Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap/vlan.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7653862Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7655574Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap-bpf.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7657716Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/include/pcap-namedb.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7659962Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/bin/pcap-config
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7662618Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/lib/pkgconfig/libpcap.pc
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7665375Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man1/pcap-config.1
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7668249Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_activate.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7670005Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_breakloop.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7671721Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_can_set_rfmon.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7673170Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_close.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7674695Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_create.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7676437Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_datalink_name_to_val.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7677958Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_datalink_val_to_name.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7679569Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_dump.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7681214Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_dump_close.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7682719Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_dump_file.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7684271Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_dump_flush.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7685797Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_dump_ftell.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7687314Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_file.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7688886Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_fileno.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7690666Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_findalldevs.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7692131Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_freecode.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7693743Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_get_required_select_timeout.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7695209Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_get_selectable_fd.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7696707Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_geterr.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7698242Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_init.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7699869Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_inject.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7701687Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_is_swapped.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7703269Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_lib_version.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7705016Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_lookupdev.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7706643Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_lookupnet.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7708191Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_loop.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7710166Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_major_version.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7711788Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_next_ex.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7713431Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_offline_filter.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7714956Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_open_live.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7716557Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_set_buffer_size.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7718088Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_set_datalink.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7719821Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_set_promisc.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7721458Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_set_protocol_linux.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7723001Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_set_rfmon.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7724578Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_set_snaplen.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7726185Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_set_timeout.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7727744Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_setdirection.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7729298Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_setfilter.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7731074Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_setnonblock.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7732509Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_snapshot.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7733965Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_stats.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7735594Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_statustostr.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7737078Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_strerror.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7738730Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_tstamp_type_name_to_val.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7740521Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_tstamp_type_val_to_name.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7741931Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7744142Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_compile.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7745581Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_datalink.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7747154Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_dump_open.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7748763Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_get_tstamp_precision.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7750292Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_list_datalinks.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7752009Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_list_tstamp_types.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7753379Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_open_dead.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7755017Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_open_offline.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7756560Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_set_immediate_mode.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7758171Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_set_tstamp_precision.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.7759970Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man3/pcap_set_tstamp_type.3pcap
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.8365050Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man5/pcap-savefile.5
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.8366660Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man7/pcap-filter.7
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.8368595Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man7/pcap-linktype.7
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:25.8370292Z -- Installing: /tmp/aurora-packet-tools-_upg9igi/prefix/share/man/man7/pcap-tstamp.7
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.0604113Z -- The C compiler identification is GNU 13.3.0
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.0692889Z -- Detecting C compiler ABI info
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.1194499Z -- Detecting C compiler ABI info - done
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.1364935Z -- Check for working C compiler: /usr/bin/cc - skipped
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.1367922Z -- Detecting C compile features
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.1372895Z -- Detecting C compile features - done
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.1468226Z -- Building 64-bit
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.1476271Z -- Checking C compiler flag -std=gnu99
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.1483588Z -- Performing Test std-gnu99
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.2001924Z -- Performing Test std-gnu99 - Success
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.2013649Z -- Performing Test CHECK_C_SOURCE_RUNS_WORKS
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.2534886Z -- Performing Test CHECK_C_SOURCE_RUNS_WORKS - Success
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.2621272Z -- Looking for sys/types.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.3160383Z -- Looking for sys/types.h - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.3161208Z -- Looking for stdint.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.3680442Z -- Looking for stdint.h - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.3681235Z -- Looking for stddef.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.4191093Z -- Looking for stddef.h - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.4191907Z -- Check size of time_t
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.4754455Z -- Check size of time_t - done
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.4755137Z -- 64-bit time_t
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.4756699Z -- Looking for rpc/rpc.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.5024017Z -- Looking for rpc/rpc.h - not found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.5024890Z -- Looking for net/if.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.5563978Z -- Looking for net/if.h - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.5564570Z -- Looking for strlcat
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.6087595Z -- Looking for strlcat - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.6088301Z -- Looking for strlcpy
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.6614726Z -- Looking for strlcpy - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.6615524Z -- Looking for strdup
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.7132284Z -- Looking for strdup - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.7133014Z -- Looking for strsep
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.7648490Z -- Looking for strsep - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.7649228Z -- Looking for gethostbyaddr
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.8158830Z -- Looking for gethostbyaddr - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.8160027Z -- Looking for getservent
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.8683504Z -- Looking for getservent - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.8685509Z -- Performing Test SUITABLE_SNPRINTF
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.9296660Z -- Performing Test SUITABLE_SNPRINTF - Success
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.9297465Z -- Looking for getopt_long
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.9807391Z -- Looking for getopt_long - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:26.9808028Z -- Looking for fork
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.0327230Z -- Looking for fork - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.0327926Z -- Looking for vfork
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.0839077Z -- Looking for vfork - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.0840531Z -- Looking for getrpcbynumber
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.1351934Z -- Looking for getrpcbynumber - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.1354344Z -- Looking for ether_ntohost
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.1867292Z -- Looking for ether_ntohost - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.1869998Z -- Looking for ether_ntohost
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.2188332Z -- Looking for ether_ntohost - not found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.2190807Z -- Looking for ether_ntohost
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.2754005Z -- Looking for ether_ntohost - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.2757607Z -- Looking for AF_INET6
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.3315341Z -- Looking for AF_INET6 - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.3318765Z -- Check size of struct in6_addr
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.3889071Z -- Check size of struct in6_addr - done
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.3901201Z -- Found PCAP: /tmp/aurora-packet-tools-_upg9igi/prefix/include
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.3903877Z -- Looking for pcap/pcap-inttypes.h
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.4428720Z -- Looking for pcap/pcap-inttypes.h - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.4432792Z -- Check size of pcap_if_t
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.5030121Z -- Check size of pcap_if_t - done
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.5032692Z -- Looking for pcap_list_datalinks
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.5584738Z -- Looking for pcap_list_datalinks - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.5585314Z -- Looking for pcap_free_datalinks
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.6133113Z -- Looking for pcap_free_datalinks - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.6133995Z -- Looking for pcap_datalink_name_to_val
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.6686926Z -- Looking for pcap_datalink_name_to_val - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.6687799Z -- Looking for pcap_datalink_val_to_description
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.7247807Z -- Looking for pcap_datalink_val_to_description - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.7248399Z -- Looking for pcap_set_datalink
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.7811425Z -- Looking for pcap_set_datalink - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.7812215Z -- Looking for pcap_breakloop
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.8371961Z -- Looking for pcap_breakloop - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.8372707Z -- Looking for pcap_dump_ftell
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.8932351Z -- Looking for pcap_dump_ftell - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.8933119Z -- Looking for pcap_statustostr
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.9486448Z -- Looking for pcap_statustostr - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:27.9487269Z -- Looking for pcap_create
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.0043056Z -- Looking for pcap_create - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.0043646Z -- Looking for pcap_set_tstamp_type
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.0617912Z -- Looking for pcap_set_tstamp_type - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.0618924Z -- Looking for pcap_set_tstamp_precision
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.1178187Z -- Looking for pcap_set_tstamp_precision - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.1179016Z -- Looking for pcap_findalldevs
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.1744106Z -- Looking for pcap_findalldevs - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.1744886Z -- Looking for pcap_dump_flush
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.2304399Z -- Looking for pcap_dump_flush - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.2305280Z -- Looking for pcap_lib_version
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.2869657Z -- Looking for pcap_lib_version - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.2870828Z -- Looking for pcap_setdirection
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.3437190Z -- Looking for pcap_setdirection - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.3448551Z -- Looking for pcap_set_immediate_mode
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.4013512Z -- Looking for pcap_set_immediate_mode - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.4014402Z -- Looking for pcap_dump_ftell64
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.4587258Z -- Looking for pcap_dump_ftell64 - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.4587954Z -- Looking for pcap_open
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.5110779Z -- Looking for pcap_open - not found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.5111628Z -- Looking for pcap_findalldevs_ex
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.5636159Z -- Looking for pcap_findalldevs_ex - not found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.5636743Z -- Looking for pcap_set_parser_debug
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.6162749Z -- Looking for pcap_set_parser_debug - not found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.6163637Z -- Looking for pcap_debug
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.6694238Z -- Looking for pcap_debug - not found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.6694764Z -- Looking for yydebug
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.7225428Z -- Looking for yydebug - not found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.7226243Z -- Looking for pcap_set_optimizer_debug
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.7746374Z -- Looking for pcap_set_optimizer_debug - not found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.7746921Z -- Looking for bpf_dump
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.8266287Z -- Looking for bpf_dump - found
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.8314135Z -- Found perl at /usr/bin/perl
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.8317069Z -- Configuring done (2.8s)
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.8464581Z -- Generating done (0.0s)
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.8469652Z -- Build files have been written to: /tmp/aurora-packet-tools-_upg9igi/tcpdump-build
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.9536959Z [1/182] Building C object CMakeFiles/netdissect.dir/addrtostr.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:28.9906458Z [2/182] Building C object CMakeFiles/netdissect.dir/af.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:29.0125386Z [3/182] Building C object CMakeFiles/netdissect.dir/ascii_strcasecmp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:29.0707936Z [4/182] Building C object CMakeFiles/netdissect.dir/checksum.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:29.1092730Z [5/182] Building C object CMakeFiles/netdissect.dir/addrtoname.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:29.1446458Z [6/182] Building C object CMakeFiles/netdissect.dir/gmpls.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:29.1666573Z [7/182] Building C object CMakeFiles/netdissect.dir/cpack.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:29.2085801Z [8/182] Building C object CMakeFiles/netdissect.dir/ipproto.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:29.2163235Z [9/182] Building C object CMakeFiles/netdissect.dir/in_cksum.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:29.2313182Z [10/182] Building C object CMakeFiles/netdissect.dir/machdep.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:29.2458497Z [11/182] Building C object CMakeFiles/netdissect.dir/l2vpn.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:29.2904679Z [12/182] Building C object CMakeFiles/netdissect.dir/netdissect-alloc.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:29.2943792Z [13/182] Building C object CMakeFiles/netdissect.dir/netdissect.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:29.3268591Z [14/182] Building C object CMakeFiles/netdissect.dir/nlpid.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:29.3298722Z [15/182] Building C object CMakeFiles/netdissect.dir/oui.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:29.3840926Z [16/182] Building C object CMakeFiles/netdissect.dir/ntp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:29.4433770Z [17/182] Building C object CMakeFiles/netdissect.dir/parsenfsfh.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:29.4755875Z [18/182] Building C object CMakeFiles/netdissect.dir/print.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:29.9071564Z [19/182] Building C object CMakeFiles/netdissect.dir/print-802_11.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:29.9633237Z [20/182] Building C object CMakeFiles/netdissect.dir/print-ah.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:30.0456751Z [21/182] Building C object CMakeFiles/netdissect.dir/print-802_15_4.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:30.0785084Z [22/182] Building C object CMakeFiles/netdissect.dir/print-ahcp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:30.1871676Z [23/182] Building C object CMakeFiles/netdissect.dir/print-aoe.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:30.1879824Z [24/182] Building C object CMakeFiles/netdissect.dir/print-aodv.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:30.2477745Z [25/182] Building C object CMakeFiles/netdissect.dir/print-ap1394.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:30.2713772Z [26/182] Building C object CMakeFiles/netdissect.dir/print-arcnet.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:30.3082076Z [27/182] Building C object CMakeFiles/netdissect.dir/print-arista.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:30.4024884Z [28/182] Building C object CMakeFiles/netdissect.dir/print-ascii.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:30.4377460Z [29/182] Building C object CMakeFiles/netdissect.dir/print-arp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:30.5373513Z [30/182] Building C object CMakeFiles/netdissect.dir/print-atm.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:30.6090103Z [31/182] Building C object CMakeFiles/netdissect.dir/print-atalk.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:30.6666105Z [32/182] Building C object CMakeFiles/netdissect.dir/print-bcm-li.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:30.7172787Z [33/182] Building C object CMakeFiles/netdissect.dir/print-beep.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:30.8047455Z [34/182] Building C object CMakeFiles/netdissect.dir/print-babel.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:30.8074156Z [35/182] Building C object CMakeFiles/netdissect.dir/print-bfd.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:31.0486266Z [36/182] Building C object CMakeFiles/netdissect.dir/print-bootp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:31.1058643Z [37/182] Building C object CMakeFiles/netdissect.dir/print-brcmtag.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:31.1525489Z [38/182] Building C object CMakeFiles/netdissect.dir/print-bt.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:31.2002022Z [39/182] Building C object CMakeFiles/netdissect.dir/print-calm-fast.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:31.2573053Z [40/182] Building C object CMakeFiles/netdissect.dir/print-carp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:31.4018027Z [41/182] Building C object CMakeFiles/netdissect.dir/print-cdp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:31.5375196Z [42/182] Building C object CMakeFiles/netdissect.dir/print-cfm.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:31.5420073Z [43/182] Building C object CMakeFiles/netdissect.dir/print-bgp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:31.5884321Z [44/182] Building C object CMakeFiles/netdissect.dir/print-cip.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:31.6132604Z [45/182] Building C object CMakeFiles/netdissect.dir/print-chdlc.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:31.7335743Z [46/182] Building C object CMakeFiles/netdissect.dir/print-cnfp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:31.8013073Z [47/182] Building C object CMakeFiles/netdissect.dir/print-dccp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:31.9315140Z [48/182] Building C object CMakeFiles/netdissect.dir/print-decnet.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:32.0185518Z [49/182] Building C object CMakeFiles/netdissect.dir/print-dhcp6.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:32.1021279Z [50/182] Building C object CMakeFiles/netdissect.dir/print-dsa.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:32.1646376Z [51/182] Building C object CMakeFiles/netdissect.dir/print-dtp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:32.2360684Z [52/182] Building C object CMakeFiles/netdissect.dir/print-domain.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:32.2873706Z [53/182] Building C object CMakeFiles/netdissect.dir/print-dvmrp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:32.3198390Z [54/182] Building C object CMakeFiles/netdissect.dir/print-eap.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:32.4004653Z [55/182] Building C object CMakeFiles/netdissect.dir/print-egp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:32.4526854Z [56/182] Building C object CMakeFiles/netdissect.dir/print-enc.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:32.4665265Z [57/182] Building C object CMakeFiles/netdissect.dir/print-eigrp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:32.5050197Z [58/182] Building C object CMakeFiles/netdissect.dir/print-esp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:32.5734055Z [59/182] Building C object CMakeFiles/netdissect.dir/print-fddi.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:32.5910287Z [60/182] Building C object CMakeFiles/netdissect.dir/print-ether.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:32.7918401Z [61/182] Building C object CMakeFiles/netdissect.dir/print-fr.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:32.8438224Z [62/182] Building C object CMakeFiles/netdissect.dir/print-frag6.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:32.8817844Z [63/182] Building C object CMakeFiles/netdissect.dir/print-ftp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:32.9242733Z [64/182] Building C object CMakeFiles/netdissect.dir/print-forces.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:32.9644483Z [65/182] Building C object CMakeFiles/netdissect.dir/print-geneve.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:32.9996833Z [66/182] Building C object CMakeFiles/netdissect.dir/print-geonet.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:33.0829362Z [67/182] Building C object CMakeFiles/netdissect.dir/print-gre.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:33.1372286Z [68/182] Building C object CMakeFiles/netdissect.dir/print-hsrp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:33.1746817Z [69/182] Building C object CMakeFiles/netdissect.dir/print-http.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:33.3393793Z [70/182] Building C object CMakeFiles/netdissect.dir/print-icmp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:33.4966980Z [71/182] Building C object CMakeFiles/netdissect.dir/print-hncp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:33.6075131Z [72/182] Building C object CMakeFiles/netdissect.dir/print-igmp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:33.6769385Z [73/182] Building C object CMakeFiles/netdissect.dir/print-igrp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:33.7143815Z [74/182] Building C object CMakeFiles/netdissect.dir/print-icmp6.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:33.7378437Z [75/182] Building C object CMakeFiles/netdissect.dir/print-ip-demux.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:33.8509031Z [76/182] Building C object CMakeFiles/netdissect.dir/print-ip6.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:33.8864933Z [77/182] Building C object CMakeFiles/netdissect.dir/print-ip.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:33.9303785Z [78/182] Building C object CMakeFiles/netdissect.dir/print-ipcomp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:33.9483989Z [79/182] Building C object CMakeFiles/netdissect.dir/print-ip6opts.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:33.9821918Z [80/182] Building C object CMakeFiles/netdissect.dir/print-ipfc.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:34.0070652Z [81/182] Building C object CMakeFiles/netdissect.dir/print-ipnet.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:34.0385833Z [82/182] Building C object CMakeFiles/netdissect.dir/print-ipoib.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:34.1010431Z [83/182] Building C object CMakeFiles/netdissect.dir/print-ipx.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:34.7768789Z [84/182] Building C object CMakeFiles/netdissect.dir/print-isakmp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:34.8881830Z [85/182] Building C object CMakeFiles/netdissect.dir/print-isoclns.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:34.9721866Z [86/182] Building C object CMakeFiles/netdissect.dir/print-krb.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:35.0265766Z [87/182] Building C object CMakeFiles/netdissect.dir/print-juniper.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:35.0798397Z [88/182] Building C object CMakeFiles/netdissect.dir/print-lane.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:35.1540392Z [89/182] Building C object CMakeFiles/netdissect.dir/print-l2tp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:35.2613970Z [90/182] Building C object CMakeFiles/netdissect.dir/print-lisp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:35.2794350Z [91/182] Building C object CMakeFiles/netdissect.dir/print-ldp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:35.3769293Z [92/182] Building C object CMakeFiles/netdissect.dir/print-llc.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:35.6219265Z [93/182] Building C object CMakeFiles/netdissect.dir/print-lmp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:35.6222940Z [94/182] Building C object CMakeFiles/netdissect.dir/print-lldp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:35.6817434Z [95/182] Building C object CMakeFiles/netdissect.dir/print-loopback.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:35.7592649Z [96/182] Building C object CMakeFiles/netdissect.dir/print-lwapp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:35.7964764Z [97/182] Building C object CMakeFiles/netdissect.dir/print-lspping.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:35.8687249Z [98/182] Building C object CMakeFiles/netdissect.dir/print-m3ua.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:35.9252622Z [99/182] Building C object CMakeFiles/netdissect.dir/print-lwres.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:35.9386831Z [100/182] Building C object CMakeFiles/netdissect.dir/print-macsec.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:35.9820226Z [101/182] Building C object CMakeFiles/netdissect.dir/print-mobile.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:36.0389948Z [102/182] Building C object CMakeFiles/netdissect.dir/print-mobility.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:36.0596891Z [103/182] Building C object CMakeFiles/netdissect.dir/print-mpcp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:36.1046202Z [104/182] Building C object CMakeFiles/netdissect.dir/print-mpls.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:36.1764169Z [105/182] Building C object CMakeFiles/netdissect.dir/print-msdp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:36.2044009Z [106/182] Building C object CMakeFiles/netdissect.dir/print-mptcp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:36.2301392Z [107/182] Building C object CMakeFiles/netdissect.dir/print-msnlb.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:36.2772797Z [108/182] Building C object CMakeFiles/netdissect.dir/print-nflog.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:36.3657868Z [109/182] Building C object CMakeFiles/netdissect.dir/print-nsh.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:36.4769806Z [110/182] Building C object CMakeFiles/netdissect.dir/print-ntp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:36.5333195Z [111/182] Building C object CMakeFiles/netdissect.dir/print-null.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:36.6462912Z [112/182] Building C object CMakeFiles/netdissect.dir/print-nfs.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:36.7354210Z [113/182] Building C object CMakeFiles/netdissect.dir/print-olsr.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:36.8729136Z [114/182] Building C object CMakeFiles/netdissect.dir/print-openflow-1.3.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:36.9486417Z [115/182] Building C object CMakeFiles/netdissect.dir/print-openflow.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:37.0852556Z [116/182] Building C object CMakeFiles/netdissect.dir/print-openflow-1.0.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:37.2810229Z [117/182] Building C object CMakeFiles/netdissect.dir/print-ospf.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:37.3103179Z [118/182] Building C object CMakeFiles/netdissect.dir/print-ospf6.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:37.3431780Z [119/182] Building C object CMakeFiles/netdissect.dir/print-pflog.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:37.4896210Z [120/182] Building C object CMakeFiles/netdissect.dir/print-pgm.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:37.5520632Z [121/182] Building C object CMakeFiles/netdissect.dir/print-pktap.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:37.6135263Z [122/182] Building C object CMakeFiles/netdissect.dir/print-ppi.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:37.6546132Z [123/182] Building C object CMakeFiles/netdissect.dir/print-pim.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:37.7339811Z [124/182] Building C object CMakeFiles/netdissect.dir/print-pppoe.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:37.9021930Z [125/182] Building C object CMakeFiles/netdissect.dir/print-pptp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:37.9025632Z [126/182] Building C object CMakeFiles/netdissect.dir/print-ppp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:38.0160583Z [127/182] Building C object CMakeFiles/netdissect.dir/print-ptp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:38.0572402Z [128/182] Building C object CMakeFiles/netdissect.dir/print-raw.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:38.1161188Z [129/182] Building C object CMakeFiles/netdissect.dir/print-radius.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:38.1245081Z [130/182] Building C object CMakeFiles/netdissect.dir/print-realtek.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:38.2219923Z [131/182] Building C object CMakeFiles/netdissect.dir/print-resp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:38.2253446Z [132/182] Building C object CMakeFiles/netdissect.dir/print-rip.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:38.2940536Z [133/182] Building C object CMakeFiles/netdissect.dir/print-ripng.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:38.3638215Z [134/182] Building C object CMakeFiles/netdissect.dir/print-rpki-rtr.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:38.4308537Z [135/182] Building C object CMakeFiles/netdissect.dir/print-rt6.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:38.4692684Z [136/182] Building C object CMakeFiles/netdissect.dir/print-rtsp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:38.7343284Z [137/182] Building C object CMakeFiles/netdissect.dir/print-rsvp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:38.8738895Z [138/182] Building C object CMakeFiles/netdissect.dir/print-sctp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:39.0666502Z [139/182] Building C object CMakeFiles/netdissect.dir/print-sflow.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:39.1047749Z [140/182] Building C object CMakeFiles/netdissect.dir/print-sip.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:39.1950083Z [141/182] Building C object CMakeFiles/netdissect.dir/print-sl.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:39.2615687Z [142/182] Building C object CMakeFiles/netdissect.dir/print-rx.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:39.3067325Z [143/182] Building C object CMakeFiles/netdissect.dir/print-sll.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:39.3461539Z [144/182] Building C object CMakeFiles/netdissect.dir/print-smtp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:39.3944880Z [145/182] Building C object CMakeFiles/netdissect.dir/print-slow.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:39.4495752Z [146/182] Building C object CMakeFiles/netdissect.dir/print-someip.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:39.5047052Z [147/182] Building C object CMakeFiles/netdissect.dir/print-ssh.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:39.6043633Z [148/182] Building C object CMakeFiles/netdissect.dir/print-snmp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:39.6273197Z [149/182] Building C object CMakeFiles/netdissect.dir/print-stp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:39.6556154Z [150/182] Building C object CMakeFiles/netdissect.dir/print-sunatm.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:39.6951470Z [151/182] Building C object CMakeFiles/netdissect.dir/print-sunrpc.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:39.7133532Z [152/182] Building C object CMakeFiles/netdissect.dir/print-symantec.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:39.7556270Z [153/182] Building C object CMakeFiles/netdissect.dir/print-syslog.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:39.8704049Z [154/182] Building C object CMakeFiles/netdissect.dir/print-telnet.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:39.9350619Z [155/182] Building C object CMakeFiles/netdissect.dir/print-tftp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:39.9930490Z [156/182] Building C object CMakeFiles/netdissect.dir/print-timed.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.0077732Z [157/182] Building C object CMakeFiles/netdissect.dir/print-tcp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.0698117Z [158/182] Building C object CMakeFiles/netdissect.dir/print-tipc.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.0942439Z [159/182] Building C object CMakeFiles/netdissect.dir/print-token.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.1442798Z [160/182] Building C object CMakeFiles/netdissect.dir/print-udld.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.1833049Z [161/182] Building C object CMakeFiles/netdissect.dir/print-unsupported.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.2469257Z [162/182] Building C object CMakeFiles/netdissect.dir/print-usb.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.3040566Z [163/182] Building C object CMakeFiles/netdissect.dir/print-vjc.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.3735539Z [164/182] Building C object CMakeFiles/netdissect.dir/print-vqp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.4483388Z [165/182] Building C object CMakeFiles/netdissect.dir/print-vrrp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.4847540Z [166/182] Building C object CMakeFiles/netdissect.dir/print-udp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.5158770Z [167/182] Building C object CMakeFiles/netdissect.dir/print-vsock.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.5699599Z [168/182] Building C object CMakeFiles/netdissect.dir/print-vxlan-gpe.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.5799325Z [169/182] Building C object CMakeFiles/netdissect.dir/print-vtp.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.6216539Z [170/182] Building C object CMakeFiles/netdissect.dir/print-vxlan.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.6608600Z [171/182] Building C object CMakeFiles/netdissect.dir/print-whois.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.6921983Z [172/182] Building C object CMakeFiles/netdissect.dir/print-wb.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.7296385Z [173/182] Building C object CMakeFiles/netdissect.dir/print-zep.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.8173144Z [174/182] Building C object CMakeFiles/netdissect.dir/print-zeromq.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.8607894Z [175/182] Building C object CMakeFiles/netdissect.dir/signature.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.8759102Z [176/182] Building C object CMakeFiles/netdissect.dir/print-zephyr.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.9264283Z [177/182] Building C object CMakeFiles/netdissect.dir/strtoaddr.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:40.9617608Z [178/182] Building C object CMakeFiles/tcpdump.dir/fptype.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.0879763Z [179/182] Building C object CMakeFiles/netdissect.dir/util-print.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.3072759Z [180/182] Linking C static library libnetdissect.a
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.3267898Z [181/182] Building C object CMakeFiles/tcpdump.dir/tcpdump.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.3803594Z [182/182] Linking C executable tcpdump
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.3828235Z Unmodified upstream /dev/full exit status: 0
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.7607013Z [1/2] Building C object CMakeFiles/tcpdump.dir/tcpdump.c.o
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.8148285Z [2/2] Linking C executable tcpdump
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.8177529Z test_agent_style_literal_filter_and_packet_limit (__main__.PacketToolsTest.test_agent_style_literal_filter_and_packet_limit) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.8188747Z test_exact_stable_versions (__main__.PacketToolsTest.test_exact_stable_versions) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.8200765Z test_filter_cannot_be_reinterpreted_as_version_flag (__main__.PacketToolsTest.test_filter_cannot_be_reinterpreted_as_version_flag) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.8212301Z test_full_output_device_cannot_report_success (__main__.PacketToolsTest.test_full_output_device_cannot_report_success) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.8222904Z test_invalid_filter_fails (__main__.PacketToolsTest.test_invalid_filter_fails) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.8271774Z test_matching_filter_preserves_packet (__main__.PacketToolsTest.test_matching_filter_preserves_packet) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.8292761Z test_nonmatching_filter_writes_only_file_header (__main__.PacketToolsTest.test_nonmatching_filter_writes_only_file_header) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.8306662Z test_nonregular_output_does_not_require_fsync (__main__.PacketToolsTest.test_nonregular_output_does_not_require_fsync) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.8639998Z test_rotation_closes_and_preserves_both_segments (__main__.PacketToolsTest.test_rotation_closes_and_preserves_both_segments) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.8655020Z test_truncated_input_fails (__main__.PacketToolsTest.test_truncated_input_fails) ... ok
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.9085831Z 
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.9086640Z ----------------------------------------------------------------------
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.9087382Z Ran 10 tests in 23.197s
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.9087613Z 
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-22T18:28:41.9087827Z OK
