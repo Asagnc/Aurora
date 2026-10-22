@@ -42,7 +42,7 @@ class ScopeTest(unittest.TestCase):
         subprocess.run(['cc', '-std=c11', '-O2', '-DNDEBUG', '-Wall', '-Wextra', '-Werror',
                         str(source / 'scope_probe.c'), str(source / 'task_scope.c'), str(source / 'scope_identity.c'),
                         str(source / 'scope_state.c'), str(source / 'scope_process.c'),
-                        str(source / 'mount_probe.c'), '-o', cls.binary], check=True)
+                        str(source / 'mount_probe.c'), str(source / 'guest_run.c'), '-o', cls.binary], check=True)
 
     @classmethod
     def tearDownClass(cls):

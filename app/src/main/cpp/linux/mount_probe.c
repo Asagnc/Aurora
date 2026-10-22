@@ -96,7 +96,7 @@ static int check_guest(void) {
     return 0;
 }
 
-int scope_chroot_fixture(const char *rootfs, const char *workspace) {
+int scope_chroot_enter(const char *rootfs, const char *workspace) {
     int source = scope_open_directory(rootfs);
     int work = scope_open_directory(workspace);
     int target = work < 0 ? -1 : child_directory(work, "view");
@@ -116,6 +116,11 @@ int scope_chroot_fixture(const char *rootfs, const char *workspace) {
         saved = errno; close(guest); errno = saved; return -1;
     }
     close(guest);
+    return 0;
+}
+
+int scope_chroot_fixture(const char *rootfs, const char *workspace) {
+    if (scope_chroot_enter(rootfs, workspace) < 0) return -1;
     return check_guest();
 }
 

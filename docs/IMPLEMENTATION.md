@@ -1,3 +1,7 @@
+## 2026-10-22 原生guest业务命令入口
+
+618c843完整CI39745288718成功。新增原生--run：真实guest argv/输出/退出码、显式环境/cwd/FD关闭、有界超时及cgroup收尾；Root专属单次目录持久generation/runId，确认scope空且退出后才写completed.json，双监督死亡恢复不伪造完成。见LINUX_GUEST_COMMANDS.md。新增主机4用例，挂载/命令组11；本地Debug/Release/lint通过，CI另记。尚未接应用Binder业务派发/SQL运行租约/PTY/Root会话文件清理，Agent executionReady=false，无新真机结果。下一步必须先闭合这些路径，不将原生入口称为完整Linux功能。版本号仍0.1.26。
+
 # 2026-10-22 guest ELF资格补充
 
 固定chroot shell fixture验证动态ELF加载、干净环境、cwd、产物和退出码37；缺失加载器失败回收，新增主机2项（挂载组7）。本地Debug/Release/lint通过；CI及设备结果另记。不是Ubuntu镜像或业务命令执行，生产租约/PTY尚待接入，executionReady=false。上一版4a783c2完整CI39741811061通过。

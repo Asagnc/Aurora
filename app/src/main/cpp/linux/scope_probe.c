@@ -2,6 +2,7 @@
 #include "task_scope.h"
 #include "scope_state.h"
 #include "mount_probe.h"
+#include "guest_run.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <poll.h>
@@ -17,7 +18,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-struct fixture { const char *rootfs, *workspace; int shell; };
+struct fixture { const char *rootfs, *workspace; int shell; struct guest_run run; };
 
 static int failure(const char *operation) {
     int saved = errno;
@@ -40,8 +41,8 @@ static int read_ready(int pipe, int timeout_ms) {
     errno = EPIPE; return -1;
 }
 
-/* No arbitrary command or caller-supplied PID is accepted by this qualification
- * binary. Descendants deliberately detach and ignore TERM to test cgroup kill. */
+/* Qualification deliberately detaches TERM-ignoring descendants. Run mode
+ * instead execs the supplied guest argv after the same admission/mount setup. */
 static int workload(const struct task_scope *scope, int report, int hold_ms, const struct fixture *fixture) {
     if (task_scope_enter(scope) < 0) return failure("scope_enter");
     close(scope->processes); close(scope->directory); close(scope->parent);
@@ -51,6 +52,12 @@ static int workload(const struct task_scope *scope, int report, int hold_ms, con
         mount(NULL, "/", NULL, MS_REC | MS_PRIVATE, NULL) < 0 || stat("/proc/self/ns/mnt", &after) < 0)
         return failure("private_mount_namespace");
     if (before.st_ino == after.st_ino) { errno = EINVAL; return failure("unchanged_mount_namespace"); }
+    if (fixture->run.argv) {
+        if (scope_chroot_enter(fixture->run.rootfs, fixture->run.workspace) < 0) return failure("guest_mount");
+        if (write(report, "r", 1) != 1) return failure("guest_ready");
+        close(report);
+        return guest_run_exec(&fixture->run);
+    }
     if (fixture->rootfs && scope_chroot_fixture(fixture->rootfs, fixture->workspace) < 0) return failure("chroot_fixture");
     if (fixture->shell && scope_chroot_shell_fixture() < 0) return failure("chroot_shell_fixture");
     int ready[2];
@@ -76,8 +83,8 @@ static int workload(const struct task_scope *scope, int report, int hold_ms, con
     return 0;
 }
 
-static int observe(int owner, int worker, int report) {
-    long long deadline = task_scope_now() + 10000;
+static int observe(int owner, int worker, int report, int timeout_ms) {
+    long long deadline = task_scope_now() + timeout_ms;
     int ready = 0;
     for (;;) {
         struct pollfd events[] = {{.fd = owner, .events = POLLIN}, {.fd = worker, .events = POLLIN},
@@ -126,7 +133,7 @@ static int cleanup(struct task_scope *scope, pid_t worker, int *exit_code) {
 
 static int guard(int owner, int hold_ms, int state, const struct fixture *fixture) {
     /* A separate session survives the command supervisor's group cancellation.
-     * This guard ends after this one bounded probe; it is not a daemon. */
+     * This guard ends after this one bounded job; it is not a daemon. */
     if (setsid() < 0 || prctl(PR_SET_CHILD_SUBREAPER, 1) < 0) return failure("guard_setup");
     struct pollfd alive = {.fd = owner, .events = POLLIN};
     if (poll(&alive, 1, 0) != 0) { errno = EPIPE; return failure("owner_already_exited"); }
@@ -151,7 +158,7 @@ static int guard(int owner, int hold_ms, int state, const struct fixture *fixtur
     }
     close(report[1]);
     int worker_fd = (int)syscall(SYS_pidfd_open, worker, 0);
-    int observed = worker_fd < 0 ? -1 : observe(owner, worker_fd, report[0]);
+    int observed = worker_fd < 0 ? -1 : observe(owner, worker_fd, report[0], fixture->run.argv ? fixture->run.timeout_ms : 10000);
     int saved = errno;
     close(report[0]); if (worker_fd >= 0) close(worker_fd);
     int populated = task_scope_populated(&scope);
@@ -165,6 +172,12 @@ static int guard(int owner, int hold_ms, int state, const struct fixture *fixtur
         return cleaned;
     }
     if (scope_state_forget(state, scope.name) < 0) return failure("scope_record_finish");
+    if (fixture->run.argv) {
+        int interrupted = observed < 0 || poll(&alive, 1, 0) != 0;
+        if (guest_run_finish(state, exit_code, interrupted) < 0) return failure("guest_completion");
+        if (interrupted) { errno = saved; return failure("guest_interrupted"); }
+        return exit_code;
+    }
     if (observed < 0) { errno = saved; return failure("owner_or_worker_observation"); }
     if (exit_code || populated != 1) { errno = EINVAL; return failure("workload_or_population"); }
     if (poll(&alive, 1, 0) != 0) { errno = EPIPE; return failure("owner_exited"); }
@@ -175,12 +188,17 @@ static int guard(int owner, int hold_ms, int state, const struct fixture *fixtur
 
 int main(int argc, char **argv) {
     int hold_ms = 0;
-    if (argc < 4 || (strcmp(argv[1], "--probe") && strcmp(argv[1], "--recover")) ||
+    if (argc < 4 || (strcmp(argv[1], "--probe") && strcmp(argv[1], "--recover") && strcmp(argv[1], "--run")) ||
         strcmp(argv[2], "--state-dir")) return 64;
     int recovering = !strcmp(argv[1], "--recover");
     struct fixture fixture = {0};
     int next = 4;
-    if (!recovering && argc >= 7 && (!strcmp(argv[4], "--chroot-fixture") || !strcmp(argv[4], "--chroot-shell-fixture"))) {
+    int running = !strcmp(argv[1], "--run");
+    if (running) {
+        if (guest_run_parse(argc, argv, &fixture.run) < 0) return 64;
+        next = argc;
+    }
+    if (!recovering && !running && argc >= 7 && (!strcmp(argv[4], "--chroot-fixture") || !strcmp(argv[4], "--chroot-shell-fixture"))) {
         fixture.shell = !strcmp(argv[4], "--chroot-shell-fixture");
         fixture.rootfs = argv[5]; fixture.workspace = argv[6]; next = 7;
     }
@@ -200,6 +218,7 @@ int main(int argc, char **argv) {
     if (state < 0) return failure("state_directory");
     if (scope_state_recover(state) < 0) { close(state); return failure("state_recovery"); }
     if (recovering) { close(state); puts("{\"protocol\":1,\"recovered\":true}"); return 0; }
+    if (running && guest_run_begin(state, &fixture.run) < 0) { close(state); return failure("guest_run_identity"); }
     if (prctl(PR_SET_CHILD_SUBREAPER, 1) < 0) { close(state); return failure("coordinator_subreaper"); }
     int owner = (int)syscall(SYS_pidfd_open, getpid(), 0);
     if (owner < 0) return failure("owner_pidfd");

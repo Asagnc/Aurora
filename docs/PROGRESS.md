@@ -2,6 +2,10 @@
 
 更新时间：2026-10-22。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 2026-10-22 原生guest业务命令入口
+
+618c843完整CI39745288718成功。新增原生--run：真实guest argv/输出/退出码、显式环境/cwd/FD关闭、有界超时及cgroup收尾；Root专属单次目录持久generation/runId，确认scope空且退出后才写completed.json，双监督死亡恢复不伪造完成。见LINUX_GUEST_COMMANDS.md。新增主机4用例，挂载/命令组11；本地Debug/Release/lint通过，CI另记。尚未接应用Binder业务派发/SQL运行租约/PTY/Root会话文件清理，Agent executionReady=false，无新真机结果。下一步必须先闭合这些路径，不将原生入口称为完整Linux功能。版本号仍0.1.26。
+
 ## 2026-10-22 guest ELF 执行资格（接续）
 
 4a783c2完整CI39741811061成功。新增固定shell fixture：在已有只读chroot/会话绑定和cgroup监督内execve真实动态ELF，显式环境、工作目录、文件产物与非零退出码37复核；缺失动态加载器必须失败并回收scope。CI主机挂载组从5增至7项。使用主机shell和匹配库，不冒充Ubuntu26.10/Android实测，不开放任意Agent命令。

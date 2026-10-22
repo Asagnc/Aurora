@@ -9,6 +9,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+import time
 import unittest
 
 spec = importlib.util.spec_from_file_location('scope_tests', Path(__file__).with_name('verify-linux-scopes.py'))
@@ -83,6 +84,81 @@ class MountTest(base.ScopeTest):
         self.assertEqual(b'', result.stdout)
         self.assertEqual([], list(state.glob('*.state')))
         self.assertFalse((work / 'home/shell.txt').exists())
+        self.assert_host_unchanged(root, work)
+
+    def run_arguments(self, root, work, command, timeout=3000):
+        state = work / 'run-state'
+        return [self.binary, '--run', '--state-dir', str(state), '--generation', 'a' * 64,
+                '--run-id', '12345678-1234-1234-1234-123456789abc', '--rootfs', str(root),
+                '--workspace', str(work), '--timeout-ms', str(timeout), '--', '/bin/sh', '-c', command]
+
+    def test_guest_command_streams_status_and_durable_completion(self):
+        root, work = self.shell_fixture()
+        args = self.run_arguments(root, work, 'printf output; printf error >&2; printf artifact > /mnt/result; exit 23')
+        result = subprocess.run(args, capture_output=True, timeout=8)
+        self.assertEqual(23, result.returncode, result.stderr.decode())
+        self.assertEqual(b'output', result.stdout)
+        self.assertEqual(b'error', result.stderr)
+        self.assertEqual('artifact', (work / 'project/result').read_text())
+        state = work / 'run-state'
+        identity = json.loads((state / 'run.json').read_text())
+        self.assertEqual('a' * 64, identity['generation'])
+        self.assertEqual({'protocol': 1, 'scopeRemoved': True, 'exitCode': 23, 'interrupted': False},
+                         json.loads((state / 'completed.json').read_text()))
+        self.assertEqual([], list(state.glob('*.state')))
+        repeated = subprocess.run(args, capture_output=True, timeout=8)
+        self.assertNotEqual(0, repeated.returncode)
+        self.assertEqual(b'', repeated.stdout)
+        self.assert_host_unchanged(root, work)
+
+    def test_guest_timeout_kills_background_descendants_before_completion(self):
+        root, work = self.shell_fixture()
+        result = subprocess.run(self.run_arguments(root, work,
+            'trap "" TERM; (while :; do :; done) & while :; do :; done', 100),
+            capture_output=True, timeout=8)
+        self.assertNotEqual(0, result.returncode)
+        state = work / 'run-state'
+        completion = json.loads((state / 'completed.json').read_text())
+        self.assertTrue(completion['interrupted'])
+        self.assertTrue(completion['scopeRemoved'])
+        self.assertEqual([], list(state.glob('*.state')))
+        self.assert_host_unchanged(root, work)
+
+    def test_guest_exec_failure_is_not_reported_as_success(self):
+        root, work = self.shell_fixture()
+        args = self.run_arguments(root, work, 'unused')
+        args[-3:] = ['/missing-executable']
+        result = subprocess.run(args, capture_output=True, timeout=8)
+        self.assertEqual(127, result.returncode)
+        completion = json.loads((work / 'run-state/completed.json').read_text())
+        self.assertEqual(127, completion['exitCode'])
+        self.assertFalse(completion['interrupted'])
+        self.assertTrue(completion['scopeRemoved'])
+        self.assert_host_unchanged(root, work)
+
+    def test_guest_both_supervisors_die_requires_recovery_without_completion(self):
+        root, work = self.shell_fixture()
+        args = self.run_arguments(root, work, 'printf ready > /mnt/ready; while :; do :; done', 5000)
+        process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        self.addCleanup(self.stop, process)
+        state = work / 'run-state'
+        self.addCleanup(self.recover_state, state)
+        deadline = time.monotonic() + 3
+        while not (work / 'project/ready').exists() and time.monotonic() < deadline:
+            time.sleep(0.01)
+        self.assertTrue((work / 'project/ready').exists())
+        guard, = base.children(process.pid)
+        worker, = base.children(guard)
+        scope = base.group(worker)
+        os.kill(guard, signal.SIGSTOP)
+        process.kill()
+        os.kill(guard, signal.SIGKILL)
+        self.recover_state(state)
+        process.communicate(timeout=8)
+        self.assertFalse((state / 'completed.json').exists())
+        self.assertEqual([], list(state.glob('*.state')))
+        self.assert_gone(worker)
+        self.assert_scope_removed(scope)
         self.assert_host_unchanged(root, work)
 
     def assert_host_unchanged(self, root, work):
