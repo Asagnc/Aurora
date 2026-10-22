@@ -1,0 +1,118 @@
+test	Verify task cgroup events and supervisor death on Linux host	﻿2026-10-22T15:26:30.1633626Z ##[group]Run sudo -n python3 scripts/verify-linux-scopes.py
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:30.1634198Z ^[[36;1msudo -n python3 scripts/verify-linux-scopes.py^[[0m
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:30.1634674Z ^[[36;1msudo -n python3 scripts/verify-linux-scope-recovery.py^[[0m
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:30.1635165Z ^[[36;1msudo -n python3 scripts/verify-linux-chroot-mounts.py^[[0m
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:30.1635602Z ^[[36;1msudo -n python3 scripts/verify-linux-pty.py^[[0m
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:30.1636033Z ^[[36;1msudo -n python3 scripts/verify-linux-metadata-gc.py^[[0m
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:30.1688728Z shell: /usr/bin/bash -e {0}
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:30.1689067Z env:
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:30.1689663Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/25.0.4-1/x64
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:30.1690234Z   JAVA_HOME_25_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/25.0.4-1/x64
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:30.1690666Z   MAVEN_ARGS: -ntp
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:30.1690963Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:30.1691320Z   GRADLE_USER_HOME: /home/runner/.gradle
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:30.1691857Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:30.1692357Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:30.1692885Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:30.1693268Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:30.1693589Z ##[endgroup]
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:31.0448866Z test_coordinator_term_and_kill_trigger_guard_cleanup (__main__.ScopeTest.test_coordinator_term_and_kill_trigger_guard_cleanup) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:31.3536507Z test_normal_exit_kills_detached_worker_reaps_and_removes_scope (__main__.ScopeTest.test_normal_exit_kills_detached_worker_reaps_and_removes_scope) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:31.3587872Z test_ordinary_uid_and_arbitrary_scope_arguments_are_rejected (__main__.ScopeTest.test_ordinary_uid_and_arbitrary_scope_arguments_are_rejected) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:31.3780636Z test_process_group_kill_leaves_guard_alive_to_clean_only_task (__main__.ScopeTest.test_process_group_kill_leaves_guard_alive_to_clean_only_task) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:32.0095168Z test_repeated_probes_remove_independent_scopes (__main__.ScopeTest.test_repeated_probes_remove_independent_scopes) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:32.0312355Z test_workload_sigkill_reaps_descendants_without_success_reply (__main__.ScopeTest.test_workload_sigkill_reaps_descendants_without_success_reply) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:32.0319983Z 
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:32.0320402Z ----------------------------------------------------------------------
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:32.0320993Z Ran 6 tests in 1.799s
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:32.0321206Z 
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:32.0321338Z OK
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:32.8844785Z test_guard_sigkill_is_recovered_by_coordinator_without_success_reply (__main__.RecoveryTest.test_guard_sigkill_is_recovered_by_coordinator_without_success_reply) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:32.9065370Z test_both_supervisors_killed_are_recovered_by_a_fresh_process (__main__.RecoveryTest.test_both_supervisors_killed_are_recovered_by_a_fresh_process) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:32.9239989Z test_live_guard_is_not_replayed_or_killed (__main__.RecoveryTest.test_live_guard_is_not_replayed_or_killed) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:32.9446223Z test_corrupt_record_is_retained_without_touching_scope (__main__.RecoveryTest.test_corrupt_record_is_retained_without_touching_scope) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:32.9635433Z test_valid_checksum_with_different_scope_inode_still_refuses_kill (__main__.RecoveryTest.test_valid_checksum_with_different_scope_inode_still_refuses_kill) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:32.9793877Z test_previous_boot_record_is_retired_without_killing_present_scope (__main__.RecoveryTest.test_previous_boot_record_is_retired_without_killing_present_scope) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:32.9821725Z test_untrusted_state_directory_and_symlink_are_refused (__main__.RecoveryTest.test_untrusted_state_directory_and_symlink_are_refused) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:32.9827962Z 
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:32.9828354Z ----------------------------------------------------------------------
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:32.9829058Z Ran 7 tests in 0.881s
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:32.9829589Z 
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:33.9446554Z OK
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:33.9447823Z test_real_guest_shell_clean_environment_and_nonzero_exit (__main__.MountTest.test_real_guest_shell_clean_environment_and_nonzero_exit) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:33.9643949Z test_missing_guest_loader_fails_and_cleans_scope (__main__.MountTest.test_missing_guest_loader_fails_and_cleans_scope) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:33.9882181Z test_guest_command_streams_status_and_durable_completion (__main__.MountTest.test_guest_command_streams_status_and_durable_completion) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:35.0031934Z test_guest_timeout_kills_background_descendants_before_completion (__main__.MountTest.test_guest_timeout_kills_background_descendants_before_completion) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:35.0211124Z test_guest_exec_failure_is_not_reported_as_success (__main__.MountTest.test_guest_exec_failure_is_not_reported_as_success) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:35.0453696Z test_guest_both_supervisors_die_requires_recovery_without_completion (__main__.MountTest.test_guest_both_supervisors_die_requires_recovery_without_completion) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:35.0481579Z test_recovery_refuses_held_startup_lock_even_before_scope_record (__main__.MountTest.test_recovery_refuses_held_startup_lock_even_before_scope_record) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:35.3636319Z test_readonly_guest_root_writable_bindings_and_host_mounts (__main__.MountTest.test_readonly_guest_root_writable_bindings_and_host_mounts) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:35.3834246Z test_guard_sigkill_releases_mounted_descendants_without_success (__main__.MountTest.test_guard_sigkill_releases_mounted_descendants_without_success) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:35.4086344Z test_fresh_recovery_after_both_supervisors_die_preserves_outputs (__main__.MountTest.test_fresh_recovery_after_both_supervisors_die_preserves_outputs) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:35.4195700Z test_guest_target_symlink_fails_without_following_or_host_mounts (__main__.MountTest.test_guest_target_symlink_fails_without_following_or_host_mounts) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:35.4563593Z test_two_private_views_share_base_without_sharing_writable_homes (__main__.MountTest.test_two_private_views_share_base_without_sharing_writable_homes) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:35.4682471Z 
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:35.4683237Z ----------------------------------------------------------------------
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:35.4683978Z Ran 12 tests in 2.418s
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:35.4684224Z 
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:36.4290399Z OK
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:36.4291354Z test_guest_tty_unicode_resize_and_nonzero_exit (__main__.LinuxPtyTest.test_guest_tty_unicode_resize_and_nonzero_exit) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:36.4818121Z test_ctrl_c_reaches_guest_foreground_without_killing_supervision (__main__.LinuxPtyTest.test_ctrl_c_reaches_guest_foreground_without_killing_supervision) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:36.5404762Z test_transport_stop_reclaims_detached_guest_session (__main__.LinuxPtyTest.test_transport_stop_reclaims_detached_guest_session) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:37.8204016Z test_transport_deadline_reclaims_detached_guest_session (__main__.LinuxPtyTest.test_transport_deadline_reclaims_detached_guest_session) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:37.8304615Z test_terminal_mode_refuses_pipes_without_creating_run_state (__main__.LinuxPtyTest.test_terminal_mode_refuses_pipes_without_creating_run_state) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:38.9109414Z test_fresh_recovery_after_both_supervisors_die_does_not_invent_completion (__main__.LinuxPtyTest.test_fresh_recovery_after_both_supervisors_die_does_not_invent_completion) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:38.9199946Z 
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:38.9200802Z ----------------------------------------------------------------------
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:38.9201711Z Ran 6 tests in 3.378s
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:38.9202010Z 
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:38.9202161Z OK
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.8095651Z test_completed_flat_metadata_is_removed_but_parent_lock_is_retained (__main__.MetadataGcTest.test_completed_flat_metadata_is_removed_but_parent_lock_is_retained) ... FAIL
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.8111634Z test_current_native_run_lock_prevents_any_unlink (__main__.MetadataGcTest.test_current_native_run_lock_prevents_any_unlink) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.8128967Z test_empty_quarantine_and_writable_metadata (__main__.MetadataGcTest.test_empty_quarantine_and_writable_metadata) ... FAIL
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.8144443Z test_legacy_read_only_world_bits_inside_private_root_directory_are_supported (__main__.MetadataGcTest.test_legacy_read_only_world_bits_inside_private_root_directory_are_supported) ... FAIL
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.8164097Z test_missing_or_non_uuid_directory_is_not_created (__main__.MetadataGcTest.test_missing_or_non_uuid_directory_is_not_created) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.8527722Z test_mounted_quarantine_directory_is_not_traversed (__main__.MetadataGcTest.test_mounted_quarantine_directory_is_not_traversed) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.8543239Z test_no_stopped_marker_means_no_collection (__main__.MetadataGcTest.test_no_stopped_marker_means_no_collection) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.8557808Z test_parent_lock_prevents_collector_split_during_final_unlink (__main__.MetadataGcTest.test_parent_lock_prevents_collector_split_during_final_unlink) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.8575408Z test_quarantined_partial_deletion_resumes_without_requiring_deleted_ticket (__main__.MetadataGcTest.test_quarantined_partial_deletion_resumes_without_requiring_deleted_ticket) ... FAIL
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.8937438Z test_regular_file_bind_mount_is_retained_before_any_unlink (__main__.MetadataGcTest.test_regular_file_bind_mount_is_retained_before_any_unlink) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.8996521Z test_unknown_entries_links_hardlinks_and_subdirectories_are_retained (__main__.MetadataGcTest.test_unknown_entries_links_hardlinks_and_subdirectories_are_retained) ... ok
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9032166Z 
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9032566Z ======================================================================
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9034064Z FAIL: test_completed_flat_metadata_is_removed_but_parent_lock_is_retained (__main__.MetadataGcTest.test_completed_flat_metadata_is_removed_but_parent_lock_is_retained)
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9035210Z ----------------------------------------------------------------------
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9035772Z Traceback (most recent call last):
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9037016Z   File "/home/runner/work/Aurora/Aurora/scripts/verify-linux-metadata-gc.py", line 47, in test_completed_flat_metadata_is_removed_but_parent_lock_is_retained
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9038168Z     self.assertEqual(0, result.returncode, result.stderr)
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9038927Z AssertionError: 0 != 126 : b'{"error":"root_scope_unavailable","operation":"metadata_gc","errno":1}\n'
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9039460Z 
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9039649Z ======================================================================
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9040502Z FAIL: test_empty_quarantine_and_writable_metadata (__main__.MetadataGcTest.test_empty_quarantine_and_writable_metadata)
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9041368Z ----------------------------------------------------------------------
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9041893Z Traceback (most recent call last):
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9042748Z   File "/home/runner/work/Aurora/Aurora/scripts/verify-linux-metadata-gc.py", line 113, in test_empty_quarantine_and_writable_metadata
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9043702Z     self.assertEqual(0, self.collect(moved).returncode)
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9044228Z AssertionError: 0 != 126
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9044450Z 
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9044634Z ======================================================================
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9045769Z FAIL: test_legacy_read_only_world_bits_inside_private_root_directory_are_supported (__main__.MetadataGcTest.test_legacy_read_only_world_bits_inside_private_root_directory_are_supported)
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9046693Z ----------------------------------------------------------------------
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9047810Z Traceback (most recent call last):
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9048594Z   File "/home/runner/work/Aurora/Aurora/scripts/verify-linux-metadata-gc.py", line 91, in test_legacy_read_only_world_bits_inside_private_root_directory_are_supported
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9049423Z     self.assertEqual(0, self.collect(state, trash).returncode)
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9050211Z AssertionError: 0 != 126
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9050388Z 
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9050535Z ======================================================================
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9051373Z FAIL: test_quarantined_partial_deletion_resumes_without_requiring_deleted_ticket (__main__.MetadataGcTest.test_quarantined_partial_deletion_resumes_without_requiring_deleted_ticket)
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9052219Z ----------------------------------------------------------------------
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9052601Z Traceback (most recent call last):
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9053346Z   File "/home/runner/work/Aurora/Aurora/scripts/verify-linux-metadata-gc.py", line 98, in test_quarantined_partial_deletion_resumes_without_requiring_deleted_ticket
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9054288Z     self.assertEqual(0, self.collect(moved).returncode)
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9054653Z AssertionError: 0 != 126
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9054822Z 
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9054996Z ----------------------------------------------------------------------
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9055374Z Ran 11 tests in 0.912s
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9055540Z 
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9055657Z FAILED (failures=4)
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-22T15:26:39.9156514Z ##[error]Process completed with exit code 1.

@@ -33,7 +33,7 @@ import kotlinx.coroutines.*
             notice = null
             try { app.ready.await(); action() }
             catch (cancel: CancellationException) { throw cancel }
-            catch (_: Exception) { notice = "操作未完成，请检查网络、可用空间和环境完整性。" }
+            catch (_: Exception) { notice = "操作未完成，请检查 Root 连接、网络、可用空间和环境完整性。" }
             finally { busy = false }
         }
     }
@@ -69,6 +69,8 @@ import kotlinx.coroutines.*
                 val result = manager.metadata.collect()
                 notice = "已回收 ${result["collected"]} 条旧运行记录；保留 ${result["retained"]} 条当前或待确认记录。"
             } }, enabled = !busy && app.root.metadataClient != null) { Text("清理已确认的旧运行记录") }
+            if (rootState.phase == io.github.asagnc.aurora.root.RootPhase.READY && app.root.metadataClient == null)
+                Text("重新连接 Root 后可清理旧运行记录。", color = AuroraMuted)
             if (pendingRuns > 0) {
                 Text("有 $pendingRuns 个 Linux 任务等待确认退出，相关会话和环境暂时保留。", color = AuroraMuted)
                 OutlinedButton({ run {

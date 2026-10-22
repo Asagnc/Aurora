@@ -37,7 +37,7 @@ static int uuid(const char *name) {
 }
 
 static int known(const char *name, int journals) {
-    const char *files[] = {"ticket.json", "retired", "stopped", "run.json", "completed.json", ".run.lock"};
+    const char *files[] = {"ticket.json", "retired", "stopped", "run.json", "completed.json", ".run.lock", ".recovery.lock"};
     for (unsigned i = 0; i < sizeof(files) / sizeof(files[0]); i++) if (!strcmp(name, files[i])) return 1;
     size_t size = strlen(name);
     return journals && size > 6 && !strcmp(name + size - 6, ".state");

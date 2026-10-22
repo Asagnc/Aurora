@@ -30,7 +30,7 @@ class MetadataGcTest(unittest.TestCase):
         runtime.mkdir(mode=0o700); trash.mkdir(mode=0o700)
         state = runtime / str(uuid.uuid4())
         state.mkdir(mode=0o700)
-        for name, contents in [('ticket.json', b'{}'), ('stopped', b''), ('run.json', b'{}'), ('.run.lock', b'')]:
+        for name, contents in [('ticket.json', b'{}'), ('stopped', b''), ('run.json', b'{}'), ('.run.lock', b''), ('.recovery.lock', b'')]:
             (state / name).write_bytes(contents)
             (state / name).chmod(0o600)
         return state, trash
