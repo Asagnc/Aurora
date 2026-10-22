@@ -9,3 +9,4 @@ target_compile_options(aurora_pty PRIVATE -Wall -Wextra -Werror -fstack-protecto
 target_link_options(aurora_pty PRIVATE -Wl,-z,relro,-z,now -Wl,-z,max-page-size=16384)
 include(linux/Proot.cmake)
 include(linux/Namespace.cmake)
+include(linux/Scope.cmake)

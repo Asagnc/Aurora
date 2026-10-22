@@ -2,6 +2,12 @@
 
 更新时间：2026-10-22。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 0.1.23 cgroup监督资格（2026-10-22，优先接续）
+
+新增固定原生任务scope资格：新建专属组、自入组、私有mount、pidfd、subreaper、独立会话监督、kill/空事件/reap/remove。Agent probe_root接此资格，不要求PID空间，executionReady=false。见LINUX_SCOPE_IMPLEMENTATION.md。新增主机6项CI和Android普通1+Root1仅编译，普通门槛73。
+
+上一版fd0c847完整[CI39650196565](https://github.com/Asagnc/Aurora/actions/runs/39650196565)已通过。当前本地/CI证据见evidence/0.1.23；未连手机。完整chroot/PTY/租约、监督自身强杀或Root撤权后的持久恢复未接，不把固定资格当完整运行时。下一步继续已批准cgroup方案的恢复闭环。
+
 ## 0.1.22 Root 辅助安装（2026-10-22，优先接续）
 
 Root 批量硬链接安装已接：App 解压普通文件保留标签，Root 一次请求复核官方镜像并补链接，App 复核后原子发布。增加服务进程身份票据、取消 join、失联暂存保留及显式 Root 恢复；不盲删、不重放。见 ROOT_LINUX_INSTALL.md。普通硬链接不支持时仍在下载前失败。

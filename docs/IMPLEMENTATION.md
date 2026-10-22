@@ -1,3 +1,7 @@
+# 0.1.23 cgroup监督资格（2026-10-22）
+
+新增固定任务scope原生程序与Agent probe_root，包含私有mount/pidfd/subreaper/脱离后代/kill空事件及独立监督收尾。新增主机6项和Android普通1+Root1仅编译，普通门槛73。见LINUX_SCOPE_IMPLEMENTATION.md。未开放任意Linux执行，监督强杀持久恢复及chroot/PTY仍待继续。
+
 # 0.1.22 Root 辅助安装（2026-10-22）
 
 普通文件由App创建保留标签，Root单次批量补硬链接；固定镜像独立复核、身份票据、取消确认后清理、失联保留与恢复已接。见 ROOT_LINUX_INSTALL.md。核心136，Android新增普通5+Root镜像专项1，仅编译；普通门槛72。本轮无新真机/guest/chroot性能结论。完整Linux执行及cgroup原生监督仍待继续。

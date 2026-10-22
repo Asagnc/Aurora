@@ -7,7 +7,7 @@ import kotlinx.serialization.json.*
 internal class LinuxEnvironmentTool(private val manager: LinuxEnvironmentManager, private val owner: String,
     private val prepared: suspend (String, String) -> Unit) : ToolExecutor {
     override val definitions = listOf(ToolDefinition("linux_environment",
-        "Inspect, install, probe or clean shared Linux base images. action=status/install/probe/probe_root/cleanup. probe runs a fixed offline PRoot workload. probe_root checks connected Root private mount namespace capability without mounting a rootfs or changing system files; PID namespaces are optional and cgroup lifecycle remains pending. Does not enable arbitrary Linux commands or install tool packs.",
+        "Inspect, install, probe or clean shared Linux base images. action=status/install/probe/probe_root/cleanup. probe runs a fixed offline PRoot workload. probe_root qualifies connected Root with a fresh task cgroup, private mount namespace, pidfd/subreaper and kill/empty events; it never mounts a rootfs or changes resource policy. PID namespaces are optional. Does not enable arbitrary Linux commands or install tool packs.",
         objectOf("type" to string("object"), "properties" to objectOf("action" to objectOf("type" to string("string"),
             "enum" to JsonArray(listOf("status", "install", "probe", "probe_root", "cleanup").map(::string)))), "required" to JsonArray(listOf(string("action"))),
             "additionalProperties" to JsonPrimitive(false))))

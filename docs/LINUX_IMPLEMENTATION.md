@@ -1,6 +1,10 @@
 # Linux 环境实施记录
 
-2026-10-22。用户已批准LINUX_PROPOSAL.md及真机后的cgroup生命周期修订，后者替代必需PID空间。当前0.1.22已接Root辅助安装，完整运行时尚未就绪。
+2026-10-22。用户已批准LINUX_PROPOSAL.md及真机后的cgroup生命周期修订，后者替代必需PID空间。当前0.1.23已接Root安装与固定cgroup监督资格，完整运行时尚未就绪。
+
+## 0.1.23 cgroup资格
+
+新增原生scope固定资格及Agent probe_root；真实主机6项CI、Android1普通+1Root仅编译。详见LINUX_SCOPE_IMPLEMENTATION.md。监督自身强杀持久恢复、业务chroot/命令/PTY和租约仍待继续，executionReady=false。
 
 ## 0.1.22 Root辅助安装
 
