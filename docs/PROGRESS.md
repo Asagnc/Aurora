@@ -2,6 +2,12 @@
 
 更新时间：2026-10-22。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 2026-10-22 guest ELF 执行资格（接续）
+
+4a783c2完整CI39741811061成功。新增固定shell fixture：在已有只读chroot/会话绑定和cgroup监督内execve真实动态ELF，显式环境、工作目录、文件产物与非零退出码37复核；缺失动态加载器必须失败并回收scope。CI主机挂载组从5增至7项。使用主机shell和匹配库，不冒充Ubuntu26.10/Android实测，不开放任意Agent命令。
+
+本地Debug/Release/lint通过（outputs/chroot-shell-build-20261022.txt）。Linux用例需CI Root执行，Windows不作通过声明。业务命令/PTY、scope与版本运行租约映射仍待实现，executionReady=false；没有新手机测试。此变更不发布新App版本号。
+
 ## 0.1.26 后端环境代发布（2026-10-22，优先接续）
 
 已实现Root/普通独立代，Root原始UID/GID/权限预检与批量恢复、独立ID/旧manifest兼容、元数据/目录同步与事务发布。Root删除也走票据/取消join；先确认旧文件工作停止再恢复版本操作，Root缺失保留版本与恢复记录。复用SQLite v5租约保护新代，未接Root业务命令/PTY的实际运行租约。见LINUX_ROOT_GENERATIONS.md。

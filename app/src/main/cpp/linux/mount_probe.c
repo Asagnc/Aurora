@@ -9,6 +9,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/syscall.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 /* Clone a pinned source, set attributes while detached, then attach to a pinned
@@ -116,4 +117,25 @@ int scope_chroot_fixture(const char *rootfs, const char *workspace) {
     }
     close(guest);
     return check_guest();
+}
+
+/* Execute a real guest ELF with a deliberately nonzero status. No host
+ * environment or arbitrary caller command is inherited by this fixture. */
+int scope_chroot_shell_fixture(void) {
+    pid_t child = fork();
+    if (child < 0) return -1;
+    if (child == 0) {
+        char *const args[] = {"/bin/sh", "-c",
+            "test \"$HOME\" = /root && test \"$PWD\" = /mnt && "
+            "test -z \"$AURORA_HOST_SECRET\" || exit 91; "
+            "printf guest-shell > /root/shell.txt; exit 37", NULL};
+        char *const env[] = {"HOME=/root", "PATH=/usr/bin:/bin", "TMPDIR=/tmp", "LANG=C", NULL};
+        if (chdir("/mnt") < 0) _exit(125);
+        execve(args[0], args, env);
+        _exit(127);
+    }
+    int status;
+    while (waitpid(child, &status, 0) < 0) { if (errno != EINTR) return -1; }
+    if (!WIFEXITED(status) || WEXITSTATUS(status) != 37) { errno = ECHILD; return -1; }
+    return exact_file("/root/shell.txt", "guest-shell");
 }

@@ -1,3 +1,7 @@
+# 2026-10-22 guest ELF资格补充
+
+固定chroot shell fixture验证动态ELF加载、干净环境、cwd、产物和退出码37；缺失加载器失败回收，新增主机2项（挂载组7）。本地Debug/Release/lint通过；CI及设备结果另记。不是Ubuntu镜像或业务命令执行，生产租约/PTY尚待接入，executionReady=false。上一版4a783c2完整CI39741811061通过。
+
 # 0.1.26 后端环境代发布（2026-10-22）
 
 Root/普通独立代、原始属主恢复、事务发布和受租约保护的Root清理已接，Root文件操作票据/取消屏障复用原协议，新增Linux能力协议2。见LINUX_ROOT_GENERATIONS.md。核心143；Android普通新增5仅编译，普通门槛78。没有新真机或真实guest证据，Root命令/PTY的运行租约与会话回收仍待接，executionReady=false。

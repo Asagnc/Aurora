@@ -5,6 +5,8 @@ import json
 import os
 from pathlib import Path
 import signal
+import re
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -33,6 +35,55 @@ class MountTest(base.ScopeTest):
             (work / name).mkdir()
         self.mount_args = ['--chroot-fixture', str(root), str(work)]
         return root, work
+
+    def shell_fixture(self):
+        root, work = self.fixture()
+        shell = Path('/bin/sh').resolve()
+        libraries = subprocess.run(['ldd', str(shell)], check=True, capture_output=True, text=True).stdout
+        paths = [str(shell)] + re.findall(r'(/[^\s()]+)', libraries)
+        for name in paths:
+            source = Path(name)
+            target = root / source.relative_to('/')
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, target)
+        (root / 'bin').mkdir(exist_ok=True)
+        shutil.copy2(shell, root / 'bin/sh')
+        self.mount_args[0] = '--chroot-shell-fixture'
+        return root, work
+
+    def test_real_guest_shell_clean_environment_and_nonzero_exit(self):
+        root, work = self.shell_fixture()
+        previous = os.environ.get('AURORA_HOST_SECRET')
+        os.environ['AURORA_HOST_SECRET'] = 'must-not-enter-guest'
+        try:
+            process, detached, scope = self.start(100)
+            out, err = process.communicate(timeout=8)
+        finally:
+            if previous is None:
+                os.environ.pop('AURORA_HOST_SECRET', None)
+            else:
+                os.environ['AURORA_HOST_SECRET'] = previous
+        self.assertEqual(0, process.returncode, err.decode())
+        self.assertTrue(json.loads(out)['chrootWorkload'])
+        self.assertEqual('guest-shell', (work / 'home/shell.txt').read_text())
+        self.assert_gone(detached)
+        self.assert_scope_removed(scope)
+        self.assert_host_unchanged(root, work)
+
+    def test_missing_guest_loader_fails_and_cleans_scope(self):
+        root, work = self.shell_fixture()
+        # A dynamic shell without its PT_INTERP must fail rather than run a host shell.
+        for path in root.rglob('*'):
+            if path.is_file() and path.name.startswith('ld-linux'):
+                path.unlink()
+        state = work / 'state'
+        result = subprocess.run([self.binary, '--probe', '--state-dir', str(state)] + self.mount_args,
+                                capture_output=True, timeout=8)
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(b'', result.stdout)
+        self.assertEqual([], list(state.glob('*.state')))
+        self.assertFalse((work / 'home/shell.txt').exists())
+        self.assert_host_unchanged(root, work)
 
     def assert_host_unchanged(self, root, work):
         self.assertEqual('aurora-chroot-fixture-v1\n', (root / 'aurora-fixture').read_text())

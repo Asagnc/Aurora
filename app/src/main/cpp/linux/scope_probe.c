@@ -17,7 +17,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-struct fixture { const char *rootfs, *workspace; };
+struct fixture { const char *rootfs, *workspace; int shell; };
 
 static int failure(const char *operation) {
     int saved = errno;
@@ -52,6 +52,7 @@ static int workload(const struct task_scope *scope, int report, int hold_ms, con
         return failure("private_mount_namespace");
     if (before.st_ino == after.st_ino) { errno = EINVAL; return failure("unchanged_mount_namespace"); }
     if (fixture->rootfs && scope_chroot_fixture(fixture->rootfs, fixture->workspace) < 0) return failure("chroot_fixture");
+    if (fixture->shell && scope_chroot_shell_fixture() < 0) return failure("chroot_shell_fixture");
     int ready[2];
     if (pipe2(ready, O_CLOEXEC) < 0) return failure("detached_pipe");
     pid_t child = fork();
@@ -179,7 +180,8 @@ int main(int argc, char **argv) {
     int recovering = !strcmp(argv[1], "--recover");
     struct fixture fixture = {0};
     int next = 4;
-    if (!recovering && argc >= 7 && !strcmp(argv[4], "--chroot-fixture")) {
+    if (!recovering && argc >= 7 && (!strcmp(argv[4], "--chroot-fixture") || !strcmp(argv[4], "--chroot-shell-fixture"))) {
+        fixture.shell = !strcmp(argv[4], "--chroot-shell-fixture");
         fixture.rootfs = argv[5]; fixture.workspace = argv[6]; next = 7;
     }
     if (argc != next) {
