@@ -68,7 +68,7 @@ import io.github.asagnc.aurora.core.text
             }
             Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 records.forEachIndexed { index, item -> FilterChip(record?.id == item.id, { selected = item.id; snapshot = null },
-                    { Text("${if (item.backend == "android-root") "Root" else "终端"} ${records.size - index} · ${terminalState(item.state)}") }) }
+                    { Text("${when (item.backend) { "android-root" -> "Root"; "linux-root" -> "Linux"; else -> "终端" }} ${records.size - index} · ${terminalState(item.state)}") }) }
             }
             record?.let { item ->
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {

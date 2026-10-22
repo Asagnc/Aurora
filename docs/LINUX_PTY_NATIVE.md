@@ -2,6 +2,8 @@
 
 2026-10-22. Reuses the approved PTY transport and cgroup/private mount lifecycle.
 This is a native composition step, not an exposed Agent Linux terminal.
+0.1.29 connects the internal application ticket/lease and terminal records;
+see LINUX_PTY_APP.md for its current implementation and verification boundary.
 
 `libaurora_pty.so ... -- libaurora_linux_scope.so --run-pty ...` retains the
 existing framed input, resize and raw output contract. The scope arguments are
@@ -48,8 +50,9 @@ creating run state; fresh recovery after both supervisors die removes the
 scope without inventing a completed record. Existing pipe/cgroup/mount suites
 remain required.
 
-Still pending: Binder terminal activation linked to the Linux ticket/lease,
-terminal record backend selection and UI/Agent routing, real Android/Ubuntu
+Superseded by LINUX_PTY_APP.md: internal Binder activation/ticket/lease and
+terminal record integration are now implemented. Still pending: UI/Agent
+Linux launch selection, real Android/Ubuntu
 TTY tests, Root/service death and revocation qualification, ordinary PRoot
 lifecycle. `executionReady=false` remains unchanged. The internal native mode
 adds no resident service, new dependencies, global resource policy or polling.

@@ -4,10 +4,28 @@ import android.os.*
 import android.system.Os
 import android.system.OsConstants
 import io.github.asagnc.aurora.terminal.*
+import io.github.asagnc.aurora.core.*
 import kotlinx.coroutines.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.*
 
 internal class RootTerminalClient(private val remote: IRootControl) {
-    suspend fun open(id: String, owner: String, request: PtyRequest): PtyEndpoint = withContext(Dispatchers.IO) {
+    suspend fun open(id: String, owner: String, request: PtyRequest): PtyEndpoint = openRemote(id,
+        { callback -> remote.openTerminal(id, owner, RootTerminalWire.encode(request), callback) }, { PtyOutcome.decode(it) })
+
+    suspend fun openLinux(ticket: LinuxRunTicket, request: PtyRequest,
+        confirm: suspend (JsonObject) -> Unit): PtyEndpoint {
+        ticket.validate()
+        val encoded = WireJson.encodeToString(ticket).also { require(it.length <= 262144) }
+        val bundle = Bundle().apply { putString("ticket", encoded); putBundle("terminal", RootTerminalWire.encode(request)) }
+        return openRemote(ticket.runId, { callback -> remote.openLinuxTerminal(ticket.runId, bundle, callback) }) { value ->
+            val result = LinuxTerminalResult.decode(ticket, value)
+            confirm(result.proof)
+            PtyOutcome(result.exitCode, result.state, result.reason)
+        }
+    }
+    private suspend fun openRemote(id: String, connect: (IRootResult) -> Bundle,
+        decode: suspend (String) -> PtyOutcome): PtyEndpoint = withContext(Dispatchers.IO) {
         val exit = CompletableDeferred<PtyOutcome>()
         val binder = remote.asBinder()
         var socket: ParcelFileDescriptor? = null
@@ -16,10 +34,13 @@ internal class RootTerminalClient(private val remote: IRootControl) {
             socket?.let { runCatching { Os.shutdown(it.fileDescriptor, OsConstants.SHUT_RDWR) } } }
         binder.linkToDeath(death, 0)
         try {
-            val result = remote.openTerminal(id, owner, RootTerminalWire.encode(request), object : IRootResult.Stub() {
+            val result = connect(object : IRootResult.Stub() {
                 override fun complete(value: String) {
-                    try { exit.complete(PtyOutcome.decode(value)) }
-                    catch (failure: Exception) { exit.completeExceptionally(failure) }
+                    // Durable lease confirmation must not block a Binder callback thread.
+                    cleanup.launch {
+                        try { exit.complete(decode(value)) }
+                        catch (failure: Exception) { exit.completeExceptionally(failure) }
+                    }
                 }
             })
             require(result.getInt("protocol") == 1)

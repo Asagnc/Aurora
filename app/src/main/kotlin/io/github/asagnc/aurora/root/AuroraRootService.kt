@@ -71,8 +71,14 @@ class AuroraRootService : RootService() {
         override fun recoverLinuxRun(id: String, request: Bundle, callback: IRootResult) {
             verifyCaller()
             val ticket = runTicket(id, request)
-            runBlocking(kotlinx.coroutines.Dispatchers.IO) { commands.cancelAndWait(id) }
+            runBlocking(kotlinx.coroutines.Dispatchers.IO) { commands.cancelAndWait(id); terminals.stop(id) }
             commands.start(id, callback) { linuxRuns.recover(ticket) }
+        }
+        override fun openLinuxTerminal(id: String, request: Bundle, callback: IRootResult): Bundle {
+            verifyCaller()
+            val ticket = runTicket(id, request)
+            val terminal = RootTerminalWire.decode(requireNotNull(request.getBundle("terminal")))
+            return terminals.open(id, conversationRoot(ticket.owner), terminal, callback, linuxRuns.terminal(ticket, terminal))
         }
         override fun linuxFiles(id: String, owner: String, request: Bundle, callback: IRootResult) {
             verifyCaller()
@@ -102,6 +108,7 @@ class AuroraRootService : RootService() {
                 putInt("terminalProtocol", 1)
                 putInt("linuxRunProtocol", 2)
                 putInt("linuxFileProtocol", 1)
+                putInt("linuxTerminalProtocol", 1)
                 runCatching {
                     val encoded = io.github.asagnc.aurora.core.WireJson.encodeToString(
                         io.github.asagnc.aurora.core.LinuxRootIdentity.serializer(), linux.identity)

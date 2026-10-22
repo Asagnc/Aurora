@@ -1,3 +1,7 @@
+## 0.1.29 Linux PTY应用链路（2026-10-22）
+
+已接Root Binder可选终端协议1、激活FD传输、SQLite run票据与租约、确认guest完成后才释放、取消join恢复、现有终端记录与Linux标签。原生timedOut明确区分guest期限。无新依赖或schema迁移，内部startLinux尚不暴露UI新建/Agent后端。核心159：152通过/7POSIX跳过；Debug/testAPK/R8Release/lint通过，Root实际PTY3项只编译，普通88门槛未实跑。上一版完整CI39780230312成功，本轮CI另查。见LINUX_PTY_APP.md。executionReady=false；无新手机结果。
+
 ## 2026-10-22 Linux PTY原生组合
 
 新增--run-pty控制终端移交与前台guest组，复用已有PTY传输与独立scope监督。新增Root主机六项及原有25项在CI39779614901通过（完整Android当时仍运行），普通PTY8/namespace4也通过。旧CI被新提交取消。Android本地双ABI Debug/testAPK/R8Release/lint、ELF/16KiB及对应源码打包通过。应用Linux终端/Binder票据与租约尚未接通，executionReady=false，无新真机。详见LINUX_PTY_NATIVE.md。

@@ -2,6 +2,12 @@
 
 更新时间：2026-10-22。新对话先读 AGENTS.md、DESIGN.md、本文件和 IMPLEMENTATION.md，再检查源码与 Git 状态。
 
+## 0.1.29 Linux PTY应用链路（2026-10-22，优先接续）
+
+上一版7acd39c完整CI39780230312成功。现接AIDL末尾openLinuxTerminal/可选能力1、现有Root终端激活与FD传输、Linux运行票据/租约、guest完成证明校验、取消join后恢复和既有终端记录/UI/前台服务。内部startLinux支持同一套读写/窗口/停止，尚不开放UI新建或Agent后端选择，executionReady=false。原生completion补timedOut区分真正guest期限。无新依赖/数据库迁移/常驻进程。详见LINUX_PTY_APP.md。
+
+核心159：152通过、7POSIX跳过，新增4项完成证明/协议失败测试；本地双ABI Debug/testAPK/R8Release/lint通过（outputs/linux-pty-app-full-20261022.txt）。新增Root实际PTY3项仅编译，普通门槛仍88；普通Binderfixture拒绝新特权接口。ADB无设备，没有新手机结果。下一步查本提交CI及native timedOut更新的主机验证，取得真实Ubuntu批命令3项和PTY3项Android结果，再开放Agent Linux工具；PRoot运行生命周期、Root元数据GC、撤权/服务死亡仍待办。无需重问已确认底层。
+
 ## 2026-10-22 Linux PTY原生组合（优先接续）
 
 fc3aab6完整CI39773271882成功。新增原生--run-pty：复用PTY帧传输与scope监督，协调进程只释放自己的控制终端，guest新会话以TIOCSCTTY参数0取得终端/前台组，HUP在guest恢复、TERM显式加入。独立guard继续cgroup回收脱离session的子进程，传输退出不代替stopped证明。见LINUX_PTY_NATIVE.md。

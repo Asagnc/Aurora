@@ -174,7 +174,7 @@ static int guard(int owner, int hold_ms, int state, int run_lock, const struct f
     if (scope_state_forget(state, scope.name) < 0) return failure("scope_record_finish");
     if (fixture->run.argv) {
         int interrupted = observed < 0 || poll(&alive, 1, 0) != 0;
-        if (guest_run_finish(state, exit_code, interrupted) < 0) return failure("guest_completion");
+        if (guest_run_finish(state, exit_code, interrupted, observed < 0 && saved == ETIMEDOUT) < 0) return failure("guest_completion");
         if (interrupted) { errno = saved; return failure("guest_interrupted"); }
         return exit_code;
     }

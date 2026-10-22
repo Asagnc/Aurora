@@ -30,6 +30,13 @@ alone is not a pass. No model API or external workload is involved.
 
 ## Assertions
 
+For the application PTY suite, use the same flags with class
+`io.github.asagnc.aurora.linux.RootLinuxTerminalDeviceTest`. Require `OK (3 tests)`.
+It brings Aurora to foreground for the existing task service, then checks guest
+TTY/Unicode/window/records, stop/lease/deletion and native guest deadline state.
+It does not download an image or alter unrelated conversations. These three
+tests currently compile only; see LINUX_PTY_APP.md.
+
 1. Actual `/bin/sh` starts inside the installed guest at `/mnt`, writes a0600
    Unicode file, exits37 and returns a completed record plus stopped proof.
    Root batch reads continue across a Chinese UTF-8 boundary without losing the

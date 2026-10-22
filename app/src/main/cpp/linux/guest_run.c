@@ -75,10 +75,10 @@ int guest_run_begin(int state, const struct guest_run *run) {
     return durable_file(state, "run.json", record);
 }
 
-int guest_run_finish(int state, int exit_code, int interrupted) {
+int guest_run_finish(int state, int exit_code, int interrupted, int timed_out) {
     char record[160];
-    snprintf(record, sizeof(record), "{\"protocol\":1,\"scopeRemoved\":true,\"exitCode\":%d,\"interrupted\":%s}\n",
-        exit_code, interrupted ? "true" : "false");
+    snprintf(record, sizeof(record), "{\"protocol\":1,\"scopeRemoved\":true,\"exitCode\":%d,\"interrupted\":%s,\"timedOut\":%s}\n",
+        exit_code, interrupted ? "true" : "false", timed_out ? "true" : "false");
     return durable_file(state, "completed.json", record);
 }
 

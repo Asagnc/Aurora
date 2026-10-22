@@ -13,24 +13,49 @@ import kotlinx.serialization.json.*
 internal class RootLinuxRuns(private val context: Context, private val identity: () -> LinuxRootIdentity) {
     private val files = RootLinuxRunFiles(context)
     suspend fun start(ticket: LinuxRunTicket): String = withContext(Dispatchers.IO) {
-        require(ticket.identity == identity()) { "Root service epoch changed" }
+        val commandRequest = prepare(ticket, terminal = false)
         val state = files.state(ticket)
-        files.bind(state, ticket, starting = true)
-        val rootfs = files.rootfs(ticket)
-        val workspace = RootWorkspaceLocks.use(context, ticket.owner) { files.workspace(ticket.owner, claimRun = ticket.runId) }
-        val helper = helper()
         var command: JsonObject? = null
         try {
-            command = NativeCommandRunner(context, ticket.appUid).execute(files.conversation(ticket.owner), CommandRequest(
-                listOf(helper, "--run", "--state-dir", state.toString(), "--generation", ticket.generation,
-                    "--run-id", ticket.runId, "--rootfs", rootfs.toString(), "--workspace", workspace.toString(),
-                    "--timeout-ms", ticket.timeoutMs.toString(), "--") + ticket.argv,
-                timeoutMs = ticket.timeoutMs + 20_000), ticket.runId)
+            command = NativeCommandRunner(context, ticket.appUid).execute(files.conversation(ticket.owner),
+                commandRequest, ticket.runId)
         } finally {
             // Generic runner exit cannot prove that the separate guard stopped.
             withContext(NonCancellable) { runCatching { recoverStopped(ticket, state) } }
         }
         response(ticket, state, command).toString()
+    }
+    private suspend fun prepare(ticket: LinuxRunTicket, terminal: Boolean): CommandRequest {
+        require(ticket.identity == identity()) { "Root service epoch changed" }
+        val state = files.state(ticket)
+        files.bind(state, ticket, starting = true)
+        val rootfs = files.rootfs(ticket)
+        val workspace = RootWorkspaceLocks.use(context, ticket.owner) { files.workspace(ticket.owner, claimRun = ticket.runId) }
+        return CommandRequest(listOf(helper(), if (terminal) "--run-pty" else "--run", "--state-dir", state.toString(),
+            "--generation", ticket.generation, "--run-id", ticket.runId, "--rootfs", rootfs.toString(),
+            "--workspace", workspace.toString(), "--timeout-ms", ticket.timeoutMs.toString(), "--") + ticket.argv,
+            timeoutMs = ticket.timeoutMs + 20_000)
+    }
+    fun terminal(ticket: LinuxRunTicket, request: io.github.asagnc.aurora.terminal.PtyRequest): RootTerminalLifecycle {
+        request.validate()
+        require(request.argv == ticket.argv && request.timeoutMs == ticket.timeoutMs)
+        require(request.directory.isEmpty() && request.environment.isEmpty()) { "Linux terminal uses the fixed guest environment and /mnt" }
+        return object : RootTerminalLifecycle {
+            override suspend fun open() = withContext(Dispatchers.IO) {
+                val command = prepare(ticket, terminal = true)
+                io.github.asagnc.aurora.terminal.PtyProcess(context).open(files.conversation(ticket.owner),
+                    request.copy(argv = command.argv, timeoutMs = command.timeoutMs))
+            }
+            override suspend fun finish(outcome: io.github.asagnc.aurora.terminal.PtyOutcome): String = withContext(Dispatchers.IO) {
+                val proof = WireJson.parseToJsonElement(recover(ticket)).jsonObject
+                val completion = proof["completion"]?.takeUnless { it == JsonNull }?.jsonObject
+                val interrupted = completion?.get("interrupted") == JsonPrimitive(true)
+                val timedOut = completion?.get("timedOut") == JsonPrimitive(true)
+                val actual = if (interrupted && outcome.state == "exited") outcome.copy(
+                    state = if (timedOut) "timed_out" else "interrupted", reason = if (timedOut) "Linux guest deadline" else "Linux guest interrupted") else outcome
+                JsonObject(WireJson.parseToJsonElement(actual.wire()).jsonObject + ("linuxProof" to proof)).toString()
+            }
+        }
     }
     suspend fun recover(ticket: LinuxRunTicket): String = withContext(Dispatchers.IO) {
         require(previousServiceGone(ticket.identity)) { "Previous Root service is still alive" }

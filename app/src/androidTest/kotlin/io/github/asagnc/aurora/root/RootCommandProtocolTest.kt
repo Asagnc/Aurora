@@ -30,6 +30,11 @@ class RootCommandProtocolTest {
             context.applicationInfo.uid, listOf("/bin/sh"))
         try { RootLinuxFileClient(remote, context).invoke(ticket.owner, "files_list"); fail("Ordinary fixture accepted Root file access") }
         catch (_: SecurityException) { }
+        try {
+            RootTerminalClient(remote).openLinux(ticket,
+                io.github.asagnc.aurora.terminal.PtyRequest(ticket.argv, timeoutMs = ticket.timeoutMs)) { fail("Ordinary fixture confirmed Root exit") }
+            fail("Ordinary fixture opened a Root Linux terminal")
+        } catch (_: SecurityException) { }
         for (recover in listOf(false, true)) {
             try { RootLinuxRunClient(remote, context).invoke(ticket, recover); fail("Ordinary fixture accepted a Root Linux run") }
             catch (_: SecurityException) { }
@@ -197,6 +202,7 @@ class RootCommandProtocolTest {
             override fun stopTerminal(id: String) {}
             override fun prepareLinux(operation: String, callback: IRootResult) { error("Must not prepare") }
             override fun linuxFiles(id: String, owner: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
+            override fun openLinuxTerminal(id: String, request: android.os.Bundle, callback: IRootResult): android.os.Bundle { throw SecurityException("Fixture is not Root") }
             override fun startLinuxRun(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
             override fun recoverLinuxRun(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
             override fun discardLinux(operation: String) {}

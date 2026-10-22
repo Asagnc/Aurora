@@ -40,14 +40,26 @@ internal class TerminalManager(private val app: AuroraApplication) {
     }
     suspend fun recover() = withContext(Dispatchers.IO) { records.recover() }
 
-    suspend fun start(owner: String, request: PtyRequest, root: Boolean = false): TerminalRecord = withContext(Dispatchers.IO) {
+    suspend fun start(owner: String, request: PtyRequest, root: Boolean = false): TerminalRecord =
+        startBackend(owner, request, if (root) "android-root" else "android-native")
+
+    /** Internal qualification entry; Agent/UI selection waits for device evidence. */
+    internal suspend fun startLinux(owner: String, request: PtyRequest = PtyRequest(argv = listOf("/bin/sh"), timeoutMs = 270_000)): TerminalRecord =
+        startBackend(owner, request, "linux-root")
+
+    private suspend fun startBackend(owner: String, supplied: PtyRequest, backend: String): TerminalRecord = withContext(Dispatchers.IO) {
+        val request = supplied.copy(argv = supplied.argv.toList(), environment = supplied.environment.toMap())
         request.validate()
+        if (backend == "linux-root") {
+            require(request.directory.isEmpty() && request.environment.isEmpty() && request.timeoutMs <= 270_000)
+            check(app.root.linuxTerminalClient != null) { "Reconnect a current Root service for Linux PTY" }
+        }
         val session = admission.withLock {
             check(sessions.values.count { it.job.isActive } < 8) { "Eight active terminals is the global budget" }
             check(sessions.values.count { it.initial.owner == owner && it.job.isActive } < 4) { "Four active terminals per conversation" }
             val id = UUID.randomUUID().toString()
-            val remote = if (root) requireNotNull(app.root.terminalClient) { "Root is not connected" } else null
-            val initial = TerminalRecord(id, owner, if (root) "android-root" else "android-native", "starting", System.currentTimeMillis())
+            val remote = if (backend == "android-root") requireNotNull(app.root.terminalClient) { "Root is not connected" } else null
+            val initial = TerminalRecord(id, owner, backend, "starting", System.currentTimeMillis())
             val next = TerminalSession(initial, request, records) { version.update { it + 1 } }
             next.job = scope.launch(start = CoroutineStart.LAZY) {
                 try {
@@ -55,10 +67,12 @@ internal class TerminalManager(private val app: AuroraApplication) {
                         val directory = app.spaces.commandRoot(owner)
                         var lease: io.github.asagnc.aurora.runtime.CommandWakeLock.Lease? = null
                         try {
-                            next.run {
+                            suspend fun consume(open: suspend () -> PtyEndpoint) = next.run {
                                 if (request.awakeMs > 0) lease = awake.acquire(request.awakeMs)
-                                remote?.open(id, owner, request) ?: process.open(directory, request)
+                                open()
                             }
+                            if (backend == "linux-root") app.linux.runs.terminal(owner, id, request, ::consume)
+                            else consume { remote?.open(id, owner, request) ?: process.open(directory, request) }
                         } finally { lease?.let { if (it.held) it.close() } }
                     }
                 } catch (cancel: CancellationException) { throw cancel }

@@ -17,7 +17,8 @@ internal class RootTerminalSessions(context: Context) {
     private val sessions = mutableMapOf<String, Bridge>()
     private var closed = false
 
-    @Synchronized fun open(id: String, root: Path, request: PtyRequest, callback: IRootResult): Bundle {
+    @Synchronized fun open(id: String, root: Path, request: PtyRequest, callback: IRootResult,
+        lifecycle: RootTerminalLifecycle? = null): Bundle {
         require(UUID.fromString(id).toString() == id)
         check(!closed && id !in sessions && sessions.size < 8) { "Root terminal session closed, duplicate or full" }
         val sockets = ParcelFileDescriptor.createSocketPair()
@@ -37,7 +38,7 @@ internal class RootTerminalSessions(context: Context) {
             try {
                 // Client acknowledges receipt before any FD may be closed by a fast child exit.
                 withTimeout(10_000) { activate.await() }
-                endpoint = process.open(root, request)
+                endpoint = lifecycle?.open() ?: process.open(root, request)
                 val child = requireNotNull(endpoint)
                 coroutineScope {
                     val cancel = launch(start = CoroutineStart.UNDISPATCHED) {
@@ -79,7 +80,9 @@ internal class RootTerminalSessions(context: Context) {
                     shutdown()
                     endpoint?.let { runCatching { it.exit.await() }; it.closeStreams() }
                     runCatching { server.close() }; runCatching { client.close() }
-                    runCatching { callback.complete(outcome.wire()) }
+                    val result = runCatching { lifecycle?.finish(outcome) ?: outcome.wire() }
+                        .getOrElse { PtyOutcome(null, "failed", "Linux cleanup unconfirmed; run lease retained").wire() }
+                    runCatching { callback.complete(result) }
                     runCatching { binder.unlinkToDeath(death, 0) }
                     synchronized(this@RootTerminalSessions) { sessions.remove(id) }
                 }
@@ -101,4 +104,9 @@ internal class RootTerminalSessions(context: Context) {
         pending.forEach { it.shutdown(); it.job.cancel() }
         pending.map { it.job }.joinAll(); scope.cancel()
     }
+}
+
+internal interface RootTerminalLifecycle {
+    suspend fun open(): PtyEndpoint
+    suspend fun finish(outcome: PtyOutcome): String
 }

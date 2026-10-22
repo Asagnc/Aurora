@@ -110,7 +110,7 @@ class MountTest(base.ScopeTest):
         state = work / 'run-state'
         identity = json.loads((state / 'run.json').read_text())
         self.assertEqual('a' * 64, identity['generation'])
-        self.assertEqual({'protocol': 1, 'scopeRemoved': True, 'exitCode': 23, 'interrupted': False},
+        self.assertEqual({'protocol': 1, 'scopeRemoved': True, 'exitCode': 23, 'interrupted': False, 'timedOut': False},
                          json.loads((state / 'completed.json').read_text()))
         self.assertEqual([], list(state.glob('*.state')))
         repeated = subprocess.run(args, capture_output=True, timeout=8)
@@ -128,6 +128,7 @@ class MountTest(base.ScopeTest):
         completion = json.loads((state / 'completed.json').read_text())
         self.assert_gone(int((work / 'project/child').read_text()))
         self.assertTrue(completion['interrupted'])
+        self.assertTrue(completion['timedOut'])
         self.assertTrue(completion['scopeRemoved'])
         self.assertEqual([], list(state.glob('*.state')))
         self.assert_host_unchanged(root, work)

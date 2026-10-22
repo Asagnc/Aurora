@@ -31,6 +31,8 @@ class RootController(private val context: Context) {
     @Volatile private var linuxProtocol = 0
     @Volatile private var linuxRunProtocol = 0
     @Volatile private var linuxFileProtocol = 0
+    @Volatile private var linuxTerminalProtocol = 0
+    internal val linuxTerminalClient get() = remote?.takeIf { linuxTerminalProtocol == 1 && linuxRunProtocol == 2 }?.let { RootTerminalClient(it) }
     internal val linuxFileClient get() = remote?.takeIf { linuxFileProtocol == 1 }?.let { RootLinuxFileClient(it, context) }
     internal val linuxRunClient get() = remote?.takeIf { linuxRunProtocol == 2 }?.let { RootLinuxRunClient(it, context) }
     internal val commandClient get() = remote?.let { RootCommandClient(it, context) }
@@ -64,6 +66,7 @@ class RootController(private val context: Context) {
                 }.getOrNull() else null
                 linuxRunProtocol = snapshot.getInt("linuxRunProtocol")
                 linuxFileProtocol = snapshot.getInt("linuxFileProtocol")
+                linuxTerminalProtocol = snapshot.getInt("linuxTerminalProtocol")
                 linuxProtocol = if (linuxIdentity != null) snapshot.getInt("linuxPrepareProtocol") else 0
                 this@RootController.remote = remote
                 mutable.value = RootState(RootPhase.READY, detail)
@@ -87,7 +90,7 @@ class RootController(private val context: Context) {
             override fun onServiceDisconnected(name: ComponentName) {
                 if (connection === this) {
                     remote = null
-                    linuxIdentity = null; linuxProtocol = 0; linuxRunProtocol = 0; linuxFileProtocol = 0
+                    linuxIdentity = null; linuxProtocol = 0; linuxRunProtocol = 0; linuxFileProtocol = 0; linuxTerminalProtocol = 0
                     connection = null
                     mutable.value = RootState(RootPhase.UNAVAILABLE, "Root 服务已退出；普通功能仍可使用")
                 }
@@ -109,7 +112,7 @@ class RootController(private val context: Context) {
     private suspend fun disconnectLocked() = withContext(NonCancellable) {
         val endpoint = remote
         remote = null
-        linuxIdentity = null; linuxProtocol = 0; linuxRunProtocol = 0; linuxFileProtocol = 0
+        linuxIdentity = null; linuxProtocol = 0; linuxRunProtocol = 0; linuxFileProtocol = 0; linuxTerminalProtocol = 0
         withContext(Dispatchers.IO) { runCatching { endpoint?.closeCommands() } }
         connection?.let { RootService.unbind(it) }
         connection = null
