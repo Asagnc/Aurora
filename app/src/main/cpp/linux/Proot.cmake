@@ -55,6 +55,22 @@ foreach(object IN LISTS objects)
         string(REPLACE "assert(!\"No pending mapping found\");" "abort();" ipc_source "${ipc_source}")
         file(WRITE "${LINUX_CONFIG}/sysvipc_shm.c" "${ipc_source}")
         list(APPEND proot_sources "${LINUX_CONFIG}/sysvipc_shm.c")
+    elseif(source STREQUAL "tracee/event.c")
+        file(READ "${PROOT_SOURCE}/${source}" event_source)
+        set(exit_option "PTRACE_O_TRACEEXIT);")
+        string(REGEX MATCHALL "PTRACE_O_TRACEEXIT\\)" exit_matches "${event_source}")
+        list(LENGTH exit_matches exit_count)
+        if(NOT exit_count EQUAL 1)
+            message(FATAL_ERROR "PRoot tracer-exit patch no longer applies")
+        endif()
+        # SIGKILL cannot run upstream's signal cleanup. Require kernel teardown
+        # of tracees when the tracer dies, including inherited fork/clone opts.
+        # Both the seccomp and fallback SETOPTIONS paths retain this option;
+        # kernels rejecting it fail startup rather than weakening cleanup.
+        string(REPLACE "${exit_option}" "PTRACE_O_TRACEEXIT | PTRACE_O_EXITKILL);"
+            event_source "${event_source}")
+        file(WRITE "${LINUX_CONFIG}/proot-event.c" "${event_source}")
+        list(APPEND proot_sources "${LINUX_CONFIG}/proot-event.c")
     else()
         list(APPEND proot_sources "${PROOT_SOURCE}/${source}")
     endif()

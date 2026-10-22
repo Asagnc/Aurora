@@ -1,3 +1,7 @@
+## 2026-10-23 PRoot tracer death prerequisite
+
+Previous head 7c60f65 CI39820489556 completed successfully. PRoot now builds a checked derived tracee/event.c with mandatory PTRACE_O_EXITKILL in both default and seccomp ptrace option paths. Unsupported kernels reject startup instead of dropping this requirement. Upstream source remains unchanged; corresponding source includes the adapter. Local Debug/Release/lint and dual-ABI ELF/16KiB verification passed. This is a prerequisite only: no SIGKILL descendant runtime qualification, startup-race proof or Android PRoot acceptance is claimed; executionReady remains false. No phone actions; final combined device acceptance remains pending.
+
 ## 2026-10-23 0.1.33元数据回收主机资格完成，手机最后集中验收
 
 23dd228完整CI39818966808成功：原scope/recovery/mount/guest-PTY31与新增GC11项通过；普通PTY8/namespace4、核心/实际签名镜像、Android Debug/testAPK/Release/lint及双ABI源码打包同样通过。原缺.recovery.lock导致4项拒绝回收的失败记录保留。见LINUX_METADATA_GC.md和evidence/0.1.33。Native已验证不等于Android Root/SQLite完整链路验收。

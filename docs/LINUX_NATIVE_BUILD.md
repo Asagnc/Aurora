@@ -46,6 +46,15 @@ To rebuild offline, add these CMake definitions, using absolute paths:
   implicit-function-declaration errors for the rest of the program.
 - The SysV pending-mapping impossible state calls abort even under NDEBUG,
   preventing a missing return from becoming Release undefined behavior.
+- The generated PRoot trace-event source requires PTRACE_O_EXITKILL in the
+  default ptrace options, including the seccomp fallback. SIGKILL cannot run
+  upstream signal handlers; this asks the kernel to kill tracees on tracer
+  death. Rejected options fail startup. The upstream tree stays unchanged and
+  an unexpected patch location fails configuration. See the Linux
+  [ptrace contract](https://man7.org/linux/man-pages/man2/ptrace.2.html).
+  This is only one lifecycle prerequisite: descendant teardown, startup races,
+  Android qualification and durable recovery still need verification before
+  enabling ordinary-UID Linux execution.
 - ARM64 loader linking explicitly retains pokedata_workaround; otherwise
   Release section garbage collection can discard the tracer's external entry.
 - libandroid-shmem is built from a checked derived copy. Key files use the
