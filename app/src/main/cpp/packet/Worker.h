@@ -5,7 +5,7 @@
 struct capture {
     pcap_t *pcap;
     pcap_dumper_t *dump;
-    uint64_t bytes, packets, budget, count, device, inode;
+    uint64_t bytes, packets, budget, count, device, inode, snapshot_truncated;
     const char *reason;
     int failed;
 };

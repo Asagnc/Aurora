@@ -8,7 +8,7 @@
 - RootService 复用现有 RootCommandSession 的两个任务上限、Binder死亡取消、原生监督与有界唤醒锁。新 worker 单进程不创建后台守护进程。硬截止比采集时长多10秒用于收尾，总范围仍低于五分钟。
 - 普通 NativeCommandRunner 的工作目录行为不变；抓包专用实例以本次运行目录为 cwd，并以保持打开的目录描述符固定子进程工作位置。没有复制环境或扫描会话。
 - worker 使用已锁定静态 libpcap，非阻塞事件FD、poll/signalfd/timerfd，CLOCK_BOOTTIME 截止包含挂起。每批最多64包，控制事件优先；不支持事件FD/需要额外 select 超时的后端明确拒绝。4MiB缓冲、100ms批量交付为待测初值，不宣称性能最优。
-- worker 最后 flush/ferror/fsync/fstat；输出 fileComplete、保存包数/字节、文件设备号/inode与 received/dropped。未知内核统计为null。进程日志完整不等于PCAP完整，核心完成校验同时要求监督器成功、日志未截断、已知预算原因和文件完成。
+- worker 抓取长度采用同一上游标准262144字节（固定源码MAXIMUM_SNAPLEN），保存包的caplen小于原始len时单独计入snapshotTruncated，不把“PCAP记录完整”冒充“每个包均未截短”。worker 最后 flush/ferror/fsync/fstat；输出 fileComplete、保存包数/字节、文件设备号/inode与 received/dropped。未知内核统计为null。进程日志完整不等于PCAP完整，核心完成校验同时要求监督器成功、日志未截断、已知预算原因和文件完成。
 - 只有进程已退出并通过合同后，Root 才重新以不跟随链接的描述符逐级固定 runs/id，打开唯一 capture.pcap；核实普通文件、单硬链接、Root原属主、设备/inode、大小和预算，只恢复该文件的App属主。保存 capture-status.json 并同步文件/目录，再返回 capture.path。离线 packet_inspect 始终普通UID。
 - 日志、工具账本、中文任务标题和现有详情复用。采集未知死亡明确 capture_outcome_uncertain；超时、取消、写盘及发布错误不转成成功或自动重放。未正常发布的文件可保留在该会话目录，不能根据存在性当成完整PCAP。
 
@@ -16,8 +16,8 @@
 
 - 先前76eb16a CI39833896207完整成功：原有离线十项 + worker整包预算/I/O项，共11项主机用例；其中四个预算边界和/dev/full缓冲失败实际运行。证据见 evidence/0.1.36/packet-worker-host-eleven-passed.txt。
 - 本轮本地核心179项：172通过、7项POSIX在Windows跳过；已提供签名Ubuntu归档实际运行镜像检查。新增6项覆盖参数、字面过滤、UTF8预算、完成证明、取消/超时与未知统计。
-- Android Debug/Release R8/测试APK/lint全部编译通过；两种ABI的Debug和Release ELF依赖、16KiB页及对应源码包检查通过。Debug APK SHA256：607fdab8a2da9345db6b5cd144339ee843dc1175948eba88dd508e04bba9aa54。
-- 本轮新增私有网络命名空间内9项受控测试：空闲截止、24字节预算、下一包放不下、包数预算、空闲取消、SIGKILL、非法过滤、接口down、输出符号链接。通过CI实际执行后再补结果，不把Windows编译代替Linux运行。
+- Android Debug/Release R8/测试APK/lint全部编译通过；两种ABI的Debug和Release ELF依赖、16KiB页及对应源码包检查通过。Debug APK SHA256：554d0b6391df5af85d6b2d713d9f02e718f18733de9c3bb3b3181c4ca23c50fd。
+- 本轮新增私有网络命名空间内10项受控测试：空闲截止、24字节预算、下一包放不下、包数预算、空闲取消、SIGKILL、非法过滤、接口down、输出符号链接、any接口的标准cooked链路格式。ec6a727的CI39836086203中，原9项的主机步骤和完整CI均成功（外层组件/离线套件12项，内部网络生命周期9项），证据evidence/0.1.36/packet-root-host-lifecycle-passed.txt；新增any/截短统计/空闲CPU预算仍待下一CI。不把Windows编译代替Linux运行。
 - Android新增普通UID拒绝和产物cwd检查、Root专项4项（仅头文件发布与离线读、空闲截止、loopback受控流量、非法过滤），加上扩展后的账本映射与普通Binder拒绝测试，目前仅编译。仍须最终集中真机检查Root断连/取消、属主、会话删除、熄屏、吞吐/CPU/丢包/内存与功耗。手机未连接、更新或操作，仍为此前0.1.32。
 
 ## 后续边界

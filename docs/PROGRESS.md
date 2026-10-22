@@ -1,3 +1,9 @@
+## 2026-10-23 0.1.36 主机采集生命周期已通过
+
+ec6a727的完整CI39836086203成功：组件/离线外层12项、私有netns内部9项（空闲截止、严格预算、包数、取消、SIGKILL、非法过滤、接口down、符号链接）、既有Linux/PRoot/核心及Android构建全部通过，证据evidence/0.1.36/packet-root-host-lifecycle-passed.txt。随后补齐上游标准262144抓取长度、snapshotTruncated显式统计、字节预算完成原因一致性，新增any接口与空闲CPU预算检查；本地核心179项（172通过/7跳过）、Debug/Release/testAPK/lint及双ABI ELF/源码包通过，这些新增主机项等下一CI。
+
+手机仍0.1.32，未连接/更新；Android Root、实际文件发布/取消/断连/删除/熄屏和性能资格仍在最后集中验收。不要把主机netns结果写成Android实测。详细实现/边界见ROOT_CAPTURE_IMPLEMENTATION.md。
+
 ## 2026-10-23 0.1.36 Root 抓包与 Agent 接入
 
 已实现 packet_capture_root 的严格双端合同、追加Binder协议与原子端点能力、现有Root会话派发/监督/有界唤醒锁、固定运行cwd、worker文件身份/完成状态、选定PCAP属主发布与状态文件持久化、工具账本/日志/中文标题。离线保持普通UID，不扫描或递归chown会话。采集文件完整与任务成功分别检查，取消、硬超时、未知死亡、发布失败不当成功。

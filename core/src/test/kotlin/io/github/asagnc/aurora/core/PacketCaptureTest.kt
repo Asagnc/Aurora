@@ -10,7 +10,7 @@ class PacketCaptureTest {
         "stdout" to objectOf("text" to string(capture.toString()), "previewTruncated" to JsonPrimitive(false),
             "artifactTruncated" to JsonPrimitive(false)))
     private fun capture() = objectOf("protocol" to JsonPrimitive(1), "reason" to string("duration"),
-        "fileComplete" to JsonPrimitive(true), "packets" to JsonPrimitive(1), "bytes" to JsonPrimitive(82),
+        "snapshotTruncated" to JsonPrimitive(0), "fileComplete" to JsonPrimitive(true), "packets" to JsonPrimitive(1), "bytes" to JsonPrimitive(82),
         "device" to JsonPrimitive(3), "inode" to JsonPrimitive(123), "received" to JsonNull, "dropped" to JsonNull)
 
     @Test fun defaultsRoundTripWithoutShellExpansion() {
@@ -48,7 +48,8 @@ class PacketCaptureTest {
     @Test fun malformedOrImpossibleWorkerResultCannotSucceed() {
         val invalid = listOf("reason" to string("cancelled"), "fileComplete" to JsonPrimitive(false),
             "bytes" to JsonPrimitive(24), "packets" to JsonPrimitive(10000001), "inode" to JsonPrimitive(-1),
-            "received" to JsonPrimitive(-1), "dropped" to string("unknown"), "reason" to string("packet_budget"))
+            "received" to JsonPrimitive(-1), "snapshotTruncated" to JsonPrimitive(2),
+            "reason" to string("byte_budget"), "dropped" to string("unknown"), "reason" to string("packet_budget"))
         invalid.forEach { pair -> assertFails { packetCaptureCompletion(completed(JsonObject(capture() + pair)), request) } }
     }
 

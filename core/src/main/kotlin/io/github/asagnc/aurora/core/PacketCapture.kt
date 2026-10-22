@@ -42,7 +42,9 @@ fun packetCaptureCompletion(command: JsonObject, request: PacketCaptureRequest):
     require(reason in setOf("duration", "byte_budget", "packet_budget"))
     val packets = requireNotNull(capture.number("packets")).also { require(it in 0..request.packets) }
     val bytes = requireNotNull(capture.number("bytes")).also { require(it in 24..request.bytes) }
-    require(bytes in (24 + packets * 16)..(24 + packets * 65551))
+    require(bytes in (24 + packets * 16)..(24 + packets * 262160))
+    require(requireNotNull(capture.number("snapshotTruncated")) in 0..packets)
+    if (reason == "byte_budget") require(request.bytes - bytes < 262160)
     if (reason == "packet_budget") require(packets == request.packets)
     for (key in listOf("device", "inode")) require(requireNotNull(capture.number(key)) >= 0)
     for (key in listOf("received", "dropped")) {

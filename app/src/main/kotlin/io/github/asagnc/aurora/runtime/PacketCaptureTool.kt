@@ -12,6 +12,7 @@ internal class PacketCaptureTool(private val client: RootPacketClient, private v
             "interface defaults to any; filter is a literal BPF expression. Defaults: 15 seconds, 16 MiB, 100000 packets. " +
             "Stop on the first duration/whole-packet byte/packet-count budget; bytes include the PCAP headers. " +
             "Returns a conversation-relative capture.path for packet_inspect and final stored/received/dropped counts. " +
+            "snapshotTruncated counts stored packets shorter than their reported original length; a valid record alone does not guarantee full packet bytes. " +
             "Received and dropped are kernel statistics and may be unknown; they are not the stored packet count. " +
             "Cancellation, hard timeout, service death and publication failure are not successful captures. " +
             "No TLS decryption, UID attribution or packet injection. Interfaces without event-driven capture support fail explicitly. " +

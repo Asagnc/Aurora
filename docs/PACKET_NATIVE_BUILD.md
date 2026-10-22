@@ -28,7 +28,7 @@ cmake -S app/src/main/cpp/packet -B build-packet \
   -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake" \
   -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-36 \
   -DCMAKE_BUILD_TYPE=RelWithDebInfo
-cmake --build build-packet --target aurora_tcpdump
+cmake --build build-packet --target aurora_tcpdump aurora_packet_worker
 ```
 
 离线复建可传 FETCHCONTENT_SOURCE_DIR_AURORA_PCAP_SOURCE 与 FETCHCONTENT_SOURCE_DIR_AURORA_TCPDUMP_SOURCE，指向对应源码 ZIP 的原始树。NDK30.0.16248370/CMake4.1.2；Release 与 Debug 保持同一来源。

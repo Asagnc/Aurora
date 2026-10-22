@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import selectors
+import resource
 import signal
 import socket
 import struct
@@ -22,8 +23,8 @@ class LiveCaptureTest(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.directory = Path(self.temp.name)
 
-    def start(self, seconds=2, budget=1048576, count=1000, expression='udp dst port 43210'):
-        process = subprocess.Popen([str(WORKER), 'lo', str(seconds), str(budget), str(count), expression],
+    def start(self, seconds=2, budget=1048576, count=1000, expression='udp dst port 43210', device='lo'):
+        process = subprocess.Popen([str(WORKER), device, str(seconds), str(budget), str(count), expression],
                                    cwd=self.directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         self.addCleanup(self.stop, process)
         with selectors.DefaultSelector() as selector:
@@ -46,6 +47,7 @@ class LiveCaptureTest(unittest.TestCase):
         if record['fileComplete']:
             file = self.directory / 'capture.pcap'
             self.assertEqual(file.stat().st_size, record['bytes'])
+            self.assertEqual(record['snapshotTruncated'], 0)
             self.assertEqual(file.stat().st_ino, record['inode'])
             self.assertEqual(file.stat().st_dev, record['device'])
             data = file.read_bytes()
@@ -67,12 +69,16 @@ class LiveCaptureTest(unittest.TestCase):
 
     def test_idle_deadline_has_no_packet_dependency(self):
         started = time.monotonic()
+        before = resource.getrusage(resource.RUSAGE_CHILDREN)
         record = self.finish(self.start(seconds=1))
         self.assertEqual(record['reason'], 'duration')
         self.assertEqual(record['packets'], 0)
         self.assertEqual(record['bytes'], 24)
         self.assertGreaterEqual(time.monotonic() - started, 0.8)
         self.assertLess(time.monotonic() - started, 4)
+        after = resource.getrusage(resource.RUSAGE_CHILDREN)
+        cpu = after.ru_utime + after.ru_stime - before.ru_utime - before.ru_stime
+        self.assertLess(cpu, 0.25, 'Idle capture consumed CPU instead of waiting for events')
 
     def test_exact_header_budget_stops_without_traffic(self):
         record = self.finish(self.start(seconds=10, budget=24))
@@ -94,6 +100,15 @@ class LiveCaptureTest(unittest.TestCase):
         self.assertEqual(record['reason'], 'packet_budget')
         self.assertEqual(record['packets'], 3)
         self.assertGreaterEqual(record['received'], 3)
+
+    def test_any_interface_uses_standard_cooked_link_type(self):
+        process = self.start(seconds=10, count=1, device='any')
+        self.send()
+        record = self.finish(process)
+        self.assertEqual(record['reason'], 'packet_budget')
+        data = (self.directory / 'capture.pcap').read_bytes()
+        self.assertIn(struct.unpack_from('<I', data, 20)[0], (113, 276))
+        self.assertTrue(data.endswith(b'aurora-test'))
 
     def test_cancel_during_idle_flushes_but_is_not_success(self):
         process = self.start(seconds=10)

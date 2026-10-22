@@ -27,6 +27,7 @@ void capture_packet(unsigned char *opaque, const struct pcap_pkthdr *header,
     }
     capture->bytes += size;
     capture->packets++;
+    if (header->caplen < header->len) capture->snapshot_truncated++;
     if (capture->packets == capture->count) capture->reason = "packet_budget";
     else if (capture->bytes == capture->budget) capture->reason = "byte_budget";
     if (capture->reason) pcap_breakloop(capture->pcap);

@@ -25,7 +25,7 @@ static pcap_t *open_capture(const char *device, const char *filter) {
     char error[PCAP_ERRBUF_SIZE];
     pcap_t *pcap = pcap_create(device, error);
     if (!pcap) return NULL;
-    if (pcap_set_snaplen(pcap, 65535) || pcap_set_promisc(pcap, 0) ||
+    if (pcap_set_snaplen(pcap, 262144) || pcap_set_promisc(pcap, 0) ||
         pcap_set_timeout(pcap, 100) || pcap_set_buffer_size(pcap, 4 * 1024 * 1024) ||
         pcap_set_immediate_mode(pcap, 0) || pcap_activate(pcap) < 0) goto failed;
     if (pcap_get_selectable_fd(pcap) < 0 || pcap_get_required_select_timeout(pcap) != NULL ||
@@ -98,6 +98,7 @@ finish:;
     printf("\"fileComplete\":%s,\"device\":%llu,\"inode\":%llu,",
            file_complete ? "true" : "false", (unsigned long long)capture.device,
            (unsigned long long)capture.inode);
+    printf("\"snapshotTruncated\":%llu,", (unsigned long long)capture.snapshot_truncated);
     if (known) printf("\"received\":%u,\"dropped\":%u}", stats.ps_recv, stats.ps_drop);
     else printf("\"received\":null,\"dropped\":null}");
     putchar('\n');
