@@ -1,3 +1,13 @@
+## 2026-10-23 0.1.35 组合抓包组件接入（资格分阶段）
+
+用户确认“我觉得可以组合都取最优”：libpcap底层采集/过滤、tcpdump成熟写盘/离线读取、Aurora Agent/任务/产物适配；不并行运行多个采集引擎，不据此引入AF_XDP或常驻服务。ROOT_CAPTURE_PROPOSAL已标组合确认。先接官方stable tcpdump4.99.7/libpcap1.10.7源码与SHA锁、NDK静态链接独立PIE、双ABI nativeLibraryDir分发、许可/源码头告知与对应源码包。Android版本0.1.35/code36。
+
+ExternalProject隔离上游配置；派生FindPCAP严格使用当前目标ABI库，避免宿主pkg-config/pcap-config。Windows生成器按宿主选择NUL，私有TEMP/TMP修复win_flex并行ABI固定临时名冲突。无上游缓存修改。未增加可选OpenSSL/libsmi或蓝牙/USBmon/RDMA等采集后端依赖。二进制含TPACKET_V3支持字符串，只证明编译支持，设备实际模式待测。
+
+本地Debug/Release/testAPK/lint及双ABI ELF/16KiB与源码包通过；新增主机离线五项接入CI（版本、匹配原包、不匹配、非法过滤、截断输入），尚未运行；新增Android普通UID两项仅编译。详见PACKET_NATIVE_BUILD.md。当前只是组件包装，不宣称Root实际抓包可用：Agent结构化抓包、受控Root运行/预算/取消/异常、产物归属、详情及吞吐/丢包/功耗仍继续。手机仍0.1.32，按用户要求最后集中验收，未连接或安装更新；无真实供应商调用。
+
+本地当前Debug SHA256 1fcd62b5f0b4f01c7f4d246f1db053827308158268abb3de161cf337b8c75037。
+
 ## 2026-10-23 0.1.34 本地与主机资格完成，手机留最终集中验收
 
 07adcd8 的 CI39825123468 最终完整成功，包括固定签名镜像/POSIX提取、现有 PTY/namespace/scope/恢复/挂载/GC、5项 ptrace 内核先决条件、4项实际派生 PRoot 生命周期、Android Debug/testAPK/Release/lint、双 ABI ELF/16KiB和对应源码包。实际 PRoot 四项覆盖启用/禁用 seccomp 的 tracer SIGKILL，以及 guest 正常退出37后两层 setsid 后代停止；使用 pidfd 验证原进程退出，不靠 PID 字符串轮询猜测。证据 evidence/0.1.34/proot-host-lifecycle-passed.txt；首次 host memset_explicit 构建失败保留。主机用 glibc、非 Android shmem、独立 fixture，不等于 Android 实际 Ubuntu/PRoot 或持久恢复已通过；PRoot executionReady仍 false。

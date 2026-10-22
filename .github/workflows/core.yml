@@ -54,9 +54,18 @@ jobs:
           path: ${{ runner.temp }}/aurora-native-downloads/talloc-2.5.0.tar.gz
           key: talloc-source-912afa237510ae542a7733998eb18a12bcda35ab6729c8e2ddb43e8d0ebab007
       - name: Prepare verified source and generated PRoot adapter
-        run: ./gradlew ':app:configureCMakeDebug[x86_64]' --console=plain
+        run: |
+          if ! command -v flex || ! command -v bison; then
+            sudo apt-get update
+            sudo apt-get install -y --no-install-recommends flex bison
+          fi
+          flex --version
+          bison --version
+          ./gradlew ':app:configureCMakeDebug[x86_64]' --console=plain
       - name: Verify actual derived PRoot lifecycle on Linux host
         run: python3 scripts/verify-proot-lifecycle.py
+      - name: Verify pinned packet tools and offline filtering on Linux host
+        run: python3 scripts/verify-packet-tools.py
       - name: Build Android application and run lint
         run: ./gradlew :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :app:lintDebug --console=plain
       - name: Verify packaged Linux ELF dependencies and corresponding source

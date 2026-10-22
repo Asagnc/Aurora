@@ -10,3 +10,4 @@ target_link_options(aurora_pty PRIVATE -Wl,-z,relro,-z,now -Wl,-z,max-page-size=
 include(linux/Proot.cmake)
 include(linux/Namespace.cmake)
 include(linux/Scope.cmake)
+include(packet/Capture.cmake)

@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 4.1.2)
+project(aurora_packet_tools C)
+if(NOT ANDROID OR ANDROID_PLATFORM_LEVEL LESS 36)
+    message(FATAL_ERROR "Aurora packet tools require an Android API 36+ toolchain")
+endif()
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
+include(Capture.cmake)

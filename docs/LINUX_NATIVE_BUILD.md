@@ -1,5 +1,8 @@
 # Aurora packaged Linux tools
 
+The corresponding-source ZIP also contains the separately built packet tools;
+see PACKET_NATIVE_BUILD.md for pinned tcpdump/libpcap and rebuild instructions.
+
 Source lock and Android build adapter: `app/src/main/cpp/linux/Sources.cmake`.
 PRoot 5.1.107.98 (GPL-2.0-or-later), talloc 2.5.0 (LGPL-3.0-or-later),
 libandroid-shmem 0.7 (BSD-3-Clause). Upstream notices and license texts ship
