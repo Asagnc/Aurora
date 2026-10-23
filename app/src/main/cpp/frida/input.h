@@ -11,5 +11,6 @@ struct frida_attach_input {
     char *payload;
 };
 int frida_input_read(int argc, char **argv, struct frida_attach_input *input);
+int frida_channel_read(int argc, char **argv, struct frida_attach_input *input);
 int frida_target_matches(const struct frida_attach_input *input);
 #endif

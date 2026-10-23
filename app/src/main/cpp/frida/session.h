@@ -22,5 +22,6 @@ void aurora_frida_number(JsonBuilder *builder, const char *key, gint64 value);
 void aurora_frida_text(JsonBuilder *builder, const char *key, const char *value);
 gboolean aurora_frida_emit(struct aurora_frida_session *run, JsonBuilder *builder, gboolean final);
 void aurora_frida_message(FridaScript *script, const gchar *message, GBytes *data, gpointer opaque);
+/* Caller owns one Frida initialization/deinitialization around parsing and this session. */
 int aurora_frida_attach(const struct frida_attach_input *input);
 #endif

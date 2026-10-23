@@ -1,5 +1,6 @@
 /* Build/ABI qualification only: not yet packaged or registered as an Agent tool. */
 #include "session.h"
+#include "fd_channel.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -47,22 +48,34 @@ static void processes(JsonBuilder *builder, FridaProcessList *list) {
     json_builder_end_array(builder);
 }
 
+static int attach(int argc, char **argv) {
+    if (getuid() != 0) return 77;
+    int64_t started = aurora_fd_now();
+    if (started < 0) return 70;
+    alarm(20); frida_init();
+    struct frida_attach_input input = {0};
+    int invalid = !strcmp(argv[1], "attach-channel") ? frida_channel_read(argc, argv, &input) : frida_input_read(argc, argv, &input);
+    int status = 64;
+    int64_t elapsed = aurora_fd_now() - started;
+    if (!invalid && elapsed >= 0 && elapsed < input.duration_ms) {
+        // Runtime setup and FD handoff consume the operation budget, never its cleanup reserve.
+        input.duration_ms -= (unsigned) elapsed;
+        status = aurora_frida_attach(&input);
+    }
+    free(input.script); free(input.payload);
+    frida_deinit(); alarm(0);
+    return status;
+}
+
 int main(int argc, char **argv) {
     if (argc == 2 && strcmp(argv[1], "--version") == 0) {
         puts(frida_version_string());
         return 0;
     }
-    if (argc >= 2 && strcmp(argv[1], "attach") == 0) {
-        if (getuid() != 0) return 77;
-        struct frida_attach_input input;
-        if (frida_input_read(argc, argv, &input)) return 64;
-        int status = aurora_frida_attach(&input);
-        free(input.script); free(input.payload);
-        return status;
-    }
+    if (argc >= 2 && (!strcmp(argv[1], "attach") || !strcmp(argv[1], "attach-channel"))) return attach(argc, argv);
     if (argc != 2 || strcmp(argv[1], "probe") != 0) return 64;
     if (getuid() != 0) return 77;
-    /* No attach/spawn operations exist in this qualification stage. */
+    /* Probe only enumerates. Attach uses its separate bounded path above. */
     alarm(20);
     frida_init();
     GError *error = NULL;

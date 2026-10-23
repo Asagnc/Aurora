@@ -1,0 +1,3 @@
+test	Verify protocols and owned files	2026-10-23T16:47:40.5987686Z ^[[36;1mpython3 scripts/verify-frida-fd-channel.py^[[0m
+test	Verify protocols and owned files	2026-10-23T16:47:41.3670379Z Ran 8 tests in 0.354s
+test	Verify protocols and owned files	2026-10-23T16:47:41.3670529Z OK

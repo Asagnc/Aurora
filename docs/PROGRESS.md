@@ -1,3 +1,9 @@
+## 2026-10-24 封印脚本FD端到端开发通路
+
+1e5baf1完整CI39989586948成功，8项真实Unix socket测试实际通过。新增Android RootScriptChannel、固定72字节帧核心与原生attach-channel：Root UID/PID/startTicks、nonce/票据摘要、首片rights、封印/内容校验、单次ACK/EOF、取消关闭accept及自有快照。不增加网络库或磁盘脚本副本，仍无Root Binder/任务cgroup产品派发。
+
+Frida运行时统一初始化一次，解析JSON前先准备随附GLib；反初始化由调用者统一负责，保留硬截止到退出。新增3项真实Frida通路用例和对端死亡第9项socket用例待最新CI执行。核心242项（232通过、10平台跳过）与Debug/Release R8/testAPK/lint本地通过；新增5项Android通道用例仅编译。ARM64原型已重新链接/16KiB检查，未打包/未注册Agent，手机仍最后集中验收。见ROOT_MANAGED_TASKS_IMPLEMENTATION.md。
+
 ## 2026-10-24 原生Frida预算与证明错配补查
 
 将原生attach观察上限从270秒收紧为250秒，和已批准Root总270秒/预留20秒一致；解析夹具补250000接受、250001及270000拒绝。ARM64 NDK重新编译/16KiB外层检查通过，报告frida-managed-budget-build.json；新原生输入边界须由最新Linux CI实际执行。票据证明补App UID、Root PID/startTicks/bootId、脚本版本/字节数错配，核心239项本地再次通过（229通过、10跳过，9秒）。

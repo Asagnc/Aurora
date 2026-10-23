@@ -199,7 +199,6 @@ int aurora_frida_attach(const struct frida_attach_input *input) {
     if (pipe2(pipes, O_CLOEXEC | O_NONBLOCK)) return 70;
     int target = (int) syscall(__NR_pidfd_open, input->pid, 0);
     if (target < 0) { close(pipes[0]); close(pipes[1]); return 69; }
-    frida_init();
     struct aurora_frida_session run = {.input = input, .target_fd = target};
     g_mutex_init(&run.lock); g_mutex_init(&run.output_lock); g_cond_init(&run.changed);
     // Frida owns the default context in FRIDA_RUNTIME_OTHER. Never run a second loop on it.
@@ -236,6 +235,5 @@ int aurora_frida_attach(const struct frida_attach_input *input) {
     g_clear_object(&run.operation); g_clear_object(&run.cleanup); g_main_loop_unref(run.loop);
     g_mutex_clear(&run.lock); g_mutex_clear(&run.output_lock); g_cond_clear(&run.changed);
     g_main_context_unref(control);
-    frida_deinit(); alarm(0);
     return status;
 }

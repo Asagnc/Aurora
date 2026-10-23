@@ -1,0 +1,7 @@
+2026-10-24 local script channel verification
+core:test: 242 tests, 0 failures/errors, 10 platform skips (232 passed).
+Debug/Release R8/testAPK/lint BUILD SUCCESSFUL in 40s.
+3 new core frame tests actually ran; 5 Android channel tests compiled only.
+ARM64 worker cross-link + outer ELF 16KiB audit passed; not packaged/run on Android.
+9 Linux socket / 11 real Frida session cases need latest CI; prior 8/8 passed in CI39989586948.
+No ADB, phone or paid model calls.

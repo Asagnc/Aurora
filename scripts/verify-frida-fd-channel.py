@@ -5,6 +5,7 @@ from contextlib import contextmanager
 import errno
 import json
 import os
+import select
 from pathlib import Path
 import shutil
 import socket
@@ -12,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import uuid
 
 if sys.platform.startswith("linux"):
     import fcntl
@@ -189,6 +191,42 @@ class ChannelTests(unittest.TestCase):
         for options in [{"peer": os.getpid() + 100000}, {"uid": os.getuid() + 1}, {"start": ticks(os.getpid()) + 1}]:
             with self.subTest(options=options), self.channel(**options) as (_, process, __):
                 self.assertEqual(-1, self.result(process)["result"])
+
+    def test_peer_death_wakes_wait_without_waiting_for_deadline(self):
+        program = self.root / "owned-peer.py"
+        program.write_text("import socket, sys\n"
+            "listener=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)\n"
+            "listener.bind('\\0'+sys.argv[1]);listener.listen(1)\n"
+            "print('ready',flush=True)\n"
+            "peer,_=listener.accept()\n"
+            "data=b''\n"
+            "while len(data)<72: data+=peer.recv(72-len(data))\n"
+            "print('hello',flush=True)\n"
+            "sys.stdin.read(1)\n", encoding="utf-8")
+        name = "aurora-fd-" + uuid.uuid4().hex
+        peer = subprocess.Popen([sys.executable, str(program), name], stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        child = None
+        try:
+            self.assertTrue(select.select([peer.stdout], [], [], 3)[0]); self.assertEqual(b"ready\n", peer.stdout.readline())
+            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
+                client.connect("\0" + name)
+                child = subprocess.Popen([str(self.binary), str(client.fileno()), "-1", str(peer.pid),
+                    str(os.getuid()), str(ticks(peer.pid)), "1", "3000"],
+                    pass_fds=[client.fileno()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                self.assertTrue(select.select([peer.stdout], [], [], 3)[0]); self.assertEqual(b"hello\n", peer.stdout.readline())
+                peer.kill(); peer.communicate(timeout=3)
+                result = self.result(child)
+                self.assertEqual(-1, result["result"])
+                self.assertIn(result["error"], [errno.ESRCH, errno.EPROTO])
+        finally:
+            if peer.poll() is None:
+                peer.kill()
+            peer.communicate(timeout=3)
+            if child is not None:
+                if child.poll() is None:
+                    child.kill()
+                child.communicate(timeout=3)
 
     def test_event_driven_deadline_and_cancellation_close_partial_fds(self):
         for cancel in [False, True]:

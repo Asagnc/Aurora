@@ -43,7 +43,7 @@ class FridaSessionTests(unittest.TestCase):
         native = ROOT / "app/src/main/cpp/frida"
         cls.worker = cls.root / "worker"
         subprocess.run(["cc", "-Wall", "-Wextra", "-Werror", "-Os", "-ffunction-sections", "-fdata-sections",
-                        "-I" + str(cls.root), *[str(native / name) for name in ["worker.c", "input.c", "events.c", "session.c"]],
+                        "-I" + str(cls.root), *[str(native / name) for name in ["worker.c", "input.c", "channel_input.c", "fd_channel.c", "fd_io.c", "events.c", "session.c"]],
                         "-o", str(cls.worker), "-L" + str(cls.root), "-lfrida-core", "-ldl", "-lrt", "-lm", "-lresolv",
                         "-pthread", "-Wl,--export-dynamic", "-Wl,--gc-sections", "-Wl,-z,noexecstack"], check=True)
         target = cls.root / "target.c"
@@ -183,6 +183,38 @@ class FridaSessionTests(unittest.TestCase):
         self.assertIn("user_script_evaluated", labels)
         self.assertTrue(records[-1]["userScriptPosted"], records)
         self.assertEqual(0, child.returncode, records)
+
+    def start_channel(self, source, bridge=None, corrupt=None):
+        from frida_channel_fixture import launch
+        child = launch(self.worker, (self.process.pid, self.ticks), source, bridge, corrupt)
+        self.addCleanup(self.stop, child)
+        return child
+
+    def test_sealed_channel_loads_selected_script_without_disk_copy(self):
+        child = self.start_channel(b"send('aurora-sealed-channel-marker');")
+        records = self.finish(child)
+        self.assertEqual(0, child.returncode, records)
+        messages = [json.loads(event["message"]) for event in records if event["kind"] == "message"]
+        self.assertEqual(1, sum(message.get("payload") == "aurora-sealed-channel-marker" for message in messages))
+
+    @unittest.skipUnless(os.environ.get("AURORA_FRIDA_JAVA_BUNDLE"), "Explicit development bridge bundle required")
+    def test_sealed_channel_bridge_delivers_selected_script_once(self):
+        bundle = Path(os.environ["AURORA_FRIDA_JAVA_BUNDLE"]).read_bytes()
+        child = self.start_channel(b"send('aurora-sealed-bridge-marker');", bundle)
+        records = self.finish(child)
+        self.assertEqual(0, child.returncode, records)
+        messages = [json.loads(event["message"]) for event in records if event["kind"] == "message"]
+        self.assertEqual(1, sum(message.get("payload") == "aurora-sealed-bridge-marker" for message in messages))
+        self.assertTrue(records[-1]["userScriptPosted"], records)
+
+    def test_sealed_channel_rechecks_exact_content_before_attaching_target(self):
+        for corrupt in ["sha", "size"]:
+            with self.subTest(corrupt=corrupt):
+                child = self.start_channel(b"send('must-not-run');", corrupt=corrupt)
+                output, _ = child.communicate(timeout=10)
+                self.assertEqual(64, child.returncode)
+                self.assertEqual(b"", output)
+                self.assertIsNone(self.process.poll())
 
     def test_target_exit_ends_session_without_waiting_full_duration(self):
         child = self.start("send('ready');", 30000)
