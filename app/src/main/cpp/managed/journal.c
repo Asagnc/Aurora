@@ -36,6 +36,12 @@ int managed_journal_begin(const struct managed_journal *journal, const struct ma
     int phase = managed_journal_status(journal, key, NULL);
     if (phase < 0) return -1;
     if (phase) { errno = phase & MANAGED_RETIRED ? ECANCELED : EEXIST; return -1; }
+    unsigned char extra[MANAGED_MAX_RECORD_BYTES];
+    int worker = managed_record_read(journal->directory, "managed.worker", extra, sizeof(extra));
+    if (worker < 0) return -1;
+    int stopped = managed_record_read(journal->directory, "managed.stopped", extra, sizeof(extra));
+    if (stopped < 0) return -1;
+    if (worker || stopped) { errno = EPROTO; return -1; }
     unsigned char bytes[MANAGED_KEY_BYTES];
     if (managed_key_bytes(key, bytes)) return -1;
     return managed_record_write(journal->directory, "managed.intent", bytes, sizeof(bytes), 0);

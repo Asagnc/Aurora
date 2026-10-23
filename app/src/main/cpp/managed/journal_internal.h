@@ -4,6 +4,7 @@
 #include <stddef.h>
 #define MANAGED_KEY_BYTES 107
 #define MANAGED_READY_BYTES 164
+#define MANAGED_MAX_RECORD_BYTES 256
 int managed_owned(int file, int directory);
 int managed_record_read(int directory, const char *name, void *buffer, size_t capacity);
 int managed_record_write(int directory, const char *name, const void *buffer, size_t size, int idempotent);

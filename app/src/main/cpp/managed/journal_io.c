@@ -57,7 +57,7 @@ int managed_record_read(int directory, const char *name, void *buffer, size_t ca
 }
 
 static int sync_existing(int directory, const char *name, const void *bytes, size_t size) {
-    unsigned char existing[MANAGED_READY_BYTES];
+    unsigned char existing[MANAGED_MAX_RECORD_BYTES];
     int read = managed_record_read(directory, name, existing, sizeof(existing));
     if (read < 0) return -1;
     if (read != (int)size || memcmp(existing, bytes, size)) { errno = EPROTO; return -1; }
@@ -71,7 +71,7 @@ static int sync_existing(int directory, const char *name, const void *bytes, siz
 }
 
 int managed_record_write(int directory, const char *name, const void *buffer, size_t size, int idempotent) {
-    if (!size || size > MANAGED_READY_BYTES) { errno = EINVAL; return -1; }
+    if (!size || size > MANAGED_MAX_RECORD_BYTES) { errno = EINVAL; return -1; }
     int file = openat(directory, name, O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC | O_NOFOLLOW | O_NONBLOCK, 0600);
     if (file < 0) return errno == EEXIST && idempotent ? sync_existing(directory, name, buffer, size) : -1;
     size_t offset = 0;

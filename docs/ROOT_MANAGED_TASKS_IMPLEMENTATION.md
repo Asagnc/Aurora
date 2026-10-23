@@ -76,6 +76,12 @@ guard必须保持默认SIGCHLD且无SA_NOCLDWAIT，防止未回收子PID被复�
 
 依据：[close_range](https://man7.org/linux/man-pages/man2/close_range.2.html)、[PDEATHSIG](https://man7.org/linux/man-pages/man2/PR_SET_PDEATHSIG.2const.html)及既有scope/cgroup算法；不使用PID命名空间或Linux镜像。
 
+## 持久worker事实与资源收尾
+
+managed.worker只接收state=1的严格EOF接收器，重新验证票据及READY PID/startTicks，再以Root私有单链接文件写入/fsync。managed.stopped固定123字节，含107字节任务key、精确阶段、worker/domain资源状态、真实退出码（未知为UINT32_MAX）、结束原因和errno；所有保留位/范围/阶段矛盾拒绝。资源CLEAR不等于目标注入清理，NOT_CREATED与UNKNOWN不能转成workerExited。没有worker报告就保留缺失，不从停止记录合成unload/detach。
+
+收尾记录须已经持久退役，精确重试才重做fsync；部分/矛盾文件保留并拒绝覆盖。无意图却遗留worker/stopped文件不允许重新begin。新增8项Root测试，journal累计25，待CI；ARM64夹具链接通过。尚未接完整guard/恢复/Root Binder/Agent，不宣称已可释放App未确认意图。
+
 ## 验证
 
 本地核心242项：232通过、10平台跳过；票据/预算/证明/错配4项与帧协议3项实际执行。Debug、Release R8、testAPK、lint通过；随后扩展Android用例又编译/lint通过，见evidence/0.1.40/local-root-managed-foundation-passed.txt及local-root-script-channel-passed.txt。

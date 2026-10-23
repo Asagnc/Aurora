@@ -1,3 +1,9 @@
+## 2026-10-24 退出事实与资源收尾持久记录
+
+新增managed.worker与managed.stopped：只有专用流验证EOF并匹配READY身份/票据的52字节报告才落盘；123字节收尾记录区分CLEAR/NOT_CREATED/UNKNOWN，明确真实退出码可未知。先持久退役才允许收尾记录，已有矛盾/部分文件拒绝覆盖；无worker报告仍是缺失，不能从资源清理合成脚本卸载。新8项与原17项Root journal合计25项主机用例待CI，NDK30/API36 ARM64夹具链接通过，Windows仅平台跳过。独立guard/恢复正在接入，不是已开放的Agent功能。
+
+用户要求连续推进，不再每个小阶段结束等待“继续”；保持只在新增底层选型确认或必要设备/授权阻碍时联系。c6fce52完整CI40005725398已成功，证据ci-40005725398-passed.txt。手机仍最后集中验收，不调用真实付费模型。
+
 ## 2026-10-24 真实cgroup放行10项通过
 
 c6fce52的CI40005725398 managed-supervision独立job成功，9接收/10观察/17 journal/10实际Root cgroup放行均实际通过。放行夹具包含真实fork/入域/GO/worker及helper exec/回收，最终加载位是模拟，不计为Frida注入或Android设备资格。证据ci-40005725398-managed-passed.txt；ARM64夹具完整链接及16KiB证据managed-launch-arm64-build.json。完整workflow仍待核实。

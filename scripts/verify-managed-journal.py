@@ -9,17 +9,15 @@ import subprocess
 import sys
 import tempfile
 import unittest
-from managed_journal_fixture import HARNESS
+from managed_journal_fixture import HARNESS, KEY_BYTES, RUN, TICKET
+from managed_completion_cases import CompletionCases
 
 ROOT = Path(__file__).resolve().parents[1]
-RUN = "00000000-0000-0000-0000-000000000002"
-TICKET = "11" * 32
-KEY_BYTES = b"ARI1\n" + RUN.encode() + b"\n" + TICKET.encode() + b"\n"
 
 
 @unittest.skipUnless(sys.platform.startswith("linux") and shutil.which("cc") and
     getattr(os, "geteuid", lambda: -1)() == 0, "Explicit Linux Root compiler fixture required")
-class JournalTests(unittest.TestCase):
+class JournalTests(CompletionCases, unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.temporary = tempfile.TemporaryDirectory(prefix="aurora-managed-journal-")
@@ -28,7 +26,8 @@ class JournalTests(unittest.TestCase):
         cls.binary = cls.root / "harness"
         native = ROOT / "app/src/main/cpp/managed"
         subprocess.run(["cc", "-Wall", "-Wextra", "-Werror", "-I" + str(native), str(source),
-            *[str(native / name) for name in ["journal.c", "journal_identity.c", "journal_io.c"]],
+            *[str(native / name) for name in ["journal.c", "journal_identity.c", "journal_io.c", "completion.c"]],
+            str(native.parent / "frida/managed_protocol.c"),
             "-Wl,--wrap=fsync,--wrap=write", "-o", str(cls.binary)], check=True)
 
     @classmethod
@@ -220,6 +219,7 @@ class JournalTests(unittest.TestCase):
             with self.subTest(run=run, ticket=ticket):
                 self.expect_failure("begin", errno.EINVAL, run=run, ticket=ticket)
         self.assertFalse((self.state / "managed.intent").exists())
+
 
 
 if __name__ == "__main__":

@@ -50,7 +50,11 @@
 
 - 原生admission/GO基础已接journal与已有cgroup算法：fork子进程先入域并等待，捕获真实PID/start/boot后持久READY，RELEASED后单次GO；拒绝自动回收，父死保护和跨exec FD隔离。10项Root cgroup/自有原生worker用例已在CI40005725398独立job实际通过；仍没有完整Root guard主程序/Binder/Agent或Frida设备资格。
 
+- 新增worker最终流/资源收尾持久记录，严格身份与完整EOF，明确NOT_CREATED/UNKNOWN与已退出的区别；8新Root故障用例（journal合计25）待CI，ARM64夹具链接通过。继续独立guard/恢复，不每个阶段停下来等待用户“继续”。
+
 ## 当前证据
+
+- c6fce52完整CI40005725398已成功；证据ci-40005725398-passed.txt。
 
 - c6fce52的40005725398 managed-supervision job成功：9接收+10观察+17 journal+10实际Root cgroup放行用例通过；完整workflow待核实。见ci-40005725398-managed-passed.txt。
 
