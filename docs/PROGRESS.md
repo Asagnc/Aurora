@@ -1,3 +1,13 @@
+## 2026-10-23 多环境逆向资格隔离与过期探测收尾
+
+原先只有一个全局资格槽，其他会话在不同Linux代发起probe会清空已通过的资格。现改为按Root身份、Linux代和bundle隔离的进程内有界资格表，最多32项；新探测只撤销自己的scope，失败不会抹去其他环境资格。淘汰项需要重新探测，不从旧结果推断就绪。
+
+每次probe持有独立尝试标识，完成时必须仍为该scope的当前尝试；被重试、删除或淘汰取代的迟到结果不能重新授权。工具删除前和finally均撤销该bundle资格，清理失败/取消也不保留旧证据；持久任务租约与真实退出证明继续由原Store/SQLite/Root流程控制，资格表不代替删除屏障。删除未成功也会保守撤销资格，需要重试probe。
+
+只在极短无I/O的表操作上使用JVM成员同步，CLI运行与文件操作不持有该锁，没有新增依赖/持久化/常驻工作。依据Kotlin官方Synchronized文档：https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-synchronized/ 。新增3项核心回归覆盖跨代/身份隔离、旧尝试拒绝、移除及重装、独立bundle和容量淘汰。ARM64 CLI仍待最终手机验收。
+
+上一轮3beb4c7完整CI39953323831成功，证据evidence/0.1.40/ci-39953323831-passed.txt。本轮核心232项：222通过、10平台跳过；3项新资格测试实际通过。Debug、Release R8、testAPK和lint通过（42秒），见evidence/0.1.40/local-concurrent-qualification-passed.txt。本轮完整CI推送后另查。
+
 ## 2026-10-23 逆向资格与Agent环境版本一致性
 
 修复共享环境更新后的版本错配：shared_toolchain probe此前独立读取全局当前代，而reverse_analyze沿用Agent已固定的代，导致重复探测仍不能满足分析资格。现在probe先取得同一LinuxAgentEnvironment的任务租约，三个CLI及后续分析共用固定代。status展示该任务选择的generation并据此判断runtimeReady；只查看状态不新增租约，未开始执行的任务仍能看到后续选择变化。没有新增运行时、持久化结构或后台进程。

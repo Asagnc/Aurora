@@ -16,8 +16,7 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
         inUse = { app.linux.runs.usesToolBundle(it) }) { component, archive, target ->
         StaticReversePreparation.prepare(component, archive, target) { path, mode -> Os.chmod(path.toString(), mode) }
     }
-    private data class Qualified(val generation: String, val identity: LinuxRootIdentity, val bundle: String)
-    @Volatile private var qualified: Qualified? = null
+    private val qualifications = StaticReverseQualifications()
     @Volatile private var cleanupPending = false
     suspend fun recover() {
         try { store.cleanup(); cleanupPending = false }
@@ -30,16 +29,19 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
         return store.install { component, target -> network.download(component.url, target, component.compressedBytes) }
     }
     suspend fun <T> reserve(id: String, record: suspend () -> T): T = store.reserve(id, record)
-    suspend fun remove(id: String) = store.remove(id).also { if (it) qualified = null }
+    suspend fun remove(id: String): Boolean {
+        // Invalidate before suspension: cancellation/cleanup failure must not retain old evidence.
+        qualifications.invalidate(id)
+        try { return store.remove(id) } finally { qualifications.invalidate(id) }
+    }
     suspend fun analyze(owner: String, request: LinuxToolRun, generation: String): JsonObject {
-        val expected = qualified
-        check(expected != null && expected.generation == generation && expected.bundle == request.bundle &&
-            expected.identity == app.root.linuxExecution?.identity) { "Run shared_toolchain probe for this environment first" }
+        val identity = requireNotNull(app.root.linuxExecution?.identity) { "Connect Root before analysis" }
+        check(qualifications.ready(StaticReverseQualifications.Scope(generation, identity, request.bundle))) { "Run shared_toolchain probe for this environment first" }
         return app.linux.runs.executeTools(owner, request, generation)
     }
     suspend fun probe(owner: String, generation: String, prepared: suspend (String) -> Unit): JsonObject {
-        qualified = null
         val identity = requireNotNull(app.root.linuxExecution?.identity) { "Reconnect Root for tool mounts" }
+        val attempt = qualifications.begin(StaticReverseQualifications.Scope(generation, identity, StaticReverseTools.bundleId))
         val commands = staticReverseStartupCommands()
         val results = mutableListOf<JsonElement>()
         for ((index, argv) in commands.withIndex()) {
@@ -51,8 +53,9 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
             if (!passed) return objectOf("error" to string("tool_probe_failed"), "qualified" to JsonPrimitive(false), "failedStep" to JsonPrimitive(index),
                 "results" to JsonArray(results))
         }
-        qualified = Qualified(generation, identity, StaticReverseTools.bundleId)
-        return objectOf("qualified" to JsonPrimitive(true), "results" to JsonArray(results))
+        val accepted = qualifications.complete(attempt)
+        return objectOf("qualified" to JsonPrimitive(accepted), "results" to JsonArray(results),
+            "reason" to string(if (accepted) "startup_qualified" else "qualification_superseded"))
     }
     suspend fun cleanup(): Int {
         try { return store.cleanup().also { cleanupPending = false } }
@@ -60,9 +63,9 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
     }
     suspend fun status(generation: String?): JsonObject {
         val installed = store.installed()
-        val current = qualified
-        val ready = current != null && current.bundle in installed && current.generation == generation &&
-            current.identity == app.root.linuxExecution?.identity
+        val identity = app.root.linuxExecution?.identity
+        val ready = generation != null && identity != null && StaticReverseTools.bundleId in installed &&
+            qualifications.ready(StaticReverseQualifications.Scope(generation, identity, StaticReverseTools.bundleId))
         return objectOf(
         "catalogBundle" to string(StaticReverseTools.bundleId),
         "generation" to (generation?.let(::string) ?: JsonNull),
