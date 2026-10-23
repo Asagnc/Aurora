@@ -20,4 +20,5 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
     systemProperty("aurora.browser.scriptTest", rootProject.file("scripts/verify-browser-javascript.mjs").absolutePath)
+    inputs.file(rootProject.file("scripts/verify-browser-javascript.mjs"))
 }

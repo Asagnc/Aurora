@@ -1,6 +1,6 @@
 # Aurora engineering rules
 
-Read `docs/DESIGN.md`, `docs/PROGRESS.md` and `docs/IMPLEMENTATION.md` before changing application behavior. Design contracts are approved; implementation and device evidence have separate status.
+Read `docs/NEXT_STEPS.md` for current status before treating historical entries as unfinished work. Read `docs/DESIGN.md`, `docs/PROGRESS.md` and `docs/IMPLEMENTATION.md` before changing application behavior. Design contracts are approved; implementation and device evidence have separate status.
 
 ## Product baseline
 

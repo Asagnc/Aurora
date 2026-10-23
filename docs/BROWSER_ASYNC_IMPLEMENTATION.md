@@ -24,8 +24,8 @@
 
 - 核心187项：180通过、7项POSIX在Windows跳过；已提供固定签名Ubuntu归档运行对应镜像检查。新增5项生命周期、2项恶意/畸形结果合同和1项生产JS主机执行测试。
 - 该JS主机测试实际运行14个场景：同步对象/undefined、大引号字符串、Unicode边界、循环值/BigInt/函数、同步Promise拒绝、Promise成功/拒绝/异步普通值、异步循环值、取消迟到结果、永不完成的接收器清理。还覆盖错误ID与重复启动。证据evidence/0.1.37/browser-script-host-fourteen-passed.txt。使用电脑现有Node24.15.0，CI也需要宿主Node；它仅运行测试，不随APK打包，不替代真实WebView测试。
-- Debug、Release R8、测试APK、lint全部本地通过。新增BrowserAsyncTest六项只编译：成功/错误、转义大值/接收器清理、本地/外层截止、导航/同URL重载、关闭页面、批处理外层取消。
+- Debug、Release R8、测试APK、lint全部本地通过。新增BrowserAsyncTest六项只编译：成功/错误、转义大值/接收器清理、本地/外层截止、导航/跨域/同URL重载、关闭页面、批处理外层取消。
 - 实际端口转移/目标origin、迟到回调、renderer退出、UI与后台/会话删除组合仍需Android16真机。当前没有连接/更新手机，仍保留此前0.1.32；没有调用真实供应商或外部网站夹具。
-- 此次提交CI状态以Actions为准，未提前标完整成功。批准与构建不代替设备功能/性能验收。
+- 9517ea9完整CI39909014575已成功，证据evidence/0.1.37/ci-39909014575-passed.txt。随后补mjs测试输入追踪和Android跨域夹具，本地core/testAPK/lint再次通过，后续提交CI另查。批准、主机CI与构建都不代替设备功能/性能验收。
 
 后续继续浏览器文件上传下载和故障矩阵；新传输/持久化选择按既有要求先研究确认。

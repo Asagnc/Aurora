@@ -53,7 +53,7 @@ class BrowserAsyncTest {
 
     @Test fun navigationAndSameUrlReloadRejectOldDocumentResults() = runBlocking { fixture { _, tools, first ->
         var page = first
-        for (navigation in listOf("location.href='/next'", "location.reload()")) {
+        for (navigation in listOf("location.href='/next'", "location.reload()", "location.href='https://other-async.fixture/'")) {
             val changed = withTimeout(5000) { evaluate(tools, page,
                 "new Promise(()=>{setTimeout(()=>{$navigation},20)})", timeout = 10000) }
             assertTrue(changed.toString(), changed.text("error").orEmpty().contains("changed", ignoreCase = true))
@@ -113,7 +113,7 @@ class BrowserAsyncTest {
         val browser = withContext(Dispatchers.Main) { BrowserController(instrumentation.targetContext, saveProxy = false, intercept = { request ->
             if (request.url.path == "/ready") dispatched?.countDown()
             if (request.url.path == "/slow") { dispatched?.countDown(); release?.await(5, TimeUnit.SECONDS) }
-            if (request.url.host == "async.fixture") WebResourceResponse("text/html", "UTF-8", "<html><body>Async fixture</body></html>".byteInputStream()) else null
+            if (request.url.host in setOf("async.fixture", "other-async.fixture")) WebResourceResponse("text/html", "UTF-8", "<html><body>Async fixture</body></html>".byteInputStream()) else null
         }) }
         val tools = BrowserToolExecutor(browser, owner)
         try {

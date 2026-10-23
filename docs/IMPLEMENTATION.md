@@ -1,3 +1,9 @@
+## 2026-10-23 0.1.37 异步浏览器完整CI通过
+
+9517ea9完整CI39909014575成功，证据evidence/0.1.37/ci-39909014575-passed.txt；含新生命周期/JSON合同/生产JS测试及原有全部主机和Android构建门槛。随后补mjs测试任务输入追踪（脚本变化不能被误判UP-TO-DATE）与跨域导航Android夹具，core/testAPK/lint本地再通过。最新后续提交CI另查。
+
+当前功能/证据/缺失项统一见NEXT_STEPS.md，避免把历史章节中的旧待办重新当作未实现。浏览器异步六项、Root抓包七项仍仅编译待最终手机；没有连接/更新手机或调用真实供应商。接续优先浏览器文件传输研究与实现，新通道/持久化选择仍先确认。
+
 ## 2026-10-23 0.1.37 浏览器事件等待与异步JS
 
 用户已确认每次调用独立WebMessagePort，见BROWSER_ASYNC_PROPOSAL。实现awaitPromise显式启用/有界deadline、精确origin/运行ID/文档revision、单次结果与关闭/取消收尾；结果不提供原生权限、网页数据仍不可信。加载等待从50ms轮询改为WebView回调StateFlow，并修复工具/批处理吞掉外层超时取消；同步/异步JSON预算与Unicode截断、字段/深度校验统一，解析移出Main并再次核对文档。
