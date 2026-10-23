@@ -1,3 +1,9 @@
+## 2026-10-23 真实Frida会话与Java桥构建进展
+
+修复共享事件上下文和GLib销毁顺序后，又通过实际崩溃栈定位Frida设备后端半启动关闭竞态；改用启动完成事件屏障，不添加固定延时。CI39965185125的独立frida-session job六项已实际通过，身份错配含5次快速退出子场景；整体workflow状态另查，不能算全CI已通过。
+
+Java桥7.0.13+官方编译器19.1.0+Nodebinding17.24.3固定锁文件/摘要，Windows开发期两次编译成功235893字节；新增第7主机用例验证真实加载时普通C目标不会误报Java能力，待CI执行。完整native post/ART、spawn、Root/Agent包装、持久恢复与许可证仍待完成。源码及生成过程不向手机安装半成品，详见DYNAMIC_REVERSE_IMPLEMENTATION.md。
+
 ## 2026-10-23 Frida附加、消息与退出收尾原生实现
 
 已新增原生附加流程：PID/pidfd复核、受限脚本读取、QuickJS加载、有界序号消息、跨线程取消、独立清理截止、unload/detach/manager确认。使用frida_unref与最终Frida上下文排空处理晚到回调。未打包/注册Agent工具；spawn/Java桥/持久恢复仍待接入，不能宣称动态逆向可用。

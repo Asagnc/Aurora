@@ -1,3 +1,13 @@
+## 2026-10-23 主机6项真实会话通过、Java桥开发期构建
+
+eb99c2e的CI39965185125中frida-session job已实际通过全部6项（身份错配含5次快速启动子场景），证据ci-39965185125-frida-job-passed.json及ci-39965185125-frida-tests-passed.txt。该时刻整体workflow尚在运行，不把job成功当完整CI成功。之前39962631872、39963441947、39963997280的失败仍保留；后续39964474273已定位上游半启动关闭竞态。
+
+tools/frida-bridge固定Java桥7.0.13、frida-compile19.1.0和Frida Node17.24.3完整package-lock闭包。编译器19.1.0来自官方npm当前版本，桥/引擎版本编号各自独立，不能互相比数字。WindowsNode24.15使用已核实SHA256的官方N-API8 binding实际编译两次，235893字节Frida bundle、局部相同SHA256。新增prepare-frida-node.py仅安装固定来源的Windows/Linux x64开发期binding，核对摘要、长度与单文件归档；npm一律ignore-scripts，不运行安装钩子的prebuild-install/make回退。手机不新增Node/npm/Python。
+
+Java桥entrypoint只安装Java对象、报告初始availability并等待一次明确aurora:run消息。它尚未与native post通道相连，不能称已能运行AndroidJava脚本。新第7项主机用例将实际加载该bundle到自有普通C目标，要求报告Java不可用，防止只从编译成功误报能力；仍待新CI，AndroidART独立待真机资格。生成bundle和node_modules不入Git/不打包APK，许可证/对应源码仍是发布门槛。
+
+当前ARM64worker strip89134752字节、单库ZIP36053008字节，见frida-attach-current-report.json与readelf；已显式禁止可执行栈，外层16KiB/系统依赖资格不代替注入端资格。Root接入必须在现有270秒总预算中预留清理窗口，不能让观察期+清理超过派发截止；普通Root命令短kill间隔不直接作为此worker的完成证明。
+
 ## 2026-10-23 本机设备早返回/其他后端未完成启动的关闭竞态
 
 真实主机第二轮已5项通过，身份错配用例仍SIGSEGV。调试栈定位frida_fruity_pairing_browser_stop(self=null)，由DeviceManager立即关闭时取消未完成的其他设备后端启动引发。Frida17.24.3源码find_device会在本机设备added时早返回，而enumerate_devices等待ensure_service完成；不能把拿到local device当整个manager已启动。

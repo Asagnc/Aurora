@@ -1,0 +1,17 @@
+{
+  "version": "17.24.3",
+  "archiveSha256": "0c688824a24949e7be77109fd2c7306bba60cb47f608789e141bb24cd23b1005",
+  "unstrippedBytes": 150269288,
+  "strippedBytes": 89134752,
+  "deflatedWorkerZipBytes": 36053008,
+  "workerSha256": "07a8ee874531fab025e7c1a19d928b1fef476dec39172536fb2a3b76b56a59df",
+  "needed": [
+    "libc.so",
+    "libdl.so",
+    "liblog.so",
+    "libm.so"
+  ],
+  "androidRuntime": "NOT TESTED",
+  "packagedInApk": false,
+  "alignmentScope": "Outer worker only; not injected agents or loader/SELinux qualification"
+}

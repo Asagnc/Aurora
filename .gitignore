@@ -9,3 +9,5 @@ local.properties
 captures/
 **/.cxx/
 **/__pycache__/
+
+**/node_modules/

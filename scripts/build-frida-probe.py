@@ -79,7 +79,7 @@ def build(args, archive, output):
                 *[str(ROOT / "app/src/main/cpp/frida" / name) for name in ["worker.c", "input.c", "events.c", "session.c"]],
                 "-o", str(binary), "-L" + str(work),
                 "-lfrida-core", "-llog", "-ldl", "-lm", "-latomic", "-pthread", "-Wl,--export-dynamic",
-                "-Wl,--gc-sections", "-Wl,-z,relro,-z,now", "-Wl,-z,max-page-size=16384"]
+                "-Wl,--gc-sections", "-Wl,-z,relro,-z,now", "-Wl,-z,noexecstack", "-Wl,-z,max-page-size=16384"]
         subprocess.run(argv, check=True)
         unstripped = binary.stat().st_size
         stripped = work / "worker.stripped"

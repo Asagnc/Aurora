@@ -45,7 +45,7 @@ class FridaSessionTests(unittest.TestCase):
         subprocess.run(["cc", "-Wall", "-Wextra", "-Werror", "-Os", "-ffunction-sections", "-fdata-sections",
                         "-I" + str(cls.root), *[str(native / name) for name in ["worker.c", "input.c", "events.c", "session.c"]],
                         "-o", str(cls.worker), "-L" + str(cls.root), "-lfrida-core", "-ldl", "-lrt", "-lm", "-lresolv",
-                        "-pthread", "-Wl,--export-dynamic", "-Wl,--gc-sections"], check=True)
+                        "-pthread", "-Wl,--export-dynamic", "-Wl,--gc-sections", "-Wl,-z,noexecstack"], check=True)
         target = cls.root / "target.c"
         target.write_text('#include <unistd.h>\n#include <stdio.h>\n'
                           '__attribute__((noinline,visibility("default"))) int aurora_marker(int value) { return value + 1; }\n'
@@ -153,6 +153,19 @@ class FridaSessionTests(unittest.TestCase):
         self.assertGreater(records[-1]["dropped"], 0)
         self.assertFalse(records[-1]["success"])
         self.assertNotEqual(0, child.returncode)
+
+    @unittest.skipUnless(os.environ.get("AURORA_FRIDA_JAVA_BUNDLE"), "Explicit development bridge bundle required")
+    def test_java_bridge_bundle_loads_on_native_target_without_claiming_java(self):
+        bundle = Path(os.environ["AURORA_FRIDA_JAVA_BUNDLE"]).read_text(encoding="utf-8")
+        child = self.start(bundle, 2000)
+        records = self.finish(child)
+        messages = [json.loads(event["message"]) for event in records if event["kind"] == "message"]
+        bridge = [message.get("payload", {}) for message in messages
+                  if message.get("payload", {}).get("aurora") == "java_bridge_ready"]
+        self.assertEqual(1, len(bridge), records)
+        self.assertEqual("7.0.13", bridge[0]["version"])
+        self.assertFalse(bridge[0]["available"], "Owned plain C target must not claim Android ART")
+        self.assertEqual(0, child.returncode, records)
 
     def test_target_exit_ends_session_without_waiting_full_duration(self):
         child = self.start("send('ready');", 30000)

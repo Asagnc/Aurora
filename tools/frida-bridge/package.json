@@ -1,0 +1,17 @@
+{
+  "name": "aurora-frida-bridge-build",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "frida": "17.24.3",
+    "frida-compile": "19.1.0",
+    "frida-java-bridge": "7.0.13"
+  },
+  "scripts": {
+    "build": "frida-compile entrypoint.js -o build/java-bridge.js -S -c"
+  }
+}
