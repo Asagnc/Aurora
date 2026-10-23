@@ -1,0 +1,17 @@
+{
+  "source": "c6fce52d7404c8dc6825ae44d49ba838a55f9ae1",
+  "kind": "standalone actual-cgroup/admission native fixture; simulated worker facts, no Frida engine",
+  "ndk": "30.0.16248370",
+  "target": "aarch64-linux-android36",
+  "link": "success, -Wall -Wextra -Werror",
+  "loadAlignment": [
+    "0x4000",
+    "0x4000",
+    "0x4000",
+    "0x4000"
+  ],
+  "bytes": 52672,
+  "sha256": "758ccdc62fc088e22d6663b939bf29f87b2d344d25bbd9b8a0d7b8bef1bba46f",
+  "AndroidExecution": false,
+  "LinuxTests": "10 actual Root cgroup/admission cases passed in CI40005725398 managed-supervision job; Windows skips"
+}

@@ -1,3 +1,9 @@
+## 2026-10-24 真实cgroup放行10项通过
+
+c6fce52的CI40005725398 managed-supervision独立job成功，9接收/10观察/17 journal/10实际Root cgroup放行均实际通过。放行夹具包含真实fork/入域/GO/worker及helper exec/回收，最终加载位是模拟，不计为Frida注入或Android设备资格。证据ci-40005725398-managed-passed.txt；ARM64夹具完整链接及16KiB证据managed-launch-arm64-build.json。完整workflow仍待核实。
+
+Root独立guard主程序、最终事实持久发布、精确恢复/版本固定、Root Binder和Agent仍未接。保持Frida未打包/未ready，手机仍最后集中验收。本提交仅文档/证据，不重复触发未变构建。
+
 ## 2026-10-24 原生cgroup admission与GO放行基础
 
 新增managed_launch_prepare/release：单线程Root guard中fork，父死信号及父PID复核；子进程先关闭自己的journal锁副本，进入本任务新建cgroup，停在私有socket门前。父进程捕获pidfd/startTicks/boot，持久READY后才返回；release持久记录后再核实owner/worker存活并单次GO。拒绝SIGCHLD自动回收/自定义处理器，避免失去未回收子PID所有权。新子进程close_range CLOEXEC，只有控制流明确跨exec，worker bootstrap再恢复CLOEXEC；exec失败由原生launcher报告never-attached事实。

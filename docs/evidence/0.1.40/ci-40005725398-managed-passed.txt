@@ -1,0 +1,14 @@
+Source: c6fce52d7404c8dc6825ae44d49ba838a55f9ae1
+Workflow: https://github.com/Asagnc/Aurora/actions/runs/40005725398
+Job: managed-supervision 120593001193, completed/success.
+Order: receive 9, observe 10, Root journal 17, Root cgroup launch 10.
+Full workflow separately pending. Launch fixture uses simulated final facts, no Frida injection/Android device execution.
+
+2026-10-23T18:44:11.5014347Z Ran 9 tests in 1.098s
+2026-10-23T18:44:11.5015570Z OK
+2026-10-23T18:44:31.0082631Z Ran 10 tests in 19.119s
+2026-10-23T18:44:31.0083194Z OK
+2026-10-23T18:44:31.0084439Z Ran 17 tests in 0.269s
+2026-10-23T18:44:31.0085059Z OK
+2026-10-23T18:44:32.1954071Z Ran 10 tests in 1.126s
+2026-10-23T18:44:32.1954433Z OK

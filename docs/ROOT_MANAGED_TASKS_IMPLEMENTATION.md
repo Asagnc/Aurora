@@ -72,7 +72,7 @@ release核对同一任务的精确READY，持久RELEASED、再次核实owner/wor
 
 guard必须保持默认SIGCHLD且无SA_NOCLDWAIT，防止未回收子PID被复用后误杀其他进程；自身不得并发waitpid。子进程清除继承的信号屏蔽，close_range CLOEXEC（复用既有guest执行的同一内核能力）后仅让私有control跨exec，worker bootstrap恢复CLOEXEC并清内部env。普通版本/可执行文件属性由调用者固定验证，不宣称目前已完成worker二进制发布/租约与Android资格。exec前失败只报告NO_SESSION/125，不编造加载；worker进程与域的真实退出仍由guard独立核实。
 
-10项Root真实cgroup/自有原生worker夹具待CI；loaded/unloaded位在此夹具中是协议模拟，不算真实Frida附加。正常用例同时核实非CLOEXEC私有FD不进入worker、control和内部env不进入后续helper exec；错误场景核实未执行、实际等待/回收/移除。ARM64完整夹具已链接；还没有独立guard主程序/最终事实持久发布/Root Binder/Agent/ART。
+10项Root真实cgroup/自有原生worker夹具已在c6fce52的CI40005725398独立managed-supervision job实际通过；loaded/unloaded位在此夹具中是协议模拟，不算真实Frida附加。正常用例同时核实非CLOEXEC私有FD不进入worker、control和内部env不进入后续helper exec；错误场景核实未执行、实际等待/回收/移除。ARM64完整夹具已链接；还没有独立guard主程序/最终事实持久发布/Root Binder/Agent/ART。
 
 依据：[close_range](https://man7.org/linux/man-pages/man2/close_range.2.html)、[PDEATHSIG](https://man7.org/linux/man-pages/man2/PR_SET_PDEATHSIG.2const.html)及既有scope/cgroup算法；不使用PID命名空间或Linux镜像。
 
