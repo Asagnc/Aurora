@@ -24,6 +24,35 @@ class LinuxCommandToolTest {
         assertFails { tool.project("another", proof()) }
     }
 
+    @Test fun incompleteOrWrongTypedExitProofNeverReportsSuccess() {
+        val complete = proof()
+        val done = complete.getValue("completion").jsonObject
+        for (key in listOf("exitCode", "scopeRemoved", "interrupted", "timedOut")) {
+            val missing = JsonObject(complete + ("completion" to JsonObject(done - key)))
+            val malformed = JsonObject(complete + ("completion" to JsonObject(done + (key to string(done.getValue(key).toString())))))
+            for (candidate in listOf(missing, malformed)) {
+                val result = tool.project("run", candidate)
+                assertEquals(JsonPrimitive(false), result["success"], key)
+                assertEquals("outcome_unknown", result.text("state"), key)
+                assertEquals(JsonNull, result["exitCode"], key)
+            }
+        }
+        assertFails { tool.project("run", JsonObject(complete + ("protocol" to string("1")))) }
+    }
+
+    @Test fun invalidTimeoutsAndExtraParametersNeverReachPreparationOrDispatch() = runBlocking {
+        var preparations = 0
+        var dispatches = 0
+        val executor = LinuxCommandTool({ _, _, _ -> dispatches++; proof() }, { _, _ -> preparations++ })
+        val valid = objectOf("argv" to JsonArray(listOf(string("/bin/true"))))
+        for (value in listOf(JsonNull, string("1000"), JsonPrimitive(true), JsonPrimitive(1.5), JsonPrimitive(-1))) {
+            assertFails { executor.execute(ToolCall("call", "command_execute_linux", JsonObject(valid + ("timeoutMs" to value)))) }
+        }
+        assertFails { executor.execute(ToolCall("call", "command_execute_linux", JsonObject(valid + ("ignored" to string("value"))))) }
+        assertEquals(0, preparations)
+        assertEquals(0, dispatches)
+    }
+
     @Test fun validationHappensBeforeArtifactsOrDispatch() = runBlocking {
         for (args in listOf(objectOf("argv" to JsonArray(listOf(string("sh")))),
             objectOf("argv" to JsonArray(listOf(string("/bin/sh"))), "timeoutMs" to JsonPrimitive(270001)))) {

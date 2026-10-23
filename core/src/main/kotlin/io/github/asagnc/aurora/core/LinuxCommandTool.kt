@@ -21,8 +21,11 @@ class LinuxCommandTool(private val run: suspend (String, List<String>, Long) -> 
 
     override suspend fun execute(call: ToolCall): String {
         require(call.name == "command_execute_linux")
+        require(call.arguments.keys.all { it in setOf("argv", "timeoutMs") })
         val argv = call.arguments.array("argv").map { require(it is JsonPrimitive && it.isString); it.content }
-        val timeout = call.arguments.number("timeoutMs") ?: 60_000
+        val rawTimeout = call.arguments["timeoutMs"]
+        require(rawTimeout == null || rawTimeout is JsonPrimitive && !rawTimeout.isString && rawTimeout.longOrNull != null)
+        val timeout = (rawTimeout as? JsonPrimitive)?.longOrNull ?: 60_000
         require(timeout in 1..270_000 && argv.size in 1..128 && argv.first().startsWith("/"))
         require(argv.all { '\u0000' !in it } && argv.sumOf { it.toByteArray(Charsets.UTF_8).size.toLong() + 1 } <= 65536)
         val id = UUID.randomUUID().toString()
@@ -31,14 +34,15 @@ class LinuxCommandTool(private val run: suspend (String, List<String>, Long) -> 
     }
 
     internal fun project(id: String, proof: JsonObject): JsonObject {
-        require(proof.number("protocol") == 1L && proof.text("runId") == id)
+        require(proof["protocol"] == JsonPrimitive(1) && proof["runId"] == string(id))
         val stopped = proof["stopped"] == JsonPrimitive(true)
         val completion = proof["completion"] as? JsonObject
-        val code = completion?.number("exitCode")?.takeIf { it in 0..255 }
+        val rawCode = completion?.get("exitCode") as? JsonPrimitive
+        val code = rawCode?.takeUnless { it.isString }?.longOrNull?.takeIf { it in 0..255 }
         val timedOut = completion?.get("timedOut") == JsonPrimitive(true)
         val interrupted = completion?.get("interrupted") == JsonPrimitive(true)
         val completed = stopped && completion?.get("scopeRemoved") == JsonPrimitive(true) && code != null &&
-            completion["interrupted"] == JsonPrimitive(false) && !timedOut
+            completion["interrupted"] == JsonPrimitive(false) && completion["timedOut"] == JsonPrimitive(false)
         val state = when { !stopped -> "uncertain"; timedOut -> "timed_out"; interrupted -> "interrupted"
             completed -> "exited"; else -> "outcome_unknown" }
         return objectOf("state" to string(state), "exitCode" to (if (completed) JsonPrimitive(code) else JsonNull),

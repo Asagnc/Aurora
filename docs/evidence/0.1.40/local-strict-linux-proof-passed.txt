@@ -1,0 +1,7 @@
+Tasks: :core:test :app:assembleDebug :app:assembleDebugAndroidTest :app:assembleRelease :app:lintDebug
+{'tests': 234, 'failures': 0, 'errors': 0, 'skipped': 10}
+BUILD SUCCESSFUL in 41s
+214 actionable tasks: 37 executed, 177 up-to-date
+Configuration cache entry reused.
+
+Android test APK compiled only; no phone/provider execution.

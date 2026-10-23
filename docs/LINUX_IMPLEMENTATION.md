@@ -1,3 +1,11 @@
+## 2026-10-23 Linux执行结果完整性与参数校验
+
+修复Linux命令结果投影把缺失timedOut视为未超时的问题。现须有明确scopeRemoved=true、interrupted=false、timedOut=false以及数值型0..255退出码和stopped=true才归为exited；字段缺失或类型不符为outcome_unknown，success=false、exitCode=null。明确超时/中断仍保留对应状态，非零真实退出仍保留原退出码。外层protocol/runId也不接受字符串数值或错误类型冒充。reverse_analyze复用该投影，自动获得相同行为；退出成功仍不证明反编译完整。
+
+command_execute_linux现在先拒绝额外参数与null/字符串/布尔/小数等非法timeoutMs，不再默默换成默认60秒，也不在参数失败时登记产物或派发命令。未提供timeoutMs的正常请求继续使用默认值。对照原生guest_run_finish源码确认真实完成记录总是输出上述明确布尔字段；没有修改Root协议、持久化或任务收尾策略。
+
+新增2项核心回归（多个字段/参数子场景）已运行。核心234项：224通过、10平台跳过；Debug、Release R8、testAPK和lint通过（41秒）。证据evidence/0.1.40/local-strict-linux-proof-passed.txt。手机留最终集中验收，本轮完整CI推送后核实。
+
 # Linux 环境实施记录
 
 当前状态优先见 PROGRESS.md / IMPLEMENTATION.md 顶部：Root Ubuntu 命令、PTY、文件通道已在 0.1.32 真机验证；0.1.33 元数据 GC 主机验证、手机待最终集中验收；0.1.34 补 PRoot 退出先决条件与 Root 连接快照一致性。下文按历史版本记录，不能把早期 executionReady=false 套到已验收的 Root 后端；PRoot 仍未开放业务执行。
