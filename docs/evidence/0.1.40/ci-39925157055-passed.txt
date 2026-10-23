@@ -1,0 +1,8 @@
+bedcfd3ae0e56218d2dc3b35748e144384cbe990
+https://github.com/Asagnc/Aurora/actions/runs/39925157055
+Complete CI SUCCESS verified2026-10-23. Downloaded log confirms:
+test_tools_are_readonly_and_host_source_is_unchanged OK
+test_tools_mount_rejects_symlink_source_or_guest_target OK
+test_tools_mount_parser_rejects_relative_source OK
+Log: outputs/ci-39925157055-log.txt
+No Android ARM64 JVM/device execution claim.

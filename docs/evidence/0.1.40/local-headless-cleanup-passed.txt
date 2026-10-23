@@ -1,0 +1,9 @@
+2026-10-23 Windows
+Core229:219 PASS,10 SKIP,0 failure/error.
+Host JVM actual headless/CPU1/heap128MiB validation PASS.
+New POSIX cleanup failure case skipped on Windows; pending Linux CI.
+Python fetch tests3 PASS (transport/digest/budget subcases); no network.
+Debug/ReleaseR8/testAPK/lint PASS.
+Log: outputs/static-reverse-headless-cleanup-qualified.txt
+ELF inventory43 objects is basename audit only; no execution or symbol closure claim.
+No phone or paid API use.

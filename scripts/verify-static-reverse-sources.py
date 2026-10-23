@@ -32,15 +32,27 @@ def verify(path, digest, size):
 
 def fetch(path, url, digest, size):
     temporary = path.with_name(path.name + ".partial")
-    with urllib.request.urlopen(url, timeout=60) as incoming, temporary.open("xb") as output:
-        count = 0
-        while block := incoming.read(65536):
-            count += len(block)
-            if count > int(size):
-                raise ValueError("Download exceeded pinned byte count")
-            output.write(block)
-    verify(temporary, digest, size)
-    temporary.replace(path)
+    owned = False
+    try:
+        with temporary.open("xb") as output:
+            owned = True
+            with urllib.request.urlopen(url, timeout=60) as incoming:
+                count = 0
+                while block := incoming.read(65536):
+                    count += len(block)
+                    if count > int(size):
+                        raise ValueError("Download exceeded pinned byte count")
+                    output.write(block)
+        verify(temporary, digest, size)
+        temporary.replace(path)
+    except BaseException as failure:
+        if owned:
+            try:
+                temporary.unlink(missing_ok=True)
+            except OSError as cleanup:
+                failure.add_note("Owned partial cleanup failed: " + str(cleanup))
+        raise
+
 
 
 def inspect(component, path):

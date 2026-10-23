@@ -20,7 +20,7 @@ fun staticReverseArguments(args: JsonObject, id: String): List<String> {
     }
     val heap = integer("heapMiB", 768, 128L..2048L)
     val threads = integer("threads", 4, 1L..8L)
-    val java = listOf("/opt/jre/jdk-27+35-jre/bin/java", "--enable-native-access=ALL-UNNAMED", "-Xms32m", "-Xmx${heap}m", "-XX:ActiveProcessorCount=$threads")
+    val java = staticReverseJava(heap.toInt(), threads.toInt())
     val output = "/mnt/reverse/$id"
     return when (tool) {
         "jadx" -> {

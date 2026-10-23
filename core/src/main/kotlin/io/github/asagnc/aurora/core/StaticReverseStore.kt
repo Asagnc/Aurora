@@ -14,6 +14,8 @@ class StaticReverseStore(private val root: Path,
     private val prepare: (StaticReverseComponent, Path, Path) -> Unit = { component, archive, target ->
         StaticReversePreparation.prepare(component, archive, target)
     }) {
+    @Volatile var cleanupFailed: Boolean = false
+        private set
     private val operations = Mutex()
     private val staging get() = root.resolve("staging")
     private val versions get() = root.resolve("versions")
@@ -64,7 +66,11 @@ class StaticReverseStore(private val root: Path,
         } catch (failure: Throwable) { original = failure; throw failure }
         finally { withContext(NonCancellable) {
             try { removeStage(stage) } catch (cleanup: Throwable) {
-                if (original != null) original.addSuppressed(cleanup) else throw cleanup
+                if (original != null) {
+                    original.addSuppressed(cleanup)
+                    if (original !is CancellationException)
+                        throw java.io.IOException("Tool installation failed; staging cleanup remains pending", original)
+                } else throw cleanup
             }
         } }
     } }
@@ -104,14 +110,20 @@ class StaticReverseStore(private val root: Path,
                 Files.isRegularFile(owner, LinkOption.NOFOLLOW_LINKS) && Files.size(owner) == marker.length.toLong() &&
                 Files.readString(owner) == marker) { removeStage(stage); removed++ }
         } }
+        cleanupFailed = false
         removed
     } }
 
     // Keep the ownership proof until the last unlink so an interrupted cleanup can be retried.
     private fun removeStage(stage: Path) {
-        Files.newDirectoryStream(stage).use { entries -> entries.filter { it.fileName.toString() != "owner" }.forEach(::removeSkillTree) }
-        Files.deleteIfExists(stage.resolve("owner"))
-        Files.delete(stage)
+        try {
+            Files.newDirectoryStream(stage).use { entries -> entries.filter { it.fileName.toString() != "owner" }.forEach(::removeSkillTree) }
+            Files.deleteIfExists(stage.resolve("owner"))
+            Files.delete(stage)
+        } catch (failure: Exception) {
+            cleanupFailed = true
+            throw java.io.IOException("Tool staging cleanup remains pending; retry shared_toolchain cleanup", failure)
+        }
     }
 
     private fun complete(directory: Path): Boolean = ownedVersion(directory) &&

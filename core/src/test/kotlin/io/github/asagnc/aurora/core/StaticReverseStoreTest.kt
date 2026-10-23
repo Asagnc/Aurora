@@ -97,6 +97,30 @@ class StaticReverseStoreTest {
         assertEquals(id, store.install(::fetch))
     } }
 
+    @Test fun cleanupFailureIsVisibleWithoutSwallowingCancellationOnPosix() = runTest { fixture { root ->
+        org.junit.jupiter.api.Assumptions.assumeTrue(Files.getFileStore(root).supportsFileAttributeView("posix") &&
+            System.getProperty("user.name") != "root", "Requires ordinary POSIX permission failures")
+        for (cancel in listOf(false, true)) {
+            var locked: Path? = null
+            val store = StaticReverseStore(root.resolve(if (cancel) "cancel" else "failure")) { _, _, target ->
+                Files.createDirectory(target)
+                val directory = Files.createDirectory(target.resolve("locked")); locked = directory
+                Files.writeString(directory.resolve("file"), "fixture")
+                Files.setPosixFilePermissions(directory, java.nio.file.attribute.PosixFilePermissions.fromString("r-x------"))
+                if (cancel) throw CancellationException("fixture cancel") else throw java.io.IOException("fixture install failure")
+            }
+            try {
+                val failure = assertFails { store.install(::fetch) }
+                assertTrue(store.cleanupFailed)
+                if (cancel) assertTrue(failure is CancellationException)
+                else assertTrue(failure.message.orEmpty().contains("cleanup remains pending"))
+            } finally {
+                locked?.let { Files.setPosixFilePermissions(it, java.nio.file.attribute.PosixFilePermissions.fromString("rwx------")) }
+            }
+            assertEquals(1, store.cleanup()); assertFalse(store.cleanupFailed)
+        }
+    } }
+
     @Test fun preparationFailureRemovesEarlierComponentsAsWellAsCurrentPartial() = runTest { fixture { root ->
         val store = StaticReverseStore(root) { component, _, target ->
             Files.createDirectory(target)

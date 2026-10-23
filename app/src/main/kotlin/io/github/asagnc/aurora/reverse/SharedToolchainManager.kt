@@ -41,10 +41,7 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
         qualified = null
         val identity = requireNotNull(app.root.linuxExecution?.identity) { "Reconnect Root for tool mounts" }
         val generation = requireNotNull(app.linux.registry.current()) { "Install a Root Linux environment first" }
-        val java = "/opt/jre/jdk-27+35-jre/bin/java"
-        val commands = listOf(listOf(java, "--version"),
-            listOf(java, "--enable-native-access=ALL-UNNAMED", "-Xmx256m", "-Djdk.util.zip.disableZip64ExtraFieldValidation=true", "-cp", "/opt/jadx/lib/jadx-1.5.6-all.jar", "jadx.cli.JadxCLI", "--version"),
-            listOf(java, "--enable-native-access=ALL-UNNAMED", "-Xmx256m", "-jar", "/opt/apktool/apktool.jar", "--version"))
+        val commands = staticReverseStartupCommands()
         val results = mutableListOf<JsonElement>()
         for ((index, argv) in commands.withIndex()) {
             val id = UUID.randomUUID().toString(); prepared(id)
@@ -72,7 +69,7 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
         "installed" to JsonArray(installed.map(::string)),
         "components" to JsonArray(StaticReverseTools.components.map { objectOf("id" to string(it.id), "version" to string(it.version)) }),
         "runtimeReady" to JsonPrimitive(ready),
-        "cleanupPending" to JsonPrimitive(cleanupPending),
+        "cleanupPending" to JsonPrimitive(cleanupPending || store.cleanupFailed),
         "reason" to string(if (ready) "CLI startup qualified for the current Root identity, Linux generation and tool bundle"
             else "Install tools and run probe; startup qualification is required for each Root/environment identity"),
         "updatePolicy" to string("install/update selects the current compiled trusted catalogue; no unverified latest URL"))

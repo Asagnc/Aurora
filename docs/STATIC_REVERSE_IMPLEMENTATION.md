@@ -1,3 +1,19 @@
+## 2026-10-23 无图形JVM一致性、依赖盘点与清理错误可见性
+
+上轮bedcfd3完整CI39925157055已通过，日志确认3项新增原生工具挂载测试实际成功。不是Android JVM运行证据。
+
+新增staticReverseJava统一启动参数，探测/分析共同使用无图形profile、native-access、显式堆与ActiveProcessorCount；CLI不再依赖显示环境的自动判断。主机实际启动子JVM验证isHeadless、处理器1、最大堆128MiB三项语义；不是仅断言参数字符串，更不是ARM64性能结论。依据OpenJDK27 GraphicsEnvironment源码对java.awt.headless的处理，未加GUI/音频包或新运行时。
+
+新增scripts/audit-static-reverse-elf.py：读取固定摘要的JRE与Ubuntu ARM64归档，用已有NDK llvm-readelf做43个ELF的DT_NEEDED名称盘点，不执行或解压不可信路径。名称缺口仅见libjsound/libsplashscreen/libawt_xawt的ALSA/X11相关库；不自动安装桌面栈。报告只做basename可用性，未证明路径搜索、符号版本、dlopen或Android SELinux可用，实际probe仍必须进行。工具只作按需离线开发审计，不加入每次Agent任务开销。
+
+修复Store清理异常仅被原安装异常suppressed而Agent看不见的问题：正常失败+清理失败明确返回cleanup remains pending；取消仍传播CancellationException，状态通过cleanupPending记录已知清理失败。成功显式cleanup后清除此错误标志；它不是“全目录已经扫描为空”的保证，有界维护仍按64候选。新增POSIX权限失败用例覆盖普通错误/取消及恢复；Windows跳过，此用例需要Linux CI实际执行。
+
+主机源码获取脚本也改为仅在完整校验后发布，网络/摘要/预算失败移除本次创建的partial；不覆盖或删除未知已有partial，也不为它发起网络请求。新增3个离线Python测试，含3种失败子场景，加入CI；测试不访问互联网。
+
+当前核心229项：219通过、10跳过（原9 POSIX+新1权限失败）；本轮新增主机JVM测试已执行。3 Python测试通过。Debug、Release R8、Android测试APK、lint通过，日志outputs/static-reverse-headless-cleanup-qualified.txt。新POSIX用例与新改动完整CI推送后另查。手机、真实模型均未操作。
+
+一手依据：https://raw.githubusercontent.com/openjdk/jdk/jdk-27%2B35/src/java.desktop/share/classes/java/awt/GraphicsEnvironment.java 。报告与证据见evidence/0.1.40。
+
 ## 2026-10-23 静态逆向原生挂载、资格与Agent执行
 
 已接入任务专属工具目录到guest /opt的只读绑定，复用现有open_tree/mount_setattr/move_mount与私有挂载域，不改原Linux基础镜像。源与guest目标均固定描述符且不跟随链接；无工具参数的普通Linux任务保持原路径。工具票据仍在派发前绑定持久引用，只有原任务退出证明才释放，删除仍受保护。
