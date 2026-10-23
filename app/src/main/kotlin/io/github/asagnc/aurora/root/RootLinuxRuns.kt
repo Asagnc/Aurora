@@ -27,6 +27,7 @@ internal class RootLinuxRuns(private val context: Context, private val identity:
     }
     private suspend fun prepare(ticket: LinuxRunTicket, terminal: Boolean): CommandRequest {
         require(ticket.identity == identity()) { "Root service epoch changed" }
+        require(ticket.toolBundle == null) { "Tool bundle mount protocol is not connected yet" }
         val state = files.state(ticket)
         files.bind(state, ticket, starting = true)
         val rootfs = files.rootfs(ticket)
@@ -80,6 +81,7 @@ internal class RootLinuxRuns(private val context: Context, private val identity:
     private fun response(ticket: LinuxRunTicket, state: Path, result: JsonObject?): JsonObject {
         val completion = state.resolve("completed.json")
         return objectOf("protocol" to JsonPrimitive(1), "runId" to string(ticket.runId), "generation" to string(ticket.generation),
+            "toolBundle" to (ticket.toolBundle?.let(::string) ?: JsonNull),
             "stopped" to JsonPrimitive(Files.isRegularFile(state.resolve("stopped"), LinkOption.NOFOLLOW_LINKS)),
             "completion" to if (Files.exists(completion, LinkOption.NOFOLLOW_LINKS)) WireJson.parseToJsonElement(files.text(completion, 4096)) else JsonNull,
             "result" to (result ?: JsonNull))

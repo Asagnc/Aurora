@@ -10,7 +10,8 @@ import kotlinx.coroutines.CancellationException
 /** Manages shared installed bytes; runtime readiness is separate from installation completion. */
 internal class SharedToolchainManager(private val app: AuroraApplication) {
     private val network = SkillNetwork()
-    private val store = StaticReverseStore(app.filesDir.toPath().resolve("spaces/resources/static-reverse")) { component, archive, target ->
+    private val store = StaticReverseStore(app.filesDir.toPath().resolve("spaces/resources/static-reverse"),
+        inUse = { app.linux.runs.usesToolBundle(it) }) { component, archive, target ->
         StaticReversePreparation.prepare(component, archive, target) { path, mode -> Os.chmod(path.toString(), mode) }
     }
     @Volatile private var cleanupPending = false
@@ -24,6 +25,7 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
         check(app.root.linuxExecution != null) { "Connect Root before installing the Root toolchain" }
         return store.install { component, target -> network.download(component.url, target, component.compressedBytes) }
     }
+    suspend fun <T> reserve(id: String, record: suspend () -> T): T = store.reserve(id, record)
     suspend fun remove(id: String) = store.remove(id)
     suspend fun cleanup(): Int {
         try { return store.cleanup().also { cleanupPending = false } }
@@ -35,6 +37,6 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
         "components" to JsonArray(StaticReverseTools.components.map { objectOf("id" to string(it.id), "version" to string(it.version)) }),
         "runtimeReady" to JsonPrimitive(false),
         "cleanupPending" to JsonPrimitive(cleanupPending),
-        "reason" to string("Installed bytes are managed; Root readonly mount and durable execution leases are not connected yet"),
+        "reason" to string("Installed bytes are managed; Root readonly tool mount and execution qualification are not connected yet"),
         "updatePolicy" to string("install/update selects the current compiled trusted catalogue; no unverified latest URL"))
 }

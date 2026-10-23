@@ -8,8 +8,9 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-/** One app-process owner. Runtime must not mount these versions until durable run leases are connected. */
+/** One app-process owner; production reservations/removals bind to the same durable Linux task records. */
 class StaticReverseStore(private val root: Path,
+    private val inUse: suspend (String) -> Boolean = { false },
     private val prepare: (StaticReverseComponent, Path, Path) -> Unit = { component, archive, target ->
         StaticReversePreparation.prepare(component, archive, target)
     }) {
@@ -68,12 +69,20 @@ class StaticReverseStore(private val root: Path,
         } }
     } }
 
-    /** No execution mounts are admitted yet. Runtime integration must add durable lease checks before enabling execution. */
+    /** The callback commits the durable dispatch record while deletion is excluded by this same lock. */
+    suspend fun <T> reserve(id: String, record: suspend () -> T): T = withContext(Dispatchers.IO) { operations.withLock {
+        initialize(); require(id.matches(Regex("[a-f0-9]{64}")))
+        require(complete(versions.resolve(id))) { "Install the requested tool bundle first" }
+        record()
+    } }
+
+    /** Persistent task lookup runs under the same lock as dispatch reservation. */
     suspend fun remove(id: String): Boolean = withContext(Dispatchers.IO) { operations.withLock {
         initialize(); require(id.matches(Regex("[a-f0-9]{64}")))
         val version = versions.resolve(id)
         if (!Files.exists(version, LinkOption.NOFOLLOW_LINKS)) return@withLock false
         require(ownedVersion(version)) { "Unrecognized tool version retained" }
+        check(!inUse(id)) { "Tool bundle has an unconfirmed Linux task; recover its exit before removing" }
         val stage = Files.createDirectory(staging.resolve(UUID.randomUUID().toString()))
         durable(stage.resolve("owner"), marker)
         Files.move(version, stage.resolve("removed"), StandardCopyOption.ATOMIC_MOVE)

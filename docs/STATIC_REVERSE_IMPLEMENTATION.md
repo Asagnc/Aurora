@@ -1,3 +1,15 @@
+## 2026-10-23 共享工具持久任务引用与删除屏障
+
+复用linux_runs现有ticket JSON，增加可选toolBundle SHA256，与原Linux环境租约在同一事务登记；旧票据默认null，schema仍7，无新表/框架。退出证明必须同时匹配原runId/generation与toolBundle；缺失或不同bundle不释放记录。恢复仍由原Root停止证明驱动，不重放命令。
+
+StaticReverseStore.reserve在同一操作锁内确认已安装版本并提交持久任务；remove持该锁查询真实待处理Linux票据，有引用或查询失败则保留版本。删除检查只读取尚未完成的linux_runs，不解析历史消息。App重建管理对象不能抹掉数据库引用；更新不改旧bundle。LinuxRunManager内部工具调度入口使用此登记顺序，原命令与PTY同样复用结构化Dispatch；连接身份仍从同一Root端点捕获。
+
+这轮只连接持久引用/删除屏障。原生工具只读挂载和Agent reverse_analyze尚未实现，Root prepare明确拒绝非空toolBundle；管理状态runtimeReady仍false，不把登记成功当能执行，不把工作强行回退普通命令。后续需原生只读挂载、Root能力协商、CLI计划与实际ARM64运行资格后才开放分析。
+
+新增3核心测试：bundle序列化/精确证明、模拟持久记录查询跨Store重建的删除保护、查询失败保留。新增1项Android SQLite持久引用/证明测试仅编译，未在手机执行。当前222核心：213通过、9 POSIX跳过；Release R8、Android测试APK及lint通过。来源样本仍显式提供；不能从注入查询夹具称已做进程重启或Android挂载测试。
+
+本轮未操作手机/真实供应商；完整CI推送后另查。日志outputs/static-reverse-leases-qualified.txt。
+
 ## 2026-10-23 共享工具管理与失败清理闭环
 
 用户进一步明确：不长期保留无用半成品；Agent要能安装、更新、删除共享工具及管理共享文件。已接入shared_toolchain（status/install/update/remove/cleanup）到Agent工具集。ARM64且已连接Root才下载，固定可信目录逐组件校验与准备，全部完成才原子发布；安装失败/取消finally清理整次暂存，成功也删除归档与暂存。已安装同bundle直接复用，不再重复下载。update选择当前APK编译期可信目录，不承诺动态追随未验证的上游latest。

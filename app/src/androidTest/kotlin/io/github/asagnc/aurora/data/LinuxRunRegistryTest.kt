@@ -43,6 +43,19 @@ class LinuxRunRegistryTest {
         assertTrue(runs.pending().isEmpty())
         assertEquals(0L, store.read { db -> android.database.DatabaseUtils.longForQuery(db, "SELECT COUNT(*) FROM linux_leases", null) })
     } }
+    @Test fun persistedToolBundleReferenceRequiresMatchingExitProof() = runBlocking { fixture { store, runs, original ->
+        val ticket = original.copy(toolBundle = "a".repeat(64))
+        runs.begin(ticket)
+        val reopened = LinuxRunRegistry(store)
+        assertTrue(reopened.usesToolBundle(requireNotNull(ticket.toolBundle)))
+        assertFalse(reopened.usesToolBundle("b".repeat(64)))
+        try { reopened.finish(ticket, confirmation(ticket)); fail("Missing bundle proof released lease") }
+        catch (_: IllegalArgumentException) { }
+        assertTrue(reopened.usesToolBundle(requireNotNull(ticket.toolBundle)))
+        reopened.finish(ticket, JsonObject(confirmation(ticket) + ("toolBundle" to string(requireNotNull(ticket.toolBundle)))))
+        assertFalse(reopened.usesToolBundle(requireNotNull(ticket.toolBundle)))
+    } }
+
     @Test fun duplicateOwnerRollsBackSecondLeaseAtomically() = runBlocking { fixture { store, runs, ticket ->
         runs.begin(ticket)
         try { runs.begin(ticket.copy(runId = UUID.randomUUID().toString())); fail("Concurrent workspace run admitted") }

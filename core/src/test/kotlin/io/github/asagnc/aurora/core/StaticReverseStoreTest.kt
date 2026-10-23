@@ -67,6 +67,27 @@ class StaticReverseStoreTest {
         assertTrue(store.installed().isEmpty()); assertFalse(Files.exists(retired)); assertFalse(Files.exists(empty))
     } }
 
+    @Test fun reservationLookupSurvivesStoreRecreationAndBlocksRemovalUntilExit() = runTest { fixture { root ->
+        val pending = mutableSetOf<String>()
+        fun protectedStore() = StaticReverseStore(root, inUse = { it in pending }) { component, archive, target ->
+            require(Files.readString(archive) == component.id); Files.createDirectory(target)
+        }
+        val store = protectedStore(); val id = store.install(::fetch)
+        store.reserve(id) { pending.add(id) }
+        assertFailsWith<IllegalStateException> { protectedStore().remove(id) }
+        assertEquals(listOf(id), protectedStore().installed())
+        pending.remove(id)
+        assertTrue(protectedStore().remove(id))
+        assertFails { protectedStore().reserve(id) { error("Absent version admitted") } }
+    } }
+
+    @Test fun unavailableTaskRegistryCannotBeMisreadAsNoUsers() = runTest { fixture { root ->
+        val store = store(root); val id = store.install(::fetch)
+        val guarded = StaticReverseStore(root, inUse = { throw java.io.IOException("Registry unavailable") })
+        assertFailsWith<java.io.IOException> { guarded.remove(id) }
+        assertEquals(listOf(id), store.installed())
+    } }
+
     @Test fun damagedKnownBundleCanBeRemovedBeforeReinstalling() = runTest { fixture { root ->
         val store = store(root); val id = store.install(::fetch)
         removeSkillTree(root.resolve("versions/$id/jadx"))

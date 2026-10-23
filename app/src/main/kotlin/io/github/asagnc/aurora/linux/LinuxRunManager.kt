@@ -14,20 +14,28 @@ import kotlinx.serialization.json.*
 /** Durable execution intent precedes dispatch; only exact stopped proof releases its lease. */
 internal class LinuxRunManager(private val app: AuroraApplication, private val environments: LinuxEnvironmentManager) {
     private val records = LinuxRunRegistry(app.conversations)
+    private data class Dispatch(val owner: String, val argv: List<String>, val timeoutMs: Long,
+        val runId: String, val generation: String?, val toolBundle: String? = null)
     suspend fun execute(owner: String, argv: List<String>, timeoutMs: Long = 60_000,
-        runId: String = UUID.randomUUID().toString(), generation: String? = null): JsonObject {
+        runId: String = UUID.randomUUID().toString(), generation: String? = null): JsonObject =
+        dispatch(Dispatch(owner, argv.toList(), timeoutMs, runId, generation))
+
+    internal suspend fun executeTools(owner: String, argv: List<String>, bundle: String,
+        timeoutMs: Long = 60_000, runId: String = UUID.randomUUID().toString()): JsonObject =
+        dispatch(Dispatch(owner, argv.toList(), timeoutMs, runId, null, bundle))
+
+    private suspend fun dispatch(request: Dispatch): JsonObject {
         val connection = requireNotNull(app.root.linuxExecution) { "Reconnect a current Root service for Linux execution" }
         val client = connection.run
-        val ticket = reserve(owner, runId, argv, timeoutMs, generation, connection.identity)
+        val ticket = reserve(request, connection.identity)
         try {
-            app.spaces.commandRoot(owner)
+            app.spaces.commandRoot(request.owner)
             currentCoroutineContext().ensureActive()
             val result = client.invoke(ticket, recover = false)
             if (ticket.confirms(result)) withContext(NonCancellable) { records.finish(ticket, result) }
             return result
         } finally {
-            // A transport failure or cancellation retains the durable intent.
-            // Explicit recovery joins/proves the old dispatcher dead; no command replay.
+            // A transport failure or cancellation retains the durable intent until exact exit proof.
             recoverPending(ticket, client)
         }
     }
@@ -38,7 +46,7 @@ internal class LinuxRunManager(private val app: AuroraApplication, private val e
         val connection = requireNotNull(app.root.linuxExecution) { "Reconnect a current Root service for Linux PTY" }
         val terminal = requireNotNull(connection.terminal) { "Reconnect a current Root service for Linux PTY" }
         val recovery = connection.run
-        val ticket = reserve(owner, id, request.argv, request.timeoutMs, generation, connection.identity)
+        val ticket = reserve(Dispatch(owner, request.argv.toList(), request.timeoutMs, id, generation), connection.identity)
         try {
             run {
                 currentCoroutineContext().ensureActive()
@@ -47,12 +55,13 @@ internal class LinuxRunManager(private val app: AuroraApplication, private val e
         } finally { recoverPending(ticket, recovery) }
     }
     // Dispatch parameters are explicit; the identity must come from the same captured connection as its clients.
-    private suspend fun reserve(owner: String, runId: String, argv: List<String>, timeoutMs: Long,
-        pinned: String?, identity: LinuxRootIdentity): LinuxRunTicket {
-        return withContext(NonCancellable) { environments.catalog.withLock {
-            val generation = pinned ?: requireNotNull(environments.registry.current()) { "Install a Root Linux generation first" }
-            LinuxRunTicket(runId, owner, generation, identity, Process.myUid(), argv.toList(), timeoutMs).also { records.begin(it) }
+    private suspend fun reserve(request: Dispatch, identity: LinuxRootIdentity): LinuxRunTicket = withContext(NonCancellable) {
+        val record: suspend () -> LinuxRunTicket = { environments.catalog.withLock {
+            val generation = request.generation ?: requireNotNull(environments.registry.current()) { "Install a Root Linux generation first" }
+            LinuxRunTicket(request.runId, request.owner, generation, identity, Process.myUid(), request.argv,
+                request.timeoutMs, toolBundle = request.toolBundle).also { records.begin(it) }
         } }
+        request.toolBundle?.let { app.sharedToolchain.reserve(it, record) } ?: record()
     }
     private suspend fun recoverPending(ticket: LinuxRunTicket, client: RootLinuxRunClient) = withContext(NonCancellable) {
         runCatching {
@@ -76,5 +85,6 @@ internal class LinuxRunManager(private val app: AuroraApplication, private val e
         }
         return objectOf("recovered" to JsonPrimitive(recovered), "retained" to JsonPrimitive(retained))
     }
+    suspend fun usesToolBundle(id: String) = records.usesToolBundle(id)
     suspend fun pendingCount(owner: String? = null) = records.count(owner).toInt()
 }

@@ -29,6 +29,11 @@ internal class LinuxRunRegistry(private val conversations: ConversationStore) {
             buildSet { while (cursor.moveToNext()) add(cursor.getString(0)) }
         }
     }
+    /** Only pending dispatch records, never message history. Malformed records fail closed. */
+    suspend fun usesToolBundle(id: String): Boolean {
+        require(id.matches(Regex("[a-f0-9]{64}")))
+        return pending().any { it.toolBundle == id }
+    }
     suspend fun count(owner: String? = null): Long = conversations.read { db ->
         android.database.DatabaseUtils.longForQuery(db, "SELECT COUNT(*) FROM linux_runs" +
             (if (owner == null) "" else " WHERE owner=?"), owner?.let { arrayOf(it) })

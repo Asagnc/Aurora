@@ -21,6 +21,19 @@ class LinuxRunTicketTest {
             ticket.copy(runId = "../other"), ticket.copy(generation = "bad"), ticket.copy(protocol = 2))
             .forEach { assertFails { it.validate() } }
     }
+    @Test fun toolBundleIsOptionalButMustMatchTheExactStoppedProof() {
+        val task = ticket().copy(toolBundle = "a".repeat(64)); task.validate()
+        assertEquals(task, WireJson.decodeFromString(LinuxRunTicket.serializer(), WireJson.encodeToString(LinuxRunTicket.serializer(), task)))
+        val proof = objectOf("protocol" to JsonPrimitive(1), "runId" to string(task.runId),
+            "generation" to string(task.generation), "stopped" to JsonPrimitive(true))
+        assertFalse(task.confirms(proof))
+        assertTrue(task.confirms(JsonObject(proof + ("toolBundle" to string(requireNotNull(task.toolBundle))))))
+        assertFalse(task.confirms(JsonObject(proof + ("toolBundle" to string("b".repeat(64))))))
+        assertFails { task.copy(toolBundle = "../bundle").validate() }
+        val legacy = WireJson.decodeFromString(LinuxRunTicket.serializer(), WireJson.encodeToString(LinuxRunTicket.serializer(), ticket()))
+        assertNull(legacy.toolBundle)
+    }
+
     @Test fun escapedWireBudgetIsCheckedBeforeReservingALease() {
         assertFails { ticket().copy(argv = listOf("/bin/sh", "\u0001".repeat(60000))).validate() }
     }

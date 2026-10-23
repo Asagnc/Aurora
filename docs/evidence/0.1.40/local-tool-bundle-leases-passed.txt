@@ -1,0 +1,6 @@
+2026-10-23 Windows verification
+Core222 total:213 passed,9 POSIX skips,0 failure/error.
+3 new core tests,1 new Android test COMPILED ONLY.
+Release R8 + Android test APK + lint PASS.
+Log: outputs/static-reverse-leases-qualified.txt
+No phone access, no native mount changes, no paid providers. Root rejects non-null bundle until native mount integration.
