@@ -52,7 +52,7 @@ managed_receive独立于Frida运行库，以MSG_DONTWAIT/recvmsg从事件循环�
 
 managed_observe通过一次poll等待owner/worker pidfd、专用报告socket及单调绝对截止；无新线程/轮询扫描。自然到期发送duration，owner死亡/流损坏发送cancel；只发送一次。合作清理最长15秒，force_deadline由未来guard设置为总预算扣除强制kill/reap/remove预留后的截止，观察器不能使用该预留。流损坏不恢复事实；pidfd通知前即使收到完整报告仍等待，超时返回给强制回收路径。worker pidfd可读只叫worker_signalled，调用者仍须waitpid及独立域清理。若worker退出但helper持有报告FD，返回pending而不猜EOF；后续域回收后可再排空。任务成功还须核对实际waitpid状态，不能只用报告中的success位。
 
-这是独立监督原语，尚未连接Root guard/持久记录或Agent。10项主机夹具用自有原生子进程验证；没有Frida注入，不当作新增真实Frida用例。覆盖正常/到期/owner退出、流损坏、无报告/截短、完整报告但不退出、合作清理超时、无效FD/预算及实际15秒取消上限；待最新CI。NDK30/API36 ARM64夹具完整链接、LOAD均0x4000对齐，报告managed-observer-arm64-build.json，不是APK体积或Android执行资格。
+这是独立监督原语，尚未连接Root guard/持久记录或Agent。10项主机夹具用自有原生子进程验证；没有Frida注入，不当作新增真实Frida用例。覆盖正常/到期/owner退出、流损坏、无报告/截短、完整报告但不退出、合作清理超时、无效FD/预算及实际15秒取消上限；已在f53d824的CI40001467909独立managed-supervision job实际通过，9项报告流接收也同job通过，完整workflow另查。NDK30/API36 ARM64夹具完整链接、LOAD均0x4000对齐，报告managed-observer-arm64-build.json，不是APK体积或Android执行资格。
 
 ## 验证
 

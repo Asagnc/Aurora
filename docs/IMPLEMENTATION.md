@@ -1,3 +1,9 @@
+## 2026-10-24 监督端新增19项主机用例通过
+
+f53d824的CI40001467909独立managed-supervision job已成功：9项报告流接收、10项真实自有子进程/pidfd/截止测试实际通过，后者19.048秒，包含真实15秒取消上限。证据ci-40001467909-managed-supervision-passed.txt；该job无Frida注入或手机执行。完整workflow仍在运行，不能将独立job成功写成整体成功。5d9ebff的40001398070被新提交取代取消，不记通过。
+
+Root guard/阶段日志/退役恢复/Binder/Agent入口仍待接。当前产品不会因这两个监督原语而显示Frida ready；继续按ROOT_MANAGED_TASKS_IMPLEMENTATION.md接入。只更新文档/证据的本提交不重复触发未变构建。
+
 ## 2026-10-24 事件驱动的受管观察循环
 
 b7c3882完整CI40000038379成功，9项严格EOF接收主机测试、19项真实Frida和Android构建/lint均通过；见对应证据。

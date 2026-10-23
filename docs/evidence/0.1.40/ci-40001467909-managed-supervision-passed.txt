@@ -1,0 +1,10 @@
+Source: f53d824d9ffdc12728a267bca977ad47b269e18a
+Workflow: https://github.com/Asagnc/Aurora/actions/runs/40001467909
+Job: managed-supervision, 120578835744, completed/success.
+Only this job is confirmed here; full workflow separately pending.
+No Frida injection or Android device execution in this job.
+
+2026-10-23T18:14:24.9923889Z Ran 9 tests in 0.354s
+2026-10-23T18:14:24.9924869Z OK
+2026-10-23T18:14:24.9926971Z Ran 10 tests in 19.048s
+2026-10-23T18:14:24.9927406Z OK

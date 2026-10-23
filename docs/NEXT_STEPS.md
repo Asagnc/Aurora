@@ -44,11 +44,13 @@
 
 - 退出事实/父进程控制原生开发通道已实现，52字节AEX1与精确进程/票据绑定；attach失败无session不再当作已detach。7主机控制+19真实Frida用例已在完整CI39997696909通过；Root Binder/cgroup guard/持久恢复/Agent仍待连接。见ROOT_MANAGED_TASKS_IMPLEMENTATION.md。
 
-- 新增事件驱动监督观察器：owner/worker pidfd、严格报告流、绝对截止，最多15秒协作窗口且不侵占调用者强制回收预留；10项自有原生子进程用例待CI。NDK30/API36 ARM64夹具链接/16KiB通过。尚无实际cgroup guard/持久退役/Binder/Agent接入，见ROOT_MANAGED_TASKS_IMPLEMENTATION.md。
+- 新增事件驱动监督观察器：owner/worker pidfd、严格报告流、绝对截止，最多15秒协作窗口且不侵占调用者强制回收预留；10项自有原生子进程用例已在CI40001467909独立job实际通过。NDK30/API36 ARM64夹具链接/16KiB通过。尚无实际cgroup guard/持久退役/Binder/Agent接入，见ROOT_MANAGED_TASKS_IMPLEMENTATION.md。
 
 ## 当前证据
 
-- 51a5658完整CI39997696909成功：7控制/解码、9脚本socket、19真实Frida生命周期及Android构建/lint通过；见evidence/0.1.40/ci-39997696909-passed.txt。随后b7c3882完整CI40000038379也已成功，9项严格EOF接收用例实际通过；10项观察器用例待接下来的CI。
+- f53d824的40001467909 managed-supervision job成功：9接收+10观察主机用例实际通过（包含15秒真实等待）；完整workflow待核实。5d9ebff的40001398070被替代取消，不记通过。证据ci-40001467909-managed-supervision-passed.txt。
+
+- 51a5658完整CI39997696909成功：7控制/解码、9脚本socket、19真实Frida生命周期及Android构建/lint通过；见evidence/0.1.40/ci-39997696909-passed.txt。随后b7c3882完整CI40000038379也已成功，9项严格EOF接收用例实际通过；10项观察器用例已在f53d824的CI40001467909独立job通过；完整workflow尚待核实。
 
 - cc84c22完整CI39993061650已成功，覆盖握手前取消修复；随后原生监督/事实通道CI推送后核实。
 - dbea45a完整CI39991608445成功，9真实socket+11真实Frida通路、完整Android构建/lint通过。随后握手前取消修复新增Android用例仅编译，Debug/Release/testAPK/lint本地通过，最新CI推送后核实。
