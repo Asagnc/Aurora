@@ -1,3 +1,11 @@
+## 2026-10-24 事件驱动的受管观察循环
+
+b7c3882完整CI40000038379成功，9项严格EOF接收主机测试、19项真实Frida和Android构建/lint均通过；见对应证据。
+
+新增独立原生managed_observe：同一个poll等待owner/worker pidfd、最终事实流和绝对单调时限；不新建线程、不定时扫描/proc。到期发duration、owner退出或流损坏发cancel，单次通知后最多给15秒合作清理，并受调用者预先扣除强制回收预算的force_deadline限制。无响应返回超时，交给后续guard强制回收，不把报告EOF当worker退出；报告已完整但worker仍活也不结束等待。
+
+新增10项自有原生子进程主机用例，包括真实pidfd、协作到期/父死取消、无报告/损坏流、报告完整但不退出、无响应强制边界及真实15秒上限，待Linux CI；Windows按平台跳过。NDK30/API36 ARM64独立夹具完整链接且LOAD均16KiB对齐，19184字节，仅夹具不是Frida worker体积。还没有实际cgroup guard/阶段日志/Binder/Agent产品入口，也没有手机执行。
+
 ## 2026-10-24 监督端严格退出流接收
 
 51a5658完整CI39997696909已成功，7项控制/解码与19项真实Frida生命周期均实际通过；Android构建/lint成功，仍不是手机运行证据。

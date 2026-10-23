@@ -1,0 +1,12 @@
+{
+  "kind": "standalone managed observer fixture; not packaged Frida worker",
+  "ndk": "30.0.16248370",
+  "target": "aarch64-linux-android36",
+  "warnings": "-Wall -Wextra -Werror",
+  "link": "success",
+  "loadAlignment": "0x4000 for every LOAD",
+  "bytes": 19184,
+  "sha256": "4e4c635c99afb4e97ce16b73a060240c716922b9eef868f8b90cde9181ad5b7d",
+  "execution": "not executed on Android",
+  "hostTests": "10 pending Linux CI; Windows platform skipped"
+}

@@ -44,9 +44,15 @@ ARM64完整worker交叉链接/外层16KiB检查通过，stripped89143968字节�
 
 managed_receive独立于Frida运行库，以MSG_DONTWAIT/recvmsg从事件循环增量接收。52字节完整帧不提前公开receipt，必须读取EOF并核对票据/worker身份/事实组合。任意尾字节、重复帧、短EOF及所有附带控制消息均拒绝；SCM_RIGHTS收到即关闭，MSG_CTRUNC也拒绝，内核关闭未交付的截断描述符。失败状态保留，不能被之后的数据修复。调用者持有socket并独立负责凭证核实、绝对截止、worker退出与域回收；pending才继续poll，HUP仍须排空已有字节，不能直接视作空报告。
 
-每次最多读53字节，不增加线程、定时轮询或按对端流长度分配。9项Linux测试覆盖51个切分点、52个截断长度、完整但未关闭、尾部/重复/大尾、附带及截断FD、错票据/进程和部分清理事实；尚待最新CI。NDK30/API36 ARM64编译检查通过；Windows本机9项平台跳过，不计入已执行。尚未被Root guard调用或APK打包。
+每次最多读53字节，不增加线程、定时轮询或按对端流长度分配。9项Linux测试覆盖51个切分点、52个截断长度、完整但未关闭、尾部/重复/大尾、附带及截断FD、错票据/进程和部分清理事实；已在b7c3882完整CI40000038379实际通过。NDK30/API36 ARM64编译检查通过；Windows本机9项平台跳过，不计入已执行。尚未被Root guard调用或APK打包。
 
 核实依据：[recvmsg](https://man7.org/linux/man-pages/man2/recvmsg.2.html)、[poll](https://man7.org/linux/man-pages/man2/poll.2.html)，包括短读、非阻塞返回与HUP仍有未读数据。
+
+## 监督观察循环
+
+managed_observe通过一次poll等待owner/worker pidfd、专用报告socket及单调绝对截止；无新线程/轮询扫描。自然到期发送duration，owner死亡/流损坏发送cancel；只发送一次。合作清理最长15秒，force_deadline由未来guard设置为总预算扣除强制kill/reap/remove预留后的截止，观察器不能使用该预留。流损坏不恢复事实；pidfd通知前即使收到完整报告仍等待，超时返回给强制回收路径。worker pidfd可读只叫worker_signalled，调用者仍须waitpid及独立域清理。若worker退出但helper持有报告FD，返回pending而不猜EOF；后续域回收后可再排空。任务成功还须核对实际waitpid状态，不能只用报告中的success位。
+
+这是独立监督原语，尚未连接Root guard/持久记录或Agent。10项主机夹具用自有原生子进程验证；没有Frida注入，不当作新增真实Frida用例。覆盖正常/到期/owner退出、流损坏、无报告/截短、完整报告但不退出、合作清理超时、无效FD/预算及实际15秒取消上限；待最新CI。NDK30/API36 ARM64夹具完整链接、LOAD均0x4000对齐，报告managed-observer-arm64-build.json，不是APK体积或Android执行资格。
 
 ## 验证
 

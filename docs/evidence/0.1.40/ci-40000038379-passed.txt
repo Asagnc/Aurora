@@ -1,0 +1,17 @@
+Source: b7c3882e22c72befa5e02ed103e6f6496d0f8357
+Workflow: https://github.com/Asagnc/Aurora/actions/runs/40000038379
+Overall: completed/success.
+9 exact report receive tests passed on Linux; no Android device execution.
+
+test	Verify protocols and owned files	2026-10-23T18:02:47.9282939Z OK
+test	Verify protocols and owned files	2026-10-23T18:02:48.0066954Z OK
+test	Verify protocols and owned files	2026-10-23T18:02:49.5222738Z OK
+test	Verify protocols and owned files	2026-10-23T18:02:50.2050035Z Ran 9 tests in 0.623s
+test	Verify protocols and owned files	2026-10-23T18:02:50.2050329Z OK
+test	Verify protocols and owned files	2026-10-23T18:02:50.4248675Z Ran 7 tests in 0.157s
+test	Verify protocols and owned files	2026-10-23T18:02:50.4248981Z OK
+test	Verify protocols and owned files	2026-10-23T18:02:50.6658386Z Ran 9 tests in 0.183s
+test	Verify protocols and owned files	2026-10-23T18:02:50.6658836Z OK
+test	Build Android application and run lint	2026-10-23T18:11:28.0681985Z BUILD SUCCESSFUL in 5m 43s
+frida-session	Verify actual Frida session lifecycle on owned Linux targets	2026-10-23T18:03:34.8482150Z Ran 19 tests in 36.941s
+frida-session	Verify actual Frida session lifecycle on owned Linux targets	2026-10-23T18:03:34.8482348Z OK
