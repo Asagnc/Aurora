@@ -4,7 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenHelper(context, name, null, 6) {
+class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenHelper(context, name, null, 7) {
     init { setWriteAheadLoggingEnabled(true) }
 
     override fun onConfigure(db: SQLiteDatabase) { db.setForeignKeyConstraintsEnabled(true) }
@@ -30,6 +30,7 @@ class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenH
             id TEXT PRIMARY KEY, call_id TEXT NOT NULL, tool TEXT NOT NULL,
             state TEXT NOT NULL, result TEXT, started_at INTEGER NOT NULL, artifact_directory TEXT, presentation TEXT)""")
         db.execSQL("CREATE INDEX tool_run_owner ON tool_runs(owner, started_at)")
+        createBrowserRecoveryIndex(db)
         db.execSQL("CREATE TABLE connections (id TEXT PRIMARY KEY, configuration TEXT NOT NULL)")
         createTaskRuns(db)
         SkillRegistry.create(db)
@@ -46,14 +47,20 @@ class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenH
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        require(oldVersion in 1..5 && newVersion == 6)
+        require(oldVersion in 1..6 && newVersion == 7)
         if (oldVersion < 2) createTaskRuns(db)
         if (oldVersion < 3) {
             db.execSQL("ALTER TABLE tool_runs ADD COLUMN artifact_directory TEXT")
             db.execSQL("ALTER TABLE tool_runs ADD COLUMN presentation TEXT")
         }
-        SkillRegistry.create(db)
-        LinuxRegistry.create(db)
-        LinuxRunRegistry.create(db)
+        if(oldVersion < 6){
+            SkillRegistry.create(db)
+            LinuxRegistry.create(db)
+            LinuxRunRegistry.create(db)
+        }
+        createBrowserRecoveryIndex(db)
+    }
+    private fun createBrowserRecoveryIndex(db: SQLiteDatabase) {
+        db.execSQL("CREATE INDEX browser_download_pending ON tool_runs(owner) WHERE $BROWSER_DOWNLOAD_PENDING")
     }
 }

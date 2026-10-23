@@ -1,0 +1,20 @@
+Python host SQLite 3.50.4
+Extracted production predicate/query fragments; NOT Android SQLite/device validation.
+Seed: 10000 completed history rows, 1 pending download
+Owner filter: None
+CO-ROUTINE p
+SCAN tool_runs USING INDEX browser_download_pending
+SCAN p
+CORRELATED SCALAR SUBQUERY 2
+SEARCH c USING INDEX sqlite_autoindex_conversations_1 (id=?)
+Host VM instructions: 52
+Owner filter: owner
+CO-ROUTINE p
+SEARCH tool_runs USING INDEX browser_download_pending (owner=?)
+SCAN p
+CORRELATED SCALAR SUBQUERY 2
+SEARCH c USING INDEX sqlite_autoindex_conversations_1 (id=?)
+Host VM instructions: 65
+Additional 10000 pending entries in deleting owner; candidate window remains 64
+Global result count: 0; VM instructions: 1426
+Scoped retry still sees active owner: 1 row; VM instructions: 55

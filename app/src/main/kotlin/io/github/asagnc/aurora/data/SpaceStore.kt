@@ -25,6 +25,9 @@ class SpaceStore(private val context: Context, private val conversations: Conver
 
     suspend fun conversation(id: String): OwnedFiles = open(path(id), true)
     internal suspend fun commandRoot(id: String): Path { conversation(id); return path(id) }
+    internal suspend fun recoverBrowserDownload(id: String, directory: String): String = withContext(Dispatchers.IO) {
+        io.github.asagnc.aurora.core.recoverBrowserDownload(path(id),directory)
+    }
     suspend fun sharedResources(): OwnedFiles = open(root.resolve("resources"), false)
     suspend fun sharedWorkspace(): OwnedFiles = open(root.resolve("workspace"), true)
     private suspend fun open(path: Path, writable: Boolean): OwnedFiles = withContext(Dispatchers.IO) {

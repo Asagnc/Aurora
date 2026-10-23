@@ -23,6 +23,7 @@ class AuroraApplication : Application() {
     internal val imageLoader by lazy { coil3.ImageLoader.Builder(this)
         .memoryCache { coil3.memory.MemoryCache.Builder().maxSizeBytes(48L * 1024 * 1024).build() }.diskCache(null).build() }
     val toolRuns by lazy { ToolRunStore(conversations) }
+    internal val browserDownloads by lazy { io.github.asagnc.aurora.data.BrowserDownloadMaintenance(conversations,spaces) }
     internal val commands by lazy { io.github.asagnc.aurora.runtime.NativeCommandRunner(this) }
     internal val commandLogs by lazy { io.github.asagnc.aurora.runtime.CommandLogObserver(this) }
     internal val agentRuns by lazy { io.github.asagnc.aurora.data.AgentRunStore(conversations) }
@@ -37,6 +38,7 @@ class AuroraApplication : Application() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     val ready by lazy { scope.async {
         conversations.recoverInterruptedRuns()
+        browserDownloads.recover()
         terminals.recover()
         skills.recover()
         linux.registry.recoverProcessPins()

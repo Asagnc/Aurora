@@ -56,9 +56,10 @@ internal class BrowserTransferTool(private val browser: BrowserController, priva
         val args = call.arguments
         val script = requireNotNull(args.text("script")).also { require(it.length in 1..16384) }
         val maxBytes = number(args, "maxBytes", 64L*1024*1024, 1..512L*1024*1024)
-        return withContext(Dispatchers.IO) { BrowserDownloadFile(root, maxBytes).use { file ->
+        val artifactId=java.util.UUID.randomUUID().toString()
+        prepared(call.id,"runs/$artifactId")
+        return withContext(Dispatchers.IO) { BrowserDownloadFile(root, maxBytes, artifactId).use { file ->
           withContext(Dispatchers.Main) {
-            prepared(call.id, file.relative.substringBeforeLast('/'))
             val request = objectOf("mode" to string("download"), "script" to string(script), "maxBytes" to JsonPrimitive(maxBytes))
             val result = BrowserBinaryTransfer.execute(tab, request, timeout) {
                 control("ready"); acknowledge()

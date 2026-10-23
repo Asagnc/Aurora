@@ -67,6 +67,21 @@ class BrowserTransferTest {
         assertNotNull(rejected.text("error"))
     } }
 
+    @Test fun artifactIntentMustBeRecordedBeforeAnyFileOrPageRequest()=runBlocking{fixture{f->
+        val owner=withContext(Dispatchers.Main){f.browser.tabs.single().owner}
+        var reserved=false
+        val tool=BrowserTransferTool(f.browser,owner,f.root,mapOf("conversation" to f.files),prepared={_,directory->
+            assertFalse(withContext(Dispatchers.IO){Files.exists(f.root.resolve(directory))})
+            reserved=true
+            throw java.io.IOException("simulate ledger failure")
+        })
+        val result=call(tool,"browser_download",*(common(f)+arrayOf("script" to string("window.downloadAttempt=1;new Blob([])"))))
+        assertTrue(reserved);assertNotNull(result.text("error"))
+        assertFalse(withContext(Dispatchers.IO){Files.exists(f.root.resolve("runs"))})
+        val observed=call(f.pages,"browser_evaluate",*(common(f)+arrayOf("script" to string("window.downloadAttempt||0"))))
+        assertEquals(0L,observed["result"]!!.jsonObject.number("value"))
+    }}
+
     private suspend fun assertNoFiles(root: Path)=withContext(Dispatchers.IO){
         Files.walk(root.resolve("runs")).use{assertFalse(it.anyMatch{file->Files.isRegularFile(file)})}
     }

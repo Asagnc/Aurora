@@ -23,6 +23,10 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
 
     private suspend fun executeWithEnvironment(id: String, text: String, connection: Connection, started: Long,
         linux: io.github.asagnc.aurora.linux.LinuxAgentEnvironment) {
+        if(app.browserDownloads.recover(id)>0){
+            val recovered=app.toolRuns.recent(id)
+            mutable.update { if(it.current?.id==id)it.copy(toolRuns=recovered)else it }
+        }
         val ordinaryFiles = FileToolExecutor(linkedMapOf("conversation" to app.spaces.conversation(id),
             "resources" to app.spaces.sharedResources(), "workspace" to app.spaces.sharedWorkspace()))
         val files = LinuxFileToolRouter(ordinaryFiles) { operation, arguments ->

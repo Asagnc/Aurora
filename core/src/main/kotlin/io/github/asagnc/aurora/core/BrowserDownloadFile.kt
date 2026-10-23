@@ -6,8 +6,8 @@ import java.nio.file.*
 import java.util.UUID
 
 /** Call on IO under the conversation task lease. Incomplete files are never published. */
-class BrowserDownloadFile(root: Path, private val maxBytes: Long) : AutoCloseable {
-    val relative = "runs/${UUID.randomUUID()}/download.bin"
+class BrowserDownloadFile(root: Path, private val maxBytes: Long, artifactId: String = UUID.randomUUID().toString()) : AutoCloseable {
+    val relative = "runs/${UUID.fromString(artifactId).toString().also { require(it == artifactId) }}/download.bin"
     private val target = OwnedFiles(root).resolve(relative)
     private val temporary = target.resolveSibling(target.fileName.toString() + ".partial")
     private val channel: FileChannel

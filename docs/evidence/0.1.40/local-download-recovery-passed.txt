@@ -1,0 +1,10 @@
+Date: 2026-10-23
+Version: 0.1.40 / code 41; SQLite schema 7
+Command: gradlew :core:test :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :app:lintDebug
+Result: BUILD SUCCESSFUL in 34s
+Core: 200 total, 191 passed, 9 POSIX skipped on Windows, 0 failures
+New core: 4 download recovery tests (3 run, 1 POSIX link case skipped)
+New Android: 4 ledger/migration cases + 1 intent-before-file/page-dispatch case; COMPILED ONLY
+Lint: 0 errors, 1 pre-existing vector-path warning
+Phone: not connected/updated/tested; last tested version remains 0.1.32
+CI for implementation commit: pending
