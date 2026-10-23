@@ -1,3 +1,13 @@
+## 2026-10-24 独立原生guard与恢复主程序
+
+新增开发期独立coordinator/guard主程序，连上意图/创建计划/真实准入/单次GO、owner/worker pidfd观察、独立卸载报告、退出与域回收。持久worker报告在资源收尾前保存，正常成功还必须实际worker退出码为0；缺失/部分报告不从stdout补造。coordinator与guard都为专用subreaper，收尾仅用/proc真实children及P_PIDFD waitid核实自有/接管后代，再按pidfd停止/回收，既有附加目标不成为选择器。合作结束最多15秒，之后保留5秒强制收尾；coordinator对guard也有绝对等待截止，冻结不无限waitpid。
+
+开发CLI支持独立recover，不重放脚本。先退役，复核旧guard/boot及worker PID-start，按完整inode记录/空组计划回收；已有最终记录精确复用。即便元数据拒绝恢复，coordinator仍尽力停止自己接管的后代，不据此去杀未经验证的其他任务组。Root权限不是对其他Root程序的沙箱，Android实际任务cgroup/Frida helper行为仍须资格测试。
+
+新增14项真实Root cgroup/自有模拟worker测试，覆盖正常/到期、两层父进程退出、冻结guard、脱离进程组及主动迁移的自有helper、exec错误/坏报告、重复恢复/迟到启动、完整报告但不退出和无响应；待CI。ARM64完整guard与fixture链接通过，Windows仅跳过。不含真实Frida注入，不是已打包/注册Agent的产品入口；接下来接真实Frida通路及Root Binder/恢复策略。
+
+创建计划1c73a8d完整CI40009832615已成功（9项新cgroup窗口测试通过），见对应证据。继续推进，不停止等待用户确认例行实现。手机仍最后集中验收，无真实模型调用。
+
 ## 2026-10-24 cgroup创建计划与空组恢复
 
 独立guard接入时补上mkdir与完整inode记录之间的崩溃窗口。TaskScope拆为reserve/materialize，旧create仍保持原组合行为；受管路径先将任务key、guard身份、boot、parent dev/inode、随机name及变长parent路径带校验和落盘，再mkdir、再持久完整记录，之后才允许fork。普通路径不增加计划文件。

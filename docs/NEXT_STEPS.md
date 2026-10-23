@@ -54,7 +54,11 @@
 
 - 已补受管cgroup创建计划：先持久化parent身份/随机name/guard/boot再mkdir，填补完整记录前崩溃留下空组的窗口；恢复只移除精确空组，未知已占用组保留。9项Root主机用例待CI，ARM64夹具链接通过；继续独立guard主程序/恢复。
 
+- 独立coordinator/guard开发CLI及recover已接现有组件；专用subreaper+pidfd回收自己的后代，严格区分worker报告、真实进程退出和域回收。14项Root模拟worker生命周期用例待CI；ARM64完整链接通过。尚未APK打包/连接Root Binder或Agent；继续真实Frida端到端资格和产品接口。
+
 ## 当前证据
+
+- 1c73a8d完整CI40009832615成功，包括9项创建计划崩溃窗口Root用例；见ci-40009832615-passed.txt。
 
 - 7025c34完整CI40008334926成功（journal/退出持久化25项实际通过）；证据ci-40008334926-passed.txt。
 

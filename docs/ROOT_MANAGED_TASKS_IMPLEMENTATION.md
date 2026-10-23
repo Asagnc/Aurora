@@ -90,6 +90,18 @@ managed.worker只接收state=1的严格EOF接收器，重新验证票据及READY
 
 9项Root cgroup故障用例覆盖mkdir前/后、完整记录、部分tmp、活guard无锁、未知已占用组、坏计划、错票据、重放；待CI，ARM64夹具链接通过。依旧未打包guard/注册Agent或执行Android设备。
 
+## 独立guard开发入口
+
+已接guard_main/runtime/recover/result及专用reaper：coordinator持同任务锁、以自己的pidfd作为owner，fork出的guard独立session/subreaper；先持久意图和cgroup计划/完整记录，再fork阻塞worker、写READY和RELEASED后GO。operation包含启动时间，观察<=250秒，合作收尾<=15秒，总预算留5秒强制收尾；coordinator用guard pidfd与绝对截止，避免guard冻结后永久waitpid。文件系统/内核不可中断I/O不是硬实时保证。
+
+worker的精确EOF报告先落盘，再kill/空组/回收自有后代/移除域和记录。reaper只读取真实procfs里本进程的children，拒绝截断/重复条目，并用waitid(P_PIDFD, WNOWAIT)重新验证可等待子身份后才pidfd_send_signal；不是枚举或杀已有target。Linux源码确认ptrace使用独立ptraced列表而children按real_parent/sibling；仍须真实Frida/Android资格。仅在退出/接管事件之后有界重读后代列表，无后台定时扫描。
+
+recover先持久退役，核实旧guard已退出、boot与worker身份；worker有合作窗口再按pidfd强制停止，完整scope记录回收后处理精确空组计划，最后回收本恢复协调器拥有的后代并发布独立资源记录。不可把资源记录当注入卸载；缺失worker报告的原目标仍活时，App意图保持未确认。既有最终记录不重写，迟到start被退役/一次性意图拒绝。
+
+开发CLI仅Root，worker版本/path/普通exec属性仍由将来的Root facade固定核实；未APK打包/注册Agent，未启用spawn。14项自有模拟worker/实际cgroup测试待CI，包含冻结、父死、孤儿/迁移helper、exec失败/坏报告和无响应；不计为Frida注入用例。ARM64 guard完整链接通过。
+
+核实：[pidfd_open](https://man7.org/linux/man-pages/man2/pidfd_open.2.html)、[内核ptrace.c](https://raw.githubusercontent.com/torvalds/linux/master/kernel/ptrace.c)、[proc children实现](https://github.com/torvalds/linux/blob/master/fs/proc/array.c)。
+
 ## 验证
 
 本地核心242项：232通过、10平台跳过；票据/预算/证明/错配4项与帧协议3项实际执行。Debug、Release R8、testAPK、lint通过；随后扩展Android用例又编译/lint通过，见evidence/0.1.40/local-root-managed-foundation-passed.txt及local-root-script-channel-passed.txt。
