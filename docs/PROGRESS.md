@@ -1,3 +1,13 @@
+## 2026-10-23 下载展示元数据与产物详情
+
+下载握手单独验证 mime（128字符）与 Content-Disposition（512字符），超长提示整体丢弃；上传 ready 仍只允许 kind。复用已有 AndroidX URLUtilCompat 解析 filename/filename*，再移除路径片段、控制/格式字符及孤立代理，名称最多120个UTF-16单元且不截断代理对；MIME只保留规范化类型，不用于内容验证/自动打开。原始头、Response URL均不写入结果。
+
+displayName/mimeType进入已有工具结果，无数据库迁移、旁路文件或新依赖；磁盘名仍 runs/UUID/download.bin，原中断恢复协议不变。下载详情展示名称、类型、字节与产物入口；只允许规范UUID下载路径，旧结果回退download.bin。下载不再打开不存在的命令输出日志。
+
+新增4项核心测试，生产传输JS增加2个元数据场景共18个（属于一个JUnit）。核心205项：196通过、9 POSIX跳过；Debug、Release R8、Android测试APK与lint通过。新增1项Android文件名扩展参数端到端用例仅编译，最终真机统一执行。未调用付费模型或操作手机。
+
+官方依据：https://developer.android.com/reference/androidx/webkit/URLUtilCompat 。名称/MIME始终是网页提供的不可信提示；跨域未暴露的头不可读取，不重发网络请求猜名称，不承诺所有下载来源可用。
+
 ## 2026-10-23 浏览器传输错误码与 MIME 通配符修复
 
 页面传输仅返回白名单错误码：脚本、Response 可读性、源类型、读流、字节预算、上传目标/accept/多选与协议等。原生只接受精确错误字段；未知代码/额外字段统一降为 page_transfer_failed，不把页面异常文本、签名网址或请求内容写入账本。页面代码属于未可信诊断提示，不作为原生事实。工具继续保留方向 phase 与 unknown/outcome，不自动重试；超时新增 transfer_timeout。

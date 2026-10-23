@@ -1,0 +1,6 @@
+2026-10-23 local Windows verification
+{'tests': 205, 'skipped': 9, 'failures': 0, 'errors': 0}
+Production transfer JS: 18 scenarios inside one JUnit.
+Debug assemble + Android test APK + lint: outputs/browser-download-metadata-build.txt
+Release R8 + core + Android test APK + lint: outputs/browser-download-metadata-qualified.txt
+One new Android metadata test COMPILED ONLY. No phone or paid API calls.

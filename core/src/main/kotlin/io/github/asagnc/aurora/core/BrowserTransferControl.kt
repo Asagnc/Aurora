@@ -19,8 +19,14 @@ fun decodeBrowserTransferControl(encoded: String, expected: String): JsonObject 
         val code = value.text("code")?.takeIf { value.keys == setOf("kind", "code") && it in transferFailureCodes }
         throw BrowserTransferFailure(code ?: "page_transfer_failed")
     }
-    require(expected in setOf("ready", "ack", "complete") && value.text("kind") == expected) { "Unexpected transfer phase" }
-    if (expected == "complete") {
+    require(expected in setOf("ready", "download_ready", "ack", "complete") && value.text("kind") == if (expected == "download_ready") "ready" else expected) { "Unexpected transfer phase" }
+    if (expected == "download_ready") {
+        require(value.keys == setOf("kind", "mime", "disposition")) { "Invalid download metadata fields" }
+        for ((key, budget) in listOf("mime" to 128, "disposition" to 512)) {
+            val field = value[key]
+            require(field is JsonPrimitive && field.isString && field.content.length <= budget) { "Invalid download metadata" }
+        }
+    } else if (expected == "complete") {
         require(value.keys == setOf("kind", "bytes") || value.keys == setOf("kind", "files")) { "Invalid completion fields" }
         val amount = value["bytes"] ?: value.getValue("files")
         require(amount is JsonPrimitive && !amount.isString && amount.longOrNull?.let { it >= 0 } == true) { "Invalid completion count" }

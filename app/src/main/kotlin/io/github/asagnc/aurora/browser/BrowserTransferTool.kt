@@ -62,7 +62,11 @@ internal class BrowserTransferTool(private val browser: BrowserController, priva
           withContext(Dispatchers.Main) {
             val request = objectOf("mode" to string("download"), "script" to string(script), "maxBytes" to JsonPrimitive(maxBytes))
             val result = BrowserBinaryTransfer.execute(tab, request, timeout) {
-                control("ready"); acknowledge()
+                val ready = control("download_ready")
+                val disposition = ready.text("disposition").orEmpty()
+                val name = runCatching { URLUtilCompat.getFilenameFromContentDisposition(disposition) }.getOrNull()
+                val metadata = browserDownloadMetadata(name, ready.text("mime"))
+                acknowledge()
                 while (true) {
                     val message = receive()
                     if (message.type == WebMessageCompat.TYPE_ARRAY_BUFFER) {
@@ -81,6 +85,7 @@ internal class BrowserTransferTool(private val browser: BrowserController, priva
                         val path = withContext(Dispatchers.IO) { file.publish(count) }
                         acknowledge()
                         return@execute objectOf("path" to string(path), "bytes" to JsonPrimitive(file.bytes),
+                            "displayName" to string(metadata.displayName), "mimeType" to string(metadata.mimeType),
                             "trust" to string("untrusted_web_content"))
                     }
                 }

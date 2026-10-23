@@ -22,6 +22,8 @@ class BrowserTransferTest {
                 mapOf("size" to JsonPrimitive(size), "error" to JsonPrimitive(error)))
         download("Response chunking", "new Response(Uint8Array.from({length:150000},(_,i)=>i%251))", 150000)
         download("Blob chunking", "new Blob([Uint8Array.from({length:70000},(_,i)=>i%251)])", 70000)
+        download("response metadata", "new Response(null,{headers:{'Content-Type':'application/pdf','Content-Disposition':'attachment; filename=report.pdf'}})")
+        download("oversize metadata discarded", "new Response(null,{headers:{'Content-Type':'a'.repeat(129),'Content-Disposition':'b'.repeat(513)}})")
         download("empty Blob", "new Blob([])")
         download("empty response", "new Response(null,{status:204})")
         download("oversize response", "new Response(new Uint8Array(100))", max = 64, error = true)

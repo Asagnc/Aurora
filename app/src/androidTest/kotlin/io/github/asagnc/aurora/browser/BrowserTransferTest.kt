@@ -31,6 +31,16 @@ class BrowserTransferTest {
         }
     } }
 
+    @Test fun responseFilenameStarAndMimeBecomeDisplayHintsOnly() = runBlocking { fixture { f ->
+        val result = transfer(f, "browser_download", "script" to string(
+            "new Response(null,{headers:{'Content-Type':'application/pdf; x=1','Content-Disposition':\"attachment; filename=fallback.pdf; filename*=UTF-8''%E6%8A%A5%E5%91%8A.pdf\"}})"))
+        assertNull(result.toString(), result["error"])
+        assertEquals("报告.pdf", result.text("displayName"))
+        assertEquals("application/pdf", result.text("mimeType"))
+        assertTrue(requireNotNull(result.text("path")).endsWith("/download.bin"))
+        assertNull(result["disposition"])
+    } }
+
     @Test fun selectedFilesPopulateRealInputAndFormDataIncludingEmptyFile() = runBlocking { fixture { f ->
         val text="Aurora文件".repeat(10000)
         f.files.editBatch(listOf(FileEdit("first.txt",null,text), FileEdit("empty.txt",null,"")))

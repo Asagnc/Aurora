@@ -27,7 +27,7 @@ import kotlinx.coroutines.withContext
     val preview = projection?.second ?: "正在读取结果预览…"
     var raw by remember(event.id) { mutableStateOf(false) }
     val command = summary?.stdout != null || summary?.stderr != null
-    val liveLogs = owner != null && event.artifactDirectory != null
+    val liveLogs = owner != null && event.artifactDirectory != null && event.tool != "browser_download"
     val image by produceState<ImageArtifact?>(null, event.result) {
         value = withContext(Dispatchers.Default) {
             if (event.tool != "images_publish" || (event.result?.length ?: 0) > 8000) null else runCatching {
@@ -40,6 +40,7 @@ import kotlinx.coroutines.withContext
     Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(event.tool, color = AuroraMuted, style = MaterialTheme.typography.labelMedium)
         image?.let { ArtifactImage(owner, it.link, it.description) }
+        if (event.tool == "browser_download") BrowserDownloadDetails(event.result, openArtifact)
         if (liveLogs) LiveCommandLog(requireNotNull(owner), requireNotNull(event.artifactDirectory), event.state == "started")
         if (command) {
             summary.exitCode?.let { Text("退出码 $it", style = MaterialTheme.typography.labelMedium) }

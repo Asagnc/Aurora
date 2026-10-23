@@ -27,14 +27,15 @@ object BrowserTransferJavascript {
             const signal=abort.signal;
             const value=await (async()=>eval(request.script))();
             if(stopped)return;
-            let source;stage='download_source';
+            let source,mime='',disposition='';stage='download_source';
             if(value instanceof Response){
               if(!value.ok || value.type==='opaque')failed('response_unreadable');
+              mime=value.headers.get('content-type') || '';disposition=value.headers.get('content-disposition') || '';
               source=value.body || new ReadableStream({start(controller){controller.close();}});
-            }else if(value instanceof Blob){source=value.stream();}
+            }else if(value instanceof Blob){source=value.stream();mime=value.type;}
             else failed('invalid_download_source');
             reader=source.getReader();
-            await acknowledged({kind:'ready'});
+            await acknowledged({kind:'ready',mime:mime.length<=128?mime:'',disposition:disposition.length<=512?disposition:''});
             let total=0;
             while(!stopped){
               stage='stream_read';const item=await reader.read(); if(item.done)break;

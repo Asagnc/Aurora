@@ -69,7 +69,16 @@ for (const item of cases) {
       const first=await next();const ready=JSON.parse(first);
       if(ready.kind==='error'){assert.equal(item.error,true);verifyError(ready);}
       else {
-        assert.equal(ready.kind,'ready');port1.postMessage('ack');
+        assert.equal(ready.kind,'ready');
+        assert.deepEqual(Object.keys(ready).sort(),['disposition','kind','mime']);
+        assert.ok(ready.mime.length<=128 && ready.disposition.length<=512);
+        if(item.name==='response metadata'){
+          assert.equal(ready.mime,'application/pdf');assert.equal(ready.disposition,'attachment; filename=report.pdf');
+        }
+        if(item.name==='oversize metadata discarded'){
+          assert.equal(ready.mime,'');assert.equal(ready.disposition,'');
+        }
+        port1.postMessage('ack');
         const chunks=[];
         while(true){
           const message=await next();
