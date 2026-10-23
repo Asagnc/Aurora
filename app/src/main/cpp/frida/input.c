@@ -50,7 +50,7 @@ int frida_input_read(int argc, char **argv, struct frida_attach_input *input) {
     uint64_t pid, ticks, duration;
     memset(input, 0, sizeof(*input));
     if ((argc != 6 && argc != 7) || strcmp(argv[1], "attach") || integer(argv[2], INT_MAX, &pid) ||
-        integer(argv[3], UINT64_MAX, &ticks) || integer(argv[5], 270000, &duration)) return -1;
+        integer(argv[3], UINT64_MAX, &ticks) || integer(argv[5], 250000, &duration)) return -1;
     char *script = read_script(argv[4]);
     if (!script) return -1;
     char *payload = argc == 7 ? read_script(argv[6]) : NULL;

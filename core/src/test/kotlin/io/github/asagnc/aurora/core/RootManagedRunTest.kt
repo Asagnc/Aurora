@@ -29,8 +29,13 @@ class RootManagedRunTest {
     @Test fun proofCannotReleaseDifferentIntentOrRootEpoch() {
         val ticket = ticket(); val proof = proof(ticket)
         listOf(ticket.copy(owner = UUID.randomUUID().toString()), ticket.copy(appBuild = "other"),
+            ticket.copy(appUid = 10001), ticket.copy(identity = ticket.identity.copy(pid = 124)),
+            ticket.copy(identity = ticket.identity.copy(startTicks = 457)),
+            ticket.copy(identity = ticket.identity.copy(bootId = UUID.randomUUID().toString())),
             ticket.copy(workerSha256 = "c".repeat(64)), ticket.copy(target = RootTargetIdentity(789, 1001)),
-            ticket.copy(script = ticket.script.copy(sha256 = "d".repeat(64))), ticket.copy(observeMs = 2),
+            ticket.copy(script = ticket.script.copy(sha256 = "d".repeat(64))),
+            ticket.copy(script = ticket.script.copy(version = "updated")), ticket.copy(script = ticket.script.copy(bytes = 43)),
+            ticket.copy(observeMs = 2),
             ticket.copy(bridge = ticket.script)).forEach { assertFalse(it.confirms(proof)) }
         assertFalse(ticket.confirms(proof.copy(identity = ticket.identity.copy(epoch = UUID.randomUUID().toString()))))
         assertFalse(ticket.confirms(proof.copy(runId = UUID.randomUUID().toString())))
@@ -47,4 +52,3 @@ class RootManagedRunTest {
             .forEach { assertFails { it.validate() } }
     }
 }
-

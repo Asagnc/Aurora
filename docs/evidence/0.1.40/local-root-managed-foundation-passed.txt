@@ -5,3 +5,5 @@ root-managed-extended-tests.txt: BUILD SUCCESSFUL in 8s
 Tasks: core:test app:assembleDebug app:assembleDebugAndroidTest app:assembleRelease app:lintDebug
 New core tests: 4 actually passed. New Android tests: 9 compiled only; not executed.
 No ADB / phone / model-provider calls. Frida not packaged or registered.
+Expanded identity/digest proof regression: core:test BUILD SUCCESSFUL in 9s.
+Native observation budget aligned to 250000ms: ARM64 cross-link/ELF verification passed; Linux input boundary execution pending CI.

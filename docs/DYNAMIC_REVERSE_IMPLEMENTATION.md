@@ -1,3 +1,9 @@
+## 2026-10-24 Root组合已确认，收紧原型预算
+
+Root持久化/FD组合已获确认，schema8账本、票据精确证明、会话删除屏障及封印memfd基础已实现，见ROOT_MANAGED_TASKS_IMPLEMENTATION.md；Binder/AF_UNIX握手、Root执行/恢复和Agent仍待接。
+
+原型attach观察期限同步收紧为1..250000ms，给现有20秒最后清理预算留空间；新增原生解析边界断言250000可接收、250001/270000拒绝。不因原型可编译而开放手机工具。下方历史270000上限已被本段取代。
+
 ## 2026-10-23 原型8项真实主机/完整CI通过，Root产品接入待确认
 
 805f5cd完整CI39967903594成功，frida-session八项实际通过，包括一次选定脚本、桥消息确认和非Java目标不误报ART；Android构建/主机原生资格也通过。实际Android/ART仍未执行，worker仍未打包。下一步需要Root专用持久化/FD/清理窗口选择，见ROOT_MANAGED_TASKS_PROPOSAL.md，待用户确认；schema8尚未实施。

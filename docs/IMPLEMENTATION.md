@@ -1,3 +1,9 @@
+## 2026-10-24 原生Frida预算与证明错配补查
+
+将原生attach观察上限从270秒收紧为250秒，和已批准Root总270秒/预留20秒一致；解析夹具补250000接受、250001及270000拒绝。ARM64 NDK重新编译/16KiB外层检查通过，报告frida-managed-budget-build.json；新原生输入边界须由最新Linux CI实际执行。票据证明补App UID、Root PID/startTicks/bootId、脚本版本/字节数错配，核心239项本地再次通过（229通过、10跳过，9秒）。
+
+schema1..7迁移/保留Linux票据租约、封印内存等新增9项Android仅编译，尚未执行手机。受管基础4a5f89e的Frida独立job已通过；完整CI状态另查，不将进行中记为已通过。
+
 ## 2026-10-24 Root受管任务账本与内存快照基础
 
 用户确认组合后新增schema8 root_managed_runs、不级联删除的owner屏障、不可变attach票据/严格清理证明；不绑定Linux环境。SpaceStore在删文件前拒绝未确认任务，损坏记录不跳过。修复历史迁移用例版本断言与重复索引创建。RootScriptMemory新增<=1MiB封印memfd、精确摘要与大小、CLOEXEC/取消回收；没有写盘回退。FD握手/Root入口/恢复/Agent仍未接入，不能显示Frida可用。

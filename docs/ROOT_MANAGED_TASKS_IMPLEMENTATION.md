@@ -5,7 +5,7 @@
 ## 已实现的基础
 
 - 原生SQLite schema8：新root_managed_runs活动/未确认意图表，owner外键不级联删除；owner/id索引只查询待处理记录。可选tool_run_id登记时在同一事务验证归属，但不设置历史级联外键；删除显示历史不会删除执行事实。没有Linux镜像或租约依赖，原linux_runs/linux_leases不变。
-- 不可变RootManagedRunTicket：完整Root身份、目标PID/startTicks、App构建、worker摘要、脚本/桥版本摘要大小及观察预算。当前只允许attach；spawn必须另有状态机，不能通过任意action字符串伪装已支持。观察最多250秒，总预算留20秒清理空间。
+- 不可变RootManagedRunTicket：完整Root身份、目标PID/startTicks、App构建、worker摘要、脚本/桥版本摘要大小及观察预算。当前只允许attach；spawn必须另有状态机，不能通过任意action字符串伪装已支持。观察最多250秒，总预算留20秒清理空间。原生CLI也同步收紧到250秒，并补250000接受/250001拒绝等边界；NDK ARM64重新交叉链接通过，独立原型仍未打包。
 - ticket摘要定义为protocol1的WireJson.encodeToString(ticket) UTF-8字节SHA-256；不是源文件摘要，也不对任意另一种JSON编码计算相同摘要。后续Root通道须核对同一不可变票据字节/摘要，不能改写意图生成新证明。
 - 正常退出证明必须匹配runId、Root完整身份及ticket摘要，并分别明确scriptUnloaded/sessionDetached/managerClosed/workerExited/domainRemoved。任何缺失/false都不能释放记录；worker死亡或cgroup空不能替代目标注入清理。这里只定义可信Root通道的数据契约，尚未从stdout接受证明。
 - SpaceStore删除/恢复先检查受管记录，未确认时不删除文件；数据库外键再次阻止直接删除owner。错误显示Root注入清理未确认。相同精确证明可幂等完成，其他owner/改写票据不受影响。未增加自动重放或自动杀目标。
