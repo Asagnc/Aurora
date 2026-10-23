@@ -115,7 +115,7 @@ void task_scope_close(struct task_scope *scope) {
     }
 }
 
-int task_scope_create(struct task_scope *scope) {
+int task_scope_reserve(struct task_scope *scope) {
     *scope = (struct task_scope){.parent = -1, .directory = -1, .processes = -1, .events = -1, .kill = -1};
     scope->parent = current_group(scope->parent_path, sizeof(scope->parent_path));
     if (scope->parent < 0) return -1;
@@ -126,6 +126,10 @@ int task_scope_create(struct task_scope *scope) {
     char hex[33];
     for (unsigned i = 0; i < sizeof(random); ++i) snprintf(hex + i * 2, 3, "%02x", random[i]);
     snprintf(scope->name, sizeof(scope->name), "aurora-linux-%ld-%s", (long)getpid(), hex);
+    return 0;
+}
+
+int task_scope_materialize(struct task_scope *scope) {
     if (mkdirat(scope->parent, scope->name, 0700) < 0) { int saved = errno; task_scope_close(scope); errno = saved; return -1; }
     scope->directory = openat(scope->parent, scope->name, O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW);
     if (scope->directory >= 0) {
@@ -138,6 +142,11 @@ int task_scope_create(struct task_scope *scope) {
         unlinkat(scope->parent, scope->name, AT_REMOVEDIR); task_scope_close(scope); errno = saved; return -1;
     }
     return 0;
+}
+
+int task_scope_create(struct task_scope *scope) {
+    if (task_scope_reserve(scope) < 0) return -1;
+    return task_scope_materialize(scope);
 }
 
 static int write_value(int descriptor, const char *value) {

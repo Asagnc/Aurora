@@ -82,6 +82,14 @@ managed.worker只接收state=1的严格EOF接收器，重新验证票据及READY
 
 收尾记录须已经持久退役，精确重试才重做fsync；部分/矛盾文件保留并拒绝覆盖。无意图却遗留worker/stopped文件不允许重新begin。新增8项Root测试，journal累计25，待CI；ARM64夹具链接通过。尚未接完整guard/恢复/Root Binder/Agent，不宣称已可释放App未确认意图。
 
+## mkdir前创建计划
+
+为独立guard接入补齐“mkdir后、完整scope.state落盘前”的崩溃窗口：仅受管路径先reserve随机name和当前parent，再将任务key、guard PID/start/boot、parent dev/inode及变长name/path写入managed.scope-plan（ASP1、FNV校验），fsync后materialize，最后原scope_state_save。旧task_scope_create仍是reserve+materialize，无新I/O。计划常规仅数百字节；Root ownership提供信任，FNV仅检错。共享record上限调为16KiB，但各固定格式读取仍按自身精确大小拒绝。
+
+普通完整记录先完成带inode核实的kill/空组回收，计划恢复再验证旧guard已死/boot/parent dev-inode，仅打开该精确name：缺失或空组可收尾，已占用而无完整inode记录只busy不kill。仅清理计划对应的Root-owned单链接.tmp，保留其他文件；旧boot不触碰当前boot同名内核资源。损坏/错key计划保留，未确认资源不转换为成功。
+
+9项Root cgroup故障用例覆盖mkdir前/后、完整记录、部分tmp、活guard无锁、未知已占用组、坏计划、错票据、重放；待CI，ARM64夹具链接通过。依旧未打包guard/注册Agent或执行Android设备。
+
 ## 验证
 
 本地核心242项：232通过、10平台跳过；票据/预算/证明/错配4项与帧协议3项实际执行。Debug、Release R8、testAPK、lint通过；随后扩展Android用例又编译/lint通过，见evidence/0.1.40/local-root-managed-foundation-passed.txt及local-root-script-channel-passed.txt。

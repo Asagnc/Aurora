@@ -41,7 +41,9 @@ int managed_journal_begin(const struct managed_journal *journal, const struct ma
     if (worker < 0) return -1;
     int stopped = managed_record_read(journal->directory, "managed.stopped", extra, sizeof(extra));
     if (stopped < 0) return -1;
-    if (worker || stopped) { errno = EPROTO; return -1; }
+    int plan = managed_record_read(journal->directory, "managed.scope-plan", extra, sizeof(extra));
+    if (plan < 0) return -1;
+    if (worker || stopped || plan) { errno = EPROTO; return -1; }
     unsigned char bytes[MANAGED_KEY_BYTES];
     if (managed_key_bytes(key, bytes)) return -1;
     return managed_record_write(journal->directory, "managed.intent", bytes, sizeof(bytes), 0);

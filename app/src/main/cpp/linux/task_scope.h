@@ -13,6 +13,10 @@ struct task_scope {
 /* No caller-provided paths or existing-group attachment. Only this process's
  * newly created child scope can be admitted to, killed, or removed. */
 int task_scope_create(struct task_scope *scope);
+/* Reserve a new random name/parent first so a caller can durably record its
+ * creation plan before mkdir. Materialize never admits a process. */
+int task_scope_reserve(struct task_scope *scope);
+int task_scope_materialize(struct task_scope *scope);
 int task_scope_enter(const struct task_scope *scope);
 int task_scope_populated(const struct task_scope *scope);
 int task_scope_kill(const struct task_scope *scope);

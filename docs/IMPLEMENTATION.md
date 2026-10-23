@@ -1,3 +1,11 @@
+## 2026-10-24 cgroup创建计划与空组恢复
+
+独立guard接入时补上mkdir与完整inode记录之间的崩溃窗口。TaskScope拆为reserve/materialize，旧create仍保持原组合行为；受管路径先将任务key、guard身份、boot、parent dev/inode、随机name及变长parent路径带校验和落盘，再mkdir、再持久完整记录，之后才允许fork。普通路径不增加计划文件。
+
+恢复先按原完整记录回收，再核对计划guard已死、boot/父目录身份，仅移除精确计划指向的空组；未完整登记的已占用组只报busy，绝不kill。无mkdir/已删除/完整登记/短tmp记录均有选择性处理，不扫描整个cgroup树。计划最大约8KiB，常规仅写实际路径长度，Root ownership而非校验和提供信任边界。9项真实Root cgroup故障用例待CI，ARM64完整夹具链接通过，Windows仅跳过。
+
+前一7025c34完整CI40008334926已成功，含25项journal/退出持久化；见ci-40008334926-passed.txt。继续独立guard及恢复接入，不停止等待用户“继续”。仍无手机/真实模型操作。
+
 ## 2026-10-24 退出事实与资源收尾持久记录
 
 新增managed.worker与managed.stopped：只有专用流验证EOF并匹配READY身份/票据的52字节报告才落盘；123字节收尾记录区分CLEAR/NOT_CREATED/UNKNOWN，明确真实退出码可未知。先持久退役才允许收尾记录，已有矛盾/部分文件拒绝覆盖；无worker报告仍是缺失，不能从资源清理合成脚本卸载。新8项与原17项Root journal合计25项主机用例待CI，NDK30/API36 ARM64夹具链接通过，Windows仅平台跳过。独立guard/恢复正在接入，不是已开放的Agent功能。

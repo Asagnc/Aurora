@@ -52,7 +52,11 @@
 
 - 新增worker最终流/资源收尾持久记录，严格身份与完整EOF，明确NOT_CREATED/UNKNOWN与已退出的区别；8新Root故障用例（journal合计25）待CI，ARM64夹具链接通过。继续独立guard/恢复，不每个阶段停下来等待用户“继续”。
 
+- 已补受管cgroup创建计划：先持久化parent身份/随机name/guard/boot再mkdir，填补完整记录前崩溃留下空组的窗口；恢复只移除精确空组，未知已占用组保留。9项Root主机用例待CI，ARM64夹具链接通过；继续独立guard主程序/恢复。
+
 ## 当前证据
+
+- 7025c34完整CI40008334926成功（journal/退出持久化25项实际通过）；证据ci-40008334926-passed.txt。
 
 - c6fce52完整CI40005725398已成功；证据ci-40005725398-passed.txt。
 

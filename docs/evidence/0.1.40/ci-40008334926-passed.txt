@@ -1,0 +1,16 @@
+Source: 7025c341c919e459aa4f18211dd44833a99921b3
+Workflow: https://github.com/Asagnc/Aurora/actions/runs/40008334926
+Overall: completed/success, all three jobs success.
+Root journal/completion 25 cases passed; Android builds are not device execution.
+
+frida-session	Verify actual Frida session lifecycle on owned Linux targets	2026-10-23T19:04:10.6556261Z Ran 19 tests in 36.623s
+frida-session	Verify actual Frida session lifecycle on owned Linux targets	2026-10-23T19:04:10.6556469Z OK
+test	Build Android application and run lint	2026-10-23T19:11:42.2418159Z BUILD SUCCESSFUL in 5m 10s
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T19:03:21.0867198Z Ran 9 tests in 0.395s
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T19:03:21.0868796Z OK
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T19:03:40.2604999Z Ran 10 tests in 19.110s
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T19:03:40.2606058Z OK
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T19:03:40.8040473Z Ran 25 tests in 0.470s
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T19:03:40.8041882Z OK
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T19:03:41.9948770Z Ran 10 tests in 1.117s
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T19:03:41.9949272Z OK
