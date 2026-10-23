@@ -8,6 +8,7 @@ import io.github.asagnc.aurora.data.*
 import java.nio.file.*
 import java.util.UUID
 import kotlinx.coroutines.*
+import kotlinx.serialization.json.*
 import kotlinx.coroutines.channels.Channel
 import org.junit.Assert.*
 import org.junit.Test
@@ -60,7 +61,7 @@ class CommandLogDeviceTest {
             val conversations = ConversationStore(database)
             val owner = conversations.create("fixture")
             val store = ToolRunStore(conversations)
-            val mappings = listOf("command_execute", "command_execute_root", "command_execute_linux", "linux_environment", "packet_inspect", "packet_capture_root").associateWith { tool ->
+            val mappings = listOf("command_execute", "command_execute_root", "command_execute_linux", "linux_environment", "packet_inspect", "packet_capture_root", "shared_toolchain", "reverse_analyze").associateWith { tool ->
                 val id = store.start(owner, ToolCall(tool, tool, objectOf()))
                 val directory = "runs/${UUID.randomUUID()}"
                 assertEquals(directory, store.attachArtifact(owner, tool, directory).artifactDirectory)
@@ -80,6 +81,33 @@ class CommandLogDeviceTest {
                 assertNull(records["images_publish"]!!.artifactDirectory)
             }
             finally { reopened.close() }
+        } finally { database.close(); app.deleteDatabase(name) }
+    }
+
+    @Test fun reverseFailureProjectionSurvivesLongOutputAndDatabaseReopen() = runBlocking {
+        val name = "reverse-projection-${UUID.randomUUID()}.db"
+        val database = AuroraDatabase(app, name)
+        try {
+            val conversations = ConversationStore(database)
+            val owner = conversations.create("reverse failure")
+            val store = ToolRunStore(conversations)
+            val id = store.start(owner, ToolCall("reverse", "reverse_analyze", objectOf()))
+            val result = objectOf("state" to string("exited"), "exitCode" to JsonPrimitive(37), "stopped" to JsonPrimitive(true),
+                "detail" to objectOf("result" to objectOf("stdout" to objectOf("text" to string("x".repeat(12000))))))
+            store.finish(id, result.toString())
+            val probe = store.start(owner, ToolCall("probe", "shared_toolchain", objectOf()))
+            store.finish(probe, objectOf("error" to string("tool_probe_failed"), "detail" to string("x".repeat(12000))).toString())
+            database.close()
+            val reopened = AuroraDatabase(app, name)
+            try {
+                val records = ToolRunStore(ConversationStore(reopened)).recent(owner).associateBy { it.tool }
+                val record = requireNotNull(records["reverse_analyze"])
+                assertEquals("tool_probe_failed", summarizeToolResult(records["shared_toolchain"]?.presentation)?.error)
+                val summary = requireNotNull(summarizeToolResult(record.presentation))
+                assertEquals(37L, summary.exitCode)
+                assertEquals("command_exit", summary.error)
+                assertTrue(requireNotNull(summary.stdout).truncated)
+            } finally { reopened.close() }
         } finally { database.close(); app.deleteDatabase(name) }
     }
 

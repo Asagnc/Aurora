@@ -1,0 +1,7 @@
+{'tests': 235, 'failures': 0, 'errors': 0, 'skipped': 10}
+Tasks: core:test app:assembleDebug app:assembleDebugAndroidTest app:assembleRelease app:lintDebug
+BUILD SUCCESSFUL in 35s
+214 actionable tasks: 38 executed, 176 up-to-date
+Configuration cache entry reused.
+
+New/expanded Android ledger and Root reverse cases compiled only.

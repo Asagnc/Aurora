@@ -1,0 +1,5 @@
+Full workflow source805f5cd succeeded, including eight real Frida host fixtures.
+2026-10-23T14:14:58.5228760Z ........
+2026-10-23T14:14:58.5230052Z Ran 8 tests in 23.396s
+2026-10-23T14:14:58.5230573Z OK
+Not Android/ART execution.

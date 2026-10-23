@@ -23,7 +23,13 @@ internal class SharedToolchainTool(private val manager: SharedToolchainManager, 
         require(args.keys.all { it in setOf("action", "bundle") })
         return when (args.text("action")) {
             "status" -> manager.status(environment.selectedGeneration())
-            "probe" -> manager.probe(owner, environment.generation()) { id -> prepared(call.id, "runs/$id") }
+            "probe" -> {
+                var attached = false
+                manager.probe(owner, environment.generation()) { id ->
+                    // One ledger entry has one primary artifact; the reply lists every step's log directory.
+                    if (!attached) { prepared(call.id, "runs/$id"); attached = true }
+                }
+            }
             "install", "update" -> {
                 require("bundle" !in args)
                 val id = manager.install()

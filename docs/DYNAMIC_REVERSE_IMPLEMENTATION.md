@@ -1,3 +1,7 @@
+## 2026-10-23 原型8项真实主机/完整CI通过，Root产品接入待确认
+
+805f5cd完整CI39967903594成功，frida-session八项实际通过，包括一次选定脚本、桥消息确认和非Java目标不误报ART；Android构建/主机原生资格也通过。实际Android/ART仍未执行，worker仍未打包。下一步需要Root专用持久化/FD/清理窗口选择，见ROOT_MANAGED_TASKS_PROPOSAL.md，待用户确认；schema8尚未实施。
+
 ## 2026-10-23 桥加载真实用例通过、选定脚本控制通道
 
 b2de755的CI39966517578中frida-session job七项已实际通过，新增用例确认开发期生成bundle能在真实Frida/普通C目标中加载并报告Java.available=false，不误报ART。证据ci-39966517578-frida-job-passed.json与ci-39966517578-frida-tests-passed.txt。整体workflow仍需独立核实，不能把job成功当全部CI成功。

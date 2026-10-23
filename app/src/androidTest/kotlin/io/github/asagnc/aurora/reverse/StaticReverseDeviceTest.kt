@@ -94,8 +94,20 @@ class StaticReverseDeviceTest {
     private suspend fun analyze(app: AuroraApplication, owner: String, generation: String, arguments: JsonObject): JsonObject {
         val executor = StaticReverseAnalysisTool({ id, argv, timeout ->
             app.sharedToolchain.analyze(owner, LinuxToolRun(argv, StaticReverseTools.bundleId, timeout, id), generation)
-        }, { _, _ -> })
-        return WireJson.parseToJsonElement(executor.execute(ToolCall("qualification", "reverse_analyze", arguments))).jsonObject
+        }, { call, directory -> app.toolRuns.attachArtifact(owner, call, directory) })
+        return WireJson.parseToJsonElement(app.toolRuns.recording(owner, executor).execute(
+            ToolCall(UUID.randomUUID().toString(), "reverse_analyze", arguments))).jsonObject
+    }
+
+    private suspend fun probe(app: AuroraApplication, owner: String, environment: LinuxAgentEnvironment): JsonObject {
+        val executor = SharedToolchainTool(app.sharedToolchain, owner,
+            { call, directory -> app.toolRuns.attachArtifact(owner, call, directory) }, environment)
+        val result = WireJson.parseToJsonElement(app.toolRuns.recording(owner, executor).execute(
+            ToolCall("qualification-probe", "shared_toolchain", objectOf("action" to string("probe"))))).jsonObject
+        assertEquals(3, result.array("logDirectories").size)
+        assertEquals(result.array("logDirectories").first().jsonPrimitive.content,
+            app.toolRuns.list(owner).single { it.tool == "shared_toolchain" }.artifactDirectory)
+        return result
     }
 
     private suspend fun tools(app: AuroraApplication, owner: String, generation: String, argv: List<String>) =
@@ -129,7 +141,7 @@ class StaticReverseDeviceTest {
             environment = LinuxAgentEnvironment(app.linux, id)
             try {
                 val generation = environment.generation()
-                assertEquals(JsonPrimitive(true), app.sharedToolchain.probe(id, generation) {}["qualified"])
+                assertEquals(JsonPrimitive(true), probe(app, id, environment)["qualified"])
                 block(app, id, generation)
             } finally { environment.close() }
         } catch (failure: Throwable) { original = failure; throw failure }

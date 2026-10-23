@@ -44,17 +44,19 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
         val attempt = qualifications.begin(StaticReverseQualifications.Scope(generation, identity, StaticReverseTools.bundleId))
         val commands = staticReverseStartupCommands()
         val results = mutableListOf<JsonElement>()
+        val logs = mutableListOf<JsonElement>()
         for ((index, argv) in commands.withIndex()) {
             val id = UUID.randomUUID().toString(); prepared(id)
+            logs += string("runs/$id")
             val proof = app.linux.runs.executeTools(owner, LinuxToolRun(argv, StaticReverseTools.bundleId, 60000, id), generation)
             results += proof
             val passed = staticReverseProbePassed(StaticReverseProbeContext(index, id, generation), proof) &&
                 app.root.linuxExecution?.identity == identity
             if (!passed) return objectOf("error" to string("tool_probe_failed"), "qualified" to JsonPrimitive(false), "failedStep" to JsonPrimitive(index),
-                "results" to JsonArray(results))
+                "results" to JsonArray(results), "logDirectories" to JsonArray(logs))
         }
         val accepted = qualifications.complete(attempt)
-        return objectOf("qualified" to JsonPrimitive(accepted), "results" to JsonArray(results),
+        return objectOf("qualified" to JsonPrimitive(accepted), "results" to JsonArray(results), "logDirectories" to JsonArray(logs),
             "reason" to string(if (accepted) "startup_qualified" else "qualification_superseded"))
     }
     suspend fun cleanup(): Int {

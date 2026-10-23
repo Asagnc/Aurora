@@ -1,3 +1,13 @@
+## 2026-10-23 静态逆向Agent账本接入修复与Frida完整CI
+
+发现真实Agent路径的两个遗漏：ToolRunStore产物白名单未含shared_toolchain/reverse_analyze，调用prepared会在执行前失败；且一次probe三步都登记同一单产物字段，第二步会被拒绝。现允许这两个已注册工具，probe只登记首步主产物，结果另列每个尝试的规范logDirectories；不改数据库结构、不允许覆盖其他工具既有产物。独立Linux run票据仍保护每个原生步骤。
+
+reverse_analyze结果使用现有Linux小投影，shared_toolchain保留小型错误投影；大日志/历史截断不再掩盖非零退出或probe错误。Android映射重开测试扩展两个工具，新增1项长输出错误投影重开用例；五个Root静态逆向资格用例现在先经真实SharedToolchainTool+ToolRunStore.recording探测，分析也经过账本，避免只测底层绕过注册路径。均只编译，设备仍留最终验收。
+
+本地核心235项（225通过、10平台跳过）及Debug/Release R8/testAPK/lint通过，35秒，证据local-static-agent-ledger-passed.txt。Frida805f5cd完整CI39967903594已成功，八项真实主机用例全部通过（含桥控制单次执行）；证据ci-39967903594-passed.txt及frida-tests-passed.txt。此CI尚不包含本段随后发现的App账本修复，后者完整CI推送后核实。
+
+下一步Root持久化/FD新通道方案已比较，见ROOT_MANAGED_TASKS_PROPOSAL.md，待确认；当前schema仍7，没有新增Root执行入口，也未操作手机/真实模型。
+
 ## 2026-10-23 按类静态分析与完整设备资格用例
 
 reverse_analyze新增可选JADX className，使用上游--single-class/--single-class-output及--no-res；输出固定在当前唯一run目录的selected.java，向Agent返回selectedSource计划路径。严格限制参数类型、长度、控制符/路径分隔符/选项前缀，Apktool不接受该选项。未指定时保留原全量行为，不改变JVM/Root架构。按类仍需解析输入和依赖，不宣称已测性能领先。

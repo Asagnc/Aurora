@@ -1,3 +1,13 @@
+## 2026-10-23 静态逆向Agent账本接入修复与Frida完整CI
+
+发现真实Agent路径的两个遗漏：ToolRunStore产物白名单未含shared_toolchain/reverse_analyze，调用prepared会在执行前失败；且一次probe三步都登记同一单产物字段，第二步会被拒绝。现允许这两个已注册工具，probe只登记首步主产物，结果另列每个尝试的规范logDirectories；不改数据库结构、不允许覆盖其他工具既有产物。独立Linux run票据仍保护每个原生步骤。
+
+reverse_analyze结果使用现有Linux小投影，shared_toolchain保留小型错误投影；大日志/历史截断不再掩盖非零退出或probe错误。Android映射重开测试扩展两个工具，新增1项长输出错误投影重开用例；五个Root静态逆向资格用例现在先经真实SharedToolchainTool+ToolRunStore.recording探测，分析也经过账本，避免只测底层绕过注册路径。均只编译，设备仍留最终验收。
+
+本地核心235项（225通过、10平台跳过）及Debug/Release R8/testAPK/lint通过，35秒，证据local-static-agent-ledger-passed.txt。Frida805f5cd完整CI39967903594已成功，八项真实主机用例全部通过（含桥控制单次执行）；证据ci-39967903594-passed.txt及frida-tests-passed.txt。此CI尚不包含本段随后发现的App账本修复，后者完整CI推送后核实。
+
+下一步Root持久化/FD新通道方案已比较，见ROOT_MANAGED_TASKS_PROPOSAL.md，待确认；当前schema仍7，没有新增Root执行入口，也未操作手机/真实模型。
+
 ## 2026-10-23 Java桥加载与选定脚本控制
 
 CI39966517578的Frida独立job七项实际通过，包括生成桥加载/普通C目标不误报Java；整体workflow另查。原生原型接上一次aurora:run payload消息、严格文件预算与userScriptPosted/桥收到/同步求值返回三种不同事实，新第8项真实单次执行用例待CI。未接APK/Root/Agent、未做ART资格，不能宣称手机Java动态逆向已可用。详见DYNAMIC_REVERSE_IMPLEMENTATION.md。

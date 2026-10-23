@@ -35,7 +35,7 @@ class ToolRunStore(private val conversations: ConversationStore) {
         require(commandArtifactId(directory) != null)
         conversations.requireActive(db, owner)
         require(db.update("tool_runs", values("artifact_directory" to directory),
-            "owner = ? AND call_id = ? AND state = 'started' AND artifact_directory IS NULL AND tool IN ('command_execute','command_execute_root','command_execute_linux','linux_environment','packet_inspect','packet_capture_root','browser_download')",
+            "owner = ? AND call_id = ? AND state = 'started' AND artifact_directory IS NULL AND tool IN ('command_execute','command_execute_root','command_execute_linux','linux_environment','packet_inspect','packet_capture_root','browser_download','shared_toolchain','reverse_analyze')",
             arrayOf(owner, callId)) == 1)
         db.rawQuery("SELECT id, call_id, tool, state, result, artifact_directory, presentation FROM tool_runs WHERE owner = ? AND call_id = ?", arrayOf(owner, callId))
             .use { require(it.moveToFirst()); it.toolRun() }
@@ -51,7 +51,7 @@ class ToolRunStore(private val conversations: ConversationStore) {
     }
 
     suspend fun recent(owner: String): List<ToolRun> = conversations.read { db ->
-        db.rawQuery("SELECT id, call_id, tool, state, CASE WHEN tool IN ('command_execute','command_execute_root','command_execute_linux') AND presentation IS NULL THEN result ELSE substr(result, 1, 8001) END, artifact_directory, presentation FROM tool_runs WHERE owner = ? ORDER BY rowid DESC LIMIT 50", arrayOf(owner))
+        db.rawQuery("SELECT id, call_id, tool, state, CASE WHEN tool IN ('command_execute','command_execute_root','command_execute_linux','reverse_analyze','shared_toolchain') AND presentation IS NULL THEN result ELSE substr(result, 1, 8001) END, artifact_directory, presentation FROM tool_runs WHERE owner = ? ORDER BY rowid DESC LIMIT 50", arrayOf(owner))
             .use { cursor -> buildList { while (cursor.moveToNext()) {
                 val record = cursor.toolRun()
                 add(record.copy(result = record.result?.take(8001), presentation = record.presentation ?: record.result?.let { commandProjection(record.tool, it) }))
@@ -78,6 +78,7 @@ private fun Cursor.toolRun() = ToolRun(getString(0), getString(1), getString(2),
 
 private fun commandProjection(tool: String, result: String): String? = when (tool) {
     "command_execute", "command_execute_root", "packet_inspect", "packet_capture_root" -> compactCommandResult(result)
-    "command_execute_linux" -> compactLinuxCommandResult(result)
+    "command_execute_linux", "reverse_analyze" -> compactLinuxCommandResult(result)
+    "shared_toolchain" -> compactCommandResult(result)
     else -> null
 }
