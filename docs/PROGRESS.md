@@ -1,3 +1,11 @@
+## 2026-10-24 Root一次性启动与持久退役屏障
+
+新增独立Root journal实现：私有目录内固定文件，Root属主/权限/单硬链接/NOFOLLOW验证，与既有.run.lock约定相同的非阻塞flock。意图、164字节guard/worker PID-startTicks-boot身份、放行记录和退役标记均先写入并fsync文件及目录。启动/身份/放行不可重放，退役可幂等但重试仍需fsync；仅退休标记也阻止之后迟到start。损坏/部分写/错误阶段顺序保留失败状态，不删除或覆盖。
+
+新增17项Linux Root主机测试含真实进程互斥、父进程死亡、子进程关闭继承锁不会释放父锁、短写/文件或目录fsync失败、错误票据/身份、symlink/hardlink/FIFO/权限等，待CI；Windows仅平台跳过。NDK30/API36 ARM64完整链接和16KiB检查通过。当前是独立持久原语，尚未被实际cgroup guard/Binder/Agent调用，不能把身份记录当作worker已启动或注入已清理。
+
+上一轮f53d824完整CI40001467909已成功：9接收+10观察+19真实Frida及Android构建/lint通过，见ci-40001467909-passed.txt。本轮仍不操作手机/真实模型；继续接实际fork/admission/GO与回收。
+
 ## 2026-10-24 监督端新增19项主机用例通过
 
 f53d824的CI40001467909独立managed-supervision job已成功：9项报告流接收、10项真实自有子进程/pidfd/截止测试实际通过，后者19.048秒，包含真实15秒取消上限。证据ci-40001467909-managed-supervision-passed.txt；该job无Frida注入或手机执行。完整workflow仍在运行，不能将独立job成功写成整体成功。5d9ebff的40001398070被新提交取代取消，不记通过。

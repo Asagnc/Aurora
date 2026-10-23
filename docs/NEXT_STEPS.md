@@ -46,7 +46,11 @@
 
 - 新增事件驱动监督观察器：owner/worker pidfd、严格报告流、绝对截止，最多15秒协作窗口且不侵占调用者强制回收预留；10项自有原生子进程用例已在CI40001467909独立job实际通过。NDK30/API36 ARM64夹具链接/16KiB通过。尚无实际cgroup guard/持久退役/Binder/Agent接入，见ROOT_MANAGED_TASKS_IMPLEMENTATION.md。
 
+- 独立Root journal已实现意图/worker身份/放行/持久退役与同任务磁盘锁；启动不可重放，退役前后迟到启动互斥，坏记录/部分写保留。17项Root主机故障用例待CI，NDK30 ARM64链接/16KiB已通过；还没有实际worker fork/cgroup guard/Binder/Agent接入。
+
 ## 当前证据
+
+- f53d824完整CI40001467909现已成功，三job均成功；证据ci-40001467909-passed.txt。以下早期“整体待核实”是当时状态。本轮Root journal的17项用例推送后另查。
 
 - f53d824的40001467909 managed-supervision job成功：9接收+10观察主机用例实际通过（包含15秒真实等待）；完整workflow待核实。5d9ebff的40001398070被替代取消，不记通过。证据ci-40001467909-managed-supervision-passed.txt。
 

@@ -54,6 +54,16 @@ managed_observe通过一次poll等待owner/worker pidfd、专用报告socket及�
 
 这是独立监督原语，尚未连接Root guard/持久记录或Agent。10项主机夹具用自有原生子进程验证；没有Frida注入，不当作新增真实Frida用例。覆盖正常/到期/owner退出、流损坏、无报告/截短、完整报告但不退出、合作清理超时、无效FD/预算及实际15秒取消上限；已在f53d824的CI40001467909独立managed-supervision job实际通过，9项报告流接收也同job通过，完整workflow另查。NDK30/API36 ARM64夹具完整链接、LOAD均0x4000对齐，报告managed-observer-arm64-build.json，不是APK体积或Android执行资格。
 
+## 一次性派发与持久退役原语
+
+managed/journal不依赖Linux镜像或Frida库。调用者提供已固定的Root私有目录FD；open复制CLOEXEC目录，验证Root属主/私有权限，在Root-owned单硬链接.run.lock上非阻塞独占flock。关闭只close引用，不LOCK_UN或unlink，继承子副本关闭不能提前释放父锁。未来guard须持锁覆盖派发到清理/退役全过程，worker在admission前关闭自己的副本。
+
+固定文件managed.intent/ready/released/retired按严格阶段发布。intent/released/retired为107字节ARI1+规范runId+票据SHA；ready为固定164字节ARW1，含runId、票据SHA、LE32/64 guard/worker PID/startTicks及bootId。Root权限是信任边界，不声称能抵抗其他恶意Root程序。仅retired也是有效屏障；无intent却有ready/released、错身份、未知格式或残缺均失败，不转成“未找到”。
+
+每次新文件O_EXCL，先fsync文件再fsync目录才返回成功；部分/失败记录保留以阻止新派发。begin/ready/release不能重放；retire幂等重试也重做文件和目录fsync，避免把上次仅可见字节当已持久化。未来guard在写GO前先发布released；这个间隙崩溃必须记为可能已放行，不能推断“未注入”。retired只阻止未来派发，绝不证明原目标脚本已卸载或任务域已空。
+
+17项Linux Root故障测试待CI，NDK30/API36 ARM64独立夹具链接/16KiB通过。尚未接实际fork/GO、cgroup guard、最终事实持久发布、Root Binder/Agent/设备资格，Frida仍不ready。核实依据：[open](https://man7.org/linux/man-pages/man2/open.2.html)、[fsync](https://man7.org/linux/man-pages/man2/fsync.2.html)、[flock](https://man7.org/linux/man-pages/man2/flock.2.html)。
+
 ## 验证
 
 本地核心242项：232通过、10平台跳过；票据/预算/证明/错配4项与帧协议3项实际执行。Debug、Release R8、testAPK、lint通过；随后扩展Android用例又编译/lint通过，见evidence/0.1.40/local-root-managed-foundation-passed.txt及local-root-script-channel-passed.txt。
