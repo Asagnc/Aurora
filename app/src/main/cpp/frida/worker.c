@@ -48,22 +48,34 @@ static void processes(JsonBuilder *builder, FridaProcessList *list) {
     json_builder_end_array(builder);
 }
 
+static int finish_control(struct aurora_managed_control *control, const struct aurora_managed_facts *facts, int status) {
+    if (aurora_managed_report(control, facts, status)) status = 74;
+    aurora_managed_close(control);
+    return status;
+}
+
 static int attach(int argc, char **argv) {
     if (getuid() != 0) return 77;
+    struct aurora_managed_control control;
+    if (aurora_managed_open(&control)) return 64;
+    struct aurora_managed_facts facts = {.flags = AURORA_FACT_NO_SESSION};
+    if (control.fd >= 0 && strcmp(argv[1], "attach-channel")) return finish_control(&control, &facts, 64);
     int64_t started = aurora_fd_now();
-    if (started < 0) return 70;
+    if (started < 0) { aurora_managed_close(&control); return 70; }
     alarm(20); frida_init();
     struct frida_attach_input input = {0};
-    int invalid = !strcmp(argv[1], "attach-channel") ? frida_channel_read(argc, argv, &input) : frida_input_read(argc, argv, &input);
+    int invalid = !strcmp(argv[1], "attach-channel") ? frida_channel_read(argc, argv, &input, control.fd) : frida_input_read(argc, argv, &input);
+    if (control.fd >= 0 && (strcmp(argv[1], "attach-channel") || memcmp(control.ticket, input.ticket, 32))) invalid = 1;
     int status = 64;
     int64_t elapsed = aurora_fd_now() - started;
     if (!invalid && elapsed >= 0 && elapsed < input.duration_ms) {
         // Runtime setup and FD handoff consume the operation budget, never its cleanup reserve.
         input.duration_ms -= (unsigned) elapsed;
-        status = aurora_frida_attach(&input);
+        status = aurora_frida_attach(&input, &control, &facts);
     }
     free(input.script); free(input.payload);
-    frida_deinit(); alarm(0);
+    frida_deinit();
+    status = finish_control(&control, &facts, status); alarm(0);
     return status;
 }
 

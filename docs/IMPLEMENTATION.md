@@ -1,3 +1,11 @@
+## 2026-10-24 原生监督控制与最终事实开发通道
+
+新增私有原生父子stream：到期/取消事件、关闭时清理、Frida deinit后52字节独立最终事实，绑定票据摘要和worker PID/startTicks。bootstrap验证Root父身份、恢复CLOEXEC、清除内部环境；不使用stdout头部作证明。无frame/强杀/报告失败仍是未确认。修复attach API已尝试但session缺失被误标detached的边界，保留部分事实。
+
+新增7项控制/帧解析主机用例与8项真实Frida监督用例（合计19），待最新CI；ARM64原型交叉链接/16KiB检查通过89143968字节。未改变App打包，未重复运行未变的Android/JUnit。上轮cc84c22完整CI39993061650成功；15项受管基础/通道Android仍仅编译，没有操作手机/真实模型。
+
+Root Binder、实际原生cgroup guard、Root持久阶段/退役与App恢复尚未接上；worker事实不能单独释放待处理意图。下一步按ROOT_MANAGED_TASKS_IMPLEMENTATION.md继续连接，不宣称本轮已完成Root受管派发。
+
 ## 2026-10-24 FD通路完整CI通过与握手前取消补查
 
 dbea45a完整CI39991608445成功：9项真实Unix socket（含对端死亡）及11项真实Frida生命周期/脚本FD通路全部通过，Android Debug/Release R8/testAPK/lint通过。证据ci-39991608445-passed.txt、fd-tests-passed.txt、frida-tests-passed.txt。

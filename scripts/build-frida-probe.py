@@ -76,7 +76,7 @@ def build(args, archive, output):
         binary = work / "worker"
         argv = [str(compiler), "-DANDROID", "-Wall", "-Wextra", "-Werror", "-Os",
                 "-ffunction-sections", "-fdata-sections", "-fstack-protector-strong", "-I" + str(work),
-                *[str(ROOT / "app/src/main/cpp/frida" / name) for name in ["worker.c", "input.c", "channel_input.c", "fd_channel.c", "fd_io.c", "events.c", "session.c"]],
+                *[str(ROOT / "app/src/main/cpp/frida" / name) for name in ["worker.c", "input.c", "channel_input.c", "fd_channel.c", "fd_io.c", "managed_control.c", "managed_protocol.c", "managed_watch.c", "events.c", "session.c"]],
                 "-o", str(binary), "-L" + str(work),
                 "-lfrida-core", "-llog", "-ldl", "-lm", "-latomic", "-pthread", "-Wl,--export-dynamic",
                 "-Wl,--gc-sections", "-Wl,-z,relro,-z,now", "-Wl,-z,noexecstack", "-Wl,-z,max-page-size=16384"]

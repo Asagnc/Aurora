@@ -110,8 +110,8 @@ static char *read_snapshot(int fd, const struct snapshot_spec *spec) {
     bytes[spec->bytes] = 0; return bytes;
 }
 
-static int capture(const char *name, struct channel_request *request, struct frida_attach_input *input) {
-    struct aurora_fd_channel channel = {.socket = -1, .cancel = -1, .peer = -1, .deadline_ms = aurora_fd_now() + 5000};
+static int capture(const char *name, struct channel_request *request, struct frida_attach_input *input, int cancel_fd) {
+    struct aurora_fd_channel channel = {.socket = -1, .cancel = cancel_fd, .peer = -1, .deadline_ms = aurora_fd_now() + 5000};
     int descriptors[2] = {-1, -1}, result = -1;
     if (connect_channel(name, &channel) || aurora_fd_receive(&channel, &request->offer, descriptors)) goto done;
     close(channel.socket); channel.socket = -1; // End control before Frida initialization or script loading.
@@ -127,7 +127,7 @@ done:
     return result;
 }
 
-int frida_channel_read(int argc, char **argv, struct frida_attach_input *input) {
+int frida_channel_read(int argc, char **argv, struct frida_attach_input *input, int cancel_fd) {
     memset(input, 0, sizeof(*input));
     if (argc != 5 || strlen(argv[4]) > 16384 || !g_utf8_validate(argv[4], -1, NULL)) return -1;
     struct channel_request parsed = {0};
@@ -140,7 +140,8 @@ int frida_channel_read(int argc, char **argv, struct frida_attach_input *input) 
     gchar *digest = g_compute_checksum_for_string(G_CHECKSUM_SHA256, argv[4], -1);
     int invalid = hex(digest, parsed.offer.ticket); g_free(digest);
     if (invalid) goto done;
-    result = capture(argv[2], &parsed, input);
+    memcpy(parsed.input.ticket, parsed.offer.ticket, 32);
+    result = capture(argv[2], &parsed, input, cancel_fd);
 done:
     g_object_unref(parser); return result;
 }

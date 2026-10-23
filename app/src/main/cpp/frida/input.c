@@ -63,20 +63,26 @@ int frida_input_read(int argc, char **argv, struct frida_attach_input *input) {
     return 0;
 }
 
-int frida_target_matches(const struct frida_attach_input *input) {
+int frida_process_start(pid_t pid, uint64_t *start_ticks) {
     char path[64], buffer[65537];
-    snprintf(path, sizeof(path), "/proc/%ld/stat", (long) input->pid);
+    snprintf(path, sizeof(path), "/proc/%ld/stat", (long) pid);
     int file = open(path, O_RDONLY | O_CLOEXEC | O_NOFOLLOW);
-    if (file < 0) return 0;
+    if (file < 0) return -1;
     ssize_t count;
     do { count = read(file, buffer, sizeof(buffer) - 1); } while (count < 0 && errno == EINTR);
     close(file);
-    if (count <= 0 || count >= (ssize_t) sizeof(buffer) - 1) return 0;
+    if (count <= 0 || count >= (ssize_t) sizeof(buffer) - 1) return -1;
     buffer[count] = 0;
     char *end = strrchr(buffer, ')');
-    if (!end) return 0;
+    if (!end) return -1;
     char *state, *token = strtok_r(end + 1, " \t\n", &state);
     for (int index = 0; index < 19 && token; index++) token = strtok_r(NULL, " \t\n", &state);
     uint64_t ticks;
-    return token && integer(token, UINT64_MAX, &ticks) == 0 && ticks == input->start_ticks;
+    if (!token || integer(token, UINT64_MAX, &ticks)) return -1;
+    *start_ticks = ticks; return 0;
+}
+
+int frida_target_matches(const struct frida_attach_input *input) {
+    uint64_t ticks;
+    return !frida_process_start(input->pid, &ticks) && ticks == input->start_ticks;
 }

@@ -42,8 +42,11 @@
 
 - 2026-10-24 Root受管组合已批准；schema8/不可变票据与精确证明/删除屏障、封印memfd快照基础已实现，详见ROOT_MANAGED_TASKS_IMPLEMENTATION.md。基础9项+发送通道6项Android用例仅编译；AF_UNIX脚本FD开发通路已接发送方/worker，Root Binder派发、任务监督/恢复与Agent仍待接。
 
+- 退出事实/父进程控制原生开发通道已实现，52字节AEX1与精确进程/票据绑定；attach失败无session不再当作已detach。7主机控制+19真实Frida用例待最新CI；Root Binder/cgroup guard/持久恢复/Agent仍待连接。见ROOT_MANAGED_TASKS_IMPLEMENTATION.md。
+
 ## 当前证据
 
+- cc84c22完整CI39993061650已成功，覆盖握手前取消修复；随后原生监督/事实通道CI推送后核实。
 - dbea45a完整CI39991608445成功，9真实socket+11真实Frida通路、完整Android构建/lint通过。随后握手前取消修复新增Android用例仅编译，Debug/Release/testAPK/lint本地通过，最新CI推送后核实。
 
 - 1e5baf1完整CI39989586948已成功，含8真实socket/8真实Frida生命周期。随后端到端脚本FD入口本地构建通过、最新CI推送后核实。

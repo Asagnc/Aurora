@@ -24,6 +24,7 @@ jobs:
           python3 scripts/verify-frida-probe-build.py
           python3 scripts/verify-frida-input.py
           python3 scripts/verify-frida-fd-channel.py
+          sudo -n python3 scripts/verify-frida-managed-control.py
           ./gradlew :core:test --console=plain
       - name: Verify signed Ubuntu image and actual POSIX rootfs extraction
         run: bash scripts/verify-linux-image.sh

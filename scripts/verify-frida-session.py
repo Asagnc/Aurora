@@ -13,6 +13,7 @@ import tarfile
 import tempfile
 import time
 import unittest
+from frida_managed_cases import ManagedCases
 
 ROOT = Path(__file__).resolve().parents[1]
 NAME = "frida-core-devkit-17.24.3-linux-x86_64.tar.xz"
@@ -21,7 +22,7 @@ SIZE = 78853964
 
 
 @unittest.skipUnless(sys.platform.startswith("linux") and os.geteuid() == 0, "Explicit Linux Root host fixture")
-class FridaSessionTests(unittest.TestCase):
+class FridaSessionTests(ManagedCases, unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.temporary = tempfile.TemporaryDirectory(prefix="aurora-frida-session-")
@@ -43,7 +44,7 @@ class FridaSessionTests(unittest.TestCase):
         native = ROOT / "app/src/main/cpp/frida"
         cls.worker = cls.root / "worker"
         subprocess.run(["cc", "-Wall", "-Wextra", "-Werror", "-Os", "-ffunction-sections", "-fdata-sections",
-                        "-I" + str(cls.root), *[str(native / name) for name in ["worker.c", "input.c", "channel_input.c", "fd_channel.c", "fd_io.c", "events.c", "session.c"]],
+                        "-I" + str(cls.root), *[str(native / name) for name in ["worker.c", "input.c", "channel_input.c", "fd_channel.c", "fd_io.c", "managed_control.c", "managed_protocol.c", "managed_watch.c", "events.c", "session.c"]],
                         "-o", str(cls.worker), "-L" + str(cls.root), "-lfrida-core", "-ldl", "-lrt", "-lm", "-lresolv",
                         "-pthread", "-Wl,--export-dynamic", "-Wl,--gc-sections", "-Wl,-z,noexecstack"], check=True)
         target = cls.root / "target.c"
@@ -185,8 +186,8 @@ class FridaSessionTests(unittest.TestCase):
         self.assertEqual(0, child.returncode, records)
 
     def start_channel(self, source, bridge=None, corrupt=None):
-        from frida_channel_fixture import launch
-        child = launch(self.worker, (self.process.pid, self.ticks), source, bridge, corrupt)
+        from frida_channel_fixture import launch, LaunchOptions
+        child = launch(self.worker, (self.process.pid, self.ticks), source, LaunchOptions(bridge=bridge, corrupt=corrupt)).child
         self.addCleanup(self.stop, child)
         return child
 

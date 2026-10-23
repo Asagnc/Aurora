@@ -1,5 +1,6 @@
 """Owned Root host sender for the same native channel used by Android; no disk script copy."""
 import array
+from dataclasses import dataclass
 import fcntl
 import hashlib
 import json
@@ -37,8 +38,25 @@ def snapshot(data):
         raise
 
 
-def launch(worker, target, selected, bridge=None, corrupt=None):
-    """target=(pid,startTicks); returns a worker only after bounded FD acknowledgement."""
+@dataclass
+class LaunchOptions:
+    bridge: bytes | None = None
+    corrupt: str | None = None
+    supervision: socket.socket | None = None
+    duration: int = 2000
+
+
+@dataclass
+class ChannelLaunch:
+    child: subprocess.Popen
+    digest: bytes
+    ticks: int
+
+
+def launch(worker, target, selected, options=None):
+    """target=(pid,startTicks); returns identity only after bounded FD acknowledgement."""
+    options = options or LaunchOptions()
+    bridge, corrupt = options.bridge, options.corrupt
     def metadata(data):
         return {"version": "owned-fixture", "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)}
     script_meta = metadata(selected)
@@ -50,7 +68,7 @@ def launch(worker, target, selected, bridge=None, corrupt=None):
         "identity": {"pid": os.getpid(), "startTicks": start_ticks(os.getpid()),
             "bootId": Path("/proc/sys/kernel/random/boot_id").read_text().strip(), "epoch": str(uuid.uuid4())},
         "appUid": 10000, "appBuild": "host-qualification", "workerSha256": "a" * 64,
-        "target": {"pid": target[0], "startTicks": target[1]}, "script": script_meta, "observeMs": 2000}
+        "target": {"pid": target[0], "startTicks": target[1]}, "script": script_meta, "observeMs": options.duration}
     if bridge is not None:
         ticket["bridge"] = metadata(bridge)
     encoded = json.dumps(ticket, separators=(",", ":"))
@@ -61,6 +79,12 @@ def launch(worker, target, selected, bridge=None, corrupt=None):
         return b"AFD1" + bytes([role, count, 0, 0]) + suffix
     name = "aurora-fd-" + uuid.uuid4().hex
     files = []
+    environment = os.environ.copy()
+    inherited = []
+    if options.supervision is not None:
+        inherited.append(options.supervision.fileno())
+        environment["AURORA_MANAGED_FD"] = str(options.supervision.fileno())
+        environment["AURORA_MANAGED_TICKET"] = hashlib.sha256(encoded.encode()).hexdigest()
     child = None
     try:
         files.append(snapshot(selected))
@@ -69,7 +93,8 @@ def launch(worker, target, selected, bridge=None, corrupt=None):
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as listener:
             listener.bind("\0" + name); listener.listen(1); listener.settimeout(6)
             child = subprocess.Popen([str(worker), "attach-channel", name, nonce.hex(), encoded],
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0)
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0, env=environment, pass_fds=inherited)
+            child_start = start_ticks(child.pid)
             peer, _ = listener.accept()
             with peer:
                 peer.settimeout(5)
@@ -81,7 +106,7 @@ def launch(worker, target, selected, bridge=None, corrupt=None):
                     raise AssertionError("Worker did not acknowledge sealed descriptors")
                 if peer.recv(1) != b"":
                     raise AssertionError("Worker retained control socket or sent extra bytes")
-        return child
+        return ChannelLaunch(child, hashlib.sha256(encoded.encode()).digest(), child_start)
     except BaseException:
         if child is not None:
             child.kill(); child.communicate(timeout=5)

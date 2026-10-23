@@ -26,6 +26,20 @@ worker独立解析有界执行字段，核实Root对端身份、封印/大小/�
 
 当前ARM64完整worker交叉链接通过（stripped89141216字节，未打包），Android发送端/核心及Debug/Release R8/testAPK/lint本地通过；3项新增核心已执行，6项Android发送端用例仅编译（含进入握手前已取消）。累计受管基础/发送端15项Android仅编译，仍不改变ready状态。
 
+## 正在接入的专用退出事实通道
+
+开发worker新增原生父进程通过fork/exec明确继承的私有AF_UNIX stream。它不同于一次性脚本FD socket：父进程只发单字节到期/取消指令，worker在独立事件上下文监听；结束后只发一次52字节AEX1最终事实。没有新线程、守护进程、依赖或每行Binder回调，也不假设Java ProcessBuilder会保留FD。
+
+bootstrap要求FD>=3、stream、SO_PEERCRED UID0且peer PID是当前父进程，恢复CLOEXEC/非阻塞后清除两个内部环境项，避免传给helper。受管模式只允许封印脚本通道，校验环境票据摘要与实际输入摘要一致。控制通道取消/断开也能中断脚本FD握手；交付之后须由进程监督配合，不能仅关闭脚本socket。
+
+AEX1固定magic/version/reserved、final/attachAttempted/loaded/unloaded/detached/managerClosed/success位、退出码、票据摘要、worker PID/startTicks；解析器拒绝跨票据/进程/启动、保留位、无效成功组合。final只代表最终报告，不等于任务已退出或清理成功。worker只在Frida deinit完成后发送，报告失败返回74；强杀/未关闭manager没有最终报告，不能回退从stdout猜证明。业务success仍仅指请求的有界观察完成，不是所有异步Java业务都已结束。
+
+修复已有原型的一个事实边界：attach API调用过却没有session对象，不再自动标记detached；保留未确认事实。未调用attach的预检失败有单独的never-attempted事实（57/64），也须结合真实worker退出、域回收和Root退役屏障后才能清理SQLite意图。
+
+ARM64完整worker交叉链接/外层16KiB检查通过，stripped89143968字节，未打包。新增7项纯主机控制/解码用例，以及8项真实Frida监督用例（自然完成、取消、到期、通道丢失、非法控制、预检拒绝、强杀无证明、已有调试器占用时不谎报detach），真实Frida总计19项，待最新CI执行。cc84c22完整CI39993061650已成功，尚不包含这些新增代码。
+
+此阶段仍没有接Root Binder、独立原生cgroup guard/持久阶段/退役处理或Agent；接收worker事实之后仍必须验证worker已退出和本任务域已移除，不能据此显示Frida ready。后续guard须由自己创建control socketpair并明确交给自己的子进程，不能拿Java创建socket的SO_PEERCRED当原生guard身份。
+
 ## 验证
 
 本地核心242项：232通过、10平台跳过；票据/预算/证明/错配4项与帧协议3项实际执行。Debug、Release R8、testAPK、lint通过；随后扩展Android用例又编译/lint通过，见evidence/0.1.40/local-root-managed-foundation-passed.txt及local-root-script-channel-passed.txt。

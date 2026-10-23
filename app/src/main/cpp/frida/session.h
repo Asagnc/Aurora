@@ -2,6 +2,7 @@
 #define AURORA_FRIDA_SESSION_H
 #include "frida-core.h"
 #include "input.h"
+#include "managed_control.h"
 
 struct aurora_frida_session {
     const struct frida_attach_input *input;
@@ -13,9 +14,10 @@ struct aurora_frida_session {
     const char *reason;
     guint64 sequence, bytes;
     gint dropped, failed;
-    gboolean loaded, posted, unloaded, detached, closed, manager_ready;
-    int target_fd;
+    gboolean loaded, posted, unloaded, detached, closed, manager_ready, attempted;
+    int target_fd, supervisor_fd;
 };
+GSource *aurora_managed_watch(struct aurora_frida_session *run, GMainContext *context);
 void aurora_frida_stop(struct aurora_frida_session *run, const char *reason);
 JsonBuilder *aurora_frida_event(const char *kind);
 void aurora_frida_number(JsonBuilder *builder, const char *key, gint64 value);
@@ -23,5 +25,5 @@ void aurora_frida_text(JsonBuilder *builder, const char *key, const char *value)
 gboolean aurora_frida_emit(struct aurora_frida_session *run, JsonBuilder *builder, gboolean final);
 void aurora_frida_message(FridaScript *script, const gchar *message, GBytes *data, gpointer opaque);
 /* Caller owns one Frida initialization/deinitialization around parsing and this session. */
-int aurora_frida_attach(const struct frida_attach_input *input);
+int aurora_frida_attach(const struct frida_attach_input *input, struct aurora_managed_control *control, struct aurora_managed_facts *facts);
 #endif
