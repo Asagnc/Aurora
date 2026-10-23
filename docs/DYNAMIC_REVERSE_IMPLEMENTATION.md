@@ -1,3 +1,19 @@
+## 2026-10-23 Frida附加会话原生流程（未打包，主机运行CI待核实）
+
+原生worker已新增attach <pid> <startTicks> <absoluteScript> <durationMs>入口，固定1..270000ms、1MiB普通脚本快照、最终组件不跟随链接、拒绝空/NUL/非法UTF8。接收已有目标时持有pidfd，附加前和加载脚本前复核PID开始时间/原进程存活；Frida API按PID附加，无法原子传pidfd，因此不能承诺消除“检查与attach之间”所有竞态，但旧目标退出后不会按已知复用PID继续加载脚本。
+
+GCancellable跨线程取消、条件变量等待，无定时轮询。SIGTERM/SIGINT只用自管道通知事件循环；运行期限结束和外部取消分别记录。worker线程同步调用Frida、主循环处理信号/截止，清理使用独立10秒取消域，不复用已取消的执行域。最终硬截止仅用于挂起兜底，触发时不产生清理成功证明。
+
+脚本消息64KiB、二进制16KiB、JSONL总4MiB且预留最终摘要空间；显式序号/丢弃数/预算错误，脚本异常不是成功。额度只限制转发日志，不是注入端脚本CPU/RSS或Frida接收分配的硬沙箱。unload/detach/manager close分别确认，不能用worker退出代替；原有目标不被kill。退出码0仅表示已加载、观察期限结束且完整收尾/输出成功，不代表脚本业务意图已达成。
+
+核实Frida17.24.3 src/frida-glue.c：frida_unref可能把释放排到Frida私有context，不能用普通g_object_unref假设同步清空。当前对Frida对象采用frida_unref，并在最终结果/状态销毁前调用frida_deinit排空其私有上下文；避免迟到回调访问已清除的锁。依据：https://github.com/frida/frida-core/blob/17.24.3/src/frida-glue.c 与 https://docs.gtk.org/gio/class.Cancellable.html 。
+
+Android ARM64交叉链接、系统依赖/外层16KiB检查通过；strip89134368字节，单库ZIP36052667字节。本机Windows没有执行这些ARM64字节。新增3项纯Linux输入测试和6项真实Frida/Linux自有目标测试（hook/取消/语法错误/身份错配/消息预算/目标退出），Windows按平台跳过，完整CI推送后才可核实实际运行。
+
+Linux主机Frida devkit固定17.24.3，78853964字节，SHA256 9a11abf474899a33af6dd9af8a064448b23947a29a3af747eb3c7851591ffec2，仅CI夹具用，不随APK交付。测试目标为仓库自有C程序，finally只杀该测试自己创建的进程，不能拿用户应用代替。主机通过也不等于Android16注入通过。
+
+上轮526c4c4完整CI39960629598已成功，证据evidence/0.1.40/ci-39960629598-passed.txt。当前仍未接APK/Root协议/Agent；spawn/Java桥/持久恢复与许可证闭包继续保留，不显示动态ready=true。未操作手机或真实供应商。
+
 # 动态逆向实施状态（2026-10-23）
 
 状态：用户要求多处比较取优，按DYNAMIC_REVERSE_PROPOSAL的原生独立worker路径先构建资格。仅源级/主机交叉链接已实现，未加入CMake/APK/Root协议/Agent工具，不能使用动态逆向，也未执行手机。不是安装半成品，没有在手机上放置文件或常驻服务。

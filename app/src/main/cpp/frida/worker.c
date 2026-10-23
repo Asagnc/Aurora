@@ -1,5 +1,6 @@
 /* Build/ABI qualification only: not yet packaged or registered as an Agent tool. */
-#include "frida-core.h"
+#include "session.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -51,6 +52,14 @@ int main(int argc, char **argv) {
         puts(frida_version_string());
         return 0;
     }
+    if (argc >= 2 && strcmp(argv[1], "attach") == 0) {
+        if (getuid() != 0) return 77;
+        struct frida_attach_input input;
+        if (frida_input_read(argc, argv, &input)) return 64;
+        int status = aurora_frida_attach(&input);
+        free(input.script);
+        return status;
+    }
     if (argc != 2 || strcmp(argv[1], "probe") != 0) return 64;
     if (getuid() != 0) return 77;
     /* No attach/spawn operations exist in this qualification stage. */
@@ -76,11 +85,11 @@ int main(int argc, char **argv) {
     const int status = list != NULL ? 0 : 1;
     g_clear_error(&error);
     g_clear_object(&builder);
-    g_clear_object(&list);
+    g_clear_pointer(&list, frida_unref);
     g_clear_object(&options);
-    g_clear_object(&device);
+    g_clear_pointer(&device, frida_unref);
     frida_device_manager_close_sync(manager, NULL, NULL);
-    g_clear_object(&manager);
+    g_clear_pointer(&manager, frida_unref);
     frida_deinit();
     return status;
 }

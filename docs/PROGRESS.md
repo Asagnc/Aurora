@@ -1,3 +1,9 @@
+## 2026-10-23 Frida附加、消息与退出收尾原生实现
+
+已新增原生附加流程：PID/pidfd复核、受限脚本读取、QuickJS加载、有界序号消息、跨线程取消、独立清理截止、unload/detach/manager确认。使用frida_unref与最终Frida上下文排空处理晚到回调。未打包/注册Agent工具；spawn/Java桥/持久恢复仍待接入，不能宣称动态逆向可用。
+
+ARM64 NDK交叉构建/依赖与外层16KiB检查通过。新增3项Linux输入+6项真实Frida主机生命周期测试，Windows跳过，推送后必须核实CI实际运行；不是9项本地通过。上一轮构建CI39960629598已成功。详情与证据见DYNAMIC_REVERSE_IMPLEMENTATION.md，手机留最终集中验收。
+
 ## 2026-10-23 动态逆向原生构建资格与APK构建链检索
 
 用户回复“多处对比取最优”，按DYNAMIC_REVERSE_PROPOSAL推进独立Frida Core worker的构建资格。官方17.24.3 devkit字节摘要通过，现有NDK ARM64交叉链接与外层16KiB段/系统依赖检查通过；strip后约89MB、单库ZIP约36MB，仅原型体积，不是完整APK/RSS。新增可复现构建适配器、2项离线归档拒绝测试及CI资格步骤。
