@@ -24,6 +24,11 @@ internal class BrowserTab(val owner: String, val view: WebView) {
     var loading by mutableStateOf(false)
     var failure by mutableStateOf<String?>(null)
     var revision = 0L
+    var closed = false
+        private set
+    val document = kotlinx.coroutines.flow.MutableStateFlow(io.github.asagnc.aurora.core.BrowserDocumentState())
+    fun changed() { document.value = io.github.asagnc.aurora.core.BrowserDocumentState(revision, loading, failure, closed) }
+    fun markClosed() { closed = true; changed() }
 }
 
 internal class BrowserController(private val context: Context, private val saveProxy: Boolean = true,
@@ -67,23 +72,26 @@ internal class BrowserController(private val context: Context, private val saveP
         val client = object : WebViewClient() {
             override fun shouldInterceptRequest(web: WebView, request: WebResourceRequest): WebResourceResponse? = intercept?.invoke(request)
             override fun onPageStarted(web: WebView, url: String, favicon: android.graphics.Bitmap?) {
-                tab.loading = true; tab.failure = null; tab.address = url; tab.revision++
+                tab.loading = true; tab.failure = null; tab.address = url; tab.revision++; tab.changed()
             }
             override fun shouldOverrideUrlLoading(web: WebView, request: WebResourceRequest): Boolean {
                 if (request.url.scheme != "https") { error = "仅支持 HTTPS 网页；外部应用和本地文件链接未打开"; return true }
                 return configuring || proxyFailed
             }
+            override fun doUpdateVisitedHistory(web: WebView, url: String, isReload: Boolean) {
+                tab.address = url; tab.revision++; tab.changed()
+            }
             override fun onPageFinished(web: WebView, url: String) {
-                tab.loading = false; tab.address = url; tab.title = web.title?.take(80) ?: "网页"
+                tab.loading = false; tab.address = url; tab.title = web.title?.take(80) ?: "网页"; tab.changed()
             }
             override fun onReceivedError(web: WebView, request: WebResourceRequest, failure: WebResourceError) {
                 if (request.isForMainFrame) {
-                    tab.loading = false; tab.failure = "network ${failure.errorCode}"
+                    tab.loading = false; tab.failure = "network ${failure.errorCode}"; tab.changed()
                     error = "网页加载失败（${failure.errorCode}），可检查网络后重新打开"
                 }
             }
             override fun onReceivedHttpError(web: WebView, request: WebResourceRequest, response: WebResourceResponse) {
-                if (request.isForMainFrame) tab.failure = "HTTP ${response.statusCode}"
+                if (request.isForMainFrame) { tab.failure = "HTTP ${response.statusCode}"; tab.changed() }
             }
             override fun onRenderProcessGone(web: WebView, detail: RenderProcessGoneDetail): Boolean {
                 close(tab); error = "网页渲染进程已退出，请重新打开页面"; return true
@@ -105,13 +113,14 @@ internal class BrowserController(private val context: Context, private val saveP
         if (uri?.scheme != "https" || uri.host.isNullOrBlank() || uri.rawUserInfo != null) {
             error = "请输入不含用户名或密码的 HTTPS 地址"; return false
         }
-        tab.address = address; tab.loading = true; tab.failure = null
+        tab.address = address; tab.loading = true; tab.failure = null; tab.changed()
         tab.view.loadUrl(address)
         return true
     }
 
     fun close(tab: BrowserTab) {
         if (!tabs.remove(tab)) return
+        tab.markClosed()
         (tab.view.parent as? ViewGroup)?.removeView(tab.view)
         tab.view.stopLoading()
         tab.view.destroy()
@@ -126,7 +135,7 @@ internal class BrowserController(private val context: Context, private val saveP
         if (owner in agents) return
         tabs.filter { it.owner == owner }.forEach {
             if (it.loading) { it.failure = "Navigation stopped before completion"; it.loading = false }
-            it.view.stopLoading(); it.view.onPause()
+            it.changed(); it.view.stopLoading(); it.view.onPause()
         }
         if (agents.isEmpty() && viewers.isEmpty()) tabs.firstOrNull()?.view?.pauseTimers()
     }

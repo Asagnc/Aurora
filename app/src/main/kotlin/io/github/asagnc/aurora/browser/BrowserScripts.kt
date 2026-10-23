@@ -43,13 +43,5 @@ internal object BrowserScripts {
         return {performed:action};
     })()""".trimIndent()
 
-    fun wrap(script: String) = """(() => {
-        try {
-            const value = (0,eval)(${string(script)});
-            if (value && typeof value.then === 'function') throw Error('Return a synchronous JSON value, not a Promise');
-            const encoded = JSON.stringify(value === undefined ? null : value);
-            const truncated = encoded.length > 32000;
-            return JSON.stringify({ok:true, value:truncated ? encoded.slice(0,32000) : JSON.parse(encoded), truncated});
-        } catch (e) { return JSON.stringify({ok:false,error:String(e.message || e).slice(0,500)}); }
-    })()""".trimIndent()
+    fun wrap(script: String) = io.github.asagnc.aurora.core.BrowserJavascript.synchronous(script)
 }

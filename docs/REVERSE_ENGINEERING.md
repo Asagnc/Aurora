@@ -2,7 +2,7 @@
 
 ## 2026-10-23 当前状态
 
-Root 命令、PTY、会话文件与 Linux 底座已实现并有后续真机证据，覆盖下方早期“只读握手”的历史状态；但抓包/发包与第三方逆向工具包仍未接入，不能因 Root 命令可用就称这些功能已完成。Root 抓包组件与产物接入的待确认推荐见 ROOT_CAPTURE_PROPOSAL.md。官网当前标记 tcpdump 4.99.7、libpcap 1.10.7 为 stable，libpcap 1.11.0 仍是 testing，不能只取最高标签代替最新稳定版。
+Root 命令、PTY、会话文件与Linux底座已有实现/设备证据。0.1.36已接Root libpcap worker、Agent抓包和普通UID tcpdump离线分析，主机控制用例通过，Android最终验收仍待进行；当前状态见ROOT_CAPTURE_IMPLEMENTATION.md。发包、TLS解密及第三方逆向工具包尚未集成。下方只读握手/抓包候选为早期历史，不能覆盖上述最新状态。
 
 
 2026-10-15。此文件是范围和候选方案记录，不代表工具已经安装或可运行。

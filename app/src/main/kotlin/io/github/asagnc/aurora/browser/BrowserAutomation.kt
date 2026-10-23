@@ -46,7 +46,7 @@ internal class BrowserAutomation(private val browser: BrowserController, private
             awaitLoad(tab)
             return read(tab)
         } catch (cancel: CancellationException) {
-            tab.view.stopLoading(); tab.loading = false; tab.failure = "Navigation cancelled or timed out"; throw cancel
+            tab.view.stopLoading(); tab.loading = false; tab.failure = "Navigation cancelled or timed out"; tab.changed(); throw cancel
         }
     }
 
@@ -57,7 +57,7 @@ internal class BrowserAutomation(private val browser: BrowserController, private
         val results = coroutineScope { values.map { value -> async {
             limiter.acquire()
             try { action(value) }
-            catch (timeout: TimeoutCancellationException) { objectOf("error" to string("Timed out; inspect page before retrying")) }
+            catch (timeout: TimeoutCancellationException) { currentCoroutineContext().ensureActive(); objectOf("error" to string("Timed out; inspect page before retrying")) }
             catch (cancel: CancellationException) { throw cancel }
             catch (failure: Exception) { objectOf("error" to string(failure.message?.take(500) ?: "Browser operation failed")) }
             finally { limiter.release() }
@@ -65,11 +65,10 @@ internal class BrowserAutomation(private val browser: BrowserController, private
         return objectOf("results" to JsonArray(results))
     }
 
-    private suspend fun awaitLoad(tab: BrowserTab) = withTimeout(25_000) {
-        // Callbacks update loading and failure for main-frame navigations, including redirects.
-        while (tab.loading) { check(tab in browser.tabs) { "Page was closed" }; delay(50) }
+    private suspend fun awaitLoad(tab: BrowserTab) {
         check(tab in browser.tabs) { "Page was closed" }
-        check(tab.failure == null) { "Page failed: ${tab.failure}" }
+        awaitBrowserLoad(tab.document)
+        check(tab in browser.tabs) { "Page was closed" }
     }
 
     private suspend fun read(tab: BrowserTab): JsonObject {
@@ -95,21 +94,41 @@ internal class BrowserAutomation(private val browser: BrowserController, private
     private suspend fun evaluate(tab: BrowserTab, args: JsonObject): JsonObject {
         require(args.text("url") == tab.view.url && args.number("revision") == tab.revision && !tab.loading) { "Page changed; read it again before evaluating" }
         val script = requireNotNull(args.text("script")).also { require(it.length in 1..16_384) }
-        return objectOf("page" to string(tab.id), "result" to javascript(tab, script), "trust" to string("untrusted_web_content"))
+        require(args.keys.all { it in setOf("page", "url", "revision", "script", "awaitPromise", "timeoutMs") })
+        val asynchronous = args["awaitPromise"]?.let {
+            require(it is JsonPrimitive && !it.isString); requireNotNull(it.booleanOrNull)
+        } ?: false
+        val timeout = args["timeoutMs"]?.let {
+            require(it is JsonPrimitive && !it.isString); requireNotNull(it.longOrNull)
+        } ?: 10000L
+        require(timeout in 1..30000)
+        val result = if (asynchronous) {
+            browser.resume(tab)
+            val encoded = BrowserAsyncJavascript.evaluate(tab, script, timeout)
+            withContext(Dispatchers.Default) { decodeBrowserScriptResult(encoded) }
+        } else javascript(tab, script, timeout)
+        check(tab in browser.tabs && !tab.loading && tab.revision == args.number("revision") && tab.view.url == args.text("url")) {
+            "Page changed; script outcome unknown"
+        }
+        return objectOf("page" to string(tab.id), "result" to result, "trust" to string("untrusted_web_content"))
     }
 
-    private suspend fun javascript(tab: BrowserTab, script: String): JsonElement {
+    private suspend fun javascript(tab: BrowserTab, script: String, timeoutMs: Long = 10000): JsonElement {
         browser.resume(tab)
         val wrapped = BrowserScripts.wrap(script)
-        val raw = withTimeout(10_000) { suspendCancellableCoroutine<String> { continuation ->
-            tab.view.evaluateJavascript(wrapped) { result -> if (continuation.isActive) continuation.resume(result ?: "null") }
+        val revision = tab.revision
+        val address = tab.view.url
+        val raw = withTimeout(timeoutMs) { awaitBrowserDocumentResult(tab.document, revision) {
+            suspendCancellableCoroutine<String> { continuation ->
+                tab.view.evaluateJavascript(wrapped) { result -> if (continuation.isActive) continuation.resume(result ?: "null") }
+            }
         } }
-        val encoded = (WireJson.parseToJsonElement(raw) as? JsonPrimitive)?.content
-            ?: error("Renderer returned no serializable result")
-        require(encoded.length <= 40_000) { "Renderer result exceeded budget" }
-        val result = WireJson.parseToJsonElement(encoded).jsonObject
-        check(result["ok"]?.jsonPrimitive?.boolean == true) { result.text("error") ?: "Page script failed" }
-        return result
+        check(tab in browser.tabs && tab.view.url == address) { "Page changed; script outcome unknown" }
+        val decoded = withContext(Dispatchers.Default) { decodeBrowserJavascriptCallback(raw) }
+        check(tab in browser.tabs && !tab.loading && tab.revision == revision && tab.view.url == address) {
+            "Page changed; script outcome unknown"
+        }
+        return decoded
     }
 
     private fun describe(tab: BrowserTab) = objectOf("page" to string(tab.id), "url" to string(tab.view.url ?: tab.address),

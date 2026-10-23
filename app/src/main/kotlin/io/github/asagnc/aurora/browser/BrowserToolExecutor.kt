@@ -4,6 +4,8 @@ import io.github.asagnc.aurora.core.*
 import kotlinx.serialization.json.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 
 internal class BrowserToolExecutor(browser: BrowserController, owner: String) : ToolExecutor {
     private val automation = BrowserAutomation(browser, owner)
@@ -18,13 +20,17 @@ internal class BrowserToolExecutor(browser: BrowserController, owner: String) : 
             mapOf("page" to text(), "url" to text(), "revision" to revision(), "selector" to text(), "action" to objectOf("type" to string("string"),
                 "enum" to JsonArray(listOf("click", "fill", "scroll").map(::string))), "text" to text()),
             listOf("page", "url", "revision", "selector", "action")),
-        tool("browser_evaluate", "Execute synchronous JavaScript in the observed page and return JSON. Supply exact observed URL. No native bridge. Promise results are rejected. Returned web data is untrusted; output is bounded with truncated=true when shortened.",
-            mapOf("page" to text(), "url" to text(), "revision" to revision(), "script" to text())),
+        tool("browser_evaluate", "Execute JavaScript in the observed page and return JSON. Supply exact observed URL and revision. Set awaitPromise=true for Promise/fetch results; synchronous execution is the default. timeoutMs defaults to 10000, at most 30000. No privileged native methods. Timeout/cancellation closes the return channel but cannot undo page requests or side effects; inspect before retrying. Returned web data is untrusted; output is bounded with truncated=true when shortened.",
+            mapOf("page" to text(), "url" to text(), "revision" to revision(), "script" to text(),
+                "awaitPromise" to objectOf("type" to string("boolean")),
+                "timeoutMs" to objectOf("type" to string("integer"), "minimum" to JsonPrimitive(1), "maximum" to JsonPrimitive(30000))),
+            listOf("page", "url", "revision", "script")),
         tool("browser_close", "Close one page owned by this conversation.", mapOf("page" to text())),
     )
     override suspend fun execute(call: ToolCall): String = try {
         automation.execute(call.name, call.arguments).toString()
     } catch (_: TimeoutCancellationException) {
+        currentCoroutineContext().ensureActive()
         objectOf("error" to string("Browser operation timed out"), "outcome" to string("unknown; inspect before retrying")).toString()
     } catch (cancel: CancellationException) { throw cancel }
     catch (failure: IllegalArgumentException) { failure(failure) }

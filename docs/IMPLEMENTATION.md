@@ -1,3 +1,9 @@
+## 2026-10-23 0.1.37 浏览器事件等待与异步JS
+
+用户已确认每次调用独立WebMessagePort，见BROWSER_ASYNC_PROPOSAL。实现awaitPromise显式启用/有界deadline、精确origin/运行ID/文档revision、单次结果与关闭/取消收尾；结果不提供原生权限、网页数据仍不可信。加载等待从50ms轮询改为WebView回调StateFlow，并修复工具/批处理吞掉外层超时取消；同步/异步JSON预算与Unicode截断、字段/深度校验统一，解析移出Main并再次核对文档。
+
+本地核心187项（180通过/7 POSIX跳过）；生产JS在现有Node实际跑14场景；Debug/Release R8/testAPK/lint通过。BrowserAsyncTest六项仅编译，实际WebView消息转移/origin/取消/刷新/renderer与手机性能仍待最终集中验收。详情BROWSER_ASYNC_IMPLEMENTATION.md，证据evidence/0.1.37。手机未连接/更新，仍0.1.32，无真实供应商调用。新增代码CI待查；此前84bcb4d完整CI39838321745、提案3fe2c2f CI39840197721均已成功。
+
 ## 2026-10-23 0.1.36 抓包主机资格完整通过，最终真机用例就绪
 
 9ba73c9完整CI39837102395成功：原生组件/离线外层12项，私有netns内部10项全部通过，包含any标准cooked格式、截短统计和空闲CPU预算。证据evidence/0.1.36/packet-snapshot-host-ten-passed.txt。Android Debug/Release/testAPK/lint、核心/既有Linux验证和ELF/对应源码全部通过。

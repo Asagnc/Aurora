@@ -1,0 +1,15 @@
+PASS sync object
+PASS undefined
+PASS quoted large output
+PASS unicode boundary
+PASS cyclic value
+PASS bigint
+PASS function
+PASS Promise requires opt in
+PASS fulfilled Promise
+PASS async plain value
+PASS rejected Promise
+PASS async cyclic value
+PASS late completion after cancel
+PASS pending receiver cleanup deadline
+Browser page-world JavaScript: 14 cases passed

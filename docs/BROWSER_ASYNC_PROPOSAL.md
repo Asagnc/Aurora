@@ -1,4 +1,4 @@
-# 浏览器异步 JavaScript 结果通道提案（待确认，2026-10-23）
+# 浏览器异步 JavaScript 结果通道提案（已确认，2026-10-23）
 
 目标：Agent可等待Promise/fetch等网页结果，复用现有会话WebView、任务取消与JSON预算；不重载页面、不安装新引擎，不为等待结果反复evaluateJavascript。仅扩展脚本结果传输，不提供Root/文件/模型原生方法。
 
@@ -38,4 +38,4 @@
 - [AndroidX WebViewCompat.addWebMessageListener](https://developer.android.com/reference/androidx/webkit/WebViewCompat)
 - [Kotlin withTimeout 的取消与协作边界](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/with-timeout.html)
 
-新结果通道属于原生/网页通信架构调整，按用户最初要求先确认；当前不提前宣称Promise已支持。
+新结果通道属于原生/网页通信架构调整，用户已确认“采用推荐方案”；实现与实际测试结果另记，不以提案批准代替设备验收。
