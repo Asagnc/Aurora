@@ -1,0 +1,7 @@
+2026-10-23 local Windows validation
+core:test: {'tests': 201, 'skipped': 10, 'failures': 0, 'errors': 0}
+BrowserTransferTest: 5 JUnit cases, production JS 16 scenarios inside one case.
+app:compileDebugKotlin PASS
+app:lintDebug PASS
+Logs: outputs/browser-transfer-diagnostics-build.txt and browser-transfer-diagnostics-verified.txt
+No phone execution. No real provider calls. Full CI pending.

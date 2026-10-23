@@ -32,6 +32,8 @@ class BrowserTransferTest {
         download("cancel while awaiting disk", "new Blob([new Uint8Array(100)])", mode = "cancel")
         download("unexpected disk acknowledgement", "new Blob([new Uint8Array(100)])", mode = "badAck")
         for ((name, sizes, accept) in listOf(Triple("single upload", listOf(150000), ""),
+            Triple("universal MIME wildcard", listOf(4), "*/*"),
+            Triple("MIME family wildcard", listOf(4), "application/*"),
             Triple("multiple including empty", listOf(0,70000), ".bin"), Triple("accept mismatch", listOf(1), "image/png"))) {
             add(name, objectOf("mode" to string("upload"), "selector" to string("#file"), "files" to JsonArray(sizes.map {
                 objectOf("name" to string("fixture.bin"), "mime" to string("application/octet-stream"), "size" to JsonPrimitive(it))
@@ -64,6 +66,21 @@ class BrowserTransferTest {
         }
         val failure = assertFails { decodeBrowserTransferControl("""{"kind":"error","error":"secret-request-url"}""", "ready") }
         assertFalse(failure.message.orEmpty().contains("secret-request-url"))
+    }
+
+    @Test fun onlyKnownExactPageErrorCodesReachDiagnostics() {
+        val known = assertFailsWith<BrowserTransferFailure> {
+            decodeBrowserTransferControl("""{"kind":"error","code":"download_budget_exceeded"}""", "complete")
+        }
+        assertEquals("download_budget_exceeded", known.code)
+        for (raw in listOf(
+            """{"kind":"error","code":"https://secret.example/token"}""",
+            """{"kind":"error","code":"stream_read","extra":"secret"}""",
+            """{"kind":"error","error":"secret"}""")) {
+            val failure = assertFailsWith<BrowserTransferFailure> { decodeBrowserTransferControl(raw, "ready") }
+            assertEquals("page_transfer_failed", failure.code)
+            assertFalse(failure.message.orEmpty().contains("secret"))
+        }
     }
 
     @Test fun incompleteAndOverBudgetDownloadsNeverBecomeCompleteArtifacts() {

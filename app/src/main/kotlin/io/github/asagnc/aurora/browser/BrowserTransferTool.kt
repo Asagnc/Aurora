@@ -42,12 +42,12 @@ internal class BrowserTransferTool(private val browser: BrowserController, priva
         } } }
     } catch (_: TimeoutCancellationException) {
         currentCoroutineContext().ensureActive()
-        objectOf("error" to string("Browser transfer timed out"), "phase" to string(phase), "outcome" to string("unknown; inspect before retrying")).toString()
+        objectOf("error" to string("Browser transfer timed out"), "code" to string("transfer_timeout"), "phase" to string(phase), "outcome" to string("unknown; inspect before retrying")).toString()
     } catch (cancel: CancellationException) { throw cancel }
-    catch (_: Exception) {
+    catch (failure: Exception) {
         // Do not log page script exceptions, signed URLs, cookies or request bodies.
         objectOf("error" to string("Browser transfer failed: check page, file selection, budgets and WebView binary support"),
-            "code" to string(if (phase == "validation") "invalid_transfer_request" else "transfer_failed"), "phase" to string(phase),
+            "code" to string((failure as? BrowserTransferFailure)?.code ?: if (phase == "validation") "invalid_transfer_request" else "transfer_failed"), "phase" to string(phase),
             "outcome" to string("unknown; inspect before retrying")).toString()
       }
     }

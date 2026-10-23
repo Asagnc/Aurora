@@ -22,10 +22,12 @@
 
 - 下载现在先登记目录再创建文件；启动/会话Agent开始时有界处理已中断账本，保留完成产物和uncertain状态。schema7部分索引避免重复扫描完成历史；见BROWSER_DOWNLOAD_RECOVERY.md。
 
+- 传输诊断新增精确白名单错误码，网页异常原文不入账本；修复 Agent 上传 accept=*/*，新增生产脚本通配符/错误形状验证。文件展示名/MIME与真机资格仍待后续。
+
 ## 当前证据
 
 - 9517ea9完整CI39909014575成功，包含核心/签名镜像/POSIX/PTY/Root原生主机/PRoot内核与生命周期/抓包/Android Debug、Release R8、testAPK、lint及ELF/源码检查。证据evidence/0.1.37/ci-39909014575-passed.txt。
-- 0.1.40本地核心200项：191通过、9 POSIX跳过。两套生产JS各14场景分别属于各自一个JUnit测试，不重复加到200总数；Android本轮新5项仍仅编译。
+- 当前本地核心201项：192通过、9 POSIX跳过。异步JS14、传输JS16场景分别属于各自一个JUnit测试，不重复加到201总数；Android本轮新5项仍仅编译。
 - 随后仅补测试任务对mjs文件的输入追踪，以及Android跨域导航夹具，core/testAPK/lint本地再次通过；2214641完整CI39910230241也已成功，见evidence/0.1.37/ci-39910230241-passed.txt。0.1.38实现40d96bc完整CI39913505934已通过，见evidence/0.1.38/ci-39913505934-passed.txt；0.1.39实现d403a4f完整CI39915958302也已通过，见evidence/0.1.39/ci-39915958302-passed.txt；本轮0.1.40 CI另查，不提前标成功。
 - Root抓包主机外层12项、内层私有netns10项成功；新Root真机7项与BrowserAsyncTest六项仅编译，没有执行手机。
 

@@ -28,7 +28,16 @@ for (const item of cases) {
       new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Missing protocol message')),2000);})]);}
     finally{clearTimeout(timer);}
   };
-  const control=async kind=>{const value=JSON.parse(await next());assert.equal(value.kind,kind,item.name);return value;};
+  const verifyError=value=>{
+    assert.deepEqual(Object.keys(value).sort(),['code','kind']);
+    const expected={ 'oversize response':'download_budget_exceeded','HTTP failure':'response_unreadable',
+      'script rejection':'page_script','wrong result type':'invalid_download_source',
+      'reader rejection':'stream_read','unexpected disk acknowledgement':'unexpected_ack',
+      'accept mismatch':'input_accept_rejected' };
+    assert.equal(value.code,expected[item.name],item.name);
+  };
+  const control=async kind=>{const value=JSON.parse(await next());assert.equal(value.kind,kind,item.name);
+    if(kind==='error')verifyError(value);return value;};
   try {
     assert.equal((0,eval)(item.code),item.id);
     const receive=[...listeners][0]; receive({data:'wrong',ports:[port2]});assert.equal(listeners.size,1);
@@ -58,7 +67,7 @@ for (const item of cases) {
       await control('ready');port1.postMessage('wrong');await control('error');
     } else {
       const first=await next();const ready=JSON.parse(first);
-      if(ready.kind==='error'){assert.equal(item.error,true);}
+      if(ready.kind==='error'){assert.equal(item.error,true);verifyError(ready);}
       else {
         assert.equal(ready.kind,'ready');port1.postMessage('ack');
         const chunks=[];
@@ -69,7 +78,7 @@ for (const item of cases) {
             await wait(2);assert.equal(queue.length,0,'No second chunk before disk ACK');port1.postMessage('ack');
           } else {
             const result=JSON.parse(message);
-            if(item.error)assert.equal(result.kind,'error');
+            if(item.error){assert.equal(result.kind,'error');verifyError(result);}
             else {assert.equal(result.kind,'complete');assert.equal(result.bytes,item.size);
               assert.deepEqual(Buffer.concat(chunks),Buffer.from(Uint8Array.from({length:item.size},(_,i)=>i%251)));port1.postMessage('ack');}
             break;
