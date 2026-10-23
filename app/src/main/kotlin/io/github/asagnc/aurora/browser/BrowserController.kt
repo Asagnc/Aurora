@@ -34,6 +34,7 @@ internal class BrowserTab(val owner: String, val view: WebView) {
 internal class BrowserController(private val context: Context, private val saveProxy: Boolean = true,
     private val intercept: ((WebResourceRequest) -> WebResourceResponse?)? = null) {
     val tabs = mutableStateListOf<BrowserTab>()
+    internal val uploads = BrowserUploadManager(context)
     internal val transferSlots = kotlinx.coroutines.sync.Semaphore(2)
     internal val transfers = mutableStateMapOf<String, BrowserTransferProgress>()
     var error by mutableStateOf<String?>(null)
@@ -74,6 +75,7 @@ internal class BrowserController(private val context: Context, private val saveP
         val client = object : WebViewClient() {
             override fun shouldInterceptRequest(web: WebView, request: WebResourceRequest): WebResourceResponse? = intercept?.invoke(request)
             override fun onPageStarted(web: WebView, url: String, favicon: android.graphics.Bitmap?) {
+                if(uploads.pending?.tab == tab)uploads.cancelPending(tab.owner)
                 tab.loading = true; tab.failure = null; tab.address = url; tab.revision++; tab.changed()
             }
             override fun shouldOverrideUrlLoading(web: WebView, request: WebResourceRequest): Boolean {
@@ -102,6 +104,8 @@ internal class BrowserController(private val context: Context, private val saveP
         view.webViewClient = client
         view.webChromeClient = object : WebChromeClient() {
             override fun onProgressChanged(web: WebView, progress: Int) { tab.progress = progress }
+            override fun onShowFileChooser(web: WebView, callback: ValueCallback<Array<android.net.Uri>>, params: FileChooserParams): Boolean =
+                uploads.request(tab,callback,params)
         }
         view.setDownloadListener { _, _, _, _, _ -> error = "下载到会话空间尚未接入；没有启动下载" }
         tabs.add(tab)
@@ -122,6 +126,7 @@ internal class BrowserController(private val context: Context, private val saveP
 
     fun close(tab: BrowserTab) {
         if (!tabs.remove(tab)) return
+        uploads.releasePage(tab)
         tab.markClosed()
         (tab.view.parent as? ViewGroup)?.removeView(tab.view)
         tab.view.stopLoading()
@@ -129,6 +134,7 @@ internal class BrowserController(private val context: Context, private val saveP
     }
 
     fun hide(owner: String) {
+        uploads.cancelPending(owner)
         viewers.remove(owner)
         pauseIdle(owner)
     }
@@ -154,6 +160,7 @@ internal class BrowserController(private val context: Context, private val saveP
     suspend fun deleteOwner(owner: String): Unit = withContext(Dispatchers.Main) {
         retired.add(owner)
         tabs.filter { it.owner == owner }.toList().forEach(::close)
+        uploads.awaitCleanup(owner)
         if (!context.getSharedPreferences("browser", Context.MODE_PRIVATE).getBoolean("used", false)) return@withContext
         if (WebViewFeature.isFeatureSupported(WebViewFeature.MULTI_PROFILE)) {
             val store = ProfileStore.getInstance()

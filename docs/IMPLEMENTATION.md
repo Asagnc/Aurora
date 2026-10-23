@@ -1,3 +1,9 @@
+## 2026-10-23 0.1.39 原生浏览器文件选择与上传快照
+
+接入单/多文件原生回调、会话/资源和系统SAF选择；64KiB流式快照、精确FileProvider URI、名称/MIME、数量/总量与只读属性，复用OwnedTasks协调取消与删会话，旧进程快照有界回收。为避免表单导航提前删文件，已交付URI保留到关页/删会话，待选请求导航即取消；UI有说明。
+
+本地核心196项（188通过/8 POSIX跳过），Android新5项只编译。0.1.38实现40d96bc完整CI39913505934已成功；0.1.39另查CI，手机仍0.1.32未操作。下载 .partial崩溃回收、真实手势/Chrome读取URI/SAF/提供器阻塞与性能仍未验收，见BROWSER_CHOOSER_IMPLEMENTATION.md。
+
 ## 2026-10-23 0.1.38 浏览器 Agent 二进制传输第一阶段
 
 用户确认组合方向。新增 browser_download/browser_upload：独立 ArrayBuffer 端口、文档/会话校验、64KiB 原生落盘 ACK、预算和临时文件完整发布；Agent 显式供给 conversation/resources 文件，真实 File 仍有整文件成本。复用账本与产物目录，浏览器事件合并显示字节，不新增网络栈或轮询。WebKit 按官方稳定发行更新 1.18.0，不启用隔离放宽。

@@ -99,6 +99,9 @@ import io.github.asagnc.aurora.browser.BrowserController
             }
         }
     }
+    browser.uploads.pending?.takeIf { it.tab.owner == owner }?.let { request ->
+        key(request.id) { BrowserUploadSheet(browser.uploads,request) }
+    }
     if (proxySettings) BrowserProxyDialog(browser) { proxySettings = false }
     browser.error?.let { message -> AlertDialog(onDismissRequest = { browser.error = null }, title = { Text("浏览器提示") },
         text = { Text(message) }, confirmButton = { TextButton({ browser.error = null }) { Text("知道了") } }) }

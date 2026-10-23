@@ -1,0 +1,30 @@
+https://github.com/Asagnc/Aurora/actions/runs/39913505934
+Commit: 40d96bc1f4eef53f908feaeb35a2690425bbc3d2
+Result: completed / success
+Device: not run; final combined acceptance pending
+
+test: success
+success: Set up job
+success: Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+success: Run actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+success: Run gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6
+success: Verify protocols and owned files
+success: Verify signed Ubuntu image and actual POSIX rootfs extraction
+success: Verify native PTY process lifecycle on Linux host
+success: Verify ptrace tracer-death kernel prerequisite on Linux host
+success: Verify Root namespace teardown on Linux host
+success: Verify task cgroup events and supervisor death on Linux host
+success: Install matching stable Android SDK
+success: Restore exact native source archive
+success: Prefetch verified native source with bounded transport retries
+skipped: Cache verified native source before compilation
+success: Prepare verified source and generated PRoot adapter
+success: Verify actual derived PRoot lifecycle on Linux host
+success: Verify pinned packet tools and offline filtering on Linux host
+success: Build Android application and run lint
+success: Verify packaged Linux ELF dependencies and corresponding source
+success: Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+success: Post Run gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6
+success: Post Run actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+success: Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+success: Complete job

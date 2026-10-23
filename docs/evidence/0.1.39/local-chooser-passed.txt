@@ -1,0 +1,12 @@
+Date: 2026-10-23
+Version: 0.1.39 / code 40
+Command: gradlew :core:test :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :app:lintDebug
+Result: BUILD SUCCESSFUL in 37s
+Core: 196 total, 188 passed, 8 skipped (POSIX unavailable on Windows), 0 failures
+New core: BrowserUploadSnapshotTest 5 cases (4 executed, POSIX symlink case skipped on Windows)
+New Android: BrowserChooserTest 5 cases compiled, NOT executed
+Lint: 0 errors, 1 pre-existing vector-path warning
+Source: URI canonicalisation/provider setup and stream IO off main thread; exact callback and task lifetime on main
+Phone: not connected, controlled, installed, updated or tested; remains last qualified 0.1.32
+Scope: callback/URI tests do not prove actual trusted input gesture, Chromium upload, SAF grants or provider cancellation
+CI: pending after implementation commit
