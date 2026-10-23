@@ -1,0 +1,10 @@
+Working tree based on 8dc3970; subsequent commit records these changes.
+Commands: gradlew :core:test :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :app:lintDebug
+BUILD SUCCESSFUL in 39s (final rerun after admission decoder extraction)
+{'tests': 248, 'skipped': 10, 'failures': 0, 'errors': 0}
+New retirement Core test passed. Registry Android retirement test compiled only.
+Targeted Android Files regression gate: 254 sources, no forbidden calls.
+SDK android-37.0/data/api-versions.xml: java/nio/file/Files.readString and writeString since=36.1; byte read/write are inherited from class since=26.
+Production BrowserUploadSnapshot/StaticReverseStore and Android fixtures now use UTF-8 byte APIs.
+No device execution or paid provider calls.
+Old empty upload-lease directories recover; current epochs, partial markers and unknown data remain protected. New crash-window regression passed.

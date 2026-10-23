@@ -2,7 +2,6 @@ package io.github.asagnc.aurora.core
 
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.util.UUID
 
 /** Decodes exact records obtained by a trusted Root reader, never arbitrary App paths or stdout. */
 class RootManagedNativeState private constructor(
@@ -20,6 +19,10 @@ class RootManagedNativeState private constructor(
     val workerStatus = facts?.second
 
     private data class Stopped(val phase: Int, val worker: Int, val domain: Int, val exitCode: Int, val reason: Int, val error: Int)
+
+    fun neverDispatchedProof(): RootManagedRetirementProof? =
+        if (phase == 8 && workerState == 2 && domainState == 2 && worker == null && workerFlags == null)
+            RootManagedRetirementProof.fromNeverDispatched(ticket) else null
 
     /** Resource reclamation and script cleanup remain independent facts, including on cancellation. */
     fun normalCleanupProof(): RootManagedExitProof? {
@@ -41,22 +44,10 @@ class RootManagedNativeState private constructor(
         fun decode(ticket: RootManagedRunTicket, ready: ByteArray?, report: ByteArray?, stopped: ByteArray): RootManagedNativeState {
             ticket.validate()
             val digest = ticket.digest()
-            val admission = ready?.let { admission(ticket, digest, it) }
+            val admission = ready?.let { RootManagedAdmission.decode(ticket, it) }
             val completion = stopped(ticket, digest, stopped, admission != null)
-            val facts = report?.let { worker(digest, requireNotNull(admission).second, it) }
-            return RootManagedNativeState(ticket, admission?.first, admission?.second, completion, facts)
-        }
-
-        private fun admission(ticket: RootManagedRunTicket, digest: String, bytes: ByteArray): Pair<RootTargetIdentity, RootTargetIdentity> {
-            require(bytes.size == 164 && text(bytes, 0, 4) == "ARW1")
-            require(text(bytes, 4, 36) == ticket.runId && text(bytes, 40, 64) == digest)
-            val boot = text(bytes, 128, 36)
-            require(UUID.fromString(boot).toString() == boot && boot == ticket.identity.bootId)
-            val input = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
-            val guard = RootTargetIdentity(input.getInt(104), input.getLong(108)).also { it.validate() }
-            val worker = RootTargetIdentity(input.getInt(116), input.getLong(120)).also { it.validate() }
-            require(guard.pid != worker.pid)
-            return guard to worker
+            val facts = report?.let { worker(digest, requireNotNull(admission).worker, it) }
+            return RootManagedNativeState(ticket, admission?.guard, admission?.worker, completion, facts)
         }
 
         private fun stopped(ticket: RootManagedRunTicket, digest: String, bytes: ByteArray, admitted: Boolean): Stopped {

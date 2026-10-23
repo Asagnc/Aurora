@@ -58,6 +58,8 @@
 
 ## 当前证据
 
+- 新增派发前持久退役的独立证明及精确账本完成路径，不伪造worker退出；Core新用例通过、Android事务/删除用例仅编译。发现并修复BrowserUploadSnapshot/StaticReverseStore生产路径及测试里的Files.readString/writeString（基础Android36不可用，SDK标since36.1），增加针对性CI门禁。核心248项：238通过/10跳过，Debug/Release/testAPK/lint本地通过；见local-managed-retirement-passed.txt。Root Binder/target-gone仍待接。
+
 - a36e31d完整CI40015005822三job成功：23项真实Frida主机测试（含4项独立guard端到端）通过，Android构建/lint通过；见ci-40015005822-passed.txt。之后新增第24项强杀worker及Core解析器，后续CI另查。
 
 - 新增Core原生记录严格解码与正常清理证明映射；本地246项核心测试：236通过/10平台跳过，4新用例全部通过。ARM64 guard自动审计43,152字节/16KiB通过；实际Frida强杀缺失报告用例及CI构建脚本推送后核实。尚未连接Root Binder或Agent，不能显示ready。

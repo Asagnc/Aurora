@@ -23,7 +23,7 @@ class RootScriptChannelTest {
     private val bytes = "send('owned')".toByteArray()
     private fun metadata() = RootScriptSnapshot("fixture", MessageDigest.getInstance("SHA-256").digest(bytes)
         .joinToString("") { "%02x".format(it.toInt() and 255) }, bytes.size.toLong())
-    private fun worker() = RootTargetIdentity(Process.myPid(), linuxProcessStartTicks(Files.readString(Path.of("/proc/self/stat"))))
+    private fun worker() = RootTargetIdentity(Process.myPid(), linuxProcessStartTicks(Files.readAllBytes(Path.of("/proc/self/stat")).toString(Charsets.UTF_8)))
     private fun ticket() = worker().let { peer -> RootManagedRunTicket(UUID.randomUUID().toString(), UUID.randomUUID().toString(),
         LinuxRootIdentity(peer.pid, peer.startTicks, UUID.randomUUID().toString(), UUID.randomUUID().toString()),
         Process.myUid(), "fixture", "a".repeat(64), peer, metadata()) }

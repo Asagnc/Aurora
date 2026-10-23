@@ -18,7 +18,7 @@ import org.junit.runner.RunWith
 class BrowserDownloadRecoveryTest {
     @Test fun uncertainResultStaysUncertainWhilePublishedArtifactIsRetained()=runBlocking{fixture{app,owner,root->
         val directory=record(app,owner,true);val path=root.resolve(directory)
-        withContext(Dispatchers.IO){Files.writeString(path.resolve("download.bin"),"published");Files.writeString(path.resolve("keep"),"sibling")}
+        withContext(Dispatchers.IO){Files.write(path.resolve("download.bin"),"published".toByteArray(Charsets.UTF_8));Files.write(path.resolve("keep"),"sibling".toByteArray(Charsets.UTF_8))}
         assertEquals(1,app.browserDownloads.recover(owner))
         val row=app.toolRuns.list(owner).single()
         assertEquals("uncertain",row.state)
@@ -26,8 +26,8 @@ class BrowserDownloadRecoveryTest {
         assertEquals("published_retained",note.text("downloadRecovery"));assertEquals("interrupted",note.text("error"))
         withContext(Dispatchers.IO){
             assertFalse(Files.exists(path.resolve("download.bin.partial")))
-            assertEquals("published",Files.readString(path.resolve("download.bin")))
-            assertEquals("sibling",Files.readString(path.resolve("keep")))
+            assertEquals("published",Files.readAllBytes(path.resolve("download.bin")).toString(Charsets.UTF_8))
+            assertEquals("sibling",Files.readAllBytes(path.resolve("keep")).toString(Charsets.UTF_8))
         }
         assertEquals(0,app.browserDownloads.recover(owner))
     }}
@@ -87,7 +87,7 @@ class BrowserDownloadRecoveryTest {
         val directory="runs/${UUID.randomUUID()}"
         app.toolRuns.attachArtifact(owner,call.id,directory)
         val root=app.spaces.commandRoot(owner)
-        withContext(Dispatchers.IO){Files.createDirectories(root.resolve(directory));Files.writeString(root.resolve(directory).resolve("download.bin.partial"),"stale")}
+        withContext(Dispatchers.IO){Files.createDirectories(root.resolve(directory));Files.write(root.resolve(directory).resolve("download.bin.partial"),"stale".toByteArray(Charsets.UTF_8))}
         if(uncertain)app.toolRuns.markUncertain(owner)
         return directory
     }

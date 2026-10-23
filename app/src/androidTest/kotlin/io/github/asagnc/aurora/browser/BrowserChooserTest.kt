@@ -45,7 +45,7 @@ class BrowserChooserTest {
             assertEquals(1,result.answers.size);assertNotNull(result.answers.single())
             val uris=requireNotNull(result.answers.single());assertEquals(2,uris.size)
             withContext(Dispatchers.IO){
-                Files.writeString(f.root.resolve("one.txt"),"changed")
+                Files.write(f.root.resolve("one.txt"),"changed".toByteArray(Charsets.UTF_8))
                 assertEquals("original",f.app.contentResolver.openInputStream(uris[0])!!.use{it.readBytes().decodeToString()})
                 assertEquals(0,f.app.contentResolver.openInputStream(uris[1])!!.use{it.readBytes().size})
                 assertEquals("text/plain",f.app.contentResolver.getType(uris[0]))

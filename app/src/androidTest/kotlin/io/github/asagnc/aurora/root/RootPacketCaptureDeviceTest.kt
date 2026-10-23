@@ -79,11 +79,11 @@ class RootPacketCaptureDeviceTest {
 
     @RootRequired @Test fun invalidFilterDoesNotClaimCaptureOrAffectOtherFiles() = runBlocking { fixture { owner ->
         val sentinel = app.spaces.commandRoot(owner).resolve("preserve")
-        Files.writeString(sentinel, "unchanged")
+        Files.write(sentinel, "unchanged".toByteArray(Charsets.UTF_8))
         val reply = invoke(owner, UUID.randomUUID().toString(), PacketCaptureRequest.parse(objectOf("filter" to string("udp and ("))))
         assertNotNull(reply["error"])
         assertNull(reply["capture"])
-        assertEquals("unchanged", Files.readString(sentinel))
+        assertEquals("unchanged", Files.readAllBytes(sentinel).toString(Charsets.UTF_8))
     } }
 
     @RootRequired @Test fun cancellationWaitsForNativeStopWithoutPublishingSuccess() = runBlocking { fixture { owner ->
@@ -121,7 +121,7 @@ class RootPacketCaptureDeviceTest {
 
     private suspend fun stopped(owner: String, id: String) {
         val directory = app.spaces.commandRoot(owner).resolve("runs/$id")
-        val metadata = WireJson.parseToJsonElement(Files.readString(directory.resolve("result.json"))).jsonObject
+        val metadata = WireJson.parseToJsonElement(Files.readAllBytes(directory.resolve("result.json")).toString(Charsets.UTF_8)).jsonObject
         assertEquals(metadata.toString(), JsonPrimitive(true), metadata["stopped"])
         assertEquals(metadata.toString(), JsonPrimitive(true), metadata["captureComplete"])
         assertFalse(Files.exists(directory.resolve("capture-status.json")))

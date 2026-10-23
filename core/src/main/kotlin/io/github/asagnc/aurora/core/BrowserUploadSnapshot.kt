@@ -20,7 +20,22 @@ class BrowserUploadSnapshot(root: Path, epoch: String, private val budget: Long 
         val parent = OwnedFiles(root).resolve(".aurora-browser-uploads/$epoch")
         Files.createDirectories(parent)
         directory = Files.createDirectory(parent.resolve(UUID.randomUUID().toString()))
-        Files.writeString(directory.resolve("lease"), MARKER, StandardOpenOption.CREATE_NEW)
+        createMarker()
+    }
+    private fun createMarker() {
+        val marker = directory.resolve("lease")
+        var created = false
+        try {
+            FileChannel.open(marker, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE, LinkOption.NOFOLLOW_LINKS).use { output ->
+                created = true
+                val bytes = ByteBuffer.wrap(MARKER.toByteArray(Charsets.UTF_8))
+                while (bytes.hasRemaining()) output.write(bytes)
+            }
+        } catch (failure: Throwable) {
+            try { if (created) Files.deleteIfExists(marker); Files.delete(directory) }
+            catch (cleanup: Throwable) { failure.addSuppressed(cleanup) }
+            throw failure
+        }
     }
     fun add(name: String, input: InputStream, extensionHint: String? = null, checkpoint: () -> Unit = {}) : Entry {
         check(!closed)
@@ -92,9 +107,10 @@ class BrowserUploadSnapshot(root: Path, epoch: String, private val budget: Long 
         private fun removeLease(directory: Path): Boolean {
             if(!Files.exists(directory,LinkOption.NOFOLLOW_LINKS)) return true
             if(!Files.isDirectory(directory,LinkOption.NOFOLLOW_LINKS)) return false
-            val marker = directory.resolve("lease")
-            if(!Files.isRegularFile(marker,LinkOption.NOFOLLOW_LINKS) || Files.size(marker) > 128 || Files.readString(marker) != MARKER) return false
             val files = Files.list(directory).use { it.limit(19).toList() }
+            if (files.isEmpty()) { Files.delete(directory); return true }
+            val marker = directory.resolve("lease")
+            if(!Files.isRegularFile(marker,LinkOption.NOFOLLOW_LINKS) || Files.size(marker) > 128 || Files.readAllBytes(marker).toString(Charsets.UTF_8) != MARKER) return false
             if(files.size > 18 || files.any { !Files.isRegularFile(it,LinkOption.NOFOLLOW_LINKS) ||
                 (it.fileName.toString() != "lease" && !LEAF.matches(it.fileName.toString())) }) return false
             files.filter { it != marker }.forEach { Files.delete(it) }

@@ -28,8 +28,11 @@ internal class RootManagedRunRegistry(private val conversations: ConversationSto
     suspend fun count(owner: String): Long = conversations.read { db ->
         DatabaseUtils.longForQuery(db, "SELECT COUNT(*) FROM root_managed_runs WHERE owner=?", arrayOf(owner))
     }
-    suspend fun finish(ticket: RootManagedRunTicket, proof: RootManagedExitProof) = conversations.write { db ->
-        require(ticket.confirms(proof)) { "Root task injection cleanup is unconfirmed" }
+    suspend fun finish(ticket: RootManagedRunTicket, proof: RootManagedExitProof) = finishConfirmed(ticket, ticket.confirms(proof))
+    suspend fun finish(ticket: RootManagedRunTicket, proof: RootManagedRetirementProof) = finishConfirmed(ticket, proof.matches(ticket))
+
+    private suspend fun finishConfirmed(ticket: RootManagedRunTicket, confirmed: Boolean) = conversations.write { db ->
+        require(confirmed) { "Root task injection cleanup or retirement is unconfirmed" }
         db.rawQuery("SELECT owner,kind,ticket FROM root_managed_runs WHERE id=?", arrayOf(ticket.runId)).use {
             if (!it.moveToFirst()) return@write Unit
             require(it.getString(0) == ticket.owner && it.getString(1) == ticket.kind &&

@@ -104,6 +104,8 @@ recover先持久退役，核实旧guard已退出、boot与worker身份；worker�
 
 ## 验证
 
+随后补RootManagedRetirementProof：仅可信Root记录严格为retired-only、worker/domain均NOT_CREATED时产生；App账本按精确原票据完成，不伪造unload/workerExited。已有INTENT但缺READY仍未知，不产生退役证明。新Core回归通过，新增Android事务/删除用例仅编译。修复生产BrowserUploadSnapshot/StaticReverseStore及Android夹具的36.1文件API，针对性源码门禁已接CI（不是完整Java API审计）。上传marker创建失败回收自己创建的文件/目录；旧epoch空租约支持恢复，部分marker和未知内容保留。核心248项：238通过/10平台跳过，Debug/Release/testAPK/lint本地通过，见local-managed-retirement-passed.txt。
+
 Core新增RootManagedNativeState严格读取164字节READY、52字节worker报告及123字节stopped：匹配票据/boot/进程、合法阶段及资源状态，不从stdout或资源清理推断注入卸载。只有实际worker清理位和独立资源证明齐全才产生现有正常清理证明；缺失报告/未detach/派发前退役仍无正常证明，不误造workerExited。它只接受可信Root读取器返回的原始记录，Root文件路径、权限与锁核实仍由待接facade负责。4项Core故障/成功回归本地通过，核心累计246项、236通过/10平台跳过。新增ARM64 guard自动构建审计脚本，43,152字节、仅libc/libdl、外层16KiB通过，未APK打包/设备执行。证据local-managed-native-state-passed.txt。
 
 再新增真实worker强杀用例：必须保留worker报告缺失、原目标仍活，回收后不能变成成功；真实Frida用例现共24项，新增此项推送后核实。CI增加guard的ARM64构建/源码摘要/ELF审计证据，不把Linux成功代替Android运行资格。
@@ -120,7 +122,7 @@ Core新增RootManagedNativeState严格读取164字节READY、52字节worker报�
 
 1. 已接AF_UNIX脚本FD发送/接收开发通路；继续Root Binder PFD所有权、实际worker PID捕获与受管派发连接，最终Android16/SELinux资格。补最终退出事实小通道，不能从截断stdout猜证明。
 2. Android-native受管cgroup入口、Root阶段日志/任务锁/退役标记。迟到start不能越过取消；不得使用普通250ms升级杀进程窗口代替Frida清理期。
-3. 精确恢复与删除协调：原目标已退出/重启、正常unload、派发前退役及未知注入是不同事实。当前finish仅支持正常完整清理证明，尚无target-gone/never-started恢复入口；不能在缺少证明时清账。
+3. 精确恢复与删除协调：原目标已退出/重启、正常unload、派发前退役及未知注入是不同事实。Core/账本现支持正常清理及严格retired-only的独立退役证明，Root读取/派发入口待接；target-gone恢复仍未实现，不能在缺少证明时清账。
 4. Root资格、可观察日志、Agent/UI接入、spawn状态机、Android ART、自有目标故障验收。
 5. 完成许可证闭包/对应源码、APK体积与最终集中真机测试后才能发布Frida ready。
 

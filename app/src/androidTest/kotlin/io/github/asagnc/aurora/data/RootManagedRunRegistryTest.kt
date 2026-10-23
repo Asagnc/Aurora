@@ -3,6 +3,8 @@ package io.github.asagnc.aurora.data
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import io.github.asagnc.aurora.core.*
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.util.UUID
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
@@ -18,6 +20,13 @@ class RootManagedRunRegistryTest {
         RootScriptSnapshot("fixture", "b".repeat(64), 42))
     private fun proof(ticket: RootManagedRunTicket) = RootManagedExitProof(ticket.runId, ticket.identity,
         ticket.digest(), true, true, true, true, true)
+    private fun retirement(ticket: RootManagedRunTicket): RootManagedRetirementProof {
+        val stopped = ByteBuffer.allocate(123).order(ByteOrder.LITTLE_ENDIAN).apply {
+            put("ARI1\n${ticket.runId}\n${ticket.digest()}\n".toByteArray(Charsets.US_ASCII))
+            put(8); put(2); put(2); put(0); putInt(-1); putInt(4); putInt(0)
+        }.array()
+        return requireNotNull(RootManagedNativeState.decode(ticket, null, null, stopped).neverDispatchedProof())
+    }
     private suspend fun fixture(block: suspend (AuroraDatabase, ConversationStore, RootManagedRunTicket) -> Unit) {
         val name = "managed-${UUID.randomUUID()}.db"
         val database = AuroraDatabase(context, name)
@@ -32,7 +41,7 @@ class RootManagedRunRegistryTest {
             assertEquals(listOf(ticket), runs.pending(ticket.owner))
             val spaces = SpaceStore(context, next)
             val files = spaces.commandRoot(ticket.owner)
-            java.nio.file.Files.writeString(files.resolve("keep.txt"), "keep")
+            java.nio.file.Files.write(files.resolve("keep.txt"), "keep".toByteArray())
             try { spaces.delete(ticket.owner, {}); fail("Unconfirmed task files removed") }
             catch (_: RootManagedRunPendingException) { }
             assertTrue(java.nio.file.Files.exists(files.resolve("keep.txt")))
@@ -45,6 +54,19 @@ class RootManagedRunRegistryTest {
             spaces.delete(ticket.owner, {})
             assertFalse(java.nio.file.Files.exists(files))
         }
+    } }
+    @Test fun retiredBeforeDispatchReleasesOnlyItsExactIntentAndAllowsDeletion() = runBlocking { fixture { _, store, ticket ->
+        val runs = RootManagedRunRegistry(store)
+        val second = ticket.copy(runId = UUID.randomUUID().toString())
+        runs.begin(ticket); runs.begin(second)
+        try { runs.finish(ticket, retirement(second)); fail("Foreign retirement cleared an intent") }
+        catch (_: IllegalArgumentException) { }
+        assertEquals(2L, runs.count(ticket.owner))
+        runs.finish(ticket, retirement(ticket)); runs.finish(ticket, retirement(ticket))
+        assertEquals(listOf(second), runs.pending(ticket.owner))
+        runs.finish(second, retirement(second))
+        SpaceStore(context, store).delete(ticket.owner, {})
+        assertTrue(store.list().none { it.id == ticket.owner })
     } }
     @Test fun ownerScopedHistoryLinkAndIntentTransaction() = runBlocking { fixture { _, store, ticket ->
         val runs = RootManagedRunRegistry(store)

@@ -1,0 +1,58 @@
+Source: 8dc39706239a585fa372a9dbd986ddf3eca3095f
+Workflow: https://github.com/Asagnc/Aurora/actions/runs/40016037081
+Overall: completed/success, all three jobs success.
+24 actual Frida host cases include 5 through standalone guard; Android ARM64 guard ELF audit and build/lint passed. No device execution.
+
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:02:00.7147956Z Ran 9 tests in 1.624s
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:02:00.7148287Z OK
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:02:19.8758518Z Ran 10 tests in 19.105s
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:02:19.8758992Z OK
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:02:20.3314143Z Ran 25 tests in 0.389s
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:02:20.3324169Z OK
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:02:21.4788162Z Ran 10 tests in 1.088s
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:02:21.4804949Z OK
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:02:22.2441679Z Ran 9 tests in 0.683s
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:02:22.2441966Z OK
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:03:15.4837550Z Ran 14 tests in 53.174s
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:03:15.4837981Z OK
+frida-session	Verify actual Frida session lifecycle on owned Linux targets	2026-10-23T20:03:12.2748587Z Ran 24 tests in 55.431s
+frida-session	Verify actual Frida session lifecycle on owned Linux targets	2026-10-23T20:03:12.2748793Z OK
+test	Verify protocols and owned files	2026-10-23T20:02:12.1661573Z Ran 3 tests in 0.003s
+test	Verify protocols and owned files	2026-10-23T20:02:12.1661995Z OK
+test	Verify protocols and owned files	2026-10-23T20:02:12.2468651Z Ran 2 tests in 0.009s
+test	Verify protocols and owned files	2026-10-23T20:02:12.2469145Z OK
+test	Verify protocols and owned files	2026-10-23T20:02:12.5309587Z Ran 3 tests in 0.226s
+test	Verify protocols and owned files	2026-10-23T20:02:12.5309904Z OK
+test	Verify protocols and owned files	2026-10-23T20:02:13.0702902Z Ran 9 tests in 0.477s
+test	Verify protocols and owned files	2026-10-23T20:02:13.0703336Z OK
+test	Verify protocols and owned files	2026-10-23T20:02:13.2884590Z Ran 7 tests in 0.150s
+test	Verify protocols and owned files	2026-10-23T20:02:13.2884926Z OK
+test	Verify protocols and owned files	2026-10-23T20:03:05.1624425Z BUILD SUCCESSFUL in 51s
+test	Verify signed Ubuntu image and actual POSIX rootfs extraction	2026-10-23T20:03:08.7383210Z /home/runner/work/_temp/aurora-rootfs.M8K9lg/ubuntu-base-26.10-base-arm64.tar.gz: OK
+test	Verify signed Ubuntu image and actual POSIX rootfs extraction	2026-10-23T20:03:27.6988078Z BUILD SUCCESSFUL in 18s
+test	Verify native PTY process lifecycle on Linux host	2026-10-23T20:03:29.4023163Z Ran 8 tests in 1.549s
+test	Verify native PTY process lifecycle on Linux host	2026-10-23T20:03:29.4023598Z OK
+test	Verify ptrace tracer-death kernel prerequisite on Linux host	2026-10-23T20:03:29.6750895Z Ran 5 tests in 0.174s
+test	Verify ptrace tracer-death kernel prerequisite on Linux host	2026-10-23T20:03:29.6751201Z OK
+test	Verify Root namespace teardown on Linux host	2026-10-23T20:03:30.4062680Z Ran 4 tests in 0.648s
+test	Verify Root namespace teardown on Linux host	2026-10-23T20:03:30.4063142Z OK
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:03:32.2768002Z Ran 6 tests in 1.780s
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:03:32.2768306Z OK
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:03:33.2119570Z Ran 7 tests in 0.860s
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:03:33.2120429Z OK
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:03:35.7314784Z Ran 15 tests in 2.451s
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:03:35.7315192Z OK
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:03:39.1730436Z Ran 6 tests in 3.361s
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:03:39.1730851Z OK
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:03:40.0944209Z Ran 11 tests in 0.853s
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:03:40.0944648Z OK
+test	Install matching stable Android SDK	2026-10-23T20:03:41.0297308Z /home/runner/work/_temp/aurora-commandlinetools.zip: OK
+test	Prefetch verified native source with bounded transport retries	2026-10-23T20:04:26.7749138Z /home/runner/work/_temp/aurora-native-downloads/talloc-2.5.0.tar.gz: OK
+test	Prepare verified source and generated PRoot adapter	2026-10-23T20:04:33.7896929Z BUILD SUCCESSFUL in 6s
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-23T20:04:38.1208650Z Ran 4 tests in 4.252s
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-23T20:04:38.1209065Z OK
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-23T20:05:03.9956705Z Ran 10 tests in 1.654s
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-23T20:05:03.9957022Z OK
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-23T20:05:04.0868988Z Ran 12 tests in 25.886s
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-23T20:05:04.0869387Z OK
+test	Build Android application and run lint	2026-10-23T20:10:17.9360505Z BUILD SUCCESSFUL in 5m 13s

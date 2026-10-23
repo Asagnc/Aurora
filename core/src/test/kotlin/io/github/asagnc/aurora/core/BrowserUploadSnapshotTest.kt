@@ -60,6 +60,18 @@ class BrowserUploadSnapshotTest {
         assertFails{BrowserUploadSnapshot(root,"../invalid")}
         assertFails{BrowserUploadSnapshot.recoverOld(root,epoch,0)}
     }
+    @Test fun interruptedEmptyLeaseIsReclaimedButCurrentAndPartialMarkerAreRetained() = temporary { root ->
+        val current = UUID.randomUUID().toString(); val old = UUID.randomUUID().toString()
+        val base = root.resolve(".aurora-browser-uploads")
+        val empty = Files.createDirectories(base.resolve("$old/${UUID.randomUUID()}"))
+        val active = Files.createDirectories(base.resolve("$current/${UUID.randomUUID()}"))
+        val partial = Files.createDirectories(base.resolve("$old/${UUID.randomUUID()}"))
+        Files.write(partial.resolve("lease"), byteArrayOf(65))
+        assertEquals(1, BrowserUploadSnapshot.recoverOld(root, current))
+        assertFalse(Files.exists(empty)); assertTrue(Files.exists(active))
+        assertContentEquals(byteArrayOf(65), Files.readAllBytes(partial.resolve("lease")))
+        assertEquals(0, BrowserUploadSnapshot.recoverOld(root, current))
+    }
     @Test fun recoveryAndSelectionDoNotFollowLinksOnPosix() = temporary { root ->
         org.junit.jupiter.api.Assumptions.assumeTrue(Files.getFileStore(root).supportsFileAttributeView("posix"))
         val outside=Files.createTempFile("aurora-upload-outside-", ".txt")

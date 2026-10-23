@@ -108,7 +108,7 @@ class StaticReverseStore(private val root: Path,
             }
             if (uuid && Files.isDirectory(stage, LinkOption.NOFOLLOW_LINKS) &&
                 Files.isRegularFile(owner, LinkOption.NOFOLLOW_LINKS) && Files.size(owner) == marker.length.toLong() &&
-                Files.readString(owner) == marker) { removeStage(stage); removed++ }
+                Files.readAllBytes(owner).toString(Charsets.UTF_8) == marker) { removeStage(stage); removed++ }
         } }
         cleanupFailed = false
         removed
@@ -134,7 +134,7 @@ class StaticReverseStore(private val root: Path,
         val id = directory.fileName.toString()
         val file = directory.resolve("bundle")
         return id.matches(Regex("[a-f0-9]{64}")) && Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS) &&
-            Files.size(file) == 64L && Files.readString(file) == id
+            Files.size(file) == 64L && Files.readAllBytes(file).toString(Charsets.UTF_8) == id
     }
 
     private fun durable(path: Path, text: String) {

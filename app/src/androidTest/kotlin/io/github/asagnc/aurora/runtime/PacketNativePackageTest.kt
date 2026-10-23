@@ -75,7 +75,7 @@ class PacketNativePackageTest {
         val cwdId = java.util.UUID.randomUUID().toString()
         val cwd = runner.execute(root, CommandRequest(listOf("/system/bin/sh", "-c", "printf scoped > marker")), cwdId)
         assertEquals(cwd.toString(), 0L, cwd.number("exitCode"))
-        assertEquals("scoped", Files.readString(root.resolve("runs/$cwdId/marker")))
+        assertEquals("scoped", Files.readAllBytes(root.resolve("runs/$cwdId/marker")).toString(Charsets.UTF_8))
         assertFalse(Files.exists(root.resolve("marker")))
     } }
 

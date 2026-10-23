@@ -2,6 +2,7 @@ package io.github.asagnc.aurora.core
 
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import kotlinx.serialization.encodeToString
 import kotlin.test.*
 
 class RootManagedNativeStateTest {
@@ -28,6 +29,10 @@ class RootManagedNativeStateTest {
         }.array()
 
     @Test fun exactRecordsYieldCleanupForCompletionAndCooperativeCancellation() {
+        val admission = RootManagedAdmission.decode(ticket, ready())
+        assertEquals(ticket.digest(), admission.ticketSha256)
+        assertEquals(RootTargetIdentity(30, 300), admission.guard)
+        assertEquals(RootTargetIdentity(40, 400), admission.worker)
         val finished = RootManagedNativeState.decode(ticket, ready(), report(), stopped())
         assertEquals(RootTargetIdentity(40, 400), finished.worker)
         assertTrue(ticket.confirms(assertNotNull(finished.normalCleanupProof())))
@@ -43,6 +48,18 @@ class RootManagedNativeStateTest {
         assertNull(RootManagedNativeState.decode(ticket, ready(), report(43, 1), stopped()).normalCleanupProof())
         assertNull(RootManagedNativeState.decode(ticket, null, null, stopped(8, 2, 2)).normalCleanupProof())
         assertNull(RootManagedNativeState.decode(ticket, null, null, stopped(9, 0, 1)).normalCleanupProof())
+    }
+
+    @Test fun retirementBeforeDispatchUsesDistinctProofWithoutInventingWorkerExit() {
+        val state = RootManagedNativeState.decode(ticket, null, null, stopped(8, 2, 2))
+        val proof = assertNotNull(state.neverDispatchedProof())
+        assertNull(state.normalCleanupProof())
+        assertTrue(proof.matches(ticket))
+        assertTrue(WireJson.decodeFromString<RootManagedRetirementProof>(WireJson.encodeToString(proof)).matches(ticket))
+        assertFalse(proof.matches(ticket.copy(appBuild = "other")))
+        assertFalse(proof.matches(ticket.copy(identity = ticket.identity.copy(startTicks = 21))))
+        assertNull(RootManagedNativeState.decode(ticket, null, null, stopped(9, 0, 1)).neverDispatchedProof())
+        assertNull(RootManagedNativeState.decode(ticket, ready(), report(), stopped()).neverDispatchedProof())
     }
 
     @Test fun foreignTaskWorkerBootAndPartialRecordsAreRejected() {
