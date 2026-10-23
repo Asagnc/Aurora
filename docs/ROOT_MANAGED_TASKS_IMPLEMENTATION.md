@@ -14,6 +14,12 @@
 
 封印禁止修改字节，但原始memfd打开模式仍是O_RDWR，不能宣称access mode变成O_RDONLY；不可变性依赖已验证的内核seals。SCM_RIGHTS与SELinux资格尚未测试。
 
+## 正在接入的FD通道
+
+新增原生AF_UNIX stream接收库：SO_PEERCRED+pidfd+开始时间核实发送方；固定72字节AFD1帧（role/count/reserved、32字节nonce、32字节票据摘要），hello→单次文件帧→EOF→接收ACK。描述符只允许出现在文件帧首个分片，明确校验MSG_CTRUNC、数量、重复inode、regular/大小、四项seals和CLOEXEC。失败关闭所有已接收FD；cancel/peer pidfd与绝对截止使用poll事件等待，不定时轮询。
+
+FD ACK只说明描述符验证完成，不能冒充Frida执行或卸载证明。当前接收库NDK ARM64独立对象编译通过，8项真实Linux socket主机用例已加入CI、尚待执行；还未接worker/Android发送方，因此不改变ready状态。
+
 ## 验证
 
 本地核心239项：229通过、10平台跳过；新增4项票据/预算/证明/错配回归实际执行。Debug、Release R8、testAPK、lint通过；随后扩展Android用例又编译/lint通过，见evidence/0.1.40/local-root-managed-foundation-passed.txt。
