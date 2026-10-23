@@ -40,6 +40,8 @@
 
 ## 当前证据
 
+- 按类分析/设备用例f2d3b4b完整CI39959191594成功，证据evidence/0.1.40/ci-39959191594-passed.txt。Frida构建原型的新增CI推送后核实；不是手机运行证据。
+
 - 7e750f0完整CI39956810632成功，覆盖此前并发资格与严格退出证明；e2f14b4的39955989822被后续提交取代而取消，不记成通过。证据evidence/0.1.40/ci-39956810632-passed.txt。
 
 - 上轮任务固定代修复3beb4c7完整CI39953323831成功，证据evidence/0.1.40/ci-39953323831-passed.txt。
@@ -56,8 +58,8 @@
 ## 尚未实现，建议继续的顺序
 
 1. **浏览器文件传输**：Agent与用户页面的上传/下载、会话归属、可观察进度/产物、取消/删除协调。先比较onShowFileChooser/精确URI授权与字节传输，核实程序点击文件输入的用户手势要求；下载需比较现有OkHttp、WebView网络上下文与系统下载器，正确处理各会话Cookie、HTTP/HTTPS/SOCKS代理、重定向和POST/blob。不能把GET重发或直连降级当所有下载都支持。新的通道/持久化设计先确认。组合方向已获确认；0.1.38已实现Agent二进制上传/页面下载，详见 BROWSER_TRANSFER_IMPLEMENTATION.md。原生chooser与精确URI快照、旧上传快照有界回收已接入0.1.39。0.1.40下载中断恢复已接入。错误诊断、文件展示/MIME已接入，接续实际WebView资格；勿重复确认同一方案或把Agent路径当全部浏览器传输。
-2. **逆向/CTF工具包**：动态Frida新运行器组合已比较并写入DYNAMIC_REVERSE_PROPOSAL.md，待用户确认；未开始接入，不能把文档算成动态逆向已完成。静态运行方案已研究并写入STATIC_REVERSE_PROPOSAL.md，JADX1.5.6+Apktool3.0.3、Temurin27+35共享Root chroot按需CLI，用户已确认新增工具安装/只读挂载与租约布局。编译期目录、校验与暂存准备层已实现，官方包实际字节验证通过；共享安装发布/移除/清理及Agent管理接口已接入；持久任务bundle引用、精确退出证明和删除屏障已接入；Root只读挂载/能力协商3/固定CLI资格/Agent分析执行现已接入；最终手机上实际JRE27/CLI/自有APK资格与故障验收仍待进行。详见STATIC_REVERSE_IMPLEMENTATION.md。JADX、Apktool、原生库分析、Frida等实际ARM64运行器、版本化共享依赖与Agent工具，不用普通SKILL.md假装这些二进制已安装可用。
-3. **手机APK构建链**：实际ARM64可用JDK/aapt2/D8/R8/签名/安装链，含产物和失败诊断；Linux基础环境存在不等于已能编译APK。
+2. **逆向/CTF工具包**：动态Frida新运行器组合已比较并写入DYNAMIC_REVERSE_PROPOSAL.md；用户要求综合取优后，已做真实devkit摘要/NDK交叉链接/外层16KiB与体积资格，原型尚未打包。attach/spawn、Java桥、消息与完整收尾仍未实现，见DYNAMIC_REVERSE_IMPLEMENTATION.md。静态运行方案已研究并写入STATIC_REVERSE_PROPOSAL.md，JADX1.5.6+Apktool3.0.3、Temurin27+35共享Root chroot按需CLI，用户已确认新增工具安装/只读挂载与租约布局。编译期目录、校验与暂存准备层已实现，官方包实际字节验证通过；共享安装发布/移除/清理及Agent管理接口已接入；持久任务bundle引用、精确退出证明和删除屏障已接入；Root只读挂载/能力协商3/固定CLI资格/Agent分析执行现已接入；最终手机上实际JRE27/CLI/自有APK资格与故障验收仍待进行。详见STATIC_REVERSE_IMPLEMENTATION.md。JADX、Apktool、原生库分析、Frida等实际ARM64运行器、版本化共享依赖与Agent工具，不用普通SKILL.md假装这些二进制已安装可用。
+3. **手机APK构建链**：当前一手检索见APK_BUILD_RESEARCH.md，尚未定新增运行器/缓存布局。实际ARM64可用JDK/aapt2/D8/R8/签名/安装链，含产物和失败诊断；Linux基础环境存在不等于已能编译APK。
 4. **网络进阶**：发包、HTTP修改/重放、TLS解密、UID归属和长时轮转。抓包不代表已提供这些功能；按需独立运行，不能给每个模型请求增加重型代理。
 5. **模型与缓存**：刷新当前稳定在售型号/端点能力、网关能力探测及各家缓存/期限策略。真实账号路由/命中/费用/延迟验证留用户允许真实连接之后；现有序列化/原生历史/前缀策略不能称全部模型最优。
 6. **其他增强**：Skills私有认证/签名、更多结构化系统API工具、浏览器跨站frame与renderer完整矩阵、正式发布签名/图标检查。先核实当前实现，不能因历史待办重复建设。

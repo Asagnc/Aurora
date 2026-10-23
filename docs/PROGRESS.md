@@ -1,3 +1,11 @@
+## 2026-10-23 动态逆向原生构建资格与APK构建链检索
+
+用户回复“多处对比取最优”，按DYNAMIC_REVERSE_PROPOSAL推进独立Frida Core worker的构建资格。官方17.24.3 devkit字节摘要通过，现有NDK ARM64交叉链接与外层16KiB段/系统依赖检查通过；strip后约89MB、单库ZIP约36MB，仅原型体积，不是完整APK/RSS。新增可复现构建适配器、2项离线归档拒绝测试及CI资格步骤。
+
+worker目前只实现版本/Root本机进程探测原型，未打包/注册Agent工具，没有手机安装半成品或常驻server。attach/spawn、Java桥、消息与取消清理必须接着完成，详见DYNAMIC_REVERSE_IMPLEMENTATION.md。原生构建完整CI推送后核实；不因静态链接通过就显示runtime ready。
+
+清理本轮重复展开devkit及旧strip文件，释放434501141字节，固定源压缩包和当前原型产物保留供后续开发。手机APK构建链的AOSP/Termux/归档AndroidIDE/CodeOnTheGo来源已重新比较，见APK_BUILD_RESEARCH.md；这是待定研究，不是新构建链已批准或实现。手机与真实模型均未操作。
+
 ## 2026-10-23 按类静态分析与完整设备资格用例
 
 reverse_analyze新增可选JADX className，使用上游--single-class/--single-class-output及--no-res；输出固定在当前唯一run目录的selected.java，向Agent返回selectedSource计划路径。严格限制参数类型、长度、控制符/路径分隔符/选项前缀，Apktool不接受该选项。未指定时保留原全量行为，不改变JVM/Root架构。按类仍需解析输入和依赖，不宣称已测性能领先。

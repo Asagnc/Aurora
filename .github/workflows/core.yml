@@ -21,6 +21,7 @@ jobs:
       - name: Verify protocols and owned files
         run: |
           python3 scripts/verify-static-reverse-fetch.py
+          python3 scripts/verify-frida-probe-build.py
           ./gradlew :core:test --console=plain
       - name: Verify signed Ubuntu image and actual POSIX rootfs extraction
         run: bash scripts/verify-linux-image.sh
@@ -41,6 +42,8 @@ jobs:
           sudo -n python3 scripts/verify-linux-metadata-gc.py
       - name: Install matching stable Android SDK
         run: bash scripts/setup-android-sdk.sh
+      - name: Build pinned Frida ARM64 qualification worker without packaging
+        run: python3 scripts/build-frida-probe.py --directory app/build/outputs/frida-qualification --ndk "$ANDROID_HOME/ndk/30.0.16248370" --download
       - name: Restore exact native source archive
         id: native-source-cache
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -82,5 +85,7 @@ jobs:
             app/build/outputs/apk/debug/*.apk
             app/build/outputs/apk/release/*.apk
             app/build/outputs/linux-sources/*.zip
+            app/build/outputs/frida-qualification/report.json
+            app/build/outputs/frida-qualification/readelf.txt
           if-no-files-found: error
           retention-days: 14
