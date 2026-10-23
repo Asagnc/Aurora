@@ -27,6 +27,18 @@ class RootManagedRunRegistryTest {
         }.array()
         return requireNotNull(RootManagedNativeState.decode(ticket, null, null, stopped).neverDispatchedProof())
     }
+    private fun targetExited(ticket: RootManagedRunTicket): RootManagedTargetExitProof {
+        val ready = ByteBuffer.allocate(164).order(ByteOrder.LITTLE_ENDIAN).apply {
+            put("ARW1${ticket.runId}${ticket.digest()}".toByteArray(Charsets.US_ASCII))
+            putInt(234); putLong(2340); putInt(235); putLong(2350); put(ticket.identity.bootId.toByteArray(Charsets.US_ASCII))
+        }.array()
+        val stopped = ByteBuffer.allocate(123).order(ByteOrder.LITTLE_ENDIAN).apply {
+            put("ARI1\n${ticket.runId}\n${ticket.digest()}\n".toByteArray(Charsets.US_ASCII))
+            put(15); put(1); put(1); put(0); putInt(-1); putInt(4); putInt(0)
+        }.array()
+        return requireNotNull(RootManagedNativeState.decode(ticket, ready, null, stopped)
+            .targetExitProof(ticket.identity.bootId, null))
+    }
     private suspend fun fixture(block: suspend (AuroraDatabase, ConversationStore, RootManagedRunTicket) -> Unit) {
         val name = "managed-${UUID.randomUUID()}.db"
         val database = AuroraDatabase(context, name)
@@ -67,6 +79,19 @@ class RootManagedRunRegistryTest {
         runs.finish(second, retirement(second))
         SpaceStore(context, store).delete(ticket.owner, {})
         assertTrue(store.list().none { it.id == ticket.owner })
+    } }
+    @Test fun targetExitRecoveryClearsOnlyExactTicketDespiteMissingWorkerReport() = runBlocking { fixture { _, store, ticket ->
+        val runs = RootManagedRunRegistry(store)
+        val second = ticket.copy(runId = UUID.randomUUID().toString())
+        runs.begin(ticket); runs.begin(second)
+        try { runs.finish(ticket, targetExited(second)); fail("Foreign target exit cleared an intent") }
+        catch (_: IllegalArgumentException) { }
+        assertEquals(2L, runs.count(ticket.owner))
+        runs.finish(ticket, targetExited(ticket)); runs.finish(ticket, targetExited(ticket))
+        assertEquals(listOf(second), runs.pending(ticket.owner))
+        runs.finish(second, targetExited(second))
+        SpaceStore(context, store).delete(ticket.owner, {})
+        assertNull(store.header(ticket.owner))
     } }
     @Test fun ownerScopedHistoryLinkAndIntentTransaction() = runBlocking { fixture { _, store, ticket ->
         val runs = RootManagedRunRegistry(store)

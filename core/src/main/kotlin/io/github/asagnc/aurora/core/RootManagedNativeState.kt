@@ -17,12 +17,21 @@ class RootManagedNativeState private constructor(
     val error = stopped.error
     val workerFlags = facts?.first
     val workerStatus = facts?.second
+    val originalRoot: LinuxRootIdentity get() = ticket.identity
+    val target: RootTargetIdentity get() = ticket.target
 
     private data class Stopped(val phase: Int, val worker: Int, val domain: Int, val exitCode: Int, val reason: Int, val error: Int)
 
     fun neverDispatchedProof(): RootManagedRetirementProof? =
         if (phase == 8 && workerState == 2 && domainState == 2 && worker == null && workerFlags == null)
             RootManagedRetirementProof.fromNeverDispatched(ticket) else null
+
+    /** Only a trusted Root observer may supply a boot change, exact replacement identity or confirmed ESRCH (null). */
+    fun targetExitProof(bootId: String, observed: RootTargetIdentity?): RootManagedTargetExitProof? {
+        if (workerState != CLEAR || domainState != CLEAR) return null
+        val proof = RootManagedTargetExitProof.confirmed(ticket, bootId, observed)
+        return proof.takeIf { it.matches(ticket) }
+    }
 
     /** Resource reclamation and script cleanup remain independent facts, including on cancellation. */
     fun normalCleanupProof(): RootManagedExitProof? {

@@ -3,6 +3,9 @@ package io.github.asagnc.aurora.core
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.jsonObject
 import kotlin.test.*
 
 class RootManagedNativeStateTest {
@@ -60,6 +63,30 @@ class RootManagedNativeStateTest {
         assertFalse(proof.matches(ticket.copy(identity = ticket.identity.copy(startTicks = 21))))
         assertNull(RootManagedNativeState.decode(ticket, null, null, stopped(9, 0, 1)).neverDispatchedProof())
         assertNull(RootManagedNativeState.decode(ticket, ready(), report(), stopped()).neverDispatchedProof())
+    }
+
+    @Test fun targetExitRecoveryRequiresResourcesAndAnActualIdentityChange() {
+        val state = RootManagedNativeState.decode(ticket, ready(), null, stopped())
+        assertNull(state.normalCleanupProof())
+        assertNull(state.targetExitProof(ticket.identity.bootId, ticket.target))
+        assertNull(state.targetExitProof("bad", null))
+        assertNull(state.targetExitProof(ticket.identity.bootId, RootTargetIdentity(91, 901)))
+        assertNull(state.targetExitProof(ticket.identity.bootId, RootTargetIdentity(90, 0)))
+        val absent = assertNotNull(state.targetExitProof(ticket.identity.bootId, null))
+        val reused = assertNotNull(state.targetExitProof(ticket.identity.bootId, RootTargetIdentity(90, 901)))
+        val rebooted = assertNotNull(state.targetExitProof("00000000-0000-0000-0000-000000000005", null))
+        for (proof in listOf(absent, reused, rebooted)) {
+            assertTrue(proof.matches(ticket))
+            assertFalse(proof.matches(ticket.copy(observeMs = 5)))
+            assertTrue(WireJson.decodeFromString<RootManagedTargetExitProof>(WireJson.encodeToString(proof)).matches(ticket))
+        }
+        val encoded = WireJson.parseToJsonElement(WireJson.encodeToString(absent)).jsonObject
+        for (field in listOf("workerExited", "domainRemoved")) {
+            val invalid = JsonObject(encoded + (field to JsonPrimitive(false))).toString()
+            assertFalse(WireJson.decodeFromString<RootManagedTargetExitProof>(invalid).matches(ticket))
+        }
+        val unknown = RootManagedNativeState.decode(ticket, null, null, stopped(9, 0, 1))
+        assertNull(unknown.targetExitProof(ticket.identity.bootId, null))
     }
 
     @Test fun foreignTaskWorkerBootAndPartialRecordsAreRejected() {

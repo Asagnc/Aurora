@@ -1,0 +1,59 @@
+Source: c58f3dd89cd725b08d39e19d9ee158f4439ce16e
+Workflow: https://github.com/Asagnc/Aurora/actions/runs/40017402355
+Overall: completed/success, all three jobs success.
+Retirement proof, base Android Files API regression gate, snapshot recovery and Android build/lint passed. No device execution.
+
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:12:30.1083824Z Ran 9 tests in 0.464s
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:12:30.1084164Z OK
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:12:49.2886665Z Ran 10 tests in 19.125s
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:12:49.2887079Z OK
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:12:49.7733223Z Ran 25 tests in 0.419s
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:12:49.7733628Z OK
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:12:50.9173154Z Ran 10 tests in 1.079s
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:12:50.9173441Z OK
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:12:51.7165326Z Ran 9 tests in 0.701s
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:12:51.7165623Z OK
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:13:45.0301082Z Ran 14 tests in 53.246s
+managed-supervision	Verify exact report streams and native supervisor events	2026-10-23T20:13:45.0301472Z OK
+frida-session	Verify actual Frida session lifecycle on owned Linux targets	2026-10-23T20:13:40.5198925Z Ran 24 tests in 57.831s
+frida-session	Verify actual Frida session lifecycle on owned Linux targets	2026-10-23T20:13:40.5199509Z OK
+test	Verify protocols and owned files	2026-10-23T20:12:40.2630877Z Android36 Files API regression check passed (254 source files; targeted check only)
+test	Verify protocols and owned files	2026-10-23T20:12:40.4187482Z Ran 3 tests in 0.003s
+test	Verify protocols and owned files	2026-10-23T20:12:40.4187889Z OK
+test	Verify protocols and owned files	2026-10-23T20:12:40.4971500Z Ran 2 tests in 0.010s
+test	Verify protocols and owned files	2026-10-23T20:12:40.4971898Z OK
+test	Verify protocols and owned files	2026-10-23T20:12:40.8363208Z Ran 3 tests in 0.276s
+test	Verify protocols and owned files	2026-10-23T20:12:40.8364067Z OK
+test	Verify protocols and owned files	2026-10-23T20:12:41.4229661Z Ran 9 tests in 0.522s
+test	Verify protocols and owned files	2026-10-23T20:12:41.4230490Z OK
+test	Verify protocols and owned files	2026-10-23T20:12:41.6346353Z Ran 7 tests in 0.141s
+test	Verify protocols and owned files	2026-10-23T20:12:41.6346791Z OK
+test	Verify protocols and owned files	2026-10-23T20:13:37.0344135Z BUILD SUCCESSFUL in 55s
+test	Verify signed Ubuntu image and actual POSIX rootfs extraction	2026-10-23T20:13:39.7740782Z /home/runner/work/_temp/aurora-rootfs.UmlcU7/ubuntu-base-26.10-base-arm64.tar.gz: OK
+test	Verify signed Ubuntu image and actual POSIX rootfs extraction	2026-10-23T20:13:59.4290176Z BUILD SUCCESSFUL in 19s
+test	Verify native PTY process lifecycle on Linux host	2026-10-23T20:14:01.0749199Z Ran 8 tests in 1.533s
+test	Verify native PTY process lifecycle on Linux host	2026-10-23T20:14:01.0749653Z OK
+test	Verify ptrace tracer-death kernel prerequisite on Linux host	2026-10-23T20:14:01.3190433Z Ran 5 tests in 0.167s
+test	Verify ptrace tracer-death kernel prerequisite on Linux host	2026-10-23T20:14:01.3190781Z OK
+test	Verify Root namespace teardown on Linux host	2026-10-23T20:14:02.0414858Z Ran 4 tests in 0.643s
+test	Verify Root namespace teardown on Linux host	2026-10-23T20:14:02.0415131Z OK
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:14:03.8762130Z Ran 6 tests in 1.753s
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:14:03.8762446Z OK
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:14:04.7588197Z Ran 7 tests in 0.819s
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:14:04.7588795Z OK
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:14:07.2455707Z Ran 15 tests in 2.424s
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:14:07.2456027Z OK
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:14:10.5939014Z Ran 6 tests in 3.280s
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:14:10.5939433Z OK
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:14:11.4519901Z Ran 11 tests in 0.795s
+test	Verify task cgroup events and supervisor death on Linux host	2026-10-23T20:14:11.4520348Z OK
+test	Install matching stable Android SDK	2026-10-23T20:14:15.0348339Z /home/runner/work/_temp/aurora-commandlinetools.zip: OK
+test	Prefetch verified native source with bounded transport retries	2026-10-23T20:15:00.6467624Z /home/runner/work/_temp/aurora-native-downloads/talloc-2.5.0.tar.gz: OK
+test	Prepare verified source and generated PRoot adapter	2026-10-23T20:15:06.6009563Z BUILD SUCCESSFUL in 5s
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-23T20:15:10.8899807Z Ran 4 tests in 4.214s
+test	Verify actual derived PRoot lifecycle on Linux host	2026-10-23T20:15:10.8900228Z OK
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-23T20:15:44.7824720Z Ran 10 tests in 1.669s
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-23T20:15:44.7825259Z OK
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-23T20:15:44.8590450Z Ran 12 tests in 33.893s
+test	Verify pinned packet tools and offline filtering on Linux host	2026-10-23T20:15:44.8591111Z OK
+test	Build Android application and run lint	2026-10-23T20:21:13.9530521Z BUILD SUCCESSFUL in 5m 28s

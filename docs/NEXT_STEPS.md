@@ -58,6 +58,10 @@
 
 ## 当前证据
 
+- c58f3dd完整CI40017402355三job成功，含派发前退役、上传残留恢复、Android基础Files API门禁、24真实Frida主机用例及Android构建/lint；见ci-40017402355-passed.txt。后续Root记录读取/target-gone待新CI；没有手机执行。
+
+- 已补Root锚定目录FD的小记录读取器及target-gone独立恢复证明：仅确认worker/domain资源退出后，原目标boot变更、PID确实不存在或startTicks变更可释放精确意图，不声称已显式unload。Root观察器仅查询，EPERM/隐藏proc/坏记录不算退出。核心249项：239通过/10跳过，Debug/Release/testAPK/lint本地通过；Root读取/观察及新增账本Android用例仅编译。尚未接Binder/Agent，不算手机验收。见local-managed-target-recovery-passed.txt。
+
 - 新增派发前持久退役的独立证明及精确账本完成路径，不伪造worker退出；Core新用例通过、Android事务/删除用例仅编译。发现并修复BrowserUploadSnapshot/StaticReverseStore生产路径及测试里的Files.readString/writeString（基础Android36不可用，SDK标since36.1），增加针对性CI门禁。核心248项：238通过/10跳过，Debug/Release/testAPK/lint本地通过；见local-managed-retirement-passed.txt。Root Binder/target-gone仍待接。
 
 - a36e31d完整CI40015005822三job成功：23项真实Frida主机测试（含4项独立guard端到端）通过，Android构建/lint通过；见ci-40015005822-passed.txt。之后新增第24项强杀worker及Core解析器，后续CI另查。

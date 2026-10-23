@@ -104,6 +104,10 @@ recover先持久退役，核实旧guard已退出、boot与worker身份；worker�
 
 ## 验证
 
+继续增加RootManagedRecords：仅UID0、已有Root私有目录FD，dup保持锚定；固定名称按O_NOFOLLOW/NONBLOCK读取，Root属主/私有权限/普通单链接/精确长度与EOF，最后阶段记录逐个核对票据和存在性。READY可独立解码供脚本握手；finished调用前必须已有coordinator/recovery进程退出屏障及生命周期租约，本读取器不等待/停止任务。坏/残缺文件不删除、不伪造缺失。
+
+RootManagedTargetCheck只读当前boot和精确PID/startTicks；同boot下proc不存在还需kill(pid,0)明确ESRCH，EPERM/隐藏proc/截断/格式错误保持未知。没有杀原目标。独立RootManagedTargetExitProof须有真实worker/domain CLEAR，按原票据绑定boot变更/原PID不存在/身份被替换，区别于正常unload证明；未知worker资源仍不清账。Core新增回归通过、Android账本精确完成用例仅编译，核心249项：239通过/10跳过，Debug/Release/testAPK/lint通过，见local-managed-target-recovery-passed.txt。Root侧读取/观察还未手机执行，Binder/Agent未接。
+
 随后补RootManagedRetirementProof：仅可信Root记录严格为retired-only、worker/domain均NOT_CREATED时产生；App账本按精确原票据完成，不伪造unload/workerExited。已有INTENT但缺READY仍未知，不产生退役证明。新Core回归通过，新增Android事务/删除用例仅编译。修复生产BrowserUploadSnapshot/StaticReverseStore及Android夹具的36.1文件API，针对性源码门禁已接CI（不是完整Java API审计）。上传marker创建失败回收自己创建的文件/目录；旧epoch空租约支持恢复，部分marker和未知内容保留。核心248项：238通过/10平台跳过，Debug/Release/testAPK/lint本地通过，见local-managed-retirement-passed.txt。
 
 Core新增RootManagedNativeState严格读取164字节READY、52字节worker报告及123字节stopped：匹配票据/boot/进程、合法阶段及资源状态，不从stdout或资源清理推断注入卸载。只有实际worker清理位和独立资源证明齐全才产生现有正常清理证明；缺失报告/未detach/派发前退役仍无正常证明，不误造workerExited。它只接受可信Root读取器返回的原始记录，Root文件路径、权限与锁核实仍由待接facade负责。4项Core故障/成功回归本地通过，核心累计246项、236通过/10平台跳过。新增ARM64 guard自动构建审计脚本，43,152字节、仅libc/libdl、外层16KiB通过，未APK打包/设备执行。证据local-managed-native-state-passed.txt。
@@ -122,7 +126,7 @@ Core新增RootManagedNativeState严格读取164字节READY、52字节worker报�
 
 1. 已接AF_UNIX脚本FD发送/接收开发通路；继续Root Binder PFD所有权、实际worker PID捕获与受管派发连接，最终Android16/SELinux资格。补最终退出事实小通道，不能从截断stdout猜证明。
 2. Android-native受管cgroup入口、Root阶段日志/任务锁/退役标记。迟到start不能越过取消；不得使用普通250ms升级杀进程窗口代替Frida清理期。
-3. 精确恢复与删除协调：原目标已退出/重启、正常unload、派发前退役及未知注入是不同事实。Core/账本现支持正常清理及严格retired-only的独立退役证明，Root读取/派发入口待接；target-gone恢复仍未实现，不能在缺少证明时清账。
+3. 精确恢复与删除协调：Core/账本现支持正常清理、严格retired-only退役和target-gone三种独立证明，Root记录读取/目标只读观察已实现但仅编译；实际派发/恢复Binder入口、迟到回调与删除协调仍待接及最终手机验证。
 4. Root资格、可观察日志、Agent/UI接入、spawn状态机、Android ART、自有目标故障验收。
 5. 完成许可证闭包/对应源码、APK体积与最终集中真机测试后才能发布Frida ready。
 

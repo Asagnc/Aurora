@@ -1,0 +1,6 @@
+Working tree based on c58f3dd; subsequent commit records these changes.
+Core tests: {'tests': 249, 'skipped': 10, 'failures': 0, 'errors': 0}
+Full command: gradlew :core:test :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :app:lintDebug
+BUILD SUCCESSFUL in 44s; subsequent test-only proof-field checks: core:test BUILD SUCCESSFUL in 7s.
+Root anchored record reader and target observer compiled; no Android runtime execution.
+Registry target-exit Android case compiled only. No Root target was signalled for termination; no phone actions.

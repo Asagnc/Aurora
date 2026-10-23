@@ -30,6 +30,7 @@ internal class RootManagedRunRegistry(private val conversations: ConversationSto
     }
     suspend fun finish(ticket: RootManagedRunTicket, proof: RootManagedExitProof) = finishConfirmed(ticket, ticket.confirms(proof))
     suspend fun finish(ticket: RootManagedRunTicket, proof: RootManagedRetirementProof) = finishConfirmed(ticket, proof.matches(ticket))
+    suspend fun finish(ticket: RootManagedRunTicket, proof: RootManagedTargetExitProof) = finishConfirmed(ticket, proof.matches(ticket))
 
     private suspend fun finishConfirmed(ticket: RootManagedRunTicket, confirmed: Boolean) = conversations.write { db ->
         require(confirmed) { "Root task injection cleanup or retirement is unconfirmed" }
