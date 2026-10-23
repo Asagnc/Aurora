@@ -16,6 +16,8 @@ import kotlinx.coroutines.ensureActive
 
 internal class LinuxFilesPendingException(cause: Throwable) : java.io.IOException("Root file cleanup remains pending", cause)
 
+internal class RootManagedRunPendingException : IllegalArgumentException("Root injection cleanup must be confirmed before deleting this conversation")
+
 internal class LinuxRunPendingException : IllegalArgumentException("Linux task exit must be confirmed before deleting this conversation")
 
 class SpaceStore(private val context: Context, private val conversations: ConversationStore,
@@ -70,7 +72,7 @@ class SpaceStore(private val context: Context, private val conversations: Conver
             val state = db.rawQuery("SELECT run_state FROM conversations WHERE id = ?", arrayOf(id))
                 .use { if (it.moveToFirst()) it.getString(0) else null }
             require(state != "running") { "Conversation tasks must stop before deletion" }
-            requireNoLinuxLeases(db, id)
+            requireNoPendingTasks(db, id)
             db.update("conversations", values("deleting" to 1), "id = ?", arrayOf(id))
         }
         releaseBrowser(id)
@@ -83,21 +85,24 @@ class SpaceStore(private val context: Context, private val conversations: Conver
         var retained = 0
         pending.forEach { id ->
             try {
-                conversations.read { requireNoLinuxLeases(it, id) }
+                conversations.read { requireNoPendingTasks(it, id) }
                 releaseBrowser(id); finishDelete(id)
             } catch (_: LinuxRunPendingException) { retained++ }
+            catch (_: RootManagedRunPendingException) { retained++ }
             catch (_: LinuxFilesPendingException) { retained++ }
         }
         return retained
     }
 
-    private fun requireNoLinuxLeases(db: SQLiteDatabase, id: String) {
+    private fun requireNoPendingTasks(db: SQLiteDatabase, id: String) {
+        if (db.rawQuery("SELECT 1 FROM root_managed_runs WHERE owner=? LIMIT 1", arrayOf(id)).use { it.moveToFirst() })
+            throw RootManagedRunPendingException()
         if (db.rawQuery("SELECT 1 FROM linux_leases WHERE owner=? LIMIT 1", arrayOf(id)).use { it.moveToFirst() })
             throw LinuxRunPendingException()
     }
 
     private suspend fun finishDelete(id: String) = withContext(Dispatchers.IO) {
-        conversations.read { requireNoLinuxLeases(it, id) }
+        conversations.read { requireNoPendingTasks(it, id) }
         val target = path(id)
         val linux = target.resolve(".aurora-linux")
         if (Files.exists(linux, LinkOption.NOFOLLOW_LINKS)) {

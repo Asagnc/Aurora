@@ -1,4 +1,4 @@
-# Frida接入Root/Agent：受管原生任务方案（待确认，2026-10-23）
+# Frida接入Root/Agent：受管原生任务方案（已确认，2026-10-24）
 
 Frida原生附加/脚本/桥/取消已在主机分阶段验证，尚未放入APK或注册Agent工具。接入前需要确定下面新增持久化与文件描述符通道；不能直接把已编译worker当普通Root shell命令执行就宣称完整恢复。
 
@@ -67,4 +67,4 @@ Android公开Os.memfd_create在本机SDK API历史中since30，最小36无需旧
 - 本机platform android-37.0 api-versions.xml和javap：memfd_create since30、Os.fcntlInt、LocalSocket接口；仍不代替Android16设备资格。
 - 仓库ToolRunStore.start、LinuxRunRegistry.begin、AuroraDatabase(schema7)、RootCommandSession、capture.c：分别核实历史无原生票据、Linux外键依赖、既有取消回收与250ms普通命令窗口。
 
-本方案待用户确认；本轮只修复已批准功能的登记/日志问题，没有创建schema8表或启用新的Root执行后端。
+用户已确认推荐组合。schema8意图账本、精确退出证明和封印内存快照已开始实现；FD握手、Root受管执行、恢复与Agent接入仍未完成，不能据此显示Frida ready。当前证据见ROOT_MANAGED_TASKS_IMPLEMENTATION.md。

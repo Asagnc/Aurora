@@ -1,0 +1,7 @@
+Root managed task foundation, local verification 2026-10-24
+Core: {'tests': 239, 'failures': 0, 'errors': 0, 'skipped': 10}
+root-managed-memory-build.txt: BUILD SUCCESSFUL in 42s
+root-managed-extended-tests.txt: BUILD SUCCESSFUL in 8s
+Tasks: core:test app:assembleDebug app:assembleDebugAndroidTest app:assembleRelease app:lintDebug
+New core tests: 4 actually passed. New Android tests: 9 compiled only; not executed.
+No ADB / phone / model-provider calls. Frida not packaged or registered.

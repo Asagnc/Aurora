@@ -1,3 +1,9 @@
+## 2026-10-24 Root受管任务账本与内存快照基础
+
+用户确认组合后新增schema8 root_managed_runs、不级联删除的owner屏障、不可变attach票据/严格清理证明；不绑定Linux环境。SpaceStore在删文件前拒绝未确认任务，损坏记录不跳过。修复历史迁移用例版本断言与重复索引创建。RootScriptMemory新增<=1MiB封印memfd、精确摘要与大小、CLOEXEC/取消回收；没有写盘回退。FD握手/Root入口/恢复/Agent仍未接入，不能显示Frida可用。
+
+核心239项（229通过、10跳过），Debug/Release R8/testAPK/lint本地通过；新增9项Android用例仅编译。上一提交16a32b5完整CI39971396204已成功。当前提交推送后核实CI，不操作手机/真实模型。详见ROOT_MANAGED_TASKS_IMPLEMENTATION.md。
+
 ## 2026-10-23 静态逆向Agent账本接入修复与Frida完整CI
 
 发现真实Agent路径的两个遗漏：ToolRunStore产物白名单未含shared_toolchain/reverse_analyze，调用prepared会在执行前失败；且一次probe三步都登记同一单产物字段，第二步会被拒绝。现允许这两个已注册工具，probe只登记首步主产物，结果另列每个尝试的规范logDirectories；不改数据库结构、不允许覆盖其他工具既有产物。独立Linux run票据仍保护每个原生步骤。

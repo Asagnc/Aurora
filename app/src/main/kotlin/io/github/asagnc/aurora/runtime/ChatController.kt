@@ -282,6 +282,7 @@ internal class ChatController(application: Application,
         is ModelNetworkException -> failure.message.orEmpty()
         is ConfigurationException -> failure.message.orEmpty()
         is io.github.asagnc.aurora.data.LinuxFilesPendingException -> "Root 文件待清理，请重新连接 Root 后继续"
+        is io.github.asagnc.aurora.data.RootManagedRunPendingException -> "Root 注入清理尚未确认，已保留会话与恢复记录"
         is io.github.asagnc.aurora.data.LinuxRunPendingException -> "Linux 任务尚未确认退出，请在 Linux 环境中恢复"
         is IllegalArgumentException -> "配置或文件版本不符合要求，请检查连接和任务状态"
         else -> "操作失败（${failure.javaClass.simpleName}），已保留会话和恢复记录"

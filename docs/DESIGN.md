@@ -8,6 +8,8 @@ Research date: 2026-10-12.
 
 ## Approved architecture
 
+- 2026-10-24 confirmed Root managed native tasks: independent SQLite active intents (schema8), sealed memfd snapshots and authenticated one-shot FD handoff, existing cgroup supervision with a Frida cleanup window, exact injection/worker/domain exit facts. No Linux image requirement or existing-target migration into Aurora cgroups. See ROOT_MANAGED_TASKS_PROPOSAL.md; implementation/qualification are separate.
+
 - 2026-10-23 user clarified managed install lifecycle: publish complete bundles only, remove failed/cancelled staging, allow Agent install/update/remove and shared-workspace file management. Unknown live ownership/failed cleanup is explicit; active runtime versions require durable lease/exit proof before removal.
 
 - 2026-10-23 user approved static reverse bundle: pinned JADX1.5.6/Apktool3.0.3/ARM64 Temurin27+35 JRE, shared versioned install with readonly guest mount and leases on existing Root chroot supervision. See STATIC_REVERSE_PROPOSAL.md; preparation is not runtime qualification.
