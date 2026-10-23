@@ -6,10 +6,15 @@ import kotlinx.serialization.json.*
 /** Literal argv; output is unique and no shell, overwrite flag or runtime plugin installation is added. */
 fun staticReverseArguments(args: JsonObject, id: String): List<String> {
     require(UUID.fromString(id).toString() == id)
-    require(args.keys.all { it in setOf("tool", "mode", "path", "heapMiB", "threads", "timeoutMs") })
+    require(args.keys.all { it in setOf("tool", "mode", "path", "heapMiB", "threads", "timeoutMs", "className") })
     val path = args["path"]
     require(path is JsonPrimitive && path.isString)
     val tool = args.text("tool"); val mode = args.text("mode")
+    val selected = args["className"]?.let {
+        require(tool == "jadx" && it is JsonPrimitive && it.isString)
+        it.content.also { name -> require(name.isNotBlank() && name.length <= 512 && !name.startsWith("-") &&
+            name.none { character -> character.isISOControl() || character.isWhitespace() || character in "/\\" }) }
+    }
     val input = "/mnt/" + skillRelativePath(requireNotNull(args.text("path"))).toString().replace('\\', '/')
     fun integer(key: String, default: Long, range: LongRange): Long {
         val value = args[key]
@@ -25,7 +30,8 @@ fun staticReverseArguments(args: JsonObject, id: String): List<String> {
     return when (tool) {
         "jadx" -> {
             require(mode == "java")
-            java + listOf("-Djdk.util.zip.disableZip64ExtraFieldValidation=true", "-cp", "/opt/jadx/lib/jadx-1.5.6-all.jar", "jadx.cli.JadxCLI", "-j", "$threads", "-d", output, input)
+            java + listOf("-Djdk.util.zip.disableZip64ExtraFieldValidation=true", "-cp", "/opt/jadx/lib/jadx-1.5.6-all.jar", "jadx.cli.JadxCLI", "-j", "$threads", "-d", output) +
+                (selected?.let { listOf("--no-res", "--single-class", it, "--single-class-output", "$output/selected.java") } ?: emptyList()) + input
         }
         "apktool" -> {
             require(mode in setOf("manifest", "resources", "smali"))
@@ -45,13 +51,16 @@ class StaticReverseAnalysisTool(private val run: suspend (String, List<String>, 
         "Run qualified shared JADX/Apktool in Root Linux. First install and probe via shared_toolchain. " +
         "path is a relative file already in this conversation Linux project (/mnt, .aurora-linux/project); " +
         "stage Android imports explicitly with the existing Root command/file tools. tool=jadx requires mode=java; " +
+        "Optional jadx className selects one raw/alias full class name and skips resources; selectedSource identifies its Java file. " +
+        "Class selection still parses input and may resolve dependencies; it is not a full APK analysis. " +
         "apktool accepts manifest/resources/smali. Unique output=.aurora-linux/project/reverse/<runId>, " +
         "logs=runs/<runId>. Partial output is retained and never reported as complete on failure; no automatic retry. " +
         "JVM heap defaults768MiB (not a total RSS limit), threads4; configurable128..2048 and1..8. " +
         "No APK rebuilding or signing is implied. Read outputs on demand with file tools.", objectOf(
             "type" to string("object"), "properties" to objectOf(
                 "tool" to enumeration("jadx", "apktool"), "mode" to enumeration("java", "manifest", "resources", "smali"),
-                "path" to objectOf("type" to string("string")), "heapMiB" to integer(128, 2048),
+                "path" to objectOf("type" to string("string")),
+                "className" to objectOf("type" to string("string"), "minLength" to JsonPrimitive(1), "maxLength" to JsonPrimitive(512)), "heapMiB" to integer(128, 2048),
                 "threads" to integer(1, 8), "timeoutMs" to integer(1, 270000)),
             "required" to JsonArray(listOf("tool", "mode", "path").map(::string)), "additionalProperties" to JsonPrimitive(false))))
     override suspend fun execute(call: ToolCall): String {
@@ -66,6 +75,7 @@ class StaticReverseAnalysisTool(private val run: suspend (String, List<String>, 
         val proof = run(id, argv, timeout)
         return JsonObject(projection.project(id, proof) + mapOf("bundle" to string(StaticReverseTools.bundleId),
             "output" to string(".aurora-linux/project/reverse/$id"),
+            "selectedSource" to (if ("className" in call.arguments) string(".aurora-linux/project/reverse/$id/selected.java") else JsonNull),
             "quality" to string("Inspect tool warnings and output; successful exit does not prove complete decompilation"))).toString()
     }
     private fun enumeration(vararg values: String) = objectOf("type" to string("string"), "enum" to JsonArray(values.map(::string)))

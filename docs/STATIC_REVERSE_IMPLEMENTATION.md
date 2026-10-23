@@ -1,3 +1,13 @@
+## 2026-10-23 按类静态分析与完整设备资格用例
+
+reverse_analyze新增可选JADX className，使用上游--single-class/--single-class-output及--no-res；输出固定在当前唯一run目录的selected.java，向Agent返回selectedSource计划路径。严格限制参数类型、长度、控制符/路径分隔符/选项前缀，Apktool不接受该选项。未指定时保留原全量行为，不改变JVM/Root架构。按类仍需解析输入和依赖，不宣称已测性能领先。
+
+新增自有732字节DEX及可复现Java/D8生成脚本；Windows主机实际验证全量和按类JADX输出中的标记。新增StaticReverseDeviceTest五项：真实启动+只读挂载、DEX全量/按类、自己APK清单、缺失输入失败、挂载任务取消及持久bundle引用回收；只编译，未执行手机、不联网下载。准备/故障边界见STATIC_REVERSE_ACCEPTANCE.md。
+
+当前核心235项：225通过、10平台跳过；新增1核心选择参数回归已运行。Debug、Release R8、testAPK和lint通过（39秒），证据evidence/0.1.40/local-selected-analysis-passed.txt。完整CI推送后核实。
+
+动态逆向新底层方案见DYNAMIC_REVERSE_PROPOSAL.md，Frida17.24.3+Java桥7.0.13来源已核实；仍待用户确认，不视为已接入。
+
 ## 2026-10-23 Linux执行结果完整性与参数校验
 
 修复Linux命令结果投影把缺失timedOut视为未超时的问题。现须有明确scopeRemoved=true、interrupted=false、timedOut=false以及数值型0..255退出码和stopped=true才归为exited；字段缺失或类型不符为outcome_unknown，success=false、exitCode=null。明确超时/中断仍保留对应状态，非零真实退出仍保留原退出码。外层protocol/runId也不接受字符串数值或错误类型冒充。reverse_analyze复用该投影，自动获得相同行为；退出成功仍不证明反编译完整。

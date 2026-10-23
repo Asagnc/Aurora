@@ -1,0 +1,4 @@
+Windows host JADX1.5.6 selected-class fixture: exit0, selected.java marker verified. Not ARM64 qualification.
+INFO  - loading ...
+INFO  - Saving class 'io.github.asagnc.aurora.fixture.AuroraReverseProbe' to file 'C:\Users\Admin\AppData\Local\Temp\aurora-jadx-selected-3o1ltrz7\reverse\selection\selected.java'
+INFO  - done

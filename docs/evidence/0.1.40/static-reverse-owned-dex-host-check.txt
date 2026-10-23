@@ -1,0 +1,10 @@
+Windows host JADX 1.5.6 fixture smoke only, not ARM64 execution.
+fixture bytes=732
+SHA256=79f24e09766c7347a9afacd52ddc4849ad2cedecf77eb3c7f0bd97e1387bd91d
+INFO  - loading ...
+INFO  - processing ...
+INFO  - progress: 0 of 1 (0%)
+                                                             
+INFO  - done
+
+Expected marker found in decompiled Java.

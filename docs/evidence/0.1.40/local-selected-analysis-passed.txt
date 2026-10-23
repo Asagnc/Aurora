@@ -1,0 +1,7 @@
+{'tests': 235, 'failures': 0, 'errors': 0, 'skipped': 10}
+Tasks: core:test app:assembleDebug app:assembleDebugAndroidTest app:assembleRelease app:lintDebug
+BUILD SUCCESSFUL in 39s
+214 actionable tasks: 41 executed, 173 up-to-date
+Configuration cache entry reused.
+
+Five new reverse Android tests compiled only.

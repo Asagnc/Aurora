@@ -1,0 +1,17 @@
+{
+  "name": "frida-java-bridge",
+  "version": "7.0.13",
+  "dist": {
+    "shasum": "5d67beeae3c00e895c18c5f47f582480800c2c09",
+    "tarball": "https://registry.npmjs.org/frida-java-bridge/-/frida-java-bridge-7.0.13.tgz",
+    "fileCount": 20,
+    "integrity": "sha512-YSyKjxbxKnSi3KSUy9vciOvTOuq0RRh9dkxzkQVEdfIIZlw20zE8D3Cq9eL2FDqUVj4YKas6Wf09kCjL5zbffg==",
+    "signatures": [
+      {
+        "sig": "MEUCICJv8bBC247Aciaw/9R0EgVPVUyVrUDAikB7pWYX09QAAiEAoXgWDnAt8sC+LDKMOOjrnZHuKIyw/xcW9IaZfKmq0Jo=",
+        "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+      }
+    ],
+    "unpackedSize": 430070
+  }
+}
