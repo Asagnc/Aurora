@@ -105,9 +105,18 @@ static void cleanup(struct aurora_frida_session *run, FridaScript *script, Frida
         }
         g_signal_handlers_disconnect_by_data(session, run);
     }
-    frida_device_manager_close_sync(manager, run->cleanup, &error);
-    run->closed = error == NULL;
-    if (error) failure(run, "close_manager", &error);
+    // A local-device notification can precede full backend startup. Do not close a half-started manager.
+    if (!run->manager_ready) {
+        FridaDeviceList *ready = frida_device_manager_enumerate_devices_sync(manager, run->cleanup, &error);
+        run->manager_ready = ready != NULL;
+        if (ready) frida_unref(ready);
+        if (error) failure(run, "manager_startup_cleanup", &error);
+    }
+    if (run->manager_ready) {
+        frida_device_manager_close_sync(manager, run->cleanup, &error);
+        run->closed = error == NULL;
+        if (error) failure(run, "close_manager", &error);
+    }
     g_source_destroy(timer); g_source_unref(timer);
 }
 
@@ -115,7 +124,13 @@ static gpointer execute(gpointer opaque) {
     struct aurora_frida_session *run = opaque;
     GError *error = NULL;
     FridaDeviceManager *manager = frida_device_manager_new();
-    FridaDevice *device = frida_device_manager_get_device_by_type_sync(manager, FRIDA_DEVICE_TYPE_LOCAL, 10000, run->operation, &error);
+    FridaDeviceList *ready = frida_device_manager_enumerate_devices_sync(manager, run->operation, &error);
+    run->manager_ready = ready != NULL;
+    FridaDevice *device = NULL;
+    if (ready) {
+        device = frida_device_manager_get_device_by_type_sync(manager, FRIDA_DEVICE_TYPE_LOCAL, 0, run->operation, &error);
+        frida_unref(ready);
+    }
     FridaSession *session = NULL;
     FridaScript *script = NULL;
     if (!device) failure(run, "local_device", &error);
@@ -130,8 +145,10 @@ static gpointer execute(gpointer opaque) {
         }
     }
     cleanup(run, script, session, manager);
-    g_clear_pointer(&script, frida_unref); g_clear_pointer(&session, frida_unref);
-    g_clear_pointer(&device, frida_unref); g_clear_pointer(&manager, frida_unref);
+    if (run->closed) {
+        g_clear_pointer(&script, frida_unref); g_clear_pointer(&session, frida_unref);
+        g_clear_pointer(&device, frida_unref); g_clear_pointer(&manager, frida_unref);
+    } // Otherwise retain state until process exit; no unsafe finalizer on partially started backends.
     g_main_loop_quit(run->loop);
     return NULL;
 }
@@ -184,6 +201,11 @@ int aurora_frida_attach(const struct frida_attach_input *input) {
     GSource *startup = g_idle_source_new();
     g_source_set_callback(startup, start, &run, NULL); g_source_attach(startup, control);
     g_main_loop_run(run.loop); g_thread_join(run.thread);
+    if (!run.closed) {
+        // Report uncertainty and let process teardown reclaim this isolated worker, not unsafe library shutdown.
+        result(&run);
+        _exit(1);
+    }
     // Drain Frida's context, but retain GLib until the final JSON and our own sources are released.
     frida_shutdown();
     int status = result(&run);

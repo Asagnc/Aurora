@@ -139,11 +139,13 @@ class FridaSessionTests(unittest.TestCase):
         self.assertFalse(records[-1]["success"])
 
     def test_changed_identity_never_loads_script(self):
-        child = self.start("send('must-not-run');", ticks=self.ticks + 1)
-        records = self.finish(child)
-        self.assertFalse(records[-1]["loaded"])
-        self.assertFalse(any(event["kind"] == "message" for event in records))
-        self.assertNotEqual(0, child.returncode)
+        for attempt in range(5):
+            with self.subTest(attempt=attempt):
+                child = self.start("send('must-not-run');", ticks=self.ticks + 1)
+                records = self.finish(child)
+                self.assertFalse(records[-1]["loaded"])
+                self.assertFalse(any(event["kind"] == "message" for event in records))
+                self.assertNotEqual(0, child.returncode)
 
     def test_oversized_message_stops_with_explicit_dropped_count(self):
         child = self.start("send('x'.repeat(70000));", 30000)

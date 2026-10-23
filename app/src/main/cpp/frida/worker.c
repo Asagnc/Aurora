@@ -67,8 +67,11 @@ int main(int argc, char **argv) {
     frida_init();
     GError *error = NULL;
     FridaDeviceManager *manager = frida_device_manager_new();
-    FridaDevice *device = frida_device_manager_get_device_by_type_sync(manager,
-        FRIDA_DEVICE_TYPE_LOCAL, 10000, NULL, &error);
+    FridaDeviceList *ready = frida_device_manager_enumerate_devices_sync(manager, NULL, &error);
+    FridaDevice *device = ready ? frida_device_manager_get_device_by_type_sync(manager,
+        FRIDA_DEVICE_TYPE_LOCAL, 0, NULL, &error) : NULL;
+    gboolean manager_ready = ready != NULL;
+    if (ready) frida_unref(ready);
     FridaProcessQueryOptions *options = frida_process_query_options_new();
     frida_process_query_options_set_scope(options, FRIDA_SCOPE_MINIMAL);
     FridaProcessList *list = device == NULL ? NULL :
@@ -88,6 +91,7 @@ int main(int argc, char **argv) {
     g_clear_pointer(&list, frida_unref);
     g_clear_object(&options);
     g_clear_pointer(&device, frida_unref);
+    if (!manager_ready) _exit(1); // No unsafe close/finalizer while backend startup is unconfirmed.
     frida_device_manager_close_sync(manager, NULL, NULL);
     g_clear_pointer(&manager, frida_unref);
     frida_deinit();

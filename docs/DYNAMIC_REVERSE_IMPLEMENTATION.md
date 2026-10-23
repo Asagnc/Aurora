@@ -1,3 +1,11 @@
+## 2026-10-23 本机设备早返回/其他后端未完成启动的关闭竞态
+
+真实主机第二轮已5项通过，身份错配用例仍SIGSEGV。调试栈定位frida_fruity_pairing_browser_stop(self=null)，由DeviceManager立即关闭时取消未完成的其他设备后端启动引发。Frida17.24.3源码find_device会在本机设备added时早返回，而enumerate_devices等待ensure_service完成；不能把拿到local device当整个manager已启动。
+
+现先等待enumerate_devices的启动完成事件，再选择本机设备；取消发生在启动期间时，清理使用独立有界域再等启动结束后关闭。未能确认启动/关闭时只报cleanupConfirmed=false并退出隔离worker，不在半初始化后端上运行不安全close/finalizer，也不假装有完整收尾。不是固定sleep/轮询，不修改上游或降低用例断言。身份错配用例增加5次快速启动/退出子场景。
+
+源码依据：https://github.com/frida/frida-core/blob/17.24.3/src/frida.vala 的find_device/enumerate_devices/ensure_service/stop_service；失败栈见CI39964474273的frida-session job。修订交叉链接通过；真实主机CI待重跑。Root取消将来必须给此专用通道留出清理窗口并保存未知结果，不能直接套用普通命令的短SIGTERM/SIGKILL间隔就宣称已回收注入。
+
 ## 2026-10-23 真实主机用例暴露的事件上下文/关闭顺序修复
 
 94c547f CI39962631872失败：6真实Frida用例中1通过、1失败、4错误，多项退出超时，身份错配仅留下error无completion。不能记成生命周期验证通过。
