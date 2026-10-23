@@ -4,7 +4,8 @@ import java.nio.file.*
 
 /** Prepares an unpublished directory only. Publication, Root ownership and leases belong to the manager. */
 object StaticReversePreparation {
-    fun prepare(component: StaticReverseComponent, archive: Path, target: Path) {
+    fun prepare(component: StaticReverseComponent, archive: Path, target: Path,
+        mode: (Path, Int) -> Unit = { path, bits -> Files.setAttribute(path, "unix:mode", bits, LinkOption.NOFOLLOW_LINKS) }) {
         require(component in StaticReverseTools.components) { "Component is not in the compiled catalogue" }
         verifyStaticReverseArchive(component, archive)
         val absolute = target.toAbsolutePath().normalize()
@@ -14,13 +15,13 @@ object StaticReversePreparation {
             parent = parent.parent
         }
         require(!Files.exists(target, LinkOption.NOFOLLOW_LINKS))
-        when (component.id) {
+        try { when (component.id) {
             "jre" -> {
                 val unpacker = RootfsArchive(RootfsBudget(compressed = 128L*1024*1024, expanded = 512L*1024*1024))
                 val plan = unpacker.scan(archive)
                 require(plan.all { it.path == "jdk-27+35-jre" || it.path.startsWith("jdk-27+35-jre/") })
                 require(plan.any { it.path == "jdk-27+35-jre/bin/java" && it.kind == "file" })
-                unpacker.extract(archive, target, plan)
+                unpacker.extract(archive, target, plan, mode = mode)
             }
             "jadx" -> {
                 SkillArchive(SkillArchiveBudget(compressed = 128L*1024*1024, expanded = 256L*1024*1024,
@@ -44,5 +45,9 @@ object StaticReversePreparation {
             }
         }
         verifyStaticReverseArchive(component, archive)
+        } catch (failure: Throwable) {
+            try { removeSkillTree(target) } catch (cleanup: Throwable) { failure.addSuppressed(cleanup) }
+            throw failure
+        }
     }
 }

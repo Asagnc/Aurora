@@ -38,7 +38,7 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
             mutable.update { it.copy(toolRuns = it.toolRuns.map { old -> if (old.id == event.id) event else old }) }
         }
         val skillSnapshot = app.skills.snapshot(id)
-        val tools = ToolRouter(listOfNotNull(files, SkillToolExecutor(app.skills, id, skillSnapshot),
+        val tools = ToolRouter(listOfNotNull(files, io.github.asagnc.aurora.reverse.SharedToolchainTool(app.sharedToolchain), SkillToolExecutor(app.skills, id, skillSnapshot),
             io.github.asagnc.aurora.linux.LinuxEnvironmentTool(app.linux, id, prepared), BrowserToolExecutor(app.browser, id),
             io.github.asagnc.aurora.browser.BrowserTransferTool(app.browser, id, directory,
                 mapOf("conversation" to app.spaces.conversation(id), "resources" to app.spaces.sharedResources()), prepared), ImageToolExecutor(app.images, id),

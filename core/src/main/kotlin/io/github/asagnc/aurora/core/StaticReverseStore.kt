@@ -1,0 +1,126 @@
+package io.github.asagnc.aurora.core
+
+import java.nio.ByteBuffer
+import java.nio.channels.FileChannel
+import java.nio.file.*
+import java.util.UUID
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+
+/** One app-process owner. Runtime must not mount these versions until durable run leases are connected. */
+class StaticReverseStore(private val root: Path,
+    private val prepare: (StaticReverseComponent, Path, Path) -> Unit = { component, archive, target ->
+        StaticReversePreparation.prepare(component, archive, target)
+    }) {
+    private val operations = Mutex()
+    private val staging get() = root.resolve("staging")
+    private val versions get() = root.resolve("versions")
+    private val marker = "aurora-static-reverse-stage-v1"
+
+    private fun initialize() {
+        require(root.isAbsolute)
+        var ancestor: Path? = root
+        while (ancestor != null) {
+            require(!Files.isSymbolicLink(ancestor))
+            ancestor = ancestor.parent
+        }
+        Files.createDirectories(root)
+        for (path in listOf(staging, versions)) {
+            require(!Files.isSymbolicLink(path)); Files.createDirectories(path)
+        }
+    }
+
+    suspend fun installed(): List<String> = withContext(Dispatchers.IO) { operations.withLock {
+        initialize()
+        Files.newDirectoryStream(versions).use { entries -> entries.filter { complete(it) }.map { it.fileName.toString() }.sorted() }
+    } }
+
+    suspend fun install(fetch: suspend (StaticReverseComponent, Path) -> Unit): String = withContext(Dispatchers.IO) { operations.withLock {
+        initialize()
+        val id = StaticReverseTools.bundleId
+        val published = versions.resolve(id)
+        if (complete(published)) return@withLock id
+        require(!Files.exists(published, LinkOption.NOFOLLOW_LINKS)) { "Incomplete published bundle: remove the catalogBundle id before reinstalling" }
+        // Includes compressed, conservative expanded maxima and per-file metadata headroom before any download.
+        require(Files.getFileStore(root).usableSpace >= StaticReverseTools.compressedBytes + 800L*1024*1024) { "Insufficient tool installation space" }
+        val stage = Files.createDirectory(staging.resolve(UUID.randomUUID().toString()))
+        var original: Throwable? = null
+        try {
+            durable(stage.resolve("owner"), marker)
+            val prepared = Files.createDirectory(stage.resolve("prepared"))
+            for (component in StaticReverseTools.components) {
+                currentCoroutineContext().ensureActive()
+                val archive = stage.resolve(component.id + ".archive")
+                fetch(component, archive)
+                runInterruptible { prepare(component, archive, prepared.resolve(component.id)) }
+                Files.delete(archive)
+            }
+            durable(prepared.resolve("bundle"), id)
+            currentCoroutineContext().ensureActive()
+            withContext(NonCancellable) { Files.move(prepared, published, StandardCopyOption.ATOMIC_MOVE) }
+            id
+        } catch (failure: Throwable) { original = failure; throw failure }
+        finally { withContext(NonCancellable) {
+            try { removeStage(stage) } catch (cleanup: Throwable) {
+                if (original != null) original.addSuppressed(cleanup) else throw cleanup
+            }
+        } }
+    } }
+
+    /** No execution mounts are admitted yet. Runtime integration must add durable lease checks before enabling execution. */
+    suspend fun remove(id: String): Boolean = withContext(Dispatchers.IO) { operations.withLock {
+        initialize(); require(id.matches(Regex("[a-f0-9]{64}")))
+        val version = versions.resolve(id)
+        if (!Files.exists(version, LinkOption.NOFOLLOW_LINKS)) return@withLock false
+        require(ownedVersion(version)) { "Unrecognized tool version retained" }
+        val stage = Files.createDirectory(staging.resolve(UUID.randomUUID().toString()))
+        durable(stage.resolve("owner"), marker)
+        Files.move(version, stage.resolve("removed"), StandardCopyOption.ATOMIC_MOVE)
+        removeStage(stage); true
+    } }
+
+    suspend fun cleanup(): Int = withContext(Dispatchers.IO) { operations.withLock {
+        initialize(); var removed = 0
+        Files.newDirectoryStream(staging).use { entries -> entries.take(64).forEach { stage ->
+            currentCoroutineContext().ensureActive()
+            val name = stage.fileName.toString()
+            val uuid = runCatching { UUID.fromString(name).toString() == name }.getOrDefault(false)
+            val owner = stage.resolve("owner")
+            if (uuid && Files.isDirectory(stage, LinkOption.NOFOLLOW_LINKS) &&
+                Files.newDirectoryStream(stage).use { !it.iterator().hasNext() }) {
+                Files.delete(stage); removed++; return@forEach
+            }
+            if (uuid && Files.isDirectory(stage, LinkOption.NOFOLLOW_LINKS) &&
+                Files.isRegularFile(owner, LinkOption.NOFOLLOW_LINKS) && Files.size(owner) == marker.length.toLong() &&
+                Files.readString(owner) == marker) { removeStage(stage); removed++ }
+        } }
+        removed
+    } }
+
+    // Keep the ownership proof until the last unlink so an interrupted cleanup can be retried.
+    private fun removeStage(stage: Path) {
+        Files.newDirectoryStream(stage).use { entries -> entries.filter { it.fileName.toString() != "owner" }.forEach(::removeSkillTree) }
+        Files.deleteIfExists(stage.resolve("owner"))
+        Files.delete(stage)
+    }
+
+    private fun complete(directory: Path): Boolean = ownedVersion(directory) &&
+        listOf("jre", "jadx", "apktool").all { Files.isDirectory(directory.resolve(it), LinkOption.NOFOLLOW_LINKS) }
+
+    private fun ownedVersion(directory: Path): Boolean {
+        if (!Files.isDirectory(directory, LinkOption.NOFOLLOW_LINKS)) return false
+        val id = directory.fileName.toString()
+        val file = directory.resolve("bundle")
+        return id.matches(Regex("[a-f0-9]{64}")) && Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS) &&
+            Files.size(file) == 64L && Files.readString(file) == id
+    }
+
+    private fun durable(path: Path, text: String) {
+        FileChannel.open(path, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE, LinkOption.NOFOLLOW_LINKS).use { channel ->
+            val bytes = ByteBuffer.wrap(text.toByteArray(Charsets.UTF_8))
+            while (bytes.hasRemaining()) channel.write(bytes)
+            channel.force(true)
+        }
+    }
+}

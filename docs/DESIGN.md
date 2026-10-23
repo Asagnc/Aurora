@@ -8,6 +8,8 @@ Research date: 2026-10-12.
 
 ## Approved architecture
 
+- 2026-10-23 user clarified managed install lifecycle: publish complete bundles only, remove failed/cancelled staging, allow Agent install/update/remove and shared-workspace file management. Unknown live ownership/failed cleanup is explicit; active runtime versions require durable lease/exit proof before removal.
+
 - 2026-10-23 user approved static reverse bundle: pinned JADX1.5.6/Apktool3.0.3/ARM64 Temurin27+35 JRE, shared versioned install with readonly guest mount and leases on existing Root chroot supervision. See STATIC_REVERSE_PROPOSAL.md; preparation is not runtime qualification.
 
 - 2026-10-23 confirmed combined browser transfers: native chooser with exact selected snapshot URI, bounded ArrayBuffer Agent supply/page-readable streaming, existing task/file ownership and no second network stack. Native snapshots remain until page close/deletion to cover deferred upload reads; implementation/qualification in BROWSER_CHOOSER_IMPLEMENTATION.md and BROWSER_TRANSFER_IMPLEMENTATION.md.

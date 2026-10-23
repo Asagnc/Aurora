@@ -1,0 +1,4 @@
+Prior source/preparation implementation d16f49d
+GitHub Actions39920712690 completed success verified2026-10-23.
+https://github.com/Asagnc/Aurora/actions/runs/39920712690
+This does not verify the later shared management changes or Android execution.

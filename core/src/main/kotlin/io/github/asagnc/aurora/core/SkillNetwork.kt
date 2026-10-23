@@ -36,16 +36,17 @@ class SkillNetwork(private val client: OkHttpClient = OkHttpClient.Builder().fol
             "https://codeload.github.com/$owner/$repo/zip/$sha")
     }
 
-    suspend fun download(url: String, target: Path) = withTimeout(60_000) {
+    suspend fun download(url: String, target: Path, maxBytes: Long = 64L * 1024 * 1024) = withTimeout(60_000) {
+        require(maxBytes in 1..128L * 1024 * 1024)
         response(url) { result ->
-            require(result.body.contentLength() <= 64L * 1024 * 1024)
+            require(result.body.contentLength() <= maxBytes)
             Files.newOutputStream(target, StandardOpenOption.CREATE_NEW, LinkOption.NOFOLLOW_LINKS).use { output ->
                 result.body.byteStream().use { input ->
                     val bytes = ByteArray(65536); var count = 0L
                     while (true) {
                         if (Thread.currentThread().isInterrupted) throw InterruptedException()
                         val size = input.read(bytes); if (size < 0) break
-                        count += size; require(count <= 64L * 1024 * 1024) { "Skill download exceeds 64 MiB" }
+                        count += size; require(count <= maxBytes) { "Download exceeds byte budget" }
                         output.write(bytes, 0, size)
                     }
                 }

@@ -97,6 +97,20 @@ class OwnedFiles(private val root: Path, private val writable: Boolean = true) {
         FileSlice(request.path, null, byteArrayOf(), 0, null, null, failure.javaClass.simpleName)
     }
 
+    /** Exact regular-file unlink; no recursive traversal, trash copy or hidden retained file. */
+    suspend fun removeFile(relative: String, expectedSize: Long): Unit = withContext(Dispatchers.IO) {
+        mutations.withLock {
+            require(writable) { "Managed resources must be removed through their installation manager" }
+            require(expectedSize >= 0)
+            recoverLocked()
+            val path = resolve(relative)
+            require(Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) { "Only regular files can be removed" }
+            require(Files.size(path) == expectedSize) { "File size changed; observe before deleting" }
+            currentCoroutineContext().ensureActive()
+            Files.delete(path)
+        }
+    }
+
     suspend fun editBatch(edits: List<FileEdit>): Unit = withContext(Dispatchers.IO) {
         mutations.withLock {
             require(writable) { "Shared resources are read-only to tasks" }

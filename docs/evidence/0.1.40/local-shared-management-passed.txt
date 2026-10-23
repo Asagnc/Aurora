@@ -1,0 +1,7 @@
+2026-10-23 Windows local verification
+{'tests': 219, 'skipped': 9, 'failures': 0, 'errors': 0}
+StaticReverseStoreTest7: orchestration fixtures, not ARM64 runtime proof
+SharedWorkspaceRemovalTest2
+Debug assemble: outputs/shared-tools-workspace-qualified.txt
+Final core/ReleaseR8/testAPK/lint: outputs/shared-tools-final-qualified.txt
+No phone execution; runtimeReady=false until durable leases and readonly mounts are connected.

@@ -4,6 +4,8 @@ import kotlinx.serialization.json.*
 
 class FileToolExecutor(private val spaces: Map<String, OwnedFiles>) : ToolExecutor {
     override val definitions = listOf(
+        ToolDefinition("files_remove", "Remove one explicitly selected regular file in the shared workspace. Supply its observed byte size; this is a size check, not a content-version guarantee. No recursive directory deletion or trash retention. Managed resources use their install/remove tools.",
+            schema(mapOf("path" to textSchema(), "expectedSize" to integerSchema()), listOf("space", "path", "expectedSize"))),
         ToolDefinition("files_list", "List up to 200 entries in an owned space. Root directory is the empty path.", schema(mapOf("path" to textSchema()), listOf("space"))),
         ToolDefinition("files_read_batch", "Read ordered UTF-8 slices, at most 64 KiB each. version is SHA-256 for editable files. Non-text slices return metadata only.",
             schema(mapOf("files" to arraySchema(objectSchema(mapOf("path" to textSchema(), "offset" to integerSchema(), "limit" to integerSchema()), listOf("path")))), listOf("space", "files"))),
@@ -15,6 +17,13 @@ class FileToolExecutor(private val spaces: Map<String, OwnedFiles>) : ToolExecut
         val arguments = call.arguments
         val files = requireNotNull(spaces[arguments.text("space")]) { "Unknown file space" }
         return when (call.name) {
+            "files_remove" -> {
+                require(arguments.text("space") == "workspace") { "This removal tool targets shared workspace files only" }
+                val size = arguments["expectedSize"]
+                require(size is JsonPrimitive && !size.isString && size.longOrNull != null)
+                files.removeFile(requireNotNull(arguments.text("path")), requireNotNull(size.longOrNull))
+                objectOf("removed" to JsonPrimitive(true)).toString()
+            }
             "files_list" -> objectOf("entries" to JsonArray(files.list(arguments.text("path").orEmpty()).map { (path, directory) ->
                 objectOf("path" to string(path), "directory" to JsonPrimitive(directory))
             })).toString()

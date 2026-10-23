@@ -12,6 +12,7 @@ internal fun presentTool(event: ToolRun): ToolPresentation {
     val failed = summary?.error != null || (summary?.exitCode ?: 0L) != 0L
     val uncertain = event.state == "uncertain" || summary?.uncertain == true
     val title = when (event.tool) {
+        "shared_toolchain" -> "管理共享工具"
         "images_publish" -> "发布图片"
         "command_execute" -> "执行原生命令"
         "command_execute_root" -> "执行 Root 命令"
@@ -19,6 +20,7 @@ internal fun presentTool(event: ToolRun): ToolPresentation {
         "packet_capture_root" -> "采集网络数据包"
         "packet_inspect" -> "分析网络数据包"
         "terminal_start_linux" -> "启动 Linux 终端"
+        "files_remove" -> "删除共享文件"
         "files_list" -> "查看文件列表"
         "files_read_batch" -> "批量读取文件"
         "files_edit_batch" -> "批量编辑文件"

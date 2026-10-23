@@ -31,6 +31,7 @@ class AuroraApplication : Application() {
     internal val agentTasks by lazy { io.github.asagnc.aurora.runtime.AgentTaskHost(this) }
     internal val terminals by lazy { io.github.asagnc.aurora.terminal.TerminalManager(this) }
     internal val skills by lazy { io.github.asagnc.aurora.skills.SkillManager(this) }
+    internal val sharedToolchain by lazy { io.github.asagnc.aurora.reverse.SharedToolchainManager(this) }
     internal val linux by lazy { io.github.asagnc.aurora.linux.LinuxEnvironmentManager(this) }
     internal val chat by lazy { io.github.asagnc.aurora.runtime.ChatController(this) }
     val root by lazy { io.github.asagnc.aurora.root.RootController(this) }
@@ -41,6 +42,7 @@ class AuroraApplication : Application() {
         browserDownloads.recover()
         terminals.recover()
         skills.recover()
+        sharedToolchain.recover()
         linux.registry.recoverProcessPins()
         linux.recover()
         spaces.recoverDeletes(browser::deleteOwner)
