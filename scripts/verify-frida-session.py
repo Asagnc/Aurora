@@ -95,6 +95,10 @@ class FridaSessionTests(unittest.TestCase):
             self.fail(f"Worker timed out; stdout={output[-8192:]!r}; stderr={error[-8192:]!r}")
         records = [json.loads(line) for line in [*prefix, *output.decode().splitlines()] if line]
         self.assertTrue(records, error.decode(errors="replace"))
+        if child.returncode == -signal.SIGSEGV and shutil.which("gdb"):
+            trace = subprocess.run(["gdb", "--batch", "-ex", "set pagination off", "-ex", "run", "-ex", "thread apply all bt",
+                                    "--args", *child.args], capture_output=True, timeout=30)
+            print("Frida crash diagnostic:\n" + trace.stdout.decode(errors="replace")[-24000:] + trace.stderr.decode(errors="replace")[-4000:], flush=True)
         self.assertEqual("completion", records[-1]["kind"], (child.returncode, records, error.decode(errors="replace")))
         self.assertTrue(records[-1]["cleanupConfirmed"], records)
         self.assertIsNone(self.process.poll(), "Attach cleanup killed the pre-existing owned target")
