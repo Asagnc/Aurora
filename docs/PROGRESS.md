@@ -1,3 +1,7 @@
+## 2026-10-23 浏览器文件传输研究（待确认）
+
+已比较系统 chooser/精确 URI、ArrayBuffer 与 File/DataTransfer、页面流式下载、OkHttp、DownloadManager 和 CDP/新增网络栈。建议沿用 WebView 网络上下文并增加有界二进制传输，用户原生 chooser 与 Agent 文件供给分别实现；不把下载回调 URL 自动重发，也不假设脚本 click 具有用户激活。新通道、文件快照生命周期、预算和能力边界待用户确认，见 BROWSER_TRANSFER_PROPOSAL.md；没有提前实施或操作手机。
+
 ## 2026-10-23 0.1.37 异步浏览器完整CI通过
 
 9517ea9完整CI39909014575成功，证据evidence/0.1.37/ci-39909014575-passed.txt；含新生命周期/JSON合同/生产JS测试及原有全部主机和Android构建门槛。随后补mjs测试任务输入追踪（脚本变化不能被误判UP-TO-DATE）与跨域导航Android夹具，core/testAPK/lint本地再通过。最新后续提交CI另查。
