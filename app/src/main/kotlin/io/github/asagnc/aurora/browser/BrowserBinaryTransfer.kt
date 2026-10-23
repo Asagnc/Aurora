@@ -17,12 +17,7 @@ internal object BrowserBinaryTransfer {
             val message = incoming.receive()
             check(message.type == WebMessageCompat.TYPE_STRING) { "Expected transfer control" }
             val raw = requireNotNull(message.data)
-            require(raw.length <= 2048)
-            val value = WireJson.parseToJsonElement(raw) as? JsonObject ?: error("Invalid transfer control")
-            // Never expose arbitrary page error text: it may contain URLs or request credentials.
-            check(value.text("kind") != "error") { "Page transfer failed; inspect page before retrying" }
-            check(value.text("kind") == expected) { "Unexpected transfer phase" }
-            return value
+            return decodeBrowserTransferControl(raw, expected)
         }
         suspend fun receive(): WebMessageCompat = incoming.receive()
         fun acknowledge() { post(port, WebMessageCompat("ack")) }

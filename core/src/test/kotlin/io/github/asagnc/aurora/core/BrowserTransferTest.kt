@@ -54,6 +54,18 @@ class BrowserTransferTest {
         }
     }
 
+    @Test fun controlEnvelopesRejectDeepUnknownAndWrongTypedMessagesWithoutLeakingErrors() {
+        assertEquals(0L, decodeBrowserTransferControl("""{"kind":"complete","bytes":0}""", "complete").number("bytes"))
+        assertEquals("ack", decodeBrowserTransferControl("""{"kind":"ack"}""", "ack").text("kind"))
+        for (raw in listOf("null", "[]", "x".repeat(2049), "[".repeat(65)+"0"+"]".repeat(65),
+            """{"kind":"complete","bytes":"2"}""", """{"kind":"complete","bytes":-1}""",
+            """{"kind":"ready","extra":42}""", """{"kind":"complete"}""", """{"kind":"complete","bytes":1,"files":1}""")) {
+            assertFails { decodeBrowserTransferControl(raw, "complete") }
+        }
+        val failure = assertFails { decodeBrowserTransferControl("""{"kind":"error","error":"secret-request-url"}""", "ready") }
+        assertFalse(failure.message.orEmpty().contains("secret-request-url"))
+    }
+
     @Test fun incompleteAndOverBudgetDownloadsNeverBecomeCompleteArtifacts() {
         val root = Files.createTempDirectory("aurora-transfer-files-")
         try {

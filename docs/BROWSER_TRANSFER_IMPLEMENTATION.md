@@ -20,11 +20,13 @@ BrowserBinaryTransfer.execute 超过普通函数目标长度，原因是端口�
 
 ## 验证与范围
 
-- 本地主机核心 190 项：183 通过、7 POSIX 在 Windows 跳过。
-- 新增 3 项 JUnit，其中一个实际执行生产传输 JS 的 14 个子场景，不重复加进 190：Response/Blob 分块、空文件、预算/HTTP/脚本/reader 失败、取消、错误 ACK、单/多文件和 accept 不匹配。Node 使用真实 File/Blob/Response/ReadableStream/MessageChannel，但 DOM 是夹具。
+- 本地主机核心 191 项：184 通过、7 POSIX 在 Windows 跳过。
+- 新增 4 项 JUnit，其中一个实际执行生产传输 JS 的 14 个子场景，不重复加进 190：Response/Blob 分块、空文件、预算/HTTP/脚本/reader 失败、取消、错误 ACK、单/多文件和 accept 不匹配。Node 使用真实 File/Blob/Response/ReadableStream/MessageChannel，但 DOM 是夹具。
 - 下载文件测试验证超限/报告长度错误不发布，失败清理、空文件和完成后拒绝继续写；现有 readBinary 默认空文件拒绝不变，仅传输显式允许。
 - Android BrowserTransferTest 新增 4 项：实际 Response/Blob 字节、真实 input/FormData 文件内容、失败/外层取消清理、导航/跨会话拒绝。只编译，未运行手机；原生 chooser 与真实网络服务端上传不是该夹具覆盖范围。
 - Debug、Release R8、testAPK、lint 本地构建证据及 CI 状态见 evidence/0.1.38 与 NEXT_STEPS.md。不得把库编译成功写成 WebView 端口实际转移、Cookie/代理正确或 Release 性能已测。
+
+控制包另有严格字段、类型和深度校验；页面错误文本不进入异常或账本。新增第4项核心测试覆盖恶意深度、伪造字段、负数/字符串计数和敏感错误内容。
 
 ## 继续实施的明确缺口
 

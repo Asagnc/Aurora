@@ -1,7 +1,7 @@
 Date: 2026-10-23
 Source version: 0.1.38 / code 39
 Command: gradlew :core:test :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :app:lintDebug
-Result: BUILD SUCCESSFUL in 45s
+Result: BUILD SUCCESSFUL in 39s (strict control envelope follow-up)
 WebKit: 1.18.0 (official stable release checked)
 Lint: 0 errors, 1 pre-existing VectorPath warning (brand_xiaomimimo)
 New Android BrowserTransferTest: 4 cases compiled, NOT run

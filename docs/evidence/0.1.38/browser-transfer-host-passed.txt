@@ -1,6 +1,6 @@
 Date: 2026-10-23
-Core: 190 total, 183 passed, 7 POSIX skipped on Windows, 0 failures
-New JUnit: 3; production JS has 14 subcases inside one JUnit (not additional JUnit count)
+Core: 191 total, 184 passed, 7 POSIX skipped on Windows, 0 failures
+New JUnit: 4; production JS has 14 subcases inside one JUnit (not additional JUnit count)
 
 PASS Response chunking
 PASS Blob chunking
@@ -17,4 +17,3 @@ PASS single upload
 PASS multiple including empty
 PASS accept mismatch
 Browser binary JavaScript: 14 cases passed
-

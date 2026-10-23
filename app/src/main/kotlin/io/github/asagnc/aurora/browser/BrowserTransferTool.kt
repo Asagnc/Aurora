@@ -73,8 +73,7 @@ internal class BrowserTransferTool(private val browser: BrowserController, priva
                     } else {
                         require(message.type == WebMessageCompat.TYPE_STRING)
                         val raw = requireNotNull(message.data).also { require(it.length <= 2048) }
-                        val complete = WireJson.parseToJsonElement(raw).jsonObject
-                        check(complete.text("kind") == "complete") { "Download did not complete" }
+                        val complete = decodeBrowserTransferControl(raw, "complete")
                         require(complete.keys == setOf("kind", "bytes"))
                         val count = number(complete, "bytes", -1, 0..maxBytes)
                         currentCoroutineContext().ensureActive()
