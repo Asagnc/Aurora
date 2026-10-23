@@ -13,7 +13,7 @@ struct aurora_frida_session {
     const char *reason;
     guint64 sequence, bytes;
     gint dropped, failed;
-    gboolean loaded, unloaded, detached, closed, manager_ready;
+    gboolean loaded, posted, unloaded, detached, closed, manager_ready;
     int target_fd;
 };
 void aurora_frida_stop(struct aurora_frida_session *run, const char *reason);

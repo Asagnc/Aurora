@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
         struct frida_attach_input input;
         if (frida_input_read(argc, argv, &input)) return 64;
         int status = aurora_frida_attach(&input);
-        free(input.script);
+        free(input.script); free(input.payload);
         return status;
     }
     if (argc != 2 || strcmp(argv[1], "probe") != 0) return 64;

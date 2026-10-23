@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
         return frida_target_matches(&input) ? 0 : 1;
     }
     if (frida_input_read(argc, argv, &input)) return 64;
-    free(input.script);
+    free(input.script); free(input.payload);
     return 0;
 }
 '''
@@ -52,6 +52,8 @@ class InputTests(unittest.TestCase):
         source.write_text("send('owned');", encoding="utf-8")
         valid = ["attach", "123", "234", source, "1000"]
         self.assertEqual(0, self.invoke(valid))
+        self.assertEqual(0, self.invoke(valid + [source]))
+        self.assertEqual(64, self.invoke(valid + [source, source]))
         for index, values in [(1, ["0", "-1", "+1", "2147483648", "1x"]),
                               (2, ["0", "18446744073709551616", "1.5"]),
                               (4, ["0", "270001", "1.5", "1 "])]:

@@ -14,6 +14,6 @@ The preparation adapter accepts only the pinned official Windows/Linux x64 N-API
 
 `build/java-bridge.js` is an ignored generated Frida bundle, not packaged into Aurora yet. Source maps are omitted and minification is enabled. The entrypoint installs `globalThis.Java`, emits initial bridge availability, and accepts exactly one `aurora:run` message containing the selected user script. Java availability is an observation at load time, not a qualification promise for every later target or spawn phase. Script evaluation exceptions remain Frida error events.
 
-The current native worker does not yet post that control message; Java script execution is not connected. Loading/Android ART qualification, bridge license/source delivery, worker integration and cancellation still need final implementation/tests. Successful compilation alone does not make Java hooking available.
+The unshipped native worker can now optionally post that control message from a second selected script file. The generated bridge acknowledges receipt and synchronous evaluation return; neither acknowledgement proves completion of asynchronous Java.perform work or the user's task. Native control, Android ART qualification, bridge license/source delivery and Root/Agent integration still require final tests/implementation. Successful compilation alone does not make Java hooking available.
 
 Do not commit node_modules or generated native bindings/bundles. All downloads are development artifacts, not conversation/shared tools installed on the phone.

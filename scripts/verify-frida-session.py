@@ -78,11 +78,15 @@ class FridaSessionTests(unittest.TestCase):
                 raise TimeoutError("Owned fixture readiness deadline")
             return stream.readline().decode().strip()
 
-    def start(self, script, duration=1000, ticks=None):
+    def start(self, script, duration=1000, ticks=None, payload=None):
         source = self.root / f"script-{self.id().rsplit('.', 1)[-1]}.js"
         source.write_text(script, encoding="utf-8")
-        child = subprocess.Popen([str(self.worker), "attach", str(self.process.pid), str(ticks or self.ticks),
-                                  str(source), str(duration)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0)
+        argv = [str(self.worker), "attach", str(self.process.pid), str(ticks or self.ticks), str(source), str(duration)]
+        if payload is not None:
+            payload_file = source.with_suffix(".payload.js")
+            payload_file.write_text(payload, encoding="utf-8")
+            argv.append(str(payload_file))
+        child = subprocess.Popen(argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0)
         self.addCleanup(self.stop, child)
         return child
 
@@ -160,11 +164,24 @@ class FridaSessionTests(unittest.TestCase):
         child = self.start(bundle, 2000)
         records = self.finish(child)
         messages = [json.loads(event["message"]) for event in records if event["kind"] == "message"]
-        bridge = [message.get("payload", {}) for message in messages
-                  if message.get("payload", {}).get("aurora") == "java_bridge_ready"]
+        payloads = [message.get("payload") for message in messages]
+        bridge = [payload for payload in payloads if isinstance(payload, dict) and payload.get("aurora") == "java_bridge_ready"]
         self.assertEqual(1, len(bridge), records)
         self.assertEqual("7.0.13", bridge[0]["version"])
         self.assertFalse(bridge[0]["available"], "Owned plain C target must not claim Android ART")
+        self.assertEqual(0, child.returncode, records)
+
+    @unittest.skipUnless(os.environ.get("AURORA_FRIDA_JAVA_BUNDLE"), "Explicit development bridge bundle required")
+    def test_bridge_control_delivers_selected_script_once(self):
+        bundle = Path(os.environ["AURORA_FRIDA_JAVA_BUNDLE"]).read_text(encoding="utf-8")
+        child = self.start(bundle, 2000, payload="send('aurora-user-control-marker');")
+        records = self.finish(child)
+        messages = [json.loads(event["message"]) for event in records if event["kind"] == "message"]
+        self.assertEqual(1, sum(message.get("payload") == "aurora-user-control-marker" for message in messages), records)
+        labels = [message.get("payload", {}).get("aurora") for message in messages if isinstance(message.get("payload"), dict)]
+        self.assertIn("user_script_received", labels)
+        self.assertIn("user_script_evaluated", labels)
+        self.assertTrue(records[-1]["userScriptPosted"], records)
         self.assertEqual(0, child.returncode, records)
 
     def test_target_exit_ends_session_without_waiting_full_duration(self):

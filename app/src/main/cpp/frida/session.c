@@ -64,6 +64,23 @@ static gboolean identity_matches(struct aurora_frida_session *run) {
     return poll(&target, 1, 0) == 0 && frida_target_matches(run->input);
 }
 
+static void post_payload(struct aurora_frida_session *run, FridaScript *script) {
+    if (!run->input->payload || g_cancellable_is_cancelled(run->operation)) return;
+    if (!identity_matches(run)) { GError *error = NULL; failure(run, "target_identity", &error); return; }
+    JsonBuilder *builder = json_builder_new();
+    json_builder_begin_object(builder);
+    aurora_frida_text(builder, "type", "aurora:run");
+    aurora_frida_text(builder, "source", run->input->payload);
+    json_builder_end_object(builder);
+    JsonNode *root = json_builder_get_root(builder);
+    JsonGenerator *generator = json_generator_new();
+    json_generator_set_root(generator, root);
+    gchar *message = json_generator_to_data(generator, NULL);
+    frida_script_post(script, message, NULL);
+    run->posted = TRUE; // Delivery intent, not proof of evaluation or business success.
+    g_free(message); g_object_unref(generator); json_node_free(root); g_object_unref(builder);
+}
+
 static void execute_script(struct aurora_frida_session *run, FridaSession *session, FridaScript **script, GError **error) {
     if (!identity_matches(run)) { failure(run, "target_identity", error); return; }
     FridaScriptOptions *options = frida_script_options_new();
@@ -76,6 +93,7 @@ static void execute_script(struct aurora_frida_session *run, FridaSession *sessi
     frida_script_load_sync(*script, run->operation, error);
     if (*error) { failure(run, "load_script", error); return; }
     run->loaded = TRUE;
+    post_payload(run, *script);
     aurora_frida_emit(run, aurora_frida_event("loaded"), FALSE);
     g_mutex_lock(&run->lock);
     while (!run->reason) g_cond_wait(&run->changed, &run->lock);
@@ -161,13 +179,13 @@ static gboolean start(gpointer opaque) {
 
 static int result(struct aurora_frida_session *run) {
     gboolean clean = run->unloaded && run->detached && run->closed;
-    gboolean success = clean && run->loaded && !g_atomic_int_get(&run->failed) &&
+    gboolean success = clean && run->loaded && (!run->input->payload || run->posted) && !g_atomic_int_get(&run->failed) &&
         g_strcmp0(run->reason, "duration_elapsed") == 0;
     JsonBuilder *builder = aurora_frida_event("completion");
     aurora_frida_text(builder, "reason", run->reason ? run->reason : "setup_failed");
     aurora_frida_number(builder, "dropped", g_atomic_int_get(&run->dropped));
-    const char *keys[] = {"loaded", "unloaded", "detached", "managerClosed", "cleanupConfirmed", "success"};
-    gboolean values[] = {run->loaded, run->unloaded, run->detached, run->closed, clean, success};
+    const char *keys[] = {"loaded", "userScriptPosted", "unloaded", "detached", "managerClosed", "cleanupConfirmed", "success"};
+    gboolean values[] = {run->loaded, run->posted, run->unloaded, run->detached, run->closed, clean, success};
     for (unsigned index = 0; index < G_N_ELEMENTS(keys); index++) {
         json_builder_set_member_name(builder, keys[index]); json_builder_add_boolean_value(builder, values[index]);
     }
@@ -175,7 +193,8 @@ static int result(struct aurora_frida_session *run) {
 }
 
 int aurora_frida_attach(const struct frida_attach_input *input) {
-    if (!g_utf8_validate(input->script, -1, NULL)) return 65;
+    if (!g_utf8_validate(input->script, -1, NULL) ||
+        (input->payload && !g_utf8_validate(input->payload, -1, NULL))) return 65;
     int pipes[2];
     if (pipe2(pipes, O_CLOEXEC | O_NONBLOCK)) return 70;
     int target = (int) syscall(__NR_pidfd_open, input->pid, 0);

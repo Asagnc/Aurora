@@ -1,3 +1,13 @@
+## 2026-10-23 桥加载真实用例通过、选定脚本控制通道
+
+b2de755的CI39966517578中frida-session job七项已实际通过，新增用例确认开发期生成bundle能在真实Frida/普通C目标中加载并报告Java.available=false，不误报ART。证据ci-39966517578-frida-job-passed.json与ci-39966517578-frida-tests-passed.txt。整体workflow仍需独立核实，不能把job成功当全部CI成功。
+
+原生attach CLI现允许第7个参数为选定payload脚本路径；桥bundle与payload各自最多1MiB，均用原普通文件/NUL/UTF8/类型规则验证。worker在load后再次检查目标身份，构建aurora:run JSON消息并仅post一次，不把源代码写进日志。userScriptPosted只说明发送意图，桥分别回报user_script_received与user_script_evaluated；后者只指同步Script.evaluate返回，不是Java.perform异步回调或用户目标已完成。若要求payload却未post，不把worker运行归为成功。
+
+新增第8个主机用例要求通过真实bridge控制消息执行自有marker且仅出现一次，并观察两个桥确认。POSIX参数用例扩展可选payload/额外参数拒绝。Windows仅编译桥/交叉链接，真实第8项推送后由CI执行。
+
+ARM64 strip89135328字节、单库ZIP36052850字节；新bridge bundle与源代码哈希见frida-java-bridge-control-build.json。仍未打包、无Root/Agent入口；ART/Java方法hook、spawn、持久恢复、专用清理窗口与许可证闭包未完成。手机未操作，真实模型未调用。
+
 ## 2026-10-23 主机6项真实会话通过、Java桥开发期构建
 
 eb99c2e的CI39965185125中frida-session job已实际通过全部6项（身份错配含5次快速启动子场景），证据ci-39965185125-frida-job-passed.json及ci-39965185125-frida-tests-passed.txt。该时刻整体workflow尚在运行，不把job成功当完整CI成功。之前39962631872、39963441947、39963997280的失败仍保留；后续39964474273已定位上游半启动关闭竞态。

@@ -1,0 +1,12 @@
+{
+  "host": "Windows x64 Node24.15.0",
+  "frida": "17.24.3",
+  "compiler": "19.1.0",
+  "javaBridge": "7.0.13",
+  "bundleBytes": 235970,
+  "sha256": "9fde013172495e7bd083e93090e14f503cae98151f4a974e3e63555900be47d3",
+  "compilation": "passed",
+  "javaRuntime": "NOT TESTED",
+  "packagedInApk": false,
+  "nativeControlMessageConnected": "prototype only, not Root/Agent integration"
+}

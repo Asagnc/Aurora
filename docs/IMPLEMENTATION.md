@@ -1,3 +1,7 @@
+## 2026-10-23 Java桥加载与选定脚本控制
+
+CI39966517578的Frida独立job七项实际通过，包括生成桥加载/普通C目标不误报Java；整体workflow另查。原生原型接上一次aurora:run payload消息、严格文件预算与userScriptPosted/桥收到/同步求值返回三种不同事实，新第8项真实单次执行用例待CI。未接APK/Root/Agent、未做ART资格，不能宣称手机Java动态逆向已可用。详见DYNAMIC_REVERSE_IMPLEMENTATION.md。
+
 ## 2026-10-23 真实Frida会话与Java桥构建进展
 
 修复共享事件上下文和GLib销毁顺序后，又通过实际崩溃栈定位Frida设备后端半启动关闭竞态；改用启动完成事件屏障，不添加固定延时。CI39965185125的独立frida-session job六项已实际通过，身份错配含5次快速退出子场景；整体workflow状态另查，不能算全CI已通过。

@@ -8,6 +8,7 @@ struct frida_attach_input {
     uint64_t start_ticks;
     unsigned duration_ms;
     char *script;
+    char *payload;
 };
 int frida_input_read(int argc, char **argv, struct frida_attach_input *input);
 int frida_target_matches(const struct frida_attach_input *input);
