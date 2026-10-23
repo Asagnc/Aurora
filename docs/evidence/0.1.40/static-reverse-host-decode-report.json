@@ -1,0 +1,18 @@
+{
+  "platform": "Windows x86_64 JDK25, NOT ARM64 Android",
+  "command": [
+    "C:\\Users\\Admin\\Documents\\Codex\\2026-10-12\\e\\work\\jdk-25\\bin\\java.exe",
+    "-jar",
+    "C:\\Users\\Admin\\Documents\\Codex\\2026-10-12\\e\\outputs\\static-reverse-source\\apktool_3.0.3.jar",
+    "d",
+    "--only-manifest",
+    "--no-src",
+    "--output",
+    "C:\\Users\\Admin\\Documents\\Codex\\2026-10-12\\e\\outputs\\static-reverse-source\\manifest-fixture-d9627c82b5cd457f8070d11965d87369",
+    "C:\\Users\\Admin\\Documents\\Codex\\2026-10-12\\e\\outputs\\static-reverse-source\\manifest-fixture-d9627c82b5cd457f8070d11965d87369.apk"
+  ],
+  "exitCode": 0,
+  "stdout": "I: Using Apktool 3.0.3 on manifest-fixture-d9627c82b5cd457f8070d11965d87369.apk with 8 threads\nI: Copying raw resources.arsc...\nI: Decoding AndroidManifest.xml with only framework resources...\nI: Loading resource table from file: C:\\Users\\Admin\\AppData\\Local\\apktool\\framework\\1.apk\nI: Copying original files...\nI: Copying unknown files...\n",
+  "stderr": "W: Could not decode attribute value: ns=android, name=icon, type=0x01, value=0x7f080000\nW: Could not decode attribute value: ns=android, name=dataExtractionRules, type=0x01, value=0x7f0d0000\nW: Could not decode attribute value: ns=android, name=resource, type=0x01, value=0x7f090001\nW: Could not decode attribute value: ns=android, name=resource, type=0x01, value=0x7f090000\nW: Could not decode attribute value: ns=android, name=resource, type=0x01, value=0x7f0d0001\n",
+  "manifestExists": true
+}

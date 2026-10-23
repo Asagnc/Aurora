@@ -1,0 +1,33 @@
+{
+  "androidExecution": "NOT TESTED",
+  "components": [
+    {
+      "id": "jre",
+      "version": "27+35",
+      "sha256": "a41b54098373f1ca8f75ee344db19b93ac39eca6c529c3ee9dc50f4b3e7857de",
+      "compressedBytes": 60962125,
+      "entries": 304,
+      "expandedFileBytes": 197873172,
+      "machine": "AArch64",
+      "legalEntries": 215
+    },
+    {
+      "id": "jadx",
+      "version": "1.5.6",
+      "sha256": "545ea2be9c242511bc145755cf4bda2485ade42966e096f8b4d3da2a230e8974",
+      "compressedBytes": 72646741,
+      "entries": 9,
+      "expandedFileBytes": 78273694,
+      "cliEntry": "lib/jadx-1.5.6-all.jar"
+    },
+    {
+      "id": "apktool",
+      "version": "3.0.3",
+      "sha256": "dbf930b076c6b9be08d57c449cacefc3bdd6b71ebd59b3066fc0e1f5b14f9423",
+      "compressedBytes": 15478013,
+      "entries": 1141,
+      "expandedFileBytes": 30691545,
+      "cliEntry": "brut/apktool/Main.class"
+    }
+  ]
+}

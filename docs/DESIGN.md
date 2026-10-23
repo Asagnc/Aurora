@@ -8,6 +8,8 @@ Research date: 2026-10-12.
 
 ## Approved architecture
 
+- 2026-10-23 user approved static reverse bundle: pinned JADX1.5.6/Apktool3.0.3/ARM64 Temurin27+35 JRE, shared versioned install with readonly guest mount and leases on existing Root chroot supervision. See STATIC_REVERSE_PROPOSAL.md; preparation is not runtime qualification.
+
 - 2026-10-23 confirmed combined browser transfers: native chooser with exact selected snapshot URI, bounded ArrayBuffer Agent supply/page-readable streaming, existing task/file ownership and no second network stack. Native snapshots remain until page close/deletion to cover deferred upload reads; implementation/qualification in BROWSER_CHOOSER_IMPLEMENTATION.md and BROWSER_TRANSFER_IMPLEMENTATION.md.
 
 - 2026-10-23 confirmed browser async results: per-invocation system WebMessagePort, exact top-level HTTPS target origin and document revision, event-driven results and bounded lifetime; no privileged JavaScript interface or polling fallback. See BROWSER_ASYNC_PROPOSAL.md; device qualification is separate.

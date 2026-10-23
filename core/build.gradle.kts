@@ -19,6 +19,11 @@ dependencies {
 }
 tasks.test {
     useJUnitPlatform()
+    val reverseSamples = providers.environmentVariable("AURORA_REVERSE_SAMPLES").orNull
+    inputs.property("reverseSamples", reverseSamples ?: "not-supplied")
+    if (reverseSamples != null) inputs.files(listOf(
+        "OpenJDK27U-jre_aarch64_linux_hotspot_27_35.tar.gz", "jadx-1.5.6.zip", "apktool_3.0.3.jar"
+    ).map { file("$reverseSamples/$it") })
     systemProperty("aurora.browser.scriptTest", rootProject.file("scripts/verify-browser-javascript.mjs").absolutePath)
     inputs.file(rootProject.file("scripts/verify-browser-javascript.mjs"))
     systemProperty("aurora.browser.transferTest", rootProject.file("scripts/verify-browser-transfer.mjs").absolutePath)

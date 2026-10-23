@@ -1,0 +1,17 @@
+{
+  "environment": "Windows x86_64 JDK25; NOT Android or ARM64 runtime execution",
+  "results": [
+    {
+      "name": "jadx-version",
+      "exitCode": 0,
+      "stdout": "1.5.6\n",
+      "stderr": ""
+    },
+    {
+      "name": "apktool-version",
+      "exitCode": 0,
+      "stdout": "3.0.3\n",
+      "stderr": ""
+    }
+  ]
+}
