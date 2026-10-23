@@ -36,9 +36,17 @@ AEX1固定magic/version/reserved、final/attachAttempted/loaded/unloaded/detache
 
 修复已有原型的一个事实边界：attach API调用过却没有session对象，不再自动标记detached；保留未确认事实。未调用attach的预检失败有单独的never-attempted事实（57/64），也须结合真实worker退出、域回收和Root退役屏障后才能清理SQLite意图。
 
-ARM64完整worker交叉链接/外层16KiB检查通过，stripped89143968字节，未打包。新增7项纯主机控制/解码用例，以及8项真实Frida监督用例（自然完成、取消、到期、通道丢失、非法控制、预检拒绝、强杀无证明、已有调试器占用时不谎报detach），真实Frida总计19项，待最新CI执行。cc84c22完整CI39993061650已成功，尚不包含这些新增代码。
+ARM64完整worker交叉链接/外层16KiB检查通过，stripped89143968字节，未打包。新增7项纯主机控制/解码用例，以及8项真实Frida监督用例（自然完成、取消、到期、通道丢失、非法控制、预检拒绝、强杀无证明、已有调试器占用时不谎报detach），真实Frida总计19项，已在51a5658完整CI39997696909实际通过；7控制/解码也实际通过，见对应证据文件。
 
 此阶段仍没有接Root Binder、独立原生cgroup guard/持久阶段/退役处理或Agent；接收worker事实之后仍必须验证worker已退出和本任务域已移除，不能据此显示Frida ready。后续guard须由自己创建control socketpair并明确交给自己的子进程，不能拿Java创建socket的SO_PEERCRED当原生guard身份。
+
+## 监督端严格接收原语
+
+managed_receive独立于Frida运行库，以MSG_DONTWAIT/recvmsg从事件循环增量接收。52字节完整帧不提前公开receipt，必须读取EOF并核对票据/worker身份/事实组合。任意尾字节、重复帧、短EOF及所有附带控制消息均拒绝；SCM_RIGHTS收到即关闭，MSG_CTRUNC也拒绝，内核关闭未交付的截断描述符。失败状态保留，不能被之后的数据修复。调用者持有socket并独立负责凭证核实、绝对截止、worker退出与域回收；pending才继续poll，HUP仍须排空已有字节，不能直接视作空报告。
+
+每次最多读53字节，不增加线程、定时轮询或按对端流长度分配。9项Linux测试覆盖51个切分点、52个截断长度、完整但未关闭、尾部/重复/大尾、附带及截断FD、错票据/进程和部分清理事实；尚待最新CI。NDK30/API36 ARM64编译检查通过；Windows本机9项平台跳过，不计入已执行。尚未被Root guard调用或APK打包。
+
+核实依据：[recvmsg](https://man7.org/linux/man-pages/man2/recvmsg.2.html)、[poll](https://man7.org/linux/man-pages/man2/poll.2.html)，包括短读、非阻塞返回与HUP仍有未读数据。
 
 ## 验证
 
