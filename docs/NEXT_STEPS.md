@@ -20,7 +20,7 @@
 
 - 9517ea9完整CI39909014575成功，包含核心/签名镜像/POSIX/PTY/Root原生主机/PRoot内核与生命周期/抓包/Android Debug、Release R8、testAPK、lint及ELF/源码检查。证据evidence/0.1.37/ci-39909014575-passed.txt。
 - 本地核心187项：180通过、7个POSIX跳过。新增生产JS主机14场景实际运行，属于同一个JUnit测试中的子场景，不重复加到187总数。
-- 随后仅补测试任务对mjs文件的输入追踪，以及Android跨域导航夹具，core/testAPK/lint本地再次通过；后续提交CI按Actions查，不提前标成功。
+- 随后仅补测试任务对mjs文件的输入追踪，以及Android跨域导航夹具，core/testAPK/lint本地再次通过；2214641完整CI39910230241也已成功，见evidence/0.1.37/ci-39910230241-passed.txt；文件传输提案仍只涉及文档，没有实现。
 - Root抓包主机外层12项、内层私有netns10项成功；新Root真机7项与BrowserAsyncTest六项仅编译，没有执行手机。
 
 ## 尚未实现，建议继续的顺序
