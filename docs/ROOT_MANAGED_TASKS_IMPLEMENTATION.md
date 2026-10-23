@@ -9,30 +9,30 @@
 - ticket摘要定义为protocol1的WireJson.encodeToString(ticket) UTF-8字节SHA-256；不是源文件摘要，也不对任意另一种JSON编码计算相同摘要。后续Root通道须核对同一不可变票据字节/摘要，不能改写意图生成新证明。
 - 正常退出证明必须匹配runId、Root完整身份及ticket摘要，并分别明确scriptUnloaded/sessionDetached/managerClosed/workerExited/domainRemoved。任何缺失/false都不能释放记录；worker死亡或cgroup空不能替代目标注入清理。这里只定义可信Root通道的数据契约，尚未从stdout接受证明。
 - SpaceStore删除/恢复先检查受管记录，未确认时不删除文件；数据库外键再次阻止直接删除owner。错误显示Root注入清理未确认。相同精确证明可幂等完成，其他owner/改写票据不受影响。未增加自动重放或自动杀目标。
-- RootScriptMemory通过公开Os.memfd_create复制所选本地输入，限制<=1MiB、精确大小/摘要、64KiB缓冲；WRITE/GROW/SHRINK/SEAL全部封印后返回CLOEXEC PFD。接收端检查regular/大小/封印，以pread验证摘要而不改共享offset。输入消费后关闭；失败/取消（包括withContext交付窗口）关闭已创建描述符，无磁盘回退。它是基础帮助类，未接Binder或worker。
+- RootScriptMemory通过公开Os.memfd_create复制所选本地输入，限制<=1MiB、精确大小/摘要、64KiB缓冲；WRITE/GROW/SHRINK/SEAL全部封印后返回CLOEXEC PFD。接收端检查regular/大小/封印，以pread验证摘要而不改共享offset。输入消费后关闭；失败/取消（包括withContext交付窗口）关闭已创建描述符，无磁盘回退。已通过RootScriptChannel接worker开发通路，Root Binder仍未连接。
 - 修复迁移索引重复创建；旧迁移用例仍断言schema6/7的部分同步为8。新建或历史迁移不删除消息、Linux版本/租约。
 
-封印禁止修改字节，但原始memfd打开模式仍是O_RDWR，不能宣称access mode变成O_RDONLY；不可变性依赖已验证的内核seals。SCM_RIGHTS与SELinux资格尚未测试。
+封印禁止修改字节，但原始memfd打开模式仍是O_RDWR，不能宣称access mode变成O_RDONLY；不可变性依赖已验证的内核seals。Linux SCM_RIGHTS已有真实主机证据；Android实际SCM_RIGHTS/SELinux资格尚未测试。
 
 ## 正在接入的FD通道
 
 新增原生AF_UNIX stream接收库：SO_PEERCRED+pidfd+开始时间核实发送方；固定72字节AFD1帧（role/count/reserved、32字节nonce、32字节票据摘要），hello→单次文件帧→EOF→接收ACK。描述符只允许出现在文件帧首个分片，明确校验MSG_CTRUNC、数量、重复inode、regular/大小、四项seals和CLOEXEC。失败关闭所有已接收FD；cancel/peer pidfd与绝对截止使用poll事件等待，不定时轮询。
 
-1e5baf1完整CI39989586948已成功，8项真实Linux socket测试实际通过（含多项子场景）；证据ci-39989586948-fd-tests-passed.txt。随后新增第9项对端进程死亡事件用例待最新CI执行。
+1e5baf1完整CI39989586948已成功，8项真实Linux socket测试实际通过（含多项子场景）；证据ci-39989586948-fd-tests-passed.txt。随后第9项对端进程死亡事件用例也在dbea45a完整CI39991608445中实际通过，见对应fd-tests-passed.txt。
 
 Android RootScriptChannel与原生attach-channel开发入口现已接入同一协议：发送方复制并独立校验脚本/桥PFD，核实worker UID/PID/startTicks和hello后只发送一次，清空outbound FD队列、半关闭写端并核对ACK/EOF。5秒绝对握手期限和取消主动关闭监听/连接/快照副本，不依赖线程中断来停止阻塞accept。调用者原PFD保留。nonce不应打印到日志。
 
-worker独立解析有界执行字段，核实Root对端身份、封印/大小/摘要/UTF8/NUL；读取后关闭FD和socket，桥可选，目标仍由原pidfd/startTicks流程复核。Frida统一由worker初始化/销毁一次，解析不再在初始化前使用随附JSON库；初始环境/握手时间消耗操作预算，保留清理窗口。原有8会话测试与新增3项真实Frida通路（单脚本、桥+脚本、错误摘要/大小拒绝）待最新CI执行。FD ACK只表示传输验证，不是脚本执行/卸载证明。
+worker独立解析有界执行字段，核实Root对端身份、封印/大小/摘要/UTF8/NUL；读取后关闭FD和socket，桥可选，目标仍由原pidfd/startTicks流程复核。Frida统一由worker初始化/销毁一次，解析不再在初始化前使用随附JSON库；初始环境/握手时间消耗操作预算，保留清理窗口。原有8会话测试与新增3项真实Frida通路（单脚本、桥+脚本、错误摘要/大小拒绝）已在39991608445实际11项通过，且整体CI成功。FD ACK只表示传输验证，不是脚本执行/卸载证明。关闭通道不能撤回已交付FD；交付后的取消还须受管任务进程域配合，当前不能用socket关闭冒充完整Frida取消。
 
-当前ARM64完整worker交叉链接通过（stripped89141216字节，未打包），Android发送端/核心及Debug/Release R8/testAPK/lint本地通过；3项新增核心已执行，5项Android发送端用例仅编译。累计受管基础/发送端14项Android仅编译，仍不改变ready状态。
+当前ARM64完整worker交叉链接通过（stripped89141216字节，未打包），Android发送端/核心及Debug/Release R8/testAPK/lint本地通过；3项新增核心已执行，6项Android发送端用例仅编译（含进入握手前已取消）。累计受管基础/发送端15项Android仅编译，仍不改变ready状态。
 
 ## 验证
 
-本地核心242项：232通过、10平台跳过；票据/预算/证明/错配4项与帧协议3项实际执行。Debug、Release R8、testAPK、lint通过；随后扩展Android用例又编译/lint通过，见evidence/0.1.40/local-root-managed-foundation-passed.txt。
+本地核心242项：232通过、10平台跳过；票据/预算/证明/错配4项与帧协议3项实际执行。Debug、Release R8、testAPK、lint通过；随后扩展Android用例又编译/lint通过，见evidence/0.1.40/local-root-managed-foundation-passed.txt及local-root-script-channel-passed.txt。
 
 基础Android9项仅编译：账本5项（重开/删除/精确完成、归属/回收保留、损坏/重复票据、schema7保留真实Linux票据/租约、1..7迁移与索引选择），内存4项（dup/不可写不可截断、源变化、取消/close异常回收、接收端拒绝未封印或不同摘要）。没有连接手机，不能把这些计入已执行用例。
 
-上一提交16a32b5完整CI39971396204已成功，包含8项真实Frida主机生命周期和Android构建；它不包含本页随后新增基础代码。当前提交CI推送后另查。
+上一提交16a32b5完整CI39971396204已成功，包含8项真实Frida主机生命周期和Android构建；它不包含本页随后新增基础代码。dbea45a完整CI39991608445已成功；随后新增的握手前取消修复已通过本地Debug/Release/testAPK/lint，推送后另查CI。
 
 ## 尚未完成，继续顺序
 

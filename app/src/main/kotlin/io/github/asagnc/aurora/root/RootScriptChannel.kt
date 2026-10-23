@@ -34,15 +34,17 @@ internal class RootScriptChannel private constructor(
             check(!closed && !claimed) { "Script channel is closed or already claimed" }
             claimed = true; deadline = SystemClock.elapsedRealtime() + 5_000
         }
-        withTimeout(5_000) {
-            coroutineScope {
-                val guard = launch(start = CoroutineStart.UNDISPATCHED) {
-                    try { awaitCancellation() } finally { close() }
+        try {
+            withTimeout(5_000) {
+                coroutineScope {
+                    val guard = launch(start = CoroutineStart.UNDISPATCHED) {
+                        try { awaitCancellation() } finally { close() }
+                    }
+                    try { withContext(Dispatchers.IO) { transfer(worker) } }
+                    finally { guard.cancelAndJoin() }
                 }
-                try { withContext(Dispatchers.IO) { transfer(worker) } }
-                finally { guard.cancelAndJoin(); close() }
             }
-        }
+        } finally { close() }
     }
     private fun transfer(worker: RootTargetIdentity) {
         server.accept().use { socket ->

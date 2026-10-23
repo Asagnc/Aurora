@@ -1,3 +1,11 @@
+## 2026-10-24 FD通路完整CI通过与握手前取消补查
+
+dbea45a完整CI39991608445成功：9项真实Unix socket（含对端死亡）及11项真实Frida生命周期/脚本FD通路全部通过，Android Debug/Release R8/testAPK/lint通过。证据ci-39991608445-passed.txt、fd-tests-passed.txt、frida-tests-passed.txt。
+
+随后补上已claim但进入超时域前就已取消的关闭兜底；外层finally释放监听/连接和自有快照。新增第6项Android通道测试，检查监听不可连接、自有副本已关闭、调用者原FD保留；仅编译。Debug/Release再次通过29秒，testAPK/lint26秒及引用断言编译13秒；不重复核心/原生测试，未改其生产源码。累计此受管基础/通道15项Android仅编译，仍留最终手机验收。
+
+下一步接Root Binder描述符所有权、实际worker PID捕获、独立于Linux的任务cgroup监督、持久阶段/退役标记及最终证明小通道；随后连接Agent/UI、ART/spawn、许可证闭包与APK体积资格。FD交付不是执行/清理成功，也没有将Frida显示为ready。
+
 ## 2026-10-24 封印脚本FD端到端开发通路
 
 1e5baf1完整CI39989586948成功，8项真实Unix socket测试实际通过。新增Android RootScriptChannel、固定72字节帧核心与原生attach-channel：Root UID/PID/startTicks、nonce/票据摘要、首片rights、封印/内容校验、单次ACK/EOF、取消关闭accept及自有快照。不增加网络库或磁盘脚本副本，仍无Root Binder/任务cgroup产品派发。

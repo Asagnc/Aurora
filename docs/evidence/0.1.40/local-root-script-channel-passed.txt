@@ -5,3 +5,6 @@ Debug/Release R8/testAPK/lint BUILD SUCCESSFUL in 40s.
 ARM64 worker cross-link + outer ELF 16KiB audit passed; not packaged/run on Android.
 9 Linux socket / 11 real Frida session cases need latest CI; prior 8/8 passed in CI39989586948.
 No ADB, phone or paid model calls.
+Later pre-cancel handoff fix: Debug/Release BUILD SUCCESSFUL in 29s; testAPK/lint 26s, expanded reference assertions compiled/lint passed in 13s.
+6 Android channel tests (15 total managed foundation/channel) remain compiled only, not executed.
+Source dbea45a full CI39991608445 subsequently passed 9 real socket + 11 real Frida tests.

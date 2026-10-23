@@ -45,6 +45,13 @@ class RootScriptChannelTest {
             return bytes to files
         } catch (failure: Throwable) { files.forEach { runCatching { Os.close(it) } }; throw failure }
     }
+    private fun references(source: ParcelFileDescriptor): Long {
+        val expected = Os.fstat(source.fileDescriptor)
+        return Files.list(Path.of("/proc/self/fd")).use { paths -> paths.filter { path ->
+            try { Os.stat(path.toString()).let { it.st_dev == expected.st_dev && it.st_ino == expected.st_ino } }
+            catch (_: android.system.ErrnoException) { false }
+        }.count() }
+    }
     @Test fun fragmentedHandshakeTransfersSealedSnapshotAndPreservesSource() = runBlocking { fixture { ticket, source, channel ->
         supervisorScope {
             val transfer = async(Dispatchers.IO) { channel.handoff(worker()) }
@@ -89,6 +96,22 @@ class RootScriptChannelTest {
         withTimeout(3_000) { transfer.cancelAndJoin() }
         RootScriptMemory.verify(source.fileDescriptor, ticket.script)
         try { channel.handoff(worker()); fail("Cancelled channel reused") } catch (_: IllegalStateException) { }
+    } }
+    @Test fun alreadyCancelledHandoffCannotLeaveListenerOrOwnedSnapshotsOpen() = runBlocking { fixture { ticket, source, channel ->
+        assertEquals(2L, references(source))
+        val transfer = launch(start = CoroutineStart.UNDISPATCHED) {
+            currentCoroutineContext().cancel()
+            channel.handoff(worker())
+        }
+        withTimeout(3_000) { transfer.join() }
+        assertEquals(1L, references(source))
+        withContext(Dispatchers.IO) {
+            LocalSocket().use { socket ->
+                try { socket.connect(LocalSocketAddress(channel.name)); fail("Cancelled offer still accepts connections") }
+                catch (_: java.io.IOException) { }
+            }
+        }
+        RootScriptMemory.verify(source.fileDescriptor, ticket.script)
     } }
     @Test fun workerCredentialMismatchClosesConnection() = runBlocking { fixture { _, _, channel -> supervisorScope {
         val transfer = async(Dispatchers.IO) { channel.handoff(RootTargetIdentity(Process.myPid() + 1, 1)) }
