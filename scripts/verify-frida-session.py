@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Real Frida/Linux tests against an owned target; never substitutes for Android qualification."""
 import importlib.util
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -14,6 +15,8 @@ import tempfile
 import time
 import unittest
 from frida_managed_cases import ManagedCases
+from frida_guard_cases import GuardCases
+from managed_native_sources import guard_sources
 
 ROOT = Path(__file__).resolve().parents[1]
 NAME = "frida-core-devkit-17.24.3-linux-x86_64.tar.xz"
@@ -22,7 +25,7 @@ SIZE = 78853964
 
 
 @unittest.skipUnless(sys.platform.startswith("linux") and os.geteuid() == 0, "Explicit Linux Root host fixture")
-class FridaSessionTests(ManagedCases, unittest.TestCase):
+class FridaSessionTests(GuardCases, ManagedCases, unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.temporary = tempfile.TemporaryDirectory(prefix="aurora-frida-session-")
@@ -47,6 +50,9 @@ class FridaSessionTests(ManagedCases, unittest.TestCase):
                         "-I" + str(cls.root), *[str(native / name) for name in ["worker.c", "input.c", "channel_input.c", "fd_channel.c", "fd_io.c", "managed_control.c", "managed_protocol.c", "managed_watch.c", "events.c", "session.c"]],
                         "-o", str(cls.worker), "-L" + str(cls.root), "-lfrida-core", "-ldl", "-lrt", "-lm", "-lresolv",
                         "-pthread", "-Wl,--export-dynamic", "-Wl,--gc-sections", "-Wl,-z,noexecstack"], check=True)
+        cls.worker_sha = hashlib.sha256(cls.worker.read_bytes()).hexdigest()
+        cls.guard = cls.root / "guard"
+        subprocess.run(["cc", "-Wall", "-Wextra", "-Werror", "-Os", *map(str, guard_sources(ROOT)), "-o", str(cls.guard)], check=True)
         target = cls.root / "target.c"
         target.write_text('#include <unistd.h>\n#include <stdio.h>\n'
                           '__attribute__((noinline,visibility("default"))) int aurora_marker(int value) { return value + 1; }\n'

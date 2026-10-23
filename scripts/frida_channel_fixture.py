@@ -53,9 +53,7 @@ class ChannelLaunch:
     ticks: int
 
 
-def launch(worker, target, selected, options=None):
-    """target=(pid,startTicks); returns identity only after bounded FD acknowledgement."""
-    options = options or LaunchOptions()
+def make_ticket(target, selected, options, worker_sha="a" * 64):
     bridge, corrupt = options.bridge, options.corrupt
     def metadata(data):
         return {"version": "owned-fixture", "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)}
@@ -67,10 +65,30 @@ def launch(worker, target, selected, options=None):
     ticket = {"runId": str(uuid.uuid4()), "owner": str(uuid.uuid4()),
         "identity": {"pid": os.getpid(), "startTicks": start_ticks(os.getpid()),
             "bootId": Path("/proc/sys/kernel/random/boot_id").read_text().strip(), "epoch": str(uuid.uuid4())},
-        "appUid": 10000, "appBuild": "host-qualification", "workerSha256": "a" * 64,
+        "appUid": 10000, "appBuild": "host-qualification", "workerSha256": worker_sha,
         "target": {"pid": target[0], "startTicks": target[1]}, "script": script_meta, "observeMs": options.duration}
     if bridge is not None:
         ticket["bridge"] = metadata(bridge)
+    return ticket
+
+
+def send_snapshots(peer, files, frame):
+    peer.settimeout(5)
+    if receive_frame(peer) != frame(1):
+        raise AssertionError("Worker hello differs from immutable task")
+    peer.sendmsg([frame(2)[:1]], [(socket.SOL_SOCKET, socket.SCM_RIGHTS, array.array("i", files))])
+    peer.sendall(frame(2)[1:]); peer.shutdown(socket.SHUT_WR)
+    if receive_frame(peer) != frame(3):
+        raise AssertionError("Worker did not acknowledge sealed descriptors")
+    if peer.recv(1) != b"":
+        raise AssertionError("Worker retained control socket or sent extra bytes")
+
+
+def launch(worker, target, selected, options=None):
+    """target=(pid,startTicks); returns identity only after bounded FD acknowledgement."""
+    options = options or LaunchOptions()
+    bridge = options.bridge
+    ticket = make_ticket(target, selected, options)
     encoded = json.dumps(ticket, separators=(",", ":"))
     count = 2 if bridge is not None else 1
     nonce = os.urandom(32)
@@ -97,15 +115,7 @@ def launch(worker, target, selected, options=None):
             child_start = start_ticks(child.pid)
             peer, _ = listener.accept()
             with peer:
-                peer.settimeout(5)
-                if receive_frame(peer) != frame(1):
-                    raise AssertionError("Worker hello differs from immutable task")
-                peer.sendmsg([frame(2)[:1]], [(socket.SOL_SOCKET, socket.SCM_RIGHTS, array.array("i", files))])
-                peer.sendall(frame(2)[1:]); peer.shutdown(socket.SHUT_WR)
-                if receive_frame(peer) != frame(3):
-                    raise AssertionError("Worker did not acknowledge sealed descriptors")
-                if peer.recv(1) != b"":
-                    raise AssertionError("Worker retained control socket or sent extra bytes")
+                send_snapshots(peer, files, frame)
         return ChannelLaunch(child, hashlib.sha256(encoded.encode()).digest(), child_start)
     except BaseException:
         if child is not None:

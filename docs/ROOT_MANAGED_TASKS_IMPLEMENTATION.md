@@ -104,6 +104,8 @@ recover先持久退役，核实旧guard已退出、boot与worker身份；worker�
 
 ## 验证
 
+336deb8完整CI40013810311三job成功：独立guard的14项Root主机生命周期与原19项真实Frida用例分别通过，见evidence/0.1.40/ci-40013810311-passed.txt。新增实际Frida穿过独立guard的4项端到端用例：真实hook/持久报告、owner死亡后真实unload/detach、封印快照预检失败、官方Java桥仅执行一次。发送方先匹配READY的PID/startTicks及Root SO_PEERCRED，再交付封印FD；完成后核实报告票据、域记录清除、原目标仍活。新增用例待CI，不是Android ART资格。
+
 本地核心242项：232通过、10平台跳过；票据/预算/证明/错配4项与帧协议3项实际执行。Debug、Release R8、testAPK、lint通过；随后扩展Android用例又编译/lint通过，见evidence/0.1.40/local-root-managed-foundation-passed.txt及local-root-script-channel-passed.txt。
 
 基础Android9项仅编译：账本5项（重开/删除/精确完成、归属/回收保留、损坏/重复票据、schema7保留真实Linux票据/租约、1..7迁移与索引选择），内存4项（dup/不可写不可截断、源变化、取消/close异常回收、接收端拒绝未封印或不同摘要）。没有连接手机，不能把这些计入已执行用例。
