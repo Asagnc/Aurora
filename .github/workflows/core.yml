@@ -103,6 +103,7 @@ jobs:
           python3 scripts/verify-frida-managed-receive.py
           python3 scripts/verify-frida-managed-observe.py
           sudo -n python3 scripts/verify-managed-journal.py
+          sudo -n python3 scripts/verify-managed-launch.py
 
   frida-session:
     runs-on: ubuntu-latest

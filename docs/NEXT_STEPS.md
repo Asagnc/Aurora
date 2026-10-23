@@ -48,7 +48,11 @@
 
 - 独立Root journal已实现意图/worker身份/放行/持久退役与同任务磁盘锁；启动不可重放，退役前后迟到启动互斥，坏记录/部分写保留。17项Root主机故障用例待CI，NDK30 ARM64链接/16KiB已通过；还没有实际worker fork/cgroup guard/Binder/Agent接入。
 
+- 原生admission/GO基础已接journal与已有cgroup算法：fork子进程先入域并等待，捕获真实PID/start/boot后持久READY，RELEASED后单次GO；拒绝自动回收，父死保护和跨exec FD隔离。10项Root cgroup/自有原生worker用例待最新CI；仍没有完整Root guard主程序/Binder/Agent或Frida设备资格。
+
 ## 当前证据
+
+- aeebb08完整CI40003765109成功，17项Root journal故障用例实际通过；证据ci-40003765109-passed.txt。本轮新增admission/GO的10项用例随后核实。
 
 - f53d824完整CI40001467909现已成功，三job均成功；证据ci-40001467909-passed.txt。以下早期“整体待核实”是当时状态。本轮Root journal的17项用例推送后另查。
 

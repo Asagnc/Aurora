@@ -1,3 +1,11 @@
+## 2026-10-24 原生cgroup admission与GO放行基础
+
+新增managed_launch_prepare/release：单线程Root guard中fork，父死信号及父PID复核；子进程先关闭自己的journal锁副本，进入本任务新建cgroup，停在私有socket门前。父进程捕获pidfd/startTicks/boot，持久READY后才返回；release持久记录后再核实owner/worker存活并单次GO。拒绝SIGCHLD自动回收/自定义处理器，避免失去未回收子PID所有权。新子进程close_range CLOEXEC，只有控制流明确跨exec，worker bootstrap再恢复CLOEXEC；exec失败由原生launcher报告never-attached事实。
+
+新增10项Root真实cgroup/自有原生worker测试（不注入Frida）：放行前不执行、退役/父死/worker死亡、准入失败、exec失败、重复GO、FD及helper exec隔离、错误参数和自动回收拒绝，待CI；Windows仅平台跳过。完整ARM64夹具链接已通过；不是独立Root guard主程序，也未APK打包。未来调用者仍须核实/固定worker版本与普通exec属性、记录scope、持锁及监督/真实回收，Root Binder/最终事实持久化/Agent仍未接。
+
+上一轮aeebb08完整CI40003765109已成功，含17项Root journal故障用例；证据ci-40003765109-passed.txt。手机验收仍最后集中进行，未调用真实模型。
+
 ## 2026-10-24 Root一次性启动与持久退役屏障
 
 新增独立Root journal实现：私有目录内固定文件，Root属主/权限/单硬链接/NOFOLLOW验证，与既有.run.lock约定相同的非阻塞flock。意图、164字节guard/worker PID-startTicks-boot身份、放行记录和退役标记均先写入并fsync文件及目录。启动/身份/放行不可重放，退役可幂等但重试仍需fsync；仅退休标记也阻止之后迟到start。损坏/部分写/错误阶段顺序保留失败状态，不删除或覆盖。

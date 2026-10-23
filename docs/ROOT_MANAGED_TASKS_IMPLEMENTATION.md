@@ -62,7 +62,19 @@ managed/journal不依赖Linux镜像或Frida库。调用者提供已固定的Root
 
 每次新文件O_EXCL，先fsync文件再fsync目录才返回成功；部分/失败记录保留以阻止新派发。begin/ready/release不能重放；retire幂等重试也重做文件和目录fsync，避免把上次仅可见字节当已持久化。未来guard在写GO前先发布released；这个间隙崩溃必须记为可能已放行，不能推断“未注入”。retired只阻止未来派发，绝不证明原目标脚本已卸载或任务域已空。
 
-17项Linux Root故障测试待CI，NDK30/API36 ARM64独立夹具链接/16KiB通过。尚未接实际fork/GO、cgroup guard、最终事实持久发布、Root Binder/Agent/设备资格，Frida仍不ready。核实依据：[open](https://man7.org/linux/man-pages/man2/open.2.html)、[fsync](https://man7.org/linux/man-pages/man2/fsync.2.html)、[flock](https://man7.org/linux/man-pages/man2/flock.2.html)。
+17项Linux Root故障测试已在aeebb08完整CI40003765109实际通过，NDK30/API36 ARM64独立夹具链接/16KiB通过。尚未接实际fork/GO、cgroup guard、最终事实持久发布、Root Binder/Agent/设备资格，Frida仍不ready。核实依据：[open](https://man7.org/linux/man-pages/man2/open.2.html)、[fsync](https://man7.org/linux/man-pages/man2/fsync.2.html)、[flock](https://man7.org/linux/man-pages/man2/flock.2.html)。
+
+## 原生admission与单次GO
+
+launch_prepare只接受已持有Root journal锁/INTENT及已记录的新建task_scope。专用单线程guard fork，子进程PDEATHSIG+getppid关闭准入前父死竞态，关闭自己的锁副本，复用task_scope_enter，给父进程准入事件后阻塞GO。父进程通过真实pidfd/startTicks、guard身份/bootId形成READY并fsync，owner/worker已退出则拒绝；此时worker二进制尚未执行。
+
+release核对同一任务的精确READY，持久RELEASED、再次核实owner/worker后仅发一次GO；句柄在首次尝试就消费，失败不能重试。持久RELEASED与实际GO之间崩溃仍未知，不从marker缺失推断没有注入。launch_close只关闭FD，不替代kill/reap/cgroup移除；准备失败也可能返回仍需收尾的自有子进程。
+
+guard必须保持默认SIGCHLD且无SA_NOCLDWAIT，防止未回收子PID被复用后误杀其他进程；自身不得并发waitpid。子进程清除继承的信号屏蔽，close_range CLOEXEC（复用既有guest执行的同一内核能力）后仅让私有control跨exec，worker bootstrap恢复CLOEXEC并清内部env。普通版本/可执行文件属性由调用者固定验证，不宣称目前已完成worker二进制发布/租约与Android资格。exec前失败只报告NO_SESSION/125，不编造加载；worker进程与域的真实退出仍由guard独立核实。
+
+10项Root真实cgroup/自有原生worker夹具待CI；loaded/unloaded位在此夹具中是协议模拟，不算真实Frida附加。正常用例同时核实非CLOEXEC私有FD不进入worker、control和内部env不进入后续helper exec；错误场景核实未执行、实际等待/回收/移除。ARM64完整夹具已链接；还没有独立guard主程序/最终事实持久发布/Root Binder/Agent/ART。
+
+依据：[close_range](https://man7.org/linux/man-pages/man2/close_range.2.html)、[PDEATHSIG](https://man7.org/linux/man-pages/man2/PR_SET_PDEATHSIG.2const.html)及既有scope/cgroup算法；不使用PID命名空间或Linux镜像。
 
 ## 验证
 
