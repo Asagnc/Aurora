@@ -116,6 +116,7 @@ int managed_launch_release(const struct managed_launch_input *input, struct mana
     ssize_t sent;
     do { sent = send(launch->gate, "g", 1, MSG_NOSIGNAL | MSG_DONTWAIT); } while (sent < 0 && errno == EINTR);
     if (sent != 1) { if (sent >= 0) errno = EPIPE; return -1; }
+    launch->dispatched = 1;
     close(launch->gate); launch->gate = -1;
     return 0;
 }

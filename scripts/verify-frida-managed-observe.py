@@ -90,6 +90,10 @@ int main(int argc, char **argv) {
         observer.force_deadline_ms = start + 50000;
     }
     if (!strcmp(argv[1], "invalid")) observer.force_deadline_ms = start;
+    if (!strcmp(argv[1], "owner-no-go")) {
+        observer.suppress_commands = 1;
+        observer.operation_deadline_ms = observer.force_deadline_ms = start + 500;
+    }
     if (!strcmp(argv[1], "bad-fd")) { close(observer.owner_pidfd); observer.owner_pidfd = 999999; }
     struct aurora_managed_observation observation;
     int result = aurora_managed_observe(&observer, &observation), error = errno;
@@ -146,6 +150,11 @@ class ObserveTests(unittest.TestCase):
         result = self.run_mode("owner")
         self.assertEqual(0, result["result"]); self.assertEqual(2, result["reason"])
         self.assertEqual(63, result["flags"]); self.assertEqual(0, result["workerStatus"])
+
+    def test_unreleased_stub_never_receives_owner_stop_command(self):
+        result = self.run_mode("owner-no-go")
+        self.assertEqual(-1, result["result"]); self.assertEqual(errno.ETIMEDOUT, result["error"])
+        self.assertEqual((2, 0, 137), (result["reason"], result["frame"], result["workerStatus"]))
 
     def test_protocol_violation_requests_cancel_but_never_repairs_report(self):
         result = self.run_mode("bad")

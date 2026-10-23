@@ -104,6 +104,10 @@ recover先持久退役，核实旧guard已退出、boot与worker身份；worker�
 
 ## 验证
 
+40020643752独立25真实Frida job成功，但放行用例发现启动前取消会向未GO的launcher写停止字节，worker125退出时可能丢失严格EOF报告；没有把该轮记通过，18 guard用例也尚未运行。新增临时dispatched标记仅在实际GO发送成功后置位；未放行观察模式不发送命令、最多等待1秒读stub报告再强制收尾。新增“owner已死但未放行的stub绝不能收到命令”的直接观察器回归，防止只靠竞态偶然通过。
+
+独立未派发证明扩展为持久退役且无RELEASED/GO、所有已创建worker/domain明确退出（不能是UNKNOWN）；可含READY和NoSession报告，不含attach-attempt事实。这样取消落在fork/READY窗口也不会永久卡住删除，不伪造unload事实。Core249项239通过/10跳过，ARM64 guard 44,936字节/16KiB链接通过；11观察/12放行/18 guard及25真实Frida待修复后的CI。见ci-40020643752-launch-failed.txt。
+
 新增可选开发CLI参数--cooperative-cancel：协调进程的TERM/INT处理器只向私有非阻塞socketpair写一次事件、保存errno，不分配/打日志/清理。guard仍持真实owner pidfd，额外取消事件复用owner-stop策略/原因2，无新持久格式；放行前及GO前也检查取消。协调进程保持存活等待guard最终报告/收尾，收到取消后等待上限缩到20秒；必要时强制guard，后续恢复最多再取5秒且不超过原票据总截止。guard强制收尾自身也缩到最多5秒。内核/文件系统不可中断I/O仍不能保证硬实时。
 
 该模式coordinator设置PR_SET_PDEATHSIG=TERM并复核原父PID，父线程死亡触发相同协作取消；guard fork后关闭写端并恢复普通TERM/INT，worker不继承取消FD。未来Root facade必须在同一阻塞OS线程里启动/等待coordinator，不能让启动线程先退出；尚未连接该facade。默认开发模式原有真实父死语义不变。Root stopped若明确NOT_CREATED且域已CLEAR/NOT_CREATED，也允许独立“未派发”证明；已有INTENT但worker UNKNOWN仍不清账。

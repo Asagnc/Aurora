@@ -96,7 +96,8 @@ static int observe(struct fixture *fixture) {
     struct aurora_managed_observer observer = {.socket = launch->control, .owner_pidfd = fixture->owner_fd,
         .worker_pidfd = launch->pidfd, .worker = {.pid = (uint32_t)launch->pid, .ticks = launch->admission.worker_ticks},
         .operation_deadline_ms = task_scope_now() + 2000, .force_deadline_ms = task_scope_now() + 3000,
-        .cancel_fd = fixture->input.cancel_fd, .cancel_enabled = fixture->input.cancel_enabled};
+        .cancel_fd = fixture->input.cancel_fd, .cancel_enabled = fixture->input.cancel_enabled,
+        .suppress_commands = !launch->dispatched};
     memset(observer.ticket, 17, 32);
     return aurora_managed_observe(&observer, &fixture->observation);
 }

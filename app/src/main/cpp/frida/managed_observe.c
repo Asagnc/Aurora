@@ -23,6 +23,7 @@ static int request_stop(const struct aurora_managed_observer *observer,
     int64_t now = now_ms();
     if (now < 0) return -1;
     shorten(deadline, now);
+    if (observer->suppress_commands) return 0;
     unsigned char command = reason == AURORA_STOP_DURATION ? 1 : 2;
     ssize_t count;
     do { count = send(observer->socket, &command, 1, MSG_NOSIGNAL | MSG_DONTWAIT); } while (count < 0 && errno == EINTR);

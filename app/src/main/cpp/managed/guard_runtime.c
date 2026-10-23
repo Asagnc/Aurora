@@ -34,7 +34,14 @@ static int observe(const struct managed_guard_spec *spec, int owner, struct runt
     struct aurora_managed_observer observer = {.socket = runtime->launch.control, .owner_pidfd = owner,
         .worker_pidfd = runtime->launch.pidfd, .worker = {.pid = (uint32_t)runtime->launch.pid,
             .ticks = runtime->launch.admission.worker_ticks}, .operation_deadline_ms = runtime->operation,
-        .force_deadline_ms = runtime->force, .cancel_fd = spec->cancel_fd, .cancel_enabled = spec->cancel_fd >= 0};
+        .force_deadline_ms = runtime->force, .cancel_fd = spec->cancel_fd, .cancel_enabled = spec->cancel_fd >= 0,
+        .suppress_commands = !runtime->launch.dispatched};
+    if (!runtime->launch.dispatched) {
+        long long pending = task_scope_now() + 1000;
+        if (pending < observer.force_deadline_ms) observer.force_deadline_ms = pending;
+        if (observer.force_deadline_ms < observer.operation_deadline_ms)
+            observer.operation_deadline_ms = observer.force_deadline_ms;
+    }
     ticket_bytes(spec->key, observer.ticket);
     return aurora_managed_observe(&observer, &runtime->observation);
 }

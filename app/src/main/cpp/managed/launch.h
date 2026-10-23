@@ -15,7 +15,7 @@ struct managed_launch_input {
 };
 struct managed_launch {
     pid_t pid;
-    int pidfd, control, gate, prepared;
+    int pidfd, control, gate, prepared, dispatched;
     struct managed_admission admission;
 };
 /* Single-threaded native guard with default SIGCHLD (no auto-reaping) only.

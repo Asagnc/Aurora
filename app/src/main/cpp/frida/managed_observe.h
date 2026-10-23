@@ -16,6 +16,7 @@ struct aurora_managed_observer {
     unsigned char ticket[32];
     int64_t operation_deadline_ms, force_deadline_ms;
     int cancel_fd, cancel_enabled;
+    int suppress_commands; // Unreleased launcher stub: no Frida engine needs cooperative commands.
 };
 /* Owns no FDs and does not reap, kill, remove a scope or publish durable facts.
  * Parent must capture/admit worker and authenticate the private socket first.

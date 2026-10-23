@@ -64,6 +64,13 @@ class RootManagedNativeStateTest {
         assertNull(RootManagedNativeState.decode(ticket, null, null, stopped(9, 0, 1)).neverDispatchedProof())
         assertTrue(assertNotNull(RootManagedNativeState.decode(ticket, null, null, stopped(9, 2, 1))
             .neverDispatchedProof()).matches(ticket))
+        assertTrue(assertNotNull(RootManagedNativeState.decode(ticket, null, null, stopped(9, 1, 1))
+            .neverDispatchedProof()).matches(ticket))
+        assertTrue(assertNotNull(RootManagedNativeState.decode(ticket, ready(), null, stopped(11, 1, 1))
+            .neverDispatchedProof()).matches(ticket))
+        assertTrue(assertNotNull(RootManagedNativeState.decode(ticket, ready(), report(57, 125), stopped(11, 1, 1))
+            .neverDispatchedProof()).matches(ticket))
+        assertNull(RootManagedNativeState.decode(ticket, ready(), report(63, 1), stopped(11, 1, 1)).neverDispatchedProof())
         assertNull(RootManagedNativeState.decode(ticket, ready(), report(), stopped()).neverDispatchedProof())
     }
 

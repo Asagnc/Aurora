@@ -2,7 +2,7 @@ package io.github.asagnc.aurora.core
 
 import kotlinx.serialization.Serializable
 
-/** Durable retirement before any worker existed; a created task domain is already reclaimed.
+/** Durable retirement before GO; any created worker and task domain are already reclaimed.
  * This is not an injection cleanup report and never asserts workerExited. */
 @Serializable
 class RootManagedRetirementProof private constructor(

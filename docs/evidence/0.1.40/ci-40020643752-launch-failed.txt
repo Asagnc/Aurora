@@ -1,0 +1,8 @@
+Source: b89dbd85759b9b521d9bb087c65a41eedae5b86a
+Workflow: https://github.com/Asagnc/Aurora/actions/runs/40020643752
+managed-supervision job 120644009105 failed; NOT an overall pass.
+Regression: cancel-after-admission prevented GO/exec and worker exited125, but strict final report was missing (flags0 instead of57). Sending a stop command into the unreleased launcher can lose the final stream. Fix: suppress commands before confirmed GO; still drain and independently await/reap worker.
+18 guard cases did not execute because launch suite failed first.
+Separate completed frida-session job 120644009522 succeeded:
+2026-10-23T20:38:41.7011485Z Ran 25 tests in 55.622s
+2026-10-23T20:38:41.7011639Z OK
