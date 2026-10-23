@@ -5,3 +5,7 @@ app:compileDebugKotlin PASS
 app:lintDebug PASS
 Logs: outputs/browser-transfer-diagnostics-build.txt and browser-transfer-diagnostics-verified.txt
 No phone execution. No real provider calls. Full CI pending.
+
+Rootfs-qualified rerun: {'tests': 201, 'skipped': 9, 'failures': 0, 'errors': 0}
+Log: outputs/browser-transfer-diagnostics-rootfs-verified.txt
+Initial no-sample run skipped the official archive case in addition to 9 POSIX cases.

@@ -28,7 +28,7 @@
 
 - 9517ea9完整CI39909014575成功，包含核心/签名镜像/POSIX/PTY/Root原生主机/PRoot内核与生命周期/抓包/Android Debug、Release R8、testAPK、lint及ELF/源码检查。证据evidence/0.1.37/ci-39909014575-passed.txt。
 - 当前本地核心201项：192通过、9 POSIX跳过。异步JS14、传输JS16场景分别属于各自一个JUnit测试，不重复加到201总数；Android本轮新5项仍仅编译。
-- 随后仅补测试任务对mjs文件的输入追踪，以及Android跨域导航夹具，core/testAPK/lint本地再次通过；2214641完整CI39910230241也已成功，见evidence/0.1.37/ci-39910230241-passed.txt。0.1.38实现40d96bc完整CI39913505934已通过，见evidence/0.1.38/ci-39913505934-passed.txt；0.1.39实现d403a4f完整CI39915958302也已通过，见evidence/0.1.39/ci-39915958302-passed.txt；本轮0.1.40 CI另查，不提前标成功。
+- 随后仅补测试任务对mjs文件的输入追踪，以及Android跨域导航夹具，core/testAPK/lint本地再次通过；2214641完整CI39910230241也已成功，见evidence/0.1.37/ci-39910230241-passed.txt。0.1.38实现40d96bc完整CI39913505934已通过，见evidence/0.1.38/ci-39913505934-passed.txt；0.1.39实现d403a4f完整CI39915958302也已通过，见evidence/0.1.39/ci-39915958302-passed.txt；0.1.40下载恢复b75113f完整CI39917911407已通过；后续传输错误码849561c的CI39918760978仍在运行。
 - Root抓包主机外层12项、内层私有netns10项成功；新Root真机7项与BrowserAsyncTest六项仅编译，没有执行手机。
 
 ## 尚未实现，建议继续的顺序
