@@ -59,6 +59,17 @@ class LaunchTests(unittest.TestCase):
         self.assertEqual(-1, result["prepared"]); self.assertEqual(errno.ECANCELED, result["prepareError"])
         self.assertEqual(0, result["after"]); self.assertEqual(-1, result["workerStatus"])
 
+    def test_pending_owner_cancellation_prevents_fork_and_exec(self):
+        result = self.run_mode("cancel-before")
+        self.assertEqual(-1, result["prepared"]); self.assertEqual(errno.ECANCELED, result["prepareError"])
+        self.assertEqual((0, -1), (result["after"], result["workerStatus"]))
+
+    def test_cancellation_after_admission_prevents_go_and_script_execution(self):
+        result = self.run_mode("cancel-ready")
+        self.assertEqual(0, result["prepared"]); self.assertEqual(-1, result["released"])
+        self.assertEqual(errno.ECANCELED, result["releaseError"])
+        self.assertEqual((0, 57, 125), (result["after"], result["flags"], result["workerStatus"]))
+
     def test_retirement_after_admission_cannot_release_child(self):
         result = self.run_mode("retired-ready")
         self.assertEqual(0, result["prepared"]); self.assertEqual(-1, result["released"])

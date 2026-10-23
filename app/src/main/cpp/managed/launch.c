@@ -20,10 +20,15 @@ static int alive(int descriptor) {
     return -1;
 }
 
+static int owner_active(const struct managed_launch_input *input) {
+    if (alive(input->owner_pidfd)) return -1;
+    return input->cancel_enabled ? alive(input->cancel_fd) : 0;
+}
+
 static int valid_input(const struct managed_launch_input *input) {
     if (geteuid()) { errno = EPERM; return -1; }
     if (!input->scope || !input->journal || !input->key || !input->argv || input->owner_pidfd < 0 ||
-        input->admission_deadline_ms <= 0) { errno = EINVAL; return -1; }
+        input->admission_deadline_ms <= 0 || (input->cancel_enabled && input->cancel_fd < 0)) { errno = EINVAL; return -1; }
     for (int index = 0; index < 5; index++) if (!input->argv[index]) { errno = EINVAL; return -1; }
     if (input->argv[5] || input->argv[0][0] != '/' || strcmp(input->argv[1], "attach-channel") ||
         !*input->argv[2] || strnlen(input->argv[2], 97) > 96 || strnlen(input->argv[3], 65) != 64 ||
@@ -37,7 +42,7 @@ static int valid_input(const struct managed_launch_input *input) {
     int phase = managed_journal_status(input->journal, input->key, NULL);
     if (phase < 0) return -1;
     if (phase != MANAGED_INTENT) { errno = phase & MANAGED_RETIRED ? ECANCELED : EPROTO; return -1; }
-    return alive(input->owner_pidfd);
+    return owner_active(input);
 }
 
 static int wait_admitted(const struct managed_launch_input *input, const struct managed_launch *launch) {
@@ -46,12 +51,13 @@ static int wait_admitted(const struct managed_launch_input *input, const struct 
         if (now < 0) return -1;
         if (left <= 0) { errno = ETIMEDOUT; return -1; }
         struct pollfd events[] = {{.fd = input->owner_pidfd, .events = POLLIN},
-            {.fd = launch->pidfd, .events = POLLIN}, {.fd = launch->gate, .events = POLLIN}};
-        int ready = poll(events, 3, (int)(left > INT_MAX ? INT_MAX : left));
+            {.fd = launch->pidfd, .events = POLLIN}, {.fd = launch->gate, .events = POLLIN},
+            {.fd = input->cancel_enabled ? input->cancel_fd : -1, .events = POLLIN}};
+        int ready = poll(events, 4, (int)(left > INT_MAX ? INT_MAX : left));
         if (ready < 0 && errno == EINTR) continue;
         if (ready < 0) return -1;
         if (!ready) { errno = ETIMEDOUT; return -1; }
-        if (events[0].revents || events[1].revents) { errno = ECANCELED; return -1; }
+        if (events[0].revents || events[1].revents || events[3].revents) { errno = ECANCELED; return -1; }
         if (events[2].revents) {
             unsigned char byte;
             if (recv(launch->gate, &byte, 1, MSG_DONTWAIT) == 1 && byte == 'r') return 0;
@@ -88,7 +94,7 @@ int managed_launch_prepare(const struct managed_launch_input *input, struct mana
     if (launch->pidfd < 0 || scope_process_start(launch->pid, &launch->admission.worker_ticks) ||
         scope_process_start(getpid(), &launch->admission.guard_ticks) || scope_boot_id(boot) || wait_admitted(input, launch)) return -1;
     memcpy(launch->admission.boot, boot, 37);
-    if (managed_journal_ready(input->journal, input->key, &launch->admission) || alive(input->owner_pidfd) || alive(launch->pidfd)) return -1;
+    if (managed_journal_ready(input->journal, input->key, &launch->admission) || owner_active(input) || alive(launch->pidfd)) return -1;
     launch->prepared = 1; return 0;
 }
 
@@ -105,8 +111,8 @@ int managed_launch_release(const struct managed_launch_input *input, struct mana
         recorded.worker_pid != expected->worker_pid || recorded.worker_ticks != expected->worker_ticks || strcmp(recorded.boot, expected->boot)) {
         errno = EPROTO; return -1;
     }
-    if (alive(input->owner_pidfd) || alive(launch->pidfd) || managed_journal_release(input->journal, input->key) ||
-        alive(input->owner_pidfd) || alive(launch->pidfd)) return -1;
+    if (owner_active(input) || alive(launch->pidfd) || managed_journal_release(input->journal, input->key) ||
+        owner_active(input) || alive(launch->pidfd)) return -1;
     ssize_t sent;
     do { sent = send(launch->gate, "g", 1, MSG_NOSIGNAL | MSG_DONTWAIT); } while (sent < 0 && errno == EINTR);
     if (sent != 1) { if (sent >= 0) errno = EPIPE; return -1; }

@@ -10,10 +10,10 @@ import uuid
 
 
 class GuardCases:
-    def guarded(self, selected=b"send('guard-ready');", bridge=None, corrupt=None, duration=8000):
+    def guarded(self, selected=b"send('guard-ready');", bridge=None, corrupt=None, duration=8000, cooperative=False):
         from frida_channel_fixture import LaunchOptions
         from frida_guard_fixture import launch_guard
-        options = LaunchOptions(bridge=bridge, corrupt=corrupt, duration=duration)
+        options = LaunchOptions(bridge=bridge, corrupt=corrupt, duration=duration, cooperative=cooperative)
         state = self.root / ("guard-" + uuid.uuid4().hex)
         launched = launch_guard(self.worker, self.guard, (self.process.pid, self.ticks), selected,
             (state, options, self.worker_sha))
@@ -59,6 +59,16 @@ class GuardCases:
         launched.child.terminate()
         records, summary = self.guarded_finish(launched, prefix)
         self.assertEqual(-signal.SIGTERM, launched.child.returncode)
+        self.assertFalse(summary["success"]); self.assertEqual((63, 1, 2), (summary["workerFlags"], summary["exitCode"], summary["reason"]))
+        completion = next(record for record in records if record.get("kind") == "completion")
+        self.assertTrue(completion["cleanupConfirmed"])
+
+    def test_guarded_cooperative_cancel_waits_for_real_cleanup_before_return(self):
+        launched = self.guarded(duration=30000, cooperative=True)
+        prefix = self.loaded(launched.child)
+        launched.child.terminate()
+        records, summary = self.guarded_finish(launched, prefix)
+        self.assertEqual(1, launched.child.returncode)
         self.assertFalse(summary["success"]); self.assertEqual((63, 1, 2), (summary["workerFlags"], summary["exitCode"], summary["reason"]))
         completion = next(record for record in records if record.get("kind") == "completion")
         self.assertTrue(completion["cleanupConfirmed"])

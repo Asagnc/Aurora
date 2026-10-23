@@ -44,6 +44,7 @@ class LaunchOptions:
     corrupt: str | None = None
     supervision: socket.socket | None = None
     duration: int = 2000
+    cooperative: bool = False
 
 
 @dataclass

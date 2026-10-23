@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/prctl.h>
+#include <sys/socket.h>
 #include <sys/syscall.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -46,6 +47,7 @@ struct fixture {
     struct aurora_managed_observation observation;
     pid_t owner;
     int owner_fd, private_fd, scope_created, scope_recorded;
+    int cancellation[2];
 };
 
 static int setup(struct fixture *fixture, char **argv, char **arguments) {
@@ -93,7 +95,8 @@ static int observe(struct fixture *fixture) {
     if (launch->pidfd < 0 || !launch->admission.worker_ticks) return 0;
     struct aurora_managed_observer observer = {.socket = launch->control, .owner_pidfd = fixture->owner_fd,
         .worker_pidfd = launch->pidfd, .worker = {.pid = (uint32_t)launch->pid, .ticks = launch->admission.worker_ticks},
-        .operation_deadline_ms = task_scope_now() + 2000, .force_deadline_ms = task_scope_now() + 3000};
+        .operation_deadline_ms = task_scope_now() + 2000, .force_deadline_ms = task_scope_now() + 3000,
+        .cancel_fd = fixture->input.cancel_fd, .cancel_enabled = fixture->input.cancel_enabled};
     memset(observer.ticket, 17, 32);
     return aurora_managed_observe(&observer, &fixture->observation);
 }
@@ -116,17 +119,23 @@ static int teardown(struct fixture *fixture, int *worker_status) {
     managed_launch_close(&fixture->launch);
     if (fixture->owner_fd >= 0) close(fixture->owner_fd);
     if (fixture->private_fd >= 0) close(fixture->private_fd);
+    for (unsigned index = 0; index < 2; index++) if (fixture->cancellation[index] >= 0) close(fixture->cancellation[index]);
     return failed ? -1 : 0;
 }
 
 static int qualify(char **argv) {
     struct fixture fixture = {.journal = {.directory = -1, .lock = -1},
-        .launch = {.pidfd = -1, .control = -1, .gate = -1}, .owner_fd = -1, .private_fd = -1};
+        .launch = {.pidfd = -1, .control = -1, .gate = -1}, .owner_fd = -1, .private_fd = -1, .cancellation = {-1, -1}};
     char *arguments[] = {argv[0], "attach-channel", "fixture-channel",
         "2222222222222222222222222222222222222222222222222222222222222222", "{}", NULL};
     if (!strcmp(argv[1], "exec-fail")) arguments[0] = "/aurora-fixture-not-installed/worker";
     if (!strcmp(argv[1], "bad-argv")) arguments[3] = "bad";
     if (setup(&fixture, argv, arguments)) goto failure;
+    if (!strncmp(argv[1], "cancel-", 7)) {
+        if (socketpair(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC | SOCK_NONBLOCK, 0, fixture.cancellation)) goto failure;
+        fixture.input.cancel_enabled = 1; fixture.input.cancel_fd = fixture.cancellation[0];
+        if (!strcmp(argv[1], "cancel-before") && write(fixture.cancellation[1], "c", 1) != 1) goto failure;
+    }
     if (!strcmp(argv[1], "retired-before") && managed_journal_retire(&fixture.journal, &fixture.key)) goto failure;
     if (!strcmp(argv[1], "owner-before")) stop_owner(&fixture);
     if (!strcmp(argv[1], "auto-reap")) signal(SIGCHLD, SIG_IGN);
@@ -135,6 +144,7 @@ static int qualify(char **argv) {
     int phase = managed_journal_status(&fixture.journal, &fixture.key, NULL);
     int before = access(argv[3], F_OK) == 0, released = -2, release_error = 0, second = 0;
     if (!prepared) {
+        if (!strcmp(argv[1], "cancel-ready") && write(fixture.cancellation[1], "c", 1) != 1) goto failure;
         if (!strcmp(argv[1], "retired-ready") && managed_journal_retire(&fixture.journal, &fixture.key)) goto failure;
         if (!strcmp(argv[1], "owner-after")) stop_owner(&fixture);
         if (!strcmp(argv[1], "worker-before-go")) {

@@ -104,6 +104,12 @@ recover先持久退役，核实旧guard已退出、boot与worker身份；worker�
 
 ## 验证
 
+新增可选开发CLI参数--cooperative-cancel：协调进程的TERM/INT处理器只向私有非阻塞socketpair写一次事件、保存errno，不分配/打日志/清理。guard仍持真实owner pidfd，额外取消事件复用owner-stop策略/原因2，无新持久格式；放行前及GO前也检查取消。协调进程保持存活等待guard最终报告/收尾，收到取消后等待上限缩到20秒；必要时强制guard，后续恢复最多再取5秒且不超过原票据总截止。guard强制收尾自身也缩到最多5秒。内核/文件系统不可中断I/O仍不能保证硬实时。
+
+该模式coordinator设置PR_SET_PDEATHSIG=TERM并复核原父PID，父线程死亡触发相同协作取消；guard fork后关闭写端并恢复普通TERM/INT，worker不继承取消FD。未来Root facade必须在同一阻塞OS线程里启动/等待coordinator，不能让启动线程先退出；尚未连接该facade。默认开发模式原有真实父死语义不变。Root stopped若明确NOT_CREATED且域已CLEAR/NOT_CREATED，也允许独立“未派发”证明；已有INTENT但worker UNKNOWN仍不清账。
+
+新2放行门禁+4 guard生命周期+1真实Frida协作取消待CI（分别累计12/18/25），ARM64 guard 44,872字节、libc/libdl、16KiB链接通过；Core249项本地239通过/10跳过。核实依据：[信号处理安全函数](https://man7.org/linux/man-pages/man7/signal-safety.7.html)、[socketpair](https://man7.org/linux/man-pages/man2/socketpair.2.html)、[poll](https://man7.org/linux/man-pages/man2/poll.2.html)、[父线程死亡信号语义](https://man7.org/linux/man-pages/man2/PR_SET_PDEATHSIG.2const.html)。不是手机证据或已打包功能。
+
 继续增加RootManagedRecords：仅UID0、已有Root私有目录FD，dup保持锚定；固定名称按O_NOFOLLOW/NONBLOCK读取，Root属主/私有权限/普通单链接/精确长度与EOF，最后阶段记录逐个核对票据和存在性。READY可独立解码供脚本握手；finished调用前必须已有coordinator/recovery进程退出屏障及生命周期租约，本读取器不等待/停止任务。坏/残缺文件不删除、不伪造缺失。
 
 RootManagedTargetCheck只读当前boot和精确PID/startTicks；同boot下proc不存在还需kill(pid,0)明确ESRCH，EPERM/隐藏proc/截断/格式错误保持未知。没有杀原目标。独立RootManagedTargetExitProof须有真实worker/domain CLEAR，按原票据绑定boot变更/原PID不存在/身份被替换，区别于正常unload证明；未知worker资源仍不清账。Core新增回归通过、Android账本精确完成用例仅编译，核心249项：239通过/10跳过，Debug/Release/testAPK/lint通过，见local-managed-target-recovery-passed.txt。Root侧读取/观察还未手机执行，Binder/Agent未接。

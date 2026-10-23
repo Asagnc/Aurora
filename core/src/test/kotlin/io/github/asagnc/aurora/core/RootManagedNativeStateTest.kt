@@ -62,6 +62,8 @@ class RootManagedNativeStateTest {
         assertFalse(proof.matches(ticket.copy(appBuild = "other")))
         assertFalse(proof.matches(ticket.copy(identity = ticket.identity.copy(startTicks = 21))))
         assertNull(RootManagedNativeState.decode(ticket, null, null, stopped(9, 0, 1)).neverDispatchedProof())
+        assertTrue(assertNotNull(RootManagedNativeState.decode(ticket, null, null, stopped(9, 2, 1))
+            .neverDispatchedProof()).matches(ticket))
         assertNull(RootManagedNativeState.decode(ticket, ready(), report(), stopped()).neverDispatchedProof())
     }
 

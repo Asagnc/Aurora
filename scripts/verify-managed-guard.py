@@ -44,10 +44,13 @@ class GuardTests(unittest.TestCase):
         self.addCleanup(self.space.cleanup)
         self.state = Path(self.space.name) / "state"; self.marker = Path(self.space.name) / "executed"
 
-    def command(self, action="run", mode="normal", observe=1000, worker=None):
+    def command(self, action="run", mode="normal", observe=1000, worker=None, cooperative=False):
         result = [str(self.guard), action, "--state-dir", str(self.state), "--run-id", RUN, "--ticket-sha", TICKET]
         if action == "run":
-            result += ["--observe-ms", str(observe), "--", str(worker or self.worker), "attach-channel", mode, "22" * 32, "{}"]
+            result += ["--observe-ms", str(observe)]
+            if cooperative:
+                result.append("--cooperative-cancel")
+            result += ["--", str(worker or self.worker), "attach-channel", mode, "22" * 32, "{}"]
         return result
 
     def start(self, mode="normal", **options):
@@ -124,6 +127,34 @@ class GuardTests(unittest.TestCase):
         process.terminate(); result = self.finish(process)
         self.assertEqual(-signal.SIGTERM, process.returncode)
         self.assertFalse(result["success"]); self.assertEqual((63, 1, 2), (result["workerFlags"], result["exitCode"], result["reason"]))
+
+    def test_cooperative_term_waits_for_guard_report_and_resource_cleanup(self):
+        process = self.start("wait", observe=60000, cooperative=True); self.wait_started(process)
+        process.terminate(); result = self.finish(process)
+        self.assertEqual(1, process.returncode)
+        self.assertFalse(result["success"]); self.assertEqual((63, 1, 2), (result["workerFlags"], result["exitCode"], result["reason"]))
+
+    def test_cooperative_mode_does_not_cancel_normal_completion(self):
+        process = self.start(cooperative=True); result = self.finish(process)
+        self.assertEqual(0, process.returncode); self.assertTrue(result["success"])
+
+    def test_cooperative_parent_death_still_finishes_without_a_live_java_owner(self):
+        wrapper = "import subprocess,sys,time; p=subprocess.Popen(sys.argv[1:]); print(p.pid,flush=True); time.sleep(60)"
+        process = subprocess.Popen([sys.executable, "-c", wrapper, *self.command(mode="wait", observe=60000, cooperative=True)],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            env={**os.environ, "AURORA_FIXTURE_MARKER": str(self.marker)})
+        self.addCleanup(self.stop, process)
+        self.wait_started(process); process.kill(); result = self.finish(process)
+        self.assertEqual(-signal.SIGKILL, process.returncode)
+        self.assertFalse(result["success"]); self.assertEqual((63, 1, 2), (result["workerFlags"], result["exitCode"], result["reason"]))
+
+    def test_cooperative_cancel_forces_frozen_guard_before_long_observation_deadline(self):
+        process = self.start("wait", observe=60000, cooperative=True); self.wait_started(process)
+        ready = (self.state / "managed.ready").read_bytes(); guard = struct.unpack_from("<I", ready, 104)[0]
+        os.kill(guard, signal.SIGSTOP); process.terminate()
+        result = self.finish(process, timeout=28)
+        self.assertEqual(137, process.returncode)
+        self.assertFalse(result["success"]); self.assertFalse(result["workerReport"])
 
     def test_guard_death_recovers_domain_without_inventing_unload_report(self):
         process = self.start("wait", observe=10000); self.wait_started(process)

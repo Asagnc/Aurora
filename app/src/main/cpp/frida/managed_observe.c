@@ -50,7 +50,8 @@ int aurora_managed_observe(const struct aurora_managed_observer *observer,
     *result = (struct aurora_managed_observation){0};
     if (observer->socket < 0 || observer->owner_pidfd < 0 || observer->worker_pidfd < 0 ||
         !observer->worker.pid || !observer->worker.ticks || observer->operation_deadline_ms <= 0 ||
-        observer->force_deadline_ms < observer->operation_deadline_ms) { errno = EINVAL; return -1; }
+        observer->force_deadline_ms < observer->operation_deadline_ms ||
+        (observer->cancel_enabled && observer->cancel_fd < 0)) { errno = EINVAL; return -1; }
     int64_t deadline = observer->force_deadline_ms;
     for (;;) {
         int64_t now = now_ms();
@@ -62,13 +63,14 @@ int aurora_managed_observe(const struct aurora_managed_observer *observer,
         if (until > deadline) until = deadline;
         struct pollfd events[] = {{.fd = result->receiver.state ? -1 : observer->socket, .events = POLLIN},
             {.fd = result->stop ? -1 : observer->owner_pidfd, .events = POLLIN},
-            {.fd = observer->worker_pidfd, .events = POLLIN}};
+            {.fd = observer->worker_pidfd, .events = POLLIN},
+            {.fd = result->stop || !observer->cancel_enabled ? -1 : observer->cancel_fd, .events = POLLIN}};
         int64_t remaining = until - now;
-        int ready = poll(events, 3, (int) (remaining > INT_MAX ? INT_MAX : remaining));
+        int ready = poll(events, 4, (int) (remaining > INT_MAX ? INT_MAX : remaining));
         if (ready < 0 && errno == EINTR) continue;
         if (ready < 0) return -1;
         if (!ready) continue;
-        if ((events[0].revents | events[1].revents | events[2].revents) & POLLNVAL) { errno = EBADF; return -1; }
+        if ((events[0].revents | events[1].revents | events[2].revents | events[3].revents) & POLLNVAL) { errno = EBADF; return -1; }
         if (events[0].revents && drain(observer, result, &deadline)) return -1;
         if (events[2].revents & POLLIN) {
             /* A ready pidfd may race the final bytes/EOF. Drain once even if
@@ -79,5 +81,9 @@ int aurora_managed_observe(const struct aurora_managed_observer *observer,
         if (events[2].revents) { errno = EIO; return -1; }
         if ((events[1].revents & POLLIN) && request_stop(observer, result, AURORA_STOP_OWNER, &deadline)) return -1;
         if (events[1].revents && !(events[1].revents & POLLIN)) { errno = EIO; return -1; }
+        /* Owner cancellation and owner death share the stored owner-stop
+         * policy; neither is an injection cleanup fact. */
+        if ((events[3].revents & POLLIN) && request_stop(observer, result, AURORA_STOP_OWNER, &deadline)) return -1;
+        if (events[3].revents && !(events[3].revents & POLLIN)) { errno = EIO; return -1; }
     }
 }

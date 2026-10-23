@@ -34,7 +34,7 @@ static int observe(const struct managed_guard_spec *spec, int owner, struct runt
     struct aurora_managed_observer observer = {.socket = runtime->launch.control, .owner_pidfd = owner,
         .worker_pidfd = runtime->launch.pidfd, .worker = {.pid = (uint32_t)runtime->launch.pid,
             .ticks = runtime->launch.admission.worker_ticks}, .operation_deadline_ms = runtime->operation,
-        .force_deadline_ms = runtime->force};
+        .force_deadline_ms = runtime->force, .cancel_fd = spec->cancel_fd, .cancel_enabled = spec->cancel_fd >= 0};
     ticket_bytes(spec->key, observer.ticket);
     return aurora_managed_observe(&observer, &runtime->observation);
 }
@@ -85,7 +85,8 @@ int managed_guard_execute(const struct managed_guard_spec *spec, int owner_pidfd
         .total = spec->started_ms + spec->observe_ms + 20000};
     if (managed_scope_create(spec->journal, spec->key, &runtime.scope)) return 126; // Coordinator recovers the creation plan.
     struct managed_launch_input input = {.scope = &runtime.scope, .journal = spec->journal, .key = spec->key,
-        .argv = spec->argv, .owner_pidfd = owner_pidfd, .admission_deadline_ms = runtime.operation};
+        .argv = spec->argv, .owner_pidfd = owner_pidfd, .admission_deadline_ms = runtime.operation,
+        .cancel_fd = spec->cancel_fd, .cancel_enabled = spec->cancel_fd >= 0};
     long long quick = task_scope_now() + 5000;
     if (input.admission_deadline_ms > quick) input.admission_deadline_ms = quick;
     if (task_scope_now() >= runtime.operation) {
@@ -96,6 +97,8 @@ int managed_guard_execute(const struct managed_guard_spec *spec, int owner_pidfd
     if (runtime.launch.gate >= 0) { close(runtime.launch.gate); runtime.launch.gate = -1; }
     if (observe(spec, owner_pidfd, &runtime) && !runtime.error) runtime.error = errno;
     if (!runtime.reason) runtime.reason = runtime.observation.stop;
+    long long cleanup = task_scope_now() + 5000;
+    if (cleanup < runtime.total) runtime.total = cleanup;
     int cleaned = teardown(spec, &runtime), saved = errno;
     managed_launch_close(&runtime.launch); errno = saved;
     if (cleaned) return 126;

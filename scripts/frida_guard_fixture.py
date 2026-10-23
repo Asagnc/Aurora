@@ -40,7 +40,8 @@ def launch_guard(worker, guard, target, selected, configuration):
         return b"AFD1" + bytes([role, count, 0, 0]) + nonce + digest
     name = "aurora-fd-" + uuid.uuid4().hex
     base = [str(guard), "run", "--state-dir", str(state), "--run-id", ticket["runId"], "--ticket-sha", digest.hex()]
-    command = [*base, "--observe-ms", str(options.duration), "--", str(worker), "attach-channel", name, nonce.hex(), encoded]
+    cancellation = ["--cooperative-cancel"] if options.cooperative else []
+    command = [*base, "--observe-ms", str(options.duration), *cancellation, "--", str(worker), "attach-channel", name, nonce.hex(), encoded]
     descriptors, child = [], None
     try:
         descriptors.append(snapshot(selected))

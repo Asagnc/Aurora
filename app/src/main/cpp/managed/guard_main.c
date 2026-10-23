@@ -1,6 +1,7 @@
 /* Development native guard: not APK-packaged until full worker qualification. */
 #define _GNU_SOURCE
 #include "guard.h"
+#include "cancel.h"
 #include "reap.h"
 #include "../linux/scope_state.h"
 #include <errno.h>
@@ -15,7 +16,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-struct options { const char *state; struct managed_key key; unsigned observe_ms; int recover; char **worker; };
+struct options { const char *state; struct managed_key key; unsigned observe_ms; int recover, cooperative; char **worker; };
 
 static int parse(int argc, char **argv, struct options *options) {
     if (argc < 8 || (strcmp(argv[1], "run") && strcmp(argv[1], "recover")) || strcmp(argv[2], "--state-dir") ||
@@ -23,12 +24,14 @@ static int parse(int argc, char **argv, struct options *options) {
     *options = (struct options){.state = argv[3], .recover = !strcmp(argv[1], "recover")};
     if (managed_key_init(&options->key, argv[5], argv[7])) return -1;
     if (options->recover) return argc == 8 ? 0 : -1;
-    if (argc != 16 || strcmp(argv[8], "--observe-ms") || strcmp(argv[10], "--") ||
+    options->cooperative = argc == 17 && !strcmp(argv[10], "--cooperative-cancel");
+    int separator = 10 + options->cooperative;
+    if (argc != 16 + options->cooperative || strcmp(argv[8], "--observe-ms") || strcmp(argv[separator], "--") ||
         !*argv[9] || strspn(argv[9], "0123456789") != strlen(argv[9])) return -1;
     errno = 0; char *end;
     unsigned long observe = strtoul(argv[9], &end, 10);
     if (errno || *end || !observe || observe > 250000) return -1;
-    options->observe_ms = (unsigned)observe; options->worker = argv + 11;
+    options->observe_ms = (unsigned)observe; options->worker = argv + separator + 1;
     return 0;
 }
 
@@ -37,17 +40,24 @@ static int failure(const char *operation) {
     return 126;
 }
 
-static int wait_guard(pid_t guard, int64_t deadline, int *status) {
+static int wait_guard(pid_t guard, int64_t deadline, int cancel_fd, int *status) {
     int descriptor = (int)syscall(SYS_pidfd_open, guard, 0);
     if (descriptor < 0) return -1;
-    int forced = 0;
+    int forced = 0, stopping = 0;
     for (;;) {
         long long now = task_scope_now(), remaining = deadline - now;
         if (now < 0) { close(descriptor); return -1; }
-        struct pollfd event = {.fd = descriptor, .events = POLLIN};
-        int ready = poll(&event, 1, remaining <= 0 ? 0 : (int)(remaining > INT_MAX ? INT_MAX : remaining));
+        struct pollfd event[] = {{.fd = descriptor, .events = POLLIN},
+            {.fd = stopping ? -1 : cancel_fd, .events = POLLIN}};
+        int ready = poll(event, 2, remaining <= 0 ? 0 : (int)(remaining > INT_MAX ? INT_MAX : remaining));
         if (ready < 0 && errno == EINTR) continue;
-        if (ready > 0 && (event.revents & POLLIN)) break;
+        if (ready > 0 && (event[0].revents & POLLIN)) break;
+        if (ready > 0 && !event[0].revents && (event[1].revents & POLLIN)) {
+            stopping = 1;
+            long long cancellation = task_scope_now() + 20000;
+            if (cancellation < deadline) deadline = cancellation;
+            continue;
+        }
         if (ready || forced) { int saved = ready < 0 ? errno : ETIMEDOUT; close(descriptor); errno = saved; return -1; }
         if (syscall(SYS_pidfd_send_signal, descriptor, SIGKILL, NULL, 0) < 0 && errno != ESRCH) {
             int saved = errno; close(descriptor); errno = saved; return -1;
@@ -67,6 +77,7 @@ static int coordinate(const struct managed_guard_spec *spec) {
     pid_t guard = fork();
     if (guard < 0) { close(owner); return failure("guard_fork"); }
     if (!guard) {
+        managed_cancel_child();
         int result = managed_guard_execute(spec, owner);
         struct managed_journal inherited = *spec->journal;
         close(owner); managed_journal_close(&inherited);
@@ -75,8 +86,10 @@ static int coordinate(const struct managed_guard_spec *spec) {
     close(owner);
     int64_t deadline = spec->started_ms + spec->observe_ms + 20000;
     int status;
-    if (wait_guard(guard, deadline, &status)) return failure("guard_wait");
+    if (wait_guard(guard, deadline, spec->cancel_fd, &status)) return failure("guard_wait");
     int exit_code = WIFEXITED(status) ? WEXITSTATUS(status) : 128 + WTERMSIG(status);
+    long long recovery = task_scope_now() + 5000;
+    if (recovery < deadline) deadline = recovery;
     if (managed_guard_recover(spec->journal, spec->key, deadline)) {
         int saved = errno, ignored = -1;
         /* Corrupt metadata must not keep this coordinator's own adopted
@@ -96,6 +109,13 @@ int main(int argc, char **argv) {
     sigset_t signals; sigemptyset(&signals);
     if (sigprocmask(SIG_SETMASK, &signals, NULL)) return failure("signal_mask");
     signal(SIGCHLD, SIG_DFL); signal(SIGTERM, SIG_DFL); signal(SIGINT, SIG_DFL); signal(SIGPIPE, SIG_IGN);
+    pid_t parent = getppid();
+    int cancellation = options.cooperative ? managed_cancel_open() : -1;
+    if (options.cooperative && cancellation < 0) return failure("cancel_channel");
+    if (options.cooperative && prctl(PR_SET_PDEATHSIG, SIGTERM)) return failure("parent_death_signal");
+    if (options.cooperative && (parent <= 1 || getppid() != parent)) {
+        errno = ECANCELED; return failure("parent_identity");
+    }
     if (prctl(PR_SET_CHILD_SUBREAPER, 1)) return failure("subreaper");
     int64_t started = task_scope_now();
     if (started < 0) return failure("clock");
@@ -113,9 +133,10 @@ int main(int argc, char **argv) {
     } else if (managed_journal_begin(&journal, &options.key)) result = failure("intent");
     else {
         struct managed_guard_spec spec = {.journal = &journal, .key = &options.key, .argv = options.worker,
-            .observe_ms = options.observe_ms, .started_ms = started};
+            .observe_ms = options.observe_ms, .started_ms = started, .cancel_fd = cancellation};
         result = coordinate(&spec);
     }
     managed_journal_close(&journal);
+    if (cancellation >= 0) managed_cancel_close(cancellation);
     return result;
 }

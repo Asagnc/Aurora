@@ -23,7 +23,7 @@ class RootManagedNativeState private constructor(
     private data class Stopped(val phase: Int, val worker: Int, val domain: Int, val exitCode: Int, val reason: Int, val error: Int)
 
     fun neverDispatchedProof(): RootManagedRetirementProof? =
-        if (phase == 8 && workerState == 2 && domainState == 2 && worker == null && workerFlags == null)
+        if (phase in 8..9 && workerState == 2 && domainState in 1..2 && worker == null && workerFlags == null)
             RootManagedRetirementProof.fromNeverDispatched(ticket) else null
 
     /** Only a trusted Root observer may supply a boot change, exact replacement identity or confirmed ESRCH (null). */

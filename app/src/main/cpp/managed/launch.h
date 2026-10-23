@@ -11,6 +11,7 @@ struct managed_launch_input {
     char *const *argv;
     int owner_pidfd;
     int64_t admission_deadline_ms;
+    int cancel_fd, cancel_enabled;
 };
 struct managed_launch {
     pid_t pid;

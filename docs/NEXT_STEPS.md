@@ -58,6 +58,8 @@
 
 ## 当前证据
 
+- 82473bd完整CI40018887965三job成功，Root记录/target-exit代码及Android构建/lint通过；见ci-40018887965-passed.txt。随后新增可选cooperative-cancel开发模式（TERM/INT先通知guard、coordinator等收尾）、父线程死亡通知与有界收尾。12放行/18 guard/25真实Frida用例待新CI；NDK ARM64 guard 44,872字节/16KiB链接审计通过，Core249项本地239通过/10跳过。仍未打包或接Binder/Agent。
+
 - c58f3dd完整CI40017402355三job成功，含派发前退役、上传残留恢复、Android基础Files API门禁、24真实Frida主机用例及Android构建/lint；见ci-40017402355-passed.txt。后续Root记录读取/target-gone待新CI；没有手机执行。
 
 - 已补Root锚定目录FD的小记录读取器及target-gone独立恢复证明：仅确认worker/domain资源退出后，原目标boot变更、PID确实不存在或startTicks变更可释放精确意图，不声称已显式unload。Root观察器仅查询，EPERM/隐藏proc/坏记录不算退出。核心249项：239通过/10跳过，Debug/Release/testAPK/lint本地通过；Root读取/观察及新增账本Android用例仅编译。尚未接Binder/Agent，不算手机验收。见local-managed-target-recovery-passed.txt。

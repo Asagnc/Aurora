@@ -32,6 +32,7 @@ _Noreturn void managed_launch_child(const struct managed_launch_input *input, co
     if (syscall(SYS_close_range, 3u, UINT_MAX, CLOSE_RANGE_CLOEXEC)) fail_child(control, input->key);
     struct managed_journal inherited = *input->journal;
     managed_journal_close(&inherited); close(input->owner_pidfd);
+    if (input->cancel_enabled) close(input->cancel_fd);
     if (task_scope_enter(input->scope)) fail_child(control, input->key);
     struct task_scope admitted = *input->scope;
     task_scope_close(&admitted);
