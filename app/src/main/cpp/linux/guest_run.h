@@ -4,6 +4,7 @@ struct guest_run {
     const char *generation, *token, *rootfs, *workspace;
     char **argv;
     int timeout_ms, terminal;
+    const char *tools;
 };
 int guest_run_lock(int state);
 int guest_run_parse(int argc, char **argv, struct guest_run *run);

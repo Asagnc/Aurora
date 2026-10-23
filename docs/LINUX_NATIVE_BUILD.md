@@ -1,3 +1,5 @@
+2026-10-23：Root执行能力协议3新增可选--tools-dir，在私有guest /opt绑定只读共享工具；source/target均固定描述符，原生guest_run格式与mount_probe适配已包含在对应源码包。普通任务不传工具目录。实际资格见STATIC_REVERSE_IMPLEMENTATION.md。
+
 # Aurora packaged Linux tools
 
 The corresponding-source ZIP also contains the separately built packet tools;

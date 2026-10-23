@@ -1,0 +1,7 @@
+2026-10-23 Windows local
+{'tests': 227, 'skipped': 9, 'failures': 0, 'errors': 0}
+Production parameter, failure projection and startup proof cases5 new JUnit cases.
+NDK ARM64 tool helper compiled, Debug + Release R8 + Android test APK + lint PASS
+Log: outputs/static-reverse-runtime-complete-build.txt
+Linux native new3 cases syntax checked ONLY, execution pending CI.
+No phone or ARM64 JVM execution, no paid providers.

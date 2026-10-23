@@ -41,13 +41,19 @@ static int identifier(const char *text, int uuid) {
 int guest_run_parse(int argc, char **argv, struct guest_run *run) {
     if (argc < 16 || strcmp(argv[4], "--generation") || strcmp(argv[6], "--run-id") ||
         strcmp(argv[8], "--rootfs") || strcmp(argv[10], "--workspace") ||
-        strcmp(argv[12], "--timeout-ms") || strcmp(argv[14], "--") ||
+        strcmp(argv[12], "--timeout-ms") ||
         !identifier(argv[5], 0) || !identifier(argv[7], 1) ||
-        argv[9][0] != '/' || argv[11][0] != '/' || argv[15][0] != '/') return -1;
+        argv[9][0] != '/' || argv[11][0] != '/') return -1;
+    int next = 14; const char *tools = NULL;
+    if (!strcmp(argv[next], "--tools-dir")) {
+        if (argc < 18 || argv[next + 1][0] != '/') return -1;
+        tools = argv[next + 1]; next += 2;
+    }
+    if (argc <= next + 1 || strcmp(argv[next], "--") || argv[next + 1][0] != '/') return -1;
     char *end;
     long timeout = strtol(argv[13], &end, 10);
     if (!*argv[13] || *end || timeout < 1 || timeout > 300000) return -1;
-    *run = (struct guest_run){argv[5], argv[7], argv[9], argv[11], argv + 15, (int)timeout, !strcmp(argv[1], "--run-pty")};
+    *run = (struct guest_run){argv[5], argv[7], argv[9], argv[11], argv + next + 1, (int)timeout, !strcmp(argv[1], "--run-pty"), tools};
     return 0;
 }
 

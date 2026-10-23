@@ -12,6 +12,8 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.*
 
 /** Durable execution intent precedes dispatch; only exact stopped proof releases its lease. */
+internal data class LinuxToolRun(val argv: List<String>, val bundle: String, val timeoutMs: Long, val runId: String)
+
 internal class LinuxRunManager(private val app: AuroraApplication, private val environments: LinuxEnvironmentManager) {
     private val records = LinuxRunRegistry(app.conversations)
     private data class Dispatch(val owner: String, val argv: List<String>, val timeoutMs: Long,
@@ -20,9 +22,8 @@ internal class LinuxRunManager(private val app: AuroraApplication, private val e
         runId: String = UUID.randomUUID().toString(), generation: String? = null): JsonObject =
         dispatch(Dispatch(owner, argv.toList(), timeoutMs, runId, generation))
 
-    internal suspend fun executeTools(owner: String, argv: List<String>, bundle: String,
-        timeoutMs: Long = 60_000, runId: String = UUID.randomUUID().toString()): JsonObject =
-        dispatch(Dispatch(owner, argv.toList(), timeoutMs, runId, null, bundle))
+    internal suspend fun executeTools(owner: String, request: LinuxToolRun, generation: String? = null): JsonObject =
+        dispatch(Dispatch(owner, request.argv.toList(), request.timeoutMs, request.runId, generation, request.bundle))
 
     private suspend fun dispatch(request: Dispatch): JsonObject {
         val connection = requireNotNull(app.root.linuxExecution) { "Reconnect a current Root service for Linux execution" }

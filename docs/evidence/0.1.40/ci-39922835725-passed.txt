@@ -1,0 +1,4 @@
+Prior durable tool bundle refs ccbc85d812656392f8d637702d000926b8bb0405
+Actions39922835725 completed SUCCESS verified2026-10-23.
+https://github.com/Asagnc/Aurora/actions/runs/39922835725
+Does not verify later native tool mounts or Android JVM.

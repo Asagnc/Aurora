@@ -93,6 +93,55 @@ class MountTest(base.ScopeTest):
                 '--run-id', '12345678-1234-1234-1234-123456789abc', '--rootfs', str(root),
                 '--workspace', str(work), '--timeout-ms', str(timeout), '--', '/bin/sh', '-c', command]
 
+    def tool_arguments(self, root, work, tools, command):
+        args = self.run_arguments(root, work, command)
+        at = args.index('--')
+        args[at:at] = ['--tools-dir', str(tools)]
+        return args
+
+    def test_tools_are_readonly_and_host_source_is_unchanged(self):
+        root, work = self.shell_fixture()
+        (root / 'opt').mkdir()
+        tools = work / 'tools-source'
+        tools.mkdir()
+        (tools / 'tool.txt').write_text('shared\n')
+        command = ('read value < /opt/tool.txt; test "$value" = shared || exit 95; '
+                   'if echo bad > /opt/new 2>/dev/null; then exit 96; fi; printf qualified')
+        result = subprocess.run(self.tool_arguments(root, work, tools, command), capture_output=True, timeout=8)
+        self.assertEqual(0, result.returncode, result.stderr.decode())
+        self.assertEqual(b'qualified', result.stdout)
+        self.assertEqual('shared\n', (tools / 'tool.txt').read_text())
+        self.assertFalse((tools / 'new').exists())
+        self.assertEqual([], list((root / 'opt').iterdir()))
+        self.assert_host_unchanged(root, work)
+
+    def test_tools_mount_rejects_symlink_source_or_guest_target(self):
+        for linked_source in (True, False):
+            with self.subTest(linked_source=linked_source):
+                root, work = self.shell_fixture()
+                tools = work / 'tools-source'
+                tools.mkdir()
+                if linked_source:
+                    (root / 'opt').mkdir()
+                    selected = work / 'tools-link'
+                    selected.symlink_to(tools)
+                else:
+                    (root / 'opt').symlink_to('tmp')
+                    selected = tools
+                result = subprocess.run(self.tool_arguments(root, work, selected, 'printf must-not-run'),
+                                        capture_output=True, timeout=8)
+                self.assertNotEqual(0, result.returncode)
+                self.assertNotIn(b'must-not-run', result.stdout)
+                self.assert_host_unchanged(root, work)
+
+    def test_tools_mount_parser_rejects_relative_source(self):
+        root, work = self.shell_fixture()
+        args = self.tool_arguments(root, work, 'relative-source', 'printf must-not-run')
+        result = subprocess.run(args, capture_output=True, timeout=8)
+        self.assertNotEqual(0, result.returncode)
+        self.assertNotIn(b'must-not-run', result.stdout)
+        self.assert_host_unchanged(root, work)
+
     def test_guest_command_streams_status_and_durable_completion(self):
         root, work = self.shell_fixture()
         with tempfile.TemporaryFile() as host_file:

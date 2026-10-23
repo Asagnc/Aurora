@@ -34,9 +34,9 @@ class RootController(private val context: Context) {
     @Volatile private var endpoint: Endpoint? = null
     internal val packetClient get() = endpoint?.takeIf { it.packet == 1 }?.let { RootPacketClient(it.remote, context) }
     internal val metadataClient get() = endpoint?.takeIf { it.metadata == 1 }?.let { RootMetadataClient(it.remote, context) }
-    internal val linuxTerminalClient get() = endpoint?.takeIf { it.terminal == 1 && it.run == 2 }?.let { RootTerminalClient(it.remote) }
+    internal val linuxTerminalClient get() = endpoint?.takeIf { it.terminal == 1 && it.run == 3 }?.let { RootTerminalClient(it.remote) }
     internal val linuxFileClient get() = endpoint?.takeIf { it.file == 1 }?.let { RootLinuxFileClient(it.remote, context) }
-    internal val linuxRunClient get() = endpoint?.takeIf { it.run == 2 }?.let { RootLinuxRunClient(it.remote, context) }
+    internal val linuxRunClient get() = endpoint?.takeIf { it.run == 3 }?.let { RootLinuxRunClient(it.remote, context) }
     internal val commandClient get() = endpoint?.let { RootCommandClient(it.remote, context) }
     internal val terminalClient get() = endpoint?.let { RootTerminalClient(it.remote) }
     internal val linuxClient get() = endpoint?.let { current -> current.identity?.let {
@@ -44,7 +44,7 @@ class RootController(private val context: Context) {
     } }
     internal val linuxAvailable get() = endpoint?.identity != null
     internal val rootImagesAvailable get() = endpoint?.let { it.identity != null && it.prepare >= 2 } == true
-    internal val linuxExecution get() = endpoint?.takeIf { it.run == 2 }?.let { current ->
+    internal val linuxExecution get() = endpoint?.takeIf { it.run == 3 }?.let { current ->
         current.identity?.let { RootLinuxExecution(it, RootLinuxRunClient(current.remote, context),
             if (current.terminal == 1) RootTerminalClient(current.remote) else null) }
     }

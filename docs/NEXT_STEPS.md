@@ -26,21 +26,23 @@
 
 - 传输诊断新增精确白名单错误码，网页异常原文不入账本；修复 Agent 上传 accept=*/*，新增生产脚本通配符/错误形状验证。下载展示名/MIME已补齐，严格握手、规范路径产物入口和名称/类型提示，不改固定磁盘名；新增1项Android仅编译。真实WebView/SAF资格仍待最终手机验收。
 
-- 静态逆向方案已批准；来源/准备与共享安装管理已实现；Agent可安装/更新/删除/清理，持久引用与删除屏障已连接，尚未启用分析执行，runtimeReady=false。
+- 静态逆向方案已批准；来源/准备与共享安装管理已实现；Agent可安装/更新/删除/清理，持久引用与删除屏障已连接，原生只读挂载与reverse_analyze已接入；runtimeReady必须经过当前Root身份/环境代/bundle的真实CLI启动资格，手机尚未执行。
 
 ## 当前证据
+
+- 持久任务绑定ccbc85d完整CI39922835725已通过；新原生挂载3项须看本轮Linux CI，不能提前标成功。
 
 - 静态来源/准备层d16f49d完整CI39920712690已通过；本轮共享管理改动CI推送后另查，Android安装/运行仍未测试。
 
 - 9517ea9完整CI39909014575成功，包含核心/签名镜像/POSIX/PTY/Root原生主机/PRoot内核与生命周期/抓包/Android Debug、Release R8、testAPK、lint及ELF/源码检查。证据evidence/0.1.37/ci-39909014575-passed.txt。
-- 当前本地核心222项：213通过、9 POSIX跳过。异步JS14、传输JS18场景分别属于各自一个JUnit测试，不重复加到222总数；下载恢复原5项与本轮新增1项元数据Android测试仍仅编译。
+- 当前本地核心227项：218通过、9 POSIX跳过。异步JS14、传输JS18场景分别属于各自一个JUnit测试，不重复加到227总数；下载恢复原5项与本轮新增1项元数据Android测试仍仅编译。
 - 随后仅补测试任务对mjs文件的输入追踪，以及Android跨域导航夹具，core/testAPK/lint本地再次通过；2214641完整CI39910230241也已成功，见evidence/0.1.37/ci-39910230241-passed.txt。0.1.38实现40d96bc完整CI39913505934已通过，见evidence/0.1.38/ci-39913505934-passed.txt；0.1.39实现d403a4f完整CI39915958302也已通过，见evidence/0.1.39/ci-39915958302-passed.txt；0.1.40下载恢复b75113f完整CI39917911407已通过；后续传输错误码849561c的CI39918760978被新推送取代而取消，4c60026的CI39918856612同样被后续推送取代而取消；跟踪最新main运行，不能把cancelled记成通过。
 - Root抓包主机外层12项、内层私有netns10项成功；新Root真机7项与BrowserAsyncTest六项仅编译，没有执行手机。
 
 ## 尚未实现，建议继续的顺序
 
 1. **浏览器文件传输**：Agent与用户页面的上传/下载、会话归属、可观察进度/产物、取消/删除协调。先比较onShowFileChooser/精确URI授权与字节传输，核实程序点击文件输入的用户手势要求；下载需比较现有OkHttp、WebView网络上下文与系统下载器，正确处理各会话Cookie、HTTP/HTTPS/SOCKS代理、重定向和POST/blob。不能把GET重发或直连降级当所有下载都支持。新的通道/持久化设计先确认。组合方向已获确认；0.1.38已实现Agent二进制上传/页面下载，详见 BROWSER_TRANSFER_IMPLEMENTATION.md。原生chooser与精确URI快照、旧上传快照有界回收已接入0.1.39。0.1.40下载中断恢复已接入。错误诊断、文件展示/MIME已接入，接续实际WebView资格；勿重复确认同一方案或把Agent路径当全部浏览器传输。
-2. **逆向/CTF工具包**：静态运行方案已研究并写入STATIC_REVERSE_PROPOSAL.md，JADX1.5.6+Apktool3.0.3、Temurin27+35共享Root chroot按需CLI，用户已确认新增工具安装/只读挂载与租约布局。编译期目录、校验与暂存准备层已实现，官方包实际字节验证通过；共享安装发布/移除/清理及Agent管理接口已接入；持久任务bundle引用、精确退出证明和删除屏障已接入；Root只读挂载/能力协商/分析执行仍未接入，Root明确拒绝非空工具票据；runtimeReady=false。详见STATIC_REVERSE_IMPLEMENTATION.md。JADX、Apktool、原生库分析、Frida等实际ARM64运行器、版本化共享依赖与Agent工具，不用普通SKILL.md假装这些二进制已安装可用。
+2. **逆向/CTF工具包**：静态运行方案已研究并写入STATIC_REVERSE_PROPOSAL.md，JADX1.5.6+Apktool3.0.3、Temurin27+35共享Root chroot按需CLI，用户已确认新增工具安装/只读挂载与租约布局。编译期目录、校验与暂存准备层已实现，官方包实际字节验证通过；共享安装发布/移除/清理及Agent管理接口已接入；持久任务bundle引用、精确退出证明和删除屏障已接入；Root只读挂载/能力协商3/固定CLI资格/Agent分析执行现已接入；最终手机上实际JRE27/CLI/自有APK资格与故障验收仍待进行。详见STATIC_REVERSE_IMPLEMENTATION.md。JADX、Apktool、原生库分析、Frida等实际ARM64运行器、版本化共享依赖与Agent工具，不用普通SKILL.md假装这些二进制已安装可用。
 3. **手机APK构建链**：实际ARM64可用JDK/aapt2/D8/R8/签名/安装链，含产物和失败诊断；Linux基础环境存在不等于已能编译APK。
 4. **网络进阶**：发包、HTTP修改/重放、TLS解密、UID归属和长时轮转。抓包不代表已提供这些功能；按需独立运行，不能给每个模型请求增加重型代理。
 5. **模型与缓存**：刷新当前稳定在售型号/端点能力、网关能力探测及各家缓存/期限策略。真实账号路由/命中/费用/延迟验证留用户允许真实连接之后；现有序列化/原生历史/前缀策略不能称全部模型最优。

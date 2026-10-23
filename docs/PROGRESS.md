@@ -1,3 +1,19 @@
+## 2026-10-23 静态逆向原生挂载、资格与Agent执行
+
+已接入任务专属工具目录到guest /opt的只读绑定，复用现有open_tree/mount_setattr/move_mount与私有挂载域，不改原Linux基础镜像。源与guest目标均固定描述符且不跟随链接；无工具参数的普通Linux任务保持原路径。工具票据仍在派发前绑定持久引用，只有原任务退出证明才释放，删除仍受保护。
+
+Root linuxRunProtocol从2升级3；新App拒绝旧Root执行服务，最终更新后要断开/重连Root，FolkPatch已有授权不重置。prepare按票据bundle选固定共享目录并校验标记，不能由Agent传任意宿主挂载路径。原生--tools-dir只接受绝对路径，旧命令格式仍支持。SQLite schema仍7。
+
+shared_toolchain新增probe：使用当前Root身份、Linux代与bundle执行固定Java/JADX/Apktool --version；协议、runId、环境、bundle、停止/退出状态及版本文本都匹配才缓存该身份的启动资格。App重启/Root身份或环境变化后重新探测；资格不持久伪装通用兼容。runtimeReady现在由真实探测与安装状态决定，失败含步骤与原证明，不靠“文件存在”置true。启动资格不是任意APK分析质量证明。
+
+Agent新增reverse_analyze，JADX java和Apktool manifest/resources/smali，字面argv、无shell/--force，产物在会话Linux项目reverse/UUID，日志复用runs/UUID。Agent须先将输入置于Linux项目；不把Android宿主绝对路径悄悄挂入guest。默认堆768MiB/4线程可调，仅为初始资格配置，不代表总RSS或安卓最优。厂商framework缓存按会话HOME和工具bundle隔离。退出码/超时/部分结果保留，失败不称完整成功，不自动重放。工具定义固定，不随Root连接临时增删来扰动请求前缀。
+
+复用上游JADX启动器的native-access与ZIP额外字段兼容参数，保留Aurora显式堆/线程预算；Windows Java17自有class由JDK25运行JADX实际反编译成功，采用上游参数后JNI警告消失。不是ARM64 JRE27执行证据。系统可信Context filesDir先toRealPath，再检查受管理子路径，修复/data/user/0别名导致合法安装误拒绝。
+
+新增5核心测试（3个参数/失败结果，2个资格证明）与Linux原生主机3项挂载/链接/参数测试。当前227核心：218通过、9 POSIX跳过；Debug、Release R8、Android测试APK、lint本地通过，NDK ARM64编译通过。主机原生3项本机Windows仅语法检查，实际运行待Linux CI；手机未执行，不把CI夹具当实际JVM/Android结论。对应源码包重新生成，未新增依赖/守护进程或付费API调用。
+
+后续：检查本次完整CI，最终手机执行安装/probe/自有APK分析、取消/超时/并发删除/撤权/重启与性能；逆向静态链已实现而未做Android运行验收，Frida/原生分析/手机APK构建链仍属后续范围。
+
 ## 2026-10-23 共享工具持久任务引用与删除屏障
 
 复用linux_runs现有ticket JSON，增加可选toolBundle SHA256，与原Linux环境租约在同一事务登记；旧票据默认null，schema仍7，无新表/框架。退出证明必须同时匹配原runId/generation与toolBundle；缺失或不同bundle不释放记录。恢复仍由原Root停止证明驱动，不重放命令。

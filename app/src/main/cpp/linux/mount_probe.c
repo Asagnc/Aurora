@@ -96,7 +96,20 @@ static int check_guest(void) {
     return 0;
 }
 
-int scope_chroot_enter(const char *rootfs, const char *workspace) {
+static int bind_tools(int guest, const char *tools) {
+    if (!tools) return 0;
+    int source = scope_open_directory(tools);
+    int target = child_directory(guest, "opt");
+    int tree = source < 0 || target < 0 ? -1 : attach(source, target,
+        MOUNT_ATTR_RDONLY | MOUNT_ATTR_NOSUID | MOUNT_ATTR_NODEV, 0);
+    int saved = errno;
+    if (source >= 0) close(source);
+    if (target >= 0) close(target);
+    if (tree >= 0) close(tree);
+    errno = saved; return tree < 0 ? -1 : 0;
+}
+
+int scope_chroot_enter(const char *rootfs, const char *workspace, const char *tools) {
     int source = scope_open_directory(rootfs);
     int work = scope_open_directory(workspace);
     int target = work < 0 ? -1 : child_directory(work, "view");
@@ -107,7 +120,7 @@ int scope_chroot_enter(const char *rootfs, const char *workspace) {
     if (target >= 0) close(target);
     if (guest < 0) { if (work >= 0) close(work); errno = saved; return -1; }
     int prepared = bind_child(work, "home", guest, "root") == 0 && bind_child(work, "tmp", guest, "tmp") == 0 &&
-        bind_child(work, "project", guest, "mnt") == 0 &&
+        bind_child(work, "project", guest, "mnt") == 0 && bind_tools(guest, tools) == 0 &&
         bind_host(guest, "proc", MOUNT_ATTR_RDONLY | MOUNT_ATTR_NOSUID | MOUNT_ATTR_NODEV | MOUNT_ATTR_NOEXEC, 0) == 0 &&
         bind_host(guest, "dev", MOUNT_ATTR_RDONLY | MOUNT_ATTR_NOSUID, 1) == 0;
     saved = errno; close(work);
@@ -120,7 +133,7 @@ int scope_chroot_enter(const char *rootfs, const char *workspace) {
 }
 
 int scope_chroot_fixture(const char *rootfs, const char *workspace) {
-    if (scope_chroot_enter(rootfs, workspace) < 0) return -1;
+    if (scope_chroot_enter(rootfs, workspace, NULL) < 0) return -1;
     return check_guest();
 }
 

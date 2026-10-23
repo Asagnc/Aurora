@@ -123,7 +123,7 @@ class AuroraRootService : RootService() {
                 putInt("commandProtocol", 2)
                 putInt("packetCaptureProtocol", 1)
                 putInt("terminalProtocol", 1)
-                putInt("linuxRunProtocol", 2)
+                putInt("linuxRunProtocol", 3)
                 putInt("linuxFileProtocol", 1)
                 putInt("linuxTerminalProtocol", 1)
                 putInt("linuxMetadataProtocol", 1)

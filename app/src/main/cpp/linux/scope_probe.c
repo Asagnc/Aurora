@@ -54,7 +54,7 @@ static int workload(const struct task_scope *scope, int report, int hold_ms, con
         return failure("private_mount_namespace");
     if (before.st_ino == after.st_ino) { errno = EINVAL; return failure("unchanged_mount_namespace"); }
     if (fixture->run.argv) {
-        if (scope_chroot_enter(fixture->run.rootfs, fixture->run.workspace) < 0) return failure("guest_mount");
+        if (scope_chroot_enter(fixture->run.rootfs, fixture->run.workspace, fixture->run.tools) < 0) return failure("guest_mount");
         if (write(report, "r", 1) != 1) return failure("guest_ready");
         close(report);
         return guest_run_exec(&fixture->run);

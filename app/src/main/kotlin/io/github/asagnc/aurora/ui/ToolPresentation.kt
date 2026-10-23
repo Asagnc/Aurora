@@ -12,6 +12,7 @@ internal fun presentTool(event: ToolRun): ToolPresentation {
     val failed = summary?.error != null || (summary?.exitCode ?: 0L) != 0L
     val uncertain = event.state == "uncertain" || summary?.uncertain == true
     val title = when (event.tool) {
+        "reverse_analyze" -> "分析 APK / DEX"
         "shared_toolchain" -> "管理共享工具"
         "images_publish" -> "发布图片"
         "command_execute" -> "执行原生命令"

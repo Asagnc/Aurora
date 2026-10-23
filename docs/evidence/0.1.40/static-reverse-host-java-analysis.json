@@ -1,0 +1,13 @@
+{
+  "platform": "Windows x86_64 JDK25; not Android ARM64/JRE27",
+  "exitCode": 0,
+  "stdout": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 1 (0%)\n                                                             \nINFO  - done\n",
+  "stderr": "WARNING: A restricted method in java.lang.System has been called\nWARNING: java.lang.System::load has been called by coursier.jniutils.LoadWindowsLibrary in an unnamed module (file:/C:/Users/Admin/Documents/Codex/2026-10-12/e/outputs/static-reverse-source/jadx-host-qualification/jadx-1.5.6-all.jar)\nWARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module\nWARNING: Restricted methods will be blocked in a future release unless native access is enabled\n\n",
+  "javaOutput": 1,
+  "containsExpectedString": true,
+  "officialWrapperFlagsRerun": {
+    "exitCode": 0,
+    "stdout": "INFO  - loading ...\nINFO  - processing ...\nINFO  - progress: 0 of 1 (0%)\n                                                             \nINFO  - done\n",
+    "stderr": ""
+  }
+}

@@ -33,6 +33,14 @@ internal class RootLinuxRunFiles(private val context: Context) {
         require(OsConstants.S_ISDIR(info.st_mode) && info.st_uid == 0 && info.st_mode and 63 == 0)
         return path
     }
+    fun tools(bundle: String): Path {
+        require(bundle.matches(Regex("[a-f0-9]{64}")))
+        val path = privatePath(listOf("spaces", "resources", "static-reverse", "versions", bundle))
+        require(text(path.resolve("bundle"), 64) == bundle)
+        for (name in listOf("jre", "jadx", "apktool"))
+            require(Files.isDirectory(path.resolve(name), LinkOption.NOFOLLOW_LINKS))
+        return path
+    }
     fun state(ticket: LinuxRunTicket): Path {
         val resources = privatePath(listOf("spaces", "resources"))
         return rootDirectory(rootDirectory(resources, "linux-runtime"), ticket.runId)

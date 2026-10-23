@@ -27,14 +27,14 @@ internal class RootLinuxRuns(private val context: Context, private val identity:
     }
     private suspend fun prepare(ticket: LinuxRunTicket, terminal: Boolean): CommandRequest {
         require(ticket.identity == identity()) { "Root service epoch changed" }
-        require(ticket.toolBundle == null) { "Tool bundle mount protocol is not connected yet" }
         val state = files.state(ticket)
         files.bind(state, ticket, starting = true)
         val rootfs = files.rootfs(ticket)
         val workspace = RootWorkspaceLocks.use(context, ticket.owner) { files.workspace(ticket.owner, claimRun = ticket.runId) }
         return CommandRequest(listOf(helper(), if (terminal) "--run-pty" else "--run", "--state-dir", state.toString(),
             "--generation", ticket.generation, "--run-id", ticket.runId, "--rootfs", rootfs.toString(),
-            "--workspace", workspace.toString(), "--timeout-ms", ticket.timeoutMs.toString(), "--") + ticket.argv,
+            "--workspace", workspace.toString(), "--timeout-ms", ticket.timeoutMs.toString()) +
+                (ticket.toolBundle?.let { listOf("--tools-dir", files.tools(it).toString()) } ?: emptyList()) + listOf("--") + ticket.argv,
             timeoutMs = ticket.timeoutMs + 20_000)
     }
     fun terminal(ticket: LinuxRunTicket, request: io.github.asagnc.aurora.terminal.PtyRequest): RootTerminalLifecycle {
