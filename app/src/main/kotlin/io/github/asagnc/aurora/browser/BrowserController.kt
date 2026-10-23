@@ -34,6 +34,8 @@ internal class BrowserTab(val owner: String, val view: WebView) {
 internal class BrowserController(private val context: Context, private val saveProxy: Boolean = true,
     private val intercept: ((WebResourceRequest) -> WebResourceResponse?)? = null) {
     val tabs = mutableStateListOf<BrowserTab>()
+    internal val transferSlots = kotlinx.coroutines.sync.Semaphore(2)
+    internal val transfers = mutableStateMapOf<String, BrowserTransferProgress>()
     var error by mutableStateOf<String?>(null)
     var proxy by mutableStateOf("")
         private set

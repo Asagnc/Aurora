@@ -1,4 +1,4 @@
-# 当前接续清单（2026-10-23，0.1.37）
+# 当前接续清单（2026-10-23，0.1.38）
 
 本文件是当前摘要；PROGRESS/IMPLEMENTATION中按时间倒序的早期记录可能包含已完成的旧待办，不应将它们重新当作当前缺失功能。细节以对应实现/证据文档为准。
 
@@ -6,7 +6,7 @@
 
 - 继续已授权实现、测试并推送main，少做常规汇报。新底层/依赖/持久化选择仍须检索比较、形成可审查方案并让用户确认，例行修复不重复问。
 - 当前不连接、更新或操作手机，也不重装Android Studio/模拟器/WSL。所有最终手机测试集中进行；保留Aurora数据和安装，测试辅助包完成后清理。
-- 手机最后已验收版本0.1.32；代码0.1.37。用户已在FolkPatch应用内授权，不能等Magisk式弹窗。真的需要处理授权/阻碍时优先联系用户。
+- 手机最后已验收版本0.1.32；代码0.1.38。用户已在FolkPatch应用内授权，不能等Magisk式弹窗。真的需要处理授权/阻碍时优先联系用户。
 - 本轮不调用真实付费模型，不要求用户发送密钥。gh已登录，不使用聊天历史泄露过的PAT。
 - 不能从编译、主机夹具或UI推断Android性能领先、所有模型最高缓存、任意网站无限访问或全协议解密。
 
@@ -15,6 +15,8 @@
 - Root抓包：libpcap独立worker、严格整包预算/截止/取消、结构化统计/截短计数、Root选定PCAP属主发布与Agent离线tcpdump分析。普通UID不提供实时抓包，无VPN。见ROOT_CAPTURE_IMPLEMENTATION.md。
 - 浏览器异步：每次独立WebMessagePort、精确origin/页面revision、awaitPromise选择、一次结果、关闭/截止/取消收尾；同步保持直接路径。加载从50ms轮询改回调StateFlow，外层取消不再被工具/批处理吞掉。见BROWSER_ASYNC_IMPLEMENTATION.md。
 - 原有Root命令/PTY、Root Linux执行与Agent入口、会话文件通道、图片发布、事件日志、Skills内容版本管理、后台Agent宿主等已实现，勿从早期记录重新列为从未做过。
+
+- 0.1.38 Agent文件供给/页面流式下载已接入，64KiB背压与会话产物发布，实际事件合并显示字节；用户原生chooser及崩溃遗留回收仍未做。新3项核心含14个生产JS子场景通过；4项Android用例仅编译。
 
 ## 当前证据
 
@@ -25,7 +27,7 @@
 
 ## 尚未实现，建议继续的顺序
 
-1. **浏览器文件传输**：Agent与用户页面的上传/下载、会话归属、可观察进度/产物、取消/删除协调。先比较onShowFileChooser/精确URI授权与字节传输，核实程序点击文件输入的用户手势要求；下载需比较现有OkHttp、WebView网络上下文与系统下载器，正确处理各会话Cookie、HTTP/HTTPS/SOCKS代理、重定向和POST/blob。不能把GET重发或直连降级当所有下载都支持。新的通道/持久化设计先确认。已完成一手资料比较，具体组合、性能边界与验收见 BROWSER_TRANSFER_PROPOSAL.md（待确认，尚未实现）。
+1. **浏览器文件传输**：Agent与用户页面的上传/下载、会话归属、可观察进度/产物、取消/删除协调。先比较onShowFileChooser/精确URI授权与字节传输，核实程序点击文件输入的用户手势要求；下载需比较现有OkHttp、WebView网络上下文与系统下载器，正确处理各会话Cookie、HTTP/HTTPS/SOCKS代理、重定向和POST/blob。不能把GET重发或直连降级当所有下载都支持。新的通道/持久化设计先确认。组合方向已获确认；0.1.38已实现Agent二进制上传/页面下载，详见 BROWSER_TRANSFER_IMPLEMENTATION.md。接续原生chooser/精确URI快照、崩溃遗留回收、诊断与实际WebView资格；勿重复确认同一方案或把Agent路径当全部浏览器传输。
 2. **逆向/CTF工具包**：JADX、Apktool、原生库分析、Frida等实际ARM64运行器、版本化共享依赖与Agent工具，不用普通SKILL.md假装这些二进制已安装可用。
 3. **手机APK构建链**：实际ARM64可用JDK/aapt2/D8/R8/签名/安装链，含产物和失败诊断；Linux基础环境存在不等于已能编译APK。
 4. **网络进阶**：发包、HTTP修改/重放、TLS解密、UID归属和长时轮转。抓包不代表已提供这些功能；按需独立运行，不能给每个模型请求增加重型代理。
@@ -42,6 +44,6 @@
 
 ## 已批准，勿重复确认
 
-原生SQLite WAL；仅任务期间有界CPU锁；前台Agent服务；共享版本化SKILL.md；Ubuntu共享代/Root原属主/chroot私有挂载和任务cgroup；Root批量文件通道；有界旧元数据GC；Root-only libpcap worker+离线tcpdump；浏览器每次独立WebMessagePort。对应方案文档均在docs。
+浏览器组合传输（原生chooser + 有界二进制Agent供给/页面下载）；原生SQLite WAL；仅任务期间有界CPU锁；前台Agent服务；共享版本化SKILL.md；Ubuntu共享代/Root原属主/chroot私有挂载和任务cgroup；Root批量文件通道；有界旧元数据GC；Root-only libpcap worker+离线tcpdump；浏览器每次独立WebMessagePort。对应方案文档均在docs。
 
 最终手机操作分别参照ROOT_CAPTURE_ACCEPTANCE.md及BROWSER_ASYNC_IMPLEMENTATION.md；不得现在因看到清单就请求连接手机。

@@ -29,6 +29,8 @@ internal fun presentTool(event: ToolRun): ToolPresentation {
         "browser_read_batch" -> "批量读取网页"
         "browser_action" -> "操作网页元素"
         "browser_evaluate" -> "执行页面脚本"
+        "browser_download" -> "下载网页文件"
+        "browser_upload" -> "供给网页文件"
         "browser_close" -> "关闭网页"
         else -> event.tool
     }

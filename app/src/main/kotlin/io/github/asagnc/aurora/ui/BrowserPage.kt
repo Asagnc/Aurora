@@ -74,6 +74,11 @@ import io.github.asagnc.aurora.browser.BrowserController
             Text(if (browser.configuring) "正在应用代理设置，暂不加载页面" else when (browser.proxy) {
                 "" -> "代理：跟随系统"; "direct" -> "代理：直连"; else -> "代理：自定义"
             }, Modifier.padding(horizontal = 16.dp, vertical = 6.dp), color = AuroraMuted, style = MaterialTheme.typography.bodySmall)
+            browser.transfers.values.filter { it.owner == owner }.forEach { transfer ->
+                Text("${transfer.direction} · ${android.text.format.Formatter.formatShortFileSize(androidx.compose.ui.platform.LocalContext.current, transfer.bytes)}",
+                    Modifier.padding(horizontal = 16.dp, vertical = 4.dp), color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.bodySmall)
+            }
             if (active != null) {
                 if (active.progress < 100) LinearProgressIndicator(progress = { active.progress / 100f }, modifier = Modifier.fillMaxWidth())
                 key(active.id) {

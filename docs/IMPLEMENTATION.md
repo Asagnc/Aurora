@@ -1,3 +1,9 @@
+## 2026-10-23 0.1.38 浏览器 Agent 二进制传输第一阶段
+
+用户确认组合方向。新增 browser_download/browser_upload：独立 ArrayBuffer 端口、文档/会话校验、64KiB 原生落盘 ACK、预算和临时文件完整发布；Agent 显式供给 conversation/resources 文件，真实 File 仍有整文件成本。复用账本与产物目录，浏览器事件合并显示字节，不新增网络栈或轮询。WebKit 按官方稳定发行更新 1.18.0，不启用隔离放宽。
+
+主机核心190项（183通过/7跳过），新增传输生产JS14场景属于其中一项JUnit；Android新4项只编译。用户原生chooser/快照、崩溃遗留回收、更多错误诊断和真实Cookie/代理/表单/性能仍待继续，不能标为传输全部完成。见 BROWSER_TRANSFER_IMPLEMENTATION.md；手机未操作，仍0.1.32。
+
 ## 2026-10-23 0.1.37 异步浏览器完整CI通过
 
 9517ea9完整CI39909014575成功，证据evidence/0.1.37/ci-39909014575-passed.txt；含新生命周期/JSON合同/生产JS测试及原有全部主机和Android构建门槛。随后补mjs测试任务输入追踪（脚本变化不能被误判UP-TO-DATE）与跨域导航Android夹具，core/testAPK/lint本地再通过。最新后续提交CI另查。

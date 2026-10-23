@@ -1,3 +1,9 @@
+## 2026-10-23 0.1.38 浏览器 Agent 二进制传输第一阶段
+
+用户确认组合方向。新增 browser_download/browser_upload：独立 ArrayBuffer 端口、文档/会话校验、64KiB 原生落盘 ACK、预算和临时文件完整发布；Agent 显式供给 conversation/resources 文件，真实 File 仍有整文件成本。复用账本与产物目录，浏览器事件合并显示字节，不新增网络栈或轮询。WebKit 按官方稳定发行更新 1.18.0，不启用隔离放宽。
+
+主机核心190项（183通过/7跳过），新增传输生产JS14场景属于其中一项JUnit；Android新4项只编译。用户原生chooser/快照、崩溃遗留回收、更多错误诊断和真实Cookie/代理/表单/性能仍待继续，不能标为传输全部完成。见 BROWSER_TRANSFER_IMPLEMENTATION.md；手机未操作，仍0.1.32。
+
 ## 2026-10-23 浏览器文件传输研究（待确认）
 
 已比较系统 chooser/精确 URI、ArrayBuffer 与 File/DataTransfer、页面流式下载、OkHttp、DownloadManager 和 CDP/新增网络栈。建议沿用 WebView 网络上下文并增加有界二进制传输，用户原生 chooser 与 Agent 文件供给分别实现；不把下载回调 URL 自动重发，也不假设脚本 click 具有用户激活。新通道、文件快照生命周期、预算和能力边界待用户确认，见 BROWSER_TRANSFER_PROPOSAL.md；没有提前实施或操作手机。
