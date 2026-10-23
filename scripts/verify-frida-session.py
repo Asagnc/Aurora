@@ -87,10 +87,15 @@ class FridaSessionTests(unittest.TestCase):
         return child
 
     def finish(self, child, prefix=()):
-        output, error = child.communicate(timeout=20)
+        try:
+            output, error = child.communicate(timeout=20)
+        except subprocess.TimeoutExpired:
+            child.kill()
+            output, error = child.communicate(timeout=5)
+            self.fail(f"Worker timed out; stdout={output[-8192:]!r}; stderr={error[-8192:]!r}")
         records = [json.loads(line) for line in [*prefix, *output.decode().splitlines()] if line]
         self.assertTrue(records, error.decode(errors="replace"))
-        self.assertEqual("completion", records[-1]["kind"], records)
+        self.assertEqual("completion", records[-1]["kind"], (child.returncode, records, error.decode(errors="replace")))
         self.assertTrue(records[-1]["cleanupConfirmed"], records)
         self.assertIsNone(self.process.poll(), "Attach cleanup killed the pre-existing owned target")
         return records

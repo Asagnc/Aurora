@@ -85,7 +85,7 @@ static void execute_script(struct aurora_frida_session *run, FridaSession *sessi
 static void cleanup(struct aurora_frida_session *run, FridaScript *script, FridaSession *session, FridaDeviceManager *manager) {
     GSource *timer = g_timeout_source_new(10000);
     g_source_set_callback(timer, cleanup_deadline, run, NULL);
-    g_source_attach(timer, NULL);
+    g_source_attach(timer, g_main_loop_get_context(run->loop));
     GError *error = NULL;
     run->unloaded = script == NULL || frida_script_is_destroyed(script);
     if (script) {
@@ -166,30 +166,35 @@ int aurora_frida_attach(const struct frida_attach_input *input) {
     frida_init();
     struct aurora_frida_session run = {.input = input, .target_fd = target};
     g_mutex_init(&run.lock); g_mutex_init(&run.output_lock); g_cond_init(&run.changed);
-    run.loop = g_main_loop_new(NULL, FALSE);
+    // Frida owns the default context in FRIDA_RUNTIME_OTHER. Never run a second loop on it.
+    GMainContext *control = g_main_context_new();
+    run.loop = g_main_loop_new(control, FALSE);
     run.operation = g_cancellable_new(); run.cleanup = g_cancellable_new();
     GIOChannel *channel = g_io_channel_unix_new(pipes[0]);
     GSource *signals = g_io_create_watch(channel, G_IO_IN);
-    g_source_set_callback(signals, G_SOURCE_FUNC(signal_ready), &run, NULL); g_source_attach(signals, NULL);
+    g_source_set_callback(signals, G_SOURCE_FUNC(signal_ready), &run, NULL); g_source_attach(signals, control);
     GSource *timer = g_timeout_source_new(input->duration_ms);
-    g_source_set_callback(timer, deadline, &run, NULL); g_source_attach(timer, NULL);
+    g_source_set_callback(timer, deadline, &run, NULL); g_source_attach(timer, control);
     struct sigaction action = {.sa_handler = on_signal}, previous_term, previous_int, previous_pipe;
     sigemptyset(&action.sa_mask); signal_fd = pipes[1];
     sigaction(SIGTERM, &action, &previous_term); sigaction(SIGINT, &action, &previous_int);
     action.sa_handler = SIG_IGN; sigaction(SIGPIPE, &action, &previous_pipe);
     /* Last resort only: no completion proof is emitted if cleanup hangs. */
     alarm((input->duration_ms + 999) / 1000 + 20);
-    g_idle_add(start, &run);
+    GSource *startup = g_idle_source_new();
+    g_source_set_callback(startup, start, &run, NULL); g_source_attach(startup, control);
     g_main_loop_run(run.loop); g_thread_join(run.thread);
-    // Frida callbacks may run on its private context. Drain it before the final record or state destruction.
-    frida_deinit();
+    // Drain Frida's context, but retain GLib until the final JSON and our own sources are released.
+    frida_shutdown();
     int status = result(&run);
+    g_source_destroy(startup); g_source_unref(startup);
     g_source_destroy(timer); g_source_unref(timer); g_source_destroy(signals); g_source_unref(signals);
     signal_fd = -1; sigaction(SIGTERM, &previous_term, NULL); sigaction(SIGINT, &previous_int, NULL);
     sigaction(SIGPIPE, &previous_pipe, NULL);
     g_io_channel_unref(channel); close(pipes[0]); close(pipes[1]); close(target);
     g_clear_object(&run.operation); g_clear_object(&run.cleanup); g_main_loop_unref(run.loop);
     g_mutex_clear(&run.lock); g_mutex_clear(&run.output_lock); g_cond_clear(&run.changed);
-    alarm(0);
+    g_main_context_unref(control);
+    frida_deinit(); alarm(0);
     return status;
 }

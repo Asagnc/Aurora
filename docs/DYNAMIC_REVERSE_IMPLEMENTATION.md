@@ -1,3 +1,11 @@
+## 2026-10-23 真实主机用例暴露的事件上下文/关闭顺序修复
+
+94c547f CI39962631872失败：6真实Frida用例中1通过、1失败、4错误，多项退出超时，身份错配仅留下error无completion。不能记成生命周期验证通过。
+
+核实src/frida-glue.c后修复两项：frida_init(FRIDA_RUNTIME_OTHER)在默认GMainContext自建线程，因此Aurora不能再在同一默认context运行控制循环。现为信号/期限/启动/清理计时创建独立control context，避免争用；Frida仍用其默认context。其次frida_deinit会关闭GLib，不能之后再构造JSON/销毁GLib对象；现先frida_shutdown排空其回调/延迟释放并停止线程，在GLib仍可用时记录最终结果和释放控制资源，最后frida_deinit。外层仍须观察进程真实退出，最终JSON本身不代表worker已经退出。
+
+新ARM64交叉链接与外层依赖/16KiB检查通过；真实会话回归推送后重跑，不缩短用例或去掉清理断言。未打包到APK、未操作手机。
+
 ## 2026-10-23 Frida附加会话原生流程（未打包，主机运行CI待核实）
 
 原生worker已新增attach <pid> <startTicks> <absoluteScript> <durationMs>入口，固定1..270000ms、1MiB普通脚本快照、最终组件不跟随链接、拒绝空/NUL/非法UTF8。接收已有目标时持有pidfd，附加前和加载脚本前复核PID开始时间/原进程存活；Frida API按PID附加，无法原子传pidfd，因此不能承诺消除“检查与attach之间”所有竞态，但旧目标退出后不会按已知复用PID继续加载脚本。
