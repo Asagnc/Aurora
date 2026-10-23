@@ -18,8 +18,10 @@ class LinuxAgentEnvironmentTest {
             val owner = store.create("pinned task")
             val first = publish(registry, "a")
             val environment = LinuxAgentEnvironment(registry, Mutex(), owner)
+            assertEquals(first, environment.selectedGeneration())
             assertEquals(first, environment.generation())
             publish(registry, "b")
+            assertEquals(first, environment.selectedGeneration())
             assertEquals(first, environment.generation())
             assertTrue(registry.unused().isEmpty())
             // close() is also safe when entered from a cancelled finally block.
@@ -52,8 +54,11 @@ class LinuxAgentEnvironmentTest {
         fixture { registry, store ->
             val owner = store.create("lazy task")
             val environment = LinuxAgentEnvironment(registry, Mutex(), owner)
+            assertNull(environment.selectedGeneration())
             val first = publish(registry, "a")
-            publish(registry, "b", LinuxBackend.PROOT)
+            assertEquals(first, environment.selectedGeneration())
+            val second = publish(registry, "b", LinuxBackend.PROOT)
+            assertEquals(second, environment.selectedGeneration())
             assertEquals(listOf(first), registry.unused())
             assertTrue(runCatching { environment.generation() }.isFailure)
             environment.close()

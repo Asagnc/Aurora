@@ -1,3 +1,11 @@
+## 2026-10-23 逆向资格与Agent环境版本一致性
+
+修复共享环境更新后的版本错配：shared_toolchain probe此前独立读取全局当前代，而reverse_analyze沿用Agent已固定的代，导致重复探测仍不能满足分析资格。现在probe先取得同一LinuxAgentEnvironment的任务租约，三个CLI及后续分析共用固定代。status展示该任务选择的generation并据此判断runtimeReady；只查看状态不新增租约，未开始执行的任务仍能看到后续选择变化。没有新增运行时、持久化结构或后台进程。
+
+扩展既有Android回归断言：无环境观察为null、观察不固定旧代、已固定任务跨全局更新仍报告原代。设备执行留最终集中验收，不能以testAPK编译替代设备通过。
+
+上一轮556ecf6完整CI39947239121已确认成功，见evidence/0.1.40/ci-39947239121-passed.txt。本轮核心测试、Debug、Release R8、testAPK、lint通过（41秒），见evidence/0.1.40/local-generation-check-passed.txt。
+
 ## 2026-10-23 无图形JVM一致性、依赖盘点与清理错误可见性
 
 上轮bedcfd3完整CI39925157055已通过，日志确认3项新增原生工具挂载测试实际成功。不是Android JVM运行证据。

@@ -14,6 +14,12 @@ internal class LinuxAgentEnvironment(private val registry: LinuxRegistry, privat
     private var pin: Pair<String, String>? = null
     private var closed = false
 
+    /** Observation does not acquire a lease; execution must still call generation(). */
+    suspend fun selectedGeneration(): String? = lock.withLock {
+        check(!closed)
+        pin?.first ?: registry.current()
+    }
+
     suspend fun generation(): String = lock.withLock {
         check(!closed)
         pin?.first ?: withContext(NonCancellable) { catalog.withLock {

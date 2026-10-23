@@ -37,10 +37,9 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
             expected.identity == app.root.linuxExecution?.identity) { "Run shared_toolchain probe for this environment first" }
         return app.linux.runs.executeTools(owner, request, generation)
     }
-    suspend fun probe(owner: String, prepared: suspend (String) -> Unit): JsonObject {
+    suspend fun probe(owner: String, generation: String, prepared: suspend (String) -> Unit): JsonObject {
         qualified = null
         val identity = requireNotNull(app.root.linuxExecution?.identity) { "Reconnect Root for tool mounts" }
-        val generation = requireNotNull(app.linux.registry.current()) { "Install a Root Linux environment first" }
         val commands = staticReverseStartupCommands()
         val results = mutableListOf<JsonElement>()
         for ((index, argv) in commands.withIndex()) {
@@ -59,13 +58,14 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
         try { return store.cleanup().also { cleanupPending = false } }
         catch (failure: Exception) { cleanupPending = true; throw failure }
     }
-    suspend fun status(): JsonObject {
+    suspend fun status(generation: String?): JsonObject {
         val installed = store.installed()
         val current = qualified
-        val ready = current != null && current.bundle in installed && current.generation == app.linux.registry.current() &&
+        val ready = current != null && current.bundle in installed && current.generation == generation &&
             current.identity == app.root.linuxExecution?.identity
         return objectOf(
         "catalogBundle" to string(StaticReverseTools.bundleId),
+        "generation" to (generation?.let(::string) ?: JsonNull),
         "installed" to JsonArray(installed.map(::string)),
         "components" to JsonArray(StaticReverseTools.components.map { objectOf("id" to string(it.id), "version" to string(it.version)) }),
         "runtimeReady" to JsonPrimitive(ready),

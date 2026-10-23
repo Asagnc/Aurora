@@ -1,0 +1,6 @@
+Command: :core:test :app:assembleDebug :app:assembleDebugAndroidTest :app:assembleRelease :app:lintDebug
+BUILD SUCCESSFUL in 41s
+214 actionable tasks: 39 executed, 175 up-to-date
+Configuration cache entry reused.
+
+Android instrumentation compiled only; no phone execution.

@@ -42,7 +42,7 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
             app.sharedToolchain.analyze(id, io.github.asagnc.aurora.linux.LinuxToolRun(argv,
                 StaticReverseTools.bundleId, timeout, runId), linux.generation())
         }, prepared)
-        val tools = ToolRouter(listOfNotNull(files, reverse, io.github.asagnc.aurora.reverse.SharedToolchainTool(app.sharedToolchain, id, prepared), SkillToolExecutor(app.skills, id, skillSnapshot),
+        val tools = ToolRouter(listOfNotNull(files, reverse, io.github.asagnc.aurora.reverse.SharedToolchainTool(app.sharedToolchain, id, prepared, linux), SkillToolExecutor(app.skills, id, skillSnapshot),
             io.github.asagnc.aurora.linux.LinuxEnvironmentTool(app.linux, id, prepared), BrowserToolExecutor(app.browser, id),
             io.github.asagnc.aurora.browser.BrowserTransferTool(app.browser, id, directory,
                 mapOf("conversation" to app.spaces.conversation(id), "resources" to app.spaces.sharedResources()), prepared), ImageToolExecutor(app.images, id),
