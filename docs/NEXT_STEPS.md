@@ -58,6 +58,10 @@
 
 ## 当前证据
 
+- a36e31d完整CI40015005822三job成功：23项真实Frida主机测试（含4项独立guard端到端）通过，Android构建/lint通过；见ci-40015005822-passed.txt。之后新增第24项强杀worker及Core解析器，后续CI另查。
+
+- 新增Core原生记录严格解码与正常清理证明映射；本地246项核心测试：236通过/10平台跳过，4新用例全部通过。ARM64 guard自动审计43,152字节/16KiB通过；实际Frida强杀缺失报告用例及CI构建脚本推送后核实。尚未连接Root Binder或Agent，不能显示ready。
+
 - 336deb8完整CI40013810311三job成功，14项独立guard/真实cgroup模拟worker用例通过，原19项真实Frida用例另计；见ci-40013810311-passed.txt。随后新增4项真实Frida穿过guard的端到端用例（共23），推送后核实，不当作手机或已打包产品功能。
 
 - 1c73a8d完整CI40009832615成功，包括9项创建计划崩溃窗口Root用例；见ci-40009832615-passed.txt。

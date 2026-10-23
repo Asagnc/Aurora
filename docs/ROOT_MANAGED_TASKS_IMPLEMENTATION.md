@@ -104,6 +104,10 @@ recover先持久退役，核实旧guard已退出、boot与worker身份；worker�
 
 ## 验证
 
+Core新增RootManagedNativeState严格读取164字节READY、52字节worker报告及123字节stopped：匹配票据/boot/进程、合法阶段及资源状态，不从stdout或资源清理推断注入卸载。只有实际worker清理位和独立资源证明齐全才产生现有正常清理证明；缺失报告/未detach/派发前退役仍无正常证明，不误造workerExited。它只接受可信Root读取器返回的原始记录，Root文件路径、权限与锁核实仍由待接facade负责。4项Core故障/成功回归本地通过，核心累计246项、236通过/10平台跳过。新增ARM64 guard自动构建审计脚本，43,152字节、仅libc/libdl、外层16KiB通过，未APK打包/设备执行。证据local-managed-native-state-passed.txt。
+
+再新增真实worker强杀用例：必须保留worker报告缺失、原目标仍活，回收后不能变成成功；真实Frida用例现共24项，新增此项推送后核实。CI增加guard的ARM64构建/源码摘要/ELF审计证据，不把Linux成功代替Android运行资格。
+
 336deb8完整CI40013810311三job成功：独立guard的14项Root主机生命周期与原19项真实Frida用例分别通过，见evidence/0.1.40/ci-40013810311-passed.txt。新增实际Frida穿过独立guard的4项端到端用例：真实hook/持久报告、owner死亡后真实unload/detach、封印快照预检失败、官方Java桥仅执行一次。发送方先匹配READY的PID/startTicks及Root SO_PEERCRED，再交付封印FD；完成后核实报告票据、域记录清除、原目标仍活。新增用例待CI，不是Android ART资格。
 
 本地核心242项：232通过、10平台跳过；票据/预算/证明/错配4项与帧协议3项实际执行。Debug、Release R8、testAPK、lint通过；随后扩展Android用例又编译/lint通过，见evidence/0.1.40/local-root-managed-foundation-passed.txt及local-root-script-channel-passed.txt。

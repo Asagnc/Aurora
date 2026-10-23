@@ -1,0 +1,6 @@
+Working-tree verification, based on a36e31d; subsequent commit records these changes.
+Command: gradlew :core:test (fixed rootfs/reverse samples enabled)
+{"tests": 246, "skipped": 10, "failures": 0, "errors": 0}
+New RootManagedNativeStateTest: 4 passed, 0 skipped.
+ARM64 guard: {"protocol": 1, "target": "aarch64-linux-android36", "strippedBytes": 43152, "sha256": "c7bbff147fd8314ddb87e4183b4ce5950464c4e7b16b40af0361e4610c719e3d", "needed": ["libc.so", "libdl.so"], "androidRuntime": "NOT TESTED", "packagedInApk": false}
+Not device execution; no Root Binder/Agent registration.

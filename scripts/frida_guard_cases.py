@@ -70,6 +70,22 @@ class GuardCases:
         self.assertEqual((57, 64), (summary["workerFlags"], summary["exitCode"]))
         self.assertFalse(any(record.get("kind") == "loaded" for record in records))
 
+    def test_guarded_killed_worker_keeps_missing_injection_proof(self):
+        launched = self.guarded(duration=30000)
+        self.loaded(launched.child)
+        os.kill(launched.worker[0], signal.SIGKILL)
+        output, error = launched.child.communicate(timeout=25)
+        self.assertNotEqual(0, launched.child.returncode, error.decode(errors="replace"))
+        summary = json.loads(output.decode().splitlines()[-1])
+        self.assertTrue(summary["resourcesClear"])
+        self.assertFalse(summary["success"]); self.assertFalse(summary["workerReport"])
+        self.assertFalse((launched.state / "managed.worker").exists())
+        recovery = subprocess.run(launched.recovery(), capture_output=True, timeout=25, check=True)
+        self.assertEqual(summary, json.loads(recovery.stdout))
+        self.assertIsNone(self.process.poll(), "Missing report must not trigger target termination")
+        self.assertFalse(list(launched.state.glob("*.state")))
+        self.assertFalse((launched.state / "managed.scope-plan").exists())
+
     @unittest.skipUnless(os.environ.get("AURORA_FRIDA_JAVA_BUNDLE"), "Explicit development bridge required")
     def test_guarded_sealed_bridge_runs_selected_script_once(self):
         bridge = Path(os.environ["AURORA_FRIDA_JAVA_BUNDLE"]).read_bytes()

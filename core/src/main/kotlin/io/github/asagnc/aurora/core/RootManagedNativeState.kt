@@ -1,0 +1,91 @@
+package io.github.asagnc.aurora.core
+
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.util.UUID
+
+/** Decodes exact records obtained by a trusted Root reader, never arbitrary App paths or stdout. */
+class RootManagedNativeState private constructor(
+    private val ticket: RootManagedRunTicket,
+    val guard: RootTargetIdentity?, val worker: RootTargetIdentity?,
+    stopped: Stopped, facts: Pair<Int, Int>?,
+) {
+    val phase = stopped.phase
+    val workerState = stopped.worker
+    val domainState = stopped.domain
+    val exitCode = stopped.exitCode
+    val reason = stopped.reason
+    val error = stopped.error
+    val workerFlags = facts?.first
+    val workerStatus = facts?.second
+
+    private data class Stopped(val phase: Int, val worker: Int, val domain: Int, val exitCode: Int, val reason: Int, val error: Int)
+
+    /** Resource reclamation and script cleanup remain independent facts, including on cancellation. */
+    fun normalCleanupProof(): RootManagedExitProof? {
+        val flags = workerFlags ?: return null
+        if (worker == null || workerState != CLEAR || domainState != CLEAR || flags and CLEAN != CLEAN) return null
+        return RootManagedExitProof(ticket.runId, ticket.identity, ticket.digest(),
+            scriptUnloaded = true, sessionDetached = true, managerClosed = true,
+            workerExited = true, domainRemoved = true)
+    }
+
+    companion object {
+        private const val CLEAR = 1
+        private const val FINAL = 1
+        private const val ATTEMPTED = 2
+        private const val LOADED = 4
+        private const val CLEAN = 8 or 16 or 32
+        private const val SUCCESS = 64
+
+        fun decode(ticket: RootManagedRunTicket, ready: ByteArray?, report: ByteArray?, stopped: ByteArray): RootManagedNativeState {
+            ticket.validate()
+            val digest = ticket.digest()
+            val admission = ready?.let { admission(ticket, digest, it) }
+            val completion = stopped(ticket, digest, stopped, admission != null)
+            val facts = report?.let { worker(digest, requireNotNull(admission).second, it) }
+            return RootManagedNativeState(ticket, admission?.first, admission?.second, completion, facts)
+        }
+
+        private fun admission(ticket: RootManagedRunTicket, digest: String, bytes: ByteArray): Pair<RootTargetIdentity, RootTargetIdentity> {
+            require(bytes.size == 164 && text(bytes, 0, 4) == "ARW1")
+            require(text(bytes, 4, 36) == ticket.runId && text(bytes, 40, 64) == digest)
+            val boot = text(bytes, 128, 36)
+            require(UUID.fromString(boot).toString() == boot && boot == ticket.identity.bootId)
+            val input = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
+            val guard = RootTargetIdentity(input.getInt(104), input.getLong(108)).also { it.validate() }
+            val worker = RootTargetIdentity(input.getInt(116), input.getLong(120)).also { it.validate() }
+            require(guard.pid != worker.pid)
+            return guard to worker
+        }
+
+        private fun stopped(ticket: RootManagedRunTicket, digest: String, bytes: ByteArray, admitted: Boolean): Stopped {
+            require(bytes.size == 123)
+            require(text(bytes, 0, 107) == "ARI1\n${ticket.runId}\n$digest\n")
+            val phase = unsigned(bytes[107]); val worker = unsigned(bytes[108]); val domain = unsigned(bytes[109])
+            val input = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
+            val code = input.getInt(111); val reason = input.getInt(115); val error = input.getInt(119)
+            require(bytes[110] == 0.toByte() && phase in listOf(8, 9, 11, 15))
+            require((phase and 2 != 0) == admitted && worker in 0..2 && domain in 1..2)
+            require(code in -1..255 && reason in 0..5 && error in 0..4095 && (worker == 1 || code == -1))
+            require(!admitted || (worker == 1 && domain == 1))
+            require(phase and 1 != 0 || (worker == 2 && domain == 2))
+            return Stopped(phase, worker, domain, code, reason, error)
+        }
+
+        private fun worker(digest: String, identity: RootTargetIdentity, bytes: ByteArray): Pair<Int, Int> {
+            require(bytes.size == 52 && text(bytes, 0, 4) == "AEX1" && bytes[4] == 1.toByte() && bytes[7] == 0.toByte())
+            val flags = unsigned(bytes[5]); val status = unsigned(bytes[6])
+            require(bytes.copyOfRange(8, 40).joinToString("") { "%02x".format(unsigned(it)) } == digest)
+            val input = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
+            require(input.getInt(40) == identity.pid && input.getLong(44) == identity.startTicks)
+            require(flags in 1..127 && flags and FINAL != 0 && (flags and LOADED == 0 || flags and ATTEMPTED != 0))
+            val success = flags and SUCCESS != 0
+            require(if (success) status == 0 && flags and CLEAN == CLEAN && flags and LOADED != 0 else status != 0)
+            return flags to status
+        }
+
+        private fun text(bytes: ByteArray, start: Int, size: Int) = bytes.copyOfRange(start, start + size).toString(Charsets.US_ASCII)
+        private fun unsigned(byte: Byte) = byte.toInt() and 255
+    }
+}

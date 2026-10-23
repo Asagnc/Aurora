@@ -47,6 +47,8 @@ jobs:
         run: bash scripts/setup-android-sdk.sh
       - name: Build pinned Frida ARM64 qualification worker without packaging
         run: python3 scripts/build-frida-probe.py --directory app/build/outputs/frida-qualification --ndk "$ANDROID_HOME/ndk/30.0.16248370" --download
+      - name: Build and audit Android ARM64 managed guard without packaging
+        run: python3 scripts/build-managed-guard.py --directory app/build/outputs/managed-qualification --ndk "$ANDROID_HOME/ndk/30.0.16248370"
       - name: Restore exact native source archive
         id: native-source-cache
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -90,6 +92,8 @@ jobs:
             app/build/outputs/linux-sources/*.zip
             app/build/outputs/frida-qualification/report.json
             app/build/outputs/frida-qualification/readelf.txt
+            app/build/outputs/managed-qualification/report.json
+            app/build/outputs/managed-qualification/readelf.txt
           if-no-files-found: error
           retention-days: 14
 
