@@ -1,0 +1,23 @@
+Revision: 9b42c24936c93b1b5a34bdf77d04ec7696911afc
+Workflow: https://github.com/Asagnc/Aurora/actions/runs/40075197598
+Conclusion: success (all three jobs)
+test: 120816929874 success
+frida-session: 120816929992 success
+managed-supervision: 120816930014 success
+
+Selected raw CI log results (UTC, 2026-10-24):
+07:43:46 Ran 25 tests in 58.593s / OK (actual Frida on owned Linux targets)
+07:42:39 Ran 9 tests in 3.007s / OK (report receiver)
+07:42:59 Ran 11 tests in 19.696s / OK (supervisor observation)
+07:42:59 Ran 25 tests in 0.392s / OK (journal)
+07:43:01 Ran 12 tests in 1.256s / OK (admission/GO)
+07:43:01 Ran 9 tests in 0.674s / OK (scope plan)
+07:44:15 Ran 19 tests in 73.315s / OK (Root guard/cgroups, metadata probe included)
+07:51:12 BUILD SUCCESSFUL in 5m 23s (Android build/lint)
+07:51:15 offlineRebuild=true, sourceHeaderCount=45, strippedBytes=45160
+  matchedSha256=ca45acc22784aaef09cb86acf5c07fa23590ac09be3dbc9c53062bc4383340a5
+  sourceArchiveSha256=c7e310eabbadc1f13e871b3135d16cf064516fcb1a8ee3d45263b8da2d2964dd
+
+The standalone qualification binary and source archive above are Linux CI artifacts;
+do not substitute local Windows/CMake APK payload sizes or hashes.
+No phone or real provider calls. Android instrumentation compiled, not executed.

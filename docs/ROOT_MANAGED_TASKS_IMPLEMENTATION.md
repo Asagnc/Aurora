@@ -4,6 +4,8 @@
 
 ## 已实现的基础
 
+- 直接coordinator执行器与固定可执行inode已实现，启动/等待维持同一OS线程、取消保留协作窗口、强停不形成卸载证明。脚本FD通道在worker连接后读取Root READY，避免轮询和读取写入中间态。三项Java子进程本地通过；五项Android pin与一项通道拒绝用例仅编译。见ROOT_MANAGED_PROCESS.md；尚未连接Binder/账本收尾与Agent。
+
 - 原生SQLite schema8：新root_managed_runs活动/未确认意图表，owner外键不级联删除；owner/id索引只查询待处理记录。可选tool_run_id登记时在同一事务验证归属，但不设置历史级联外键；删除显示历史不会删除执行事实。没有Linux镜像或租约依赖，原linux_runs/linux_leases不变。
 - 不可变RootManagedRunTicket：完整Root身份、目标PID/startTicks、App构建、worker摘要、脚本/桥版本摘要大小及观察预算。当前只允许attach；spawn必须另有状态机，不能通过任意action字符串伪装已支持。观察最多250秒，总预算留20秒清理空间。原生CLI也同步收紧到250秒，并补250000接受/250001拒绝等边界；NDK ARM64重新交叉链接通过，独立原型仍未打包。
 - ticket摘要定义为protocol1的WireJson.encodeToString(ticket) UTF-8字节SHA-256；不是源文件摘要，也不对任意另一种JSON编码计算相同摘要。后续Root通道须核对同一不可变票据字节/摘要，不能改写意图生成新证明。

@@ -58,6 +58,10 @@
 
 ## 当前证据
 
+- 新执行器本地完整构建/lint成功；核心252项242通过/10平台跳过，含三项实际Java子进程用例。双ABI APK审计与45文件源码归档离线等哈希重建通过；见local-managed-runner-passed.txt。新增Android六项仅编译（五pin、一持久通道拒绝）。新CI推送后核实，Linux TERM清理hook尚不从Windows结果推断。
+
+- 9b42c24完整CI40075197598三job成功：19 guard、25真实Frida、Android构建/lint、双ABI APK审计与源码归档离线等哈希重建均通过。之后新增Root固定可执行inode/直接coordinator执行器、核心阻塞退出屏障和accept后读取READY的FD交付；三项实际Java子进程测试本地通过，五项Android固定文件与一项普通UID通道拒绝用例仅编译。见ROOT_MANAGED_PROCESS.md；Binder派发/账本收尾/Frida worker打包仍待接入，不显示ready，不操作手机。
+
 - c52f10a完整CI40021399232三job成功：11观察/12放行/18 guard/25真实Frida通过；见ci-40021399232-passed.txt。guard现已接APK（Frida Core worker仍未打包/Agent未注册），共享显式sources清单、版本只读探测、严格系统依赖与ELF硬化检查。Debug/Release/testAPK/lint、双ABI APK审计及源码归档离线等哈希重建本地通过；Release guard ARM64 48,920字节、x86_64 50,448字节。新增2普通UID打包用例仅编译、guard主机用例增至19待新CI，未操作手机。
 
 - b89dbd8的CI40020643752放行回归发现启动前取消可丢最终流（无GO/无exec、exit125但flags0），未记整体通过，18 guard用例因此未执行；独立25真实Frida job成功。已修复：真实GO成功前禁止发送协作命令，仍按pidfd等待并读取最终流，增加专门观察器回归；放行前已知资源退出可形成独立未派发证明。NDK guard 44,936字节/16KiB通过，Core249项239通过/10跳过。新CI推送后核实，证据ci-40020643752-launch-failed.txt。

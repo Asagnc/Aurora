@@ -28,8 +28,24 @@ internal class RootScriptChannel private constructor(
     private var deadline = 0L
     val arguments: List<String> get() = listOf("attach-channel", name, nonce, WireJson.encodeToString(ticket))
 
+    /** Explicit peer identity for transport qualification; managed launches use the directory overload. */
     suspend fun handoff(worker: RootTargetIdentity) {
         worker.validate()
+        handoff { worker }
+    }
+
+    /** The worker can connect only after native GO. Read durable READY after accept, without polling
+     * or racing an in-progress READY write. The caller retains its task/version lifecycle leases. */
+    suspend fun handoff(directory: ParcelFileDescriptor) {
+        check(Process.myUid() == 0) { "Durable script admission requires Root" }
+        val owned = ParcelFileDescriptor.dup(directory.fileDescriptor)
+        try {
+            Os.fcntlInt(owned.fileDescriptor, OsConstants.F_SETFD, OsConstants.FD_CLOEXEC)
+            handoff { RootManagedRecords.admission(owned, ticket).worker }
+        } finally { owned.close() }
+    }
+
+    private suspend fun handoff(worker: () -> RootTargetIdentity) {
         synchronized(this) {
             check(!closed && !claimed) { "Script channel is closed or already claimed" }
             claimed = true; deadline = SystemClock.elapsedRealtime() + 5_000
@@ -46,11 +62,13 @@ internal class RootScriptChannel private constructor(
             }
         } finally { close() }
     }
-    private fun transfer(worker: RootTargetIdentity) {
+    private fun transfer(resolveWorker: () -> RootTargetIdentity) {
         server.accept().use { socket ->
             synchronized(this) { check(!closed); client = socket }
             val peer = socket.peerCredentials
-            require(peer.uid == Process.myUid() && peer.pid == worker.pid) { "Unexpected script worker" }
+            require(peer.uid == Process.myUid()) { "Unexpected script worker UID" }
+            val worker = resolveWorker().also { it.validate() }
+            require(peer.pid == worker.pid) { "Unexpected script worker PID" }
             requireStart(worker)
             require(codec.matches(1, read(socket, 72))) { "Script handshake mismatch" }
             requireStart(worker)

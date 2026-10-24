@@ -1,4 +1,4 @@
-/* Development native guard: not APK-packaged until full worker qualification. */
+/* Native coordinator/guard. Frida worker packaging and runtime qualification are separate. */
 #define _GNU_SOURCE
 #include "guard.h"
 #include "cancel.h"

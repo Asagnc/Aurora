@@ -133,4 +133,13 @@ class RootScriptChannelTest {
             RootScriptMemory.verify(source.fileDescriptor, ticket.script)
         }
     }
+
+    @Test fun durableAdmissionRequiresRootWithoutConsumingCallerDescriptor() = runBlocking { fixture { ticket, source, channel ->
+        assertTrue(Process.myUid() != 0)
+        val before = references(source)
+        try { channel.handoff(source); fail("Ordinary UID admitted as Root") }
+        catch (_: IllegalStateException) { }
+        assertEquals(before, references(source))
+        RootScriptMemory.verify(source.fileDescriptor, ticket.script)
+    } }
 }

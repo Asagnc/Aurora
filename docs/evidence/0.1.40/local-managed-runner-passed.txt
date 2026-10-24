@@ -1,0 +1,26 @@
+Date: 2026-10-24
+Scope: executable inode pin, direct native coordinator launcher, owner-thread exit barrier,
+       Root admission read after socket accept. No Binder/Agent registration or phone execution.
+
+Gradle:
+  :core:test :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :app:lintDebug
+  BUILD SUCCESSFUL in 40s; 214 actionable tasks.
+Core JUnit aggregate: 252 tests, 10 skipped, 0 failures, 0 errors (242 passed).
+RootManagedProcessWaitTest: 3 tests, 0 skipped/failures/errors.
+  Actual owned Java subprocess: natural code 7, interrupted owner waits/restores flag,
+  absolute deadline forced outcome. Local Windows is not Unix cooperative-hook evidence.
+Five new Android executable-pin tests and one Root-only admission refusal test: COMPILED ONLY.
+Android36 Files targeted gate: 262 source files passed.
+
+Both Debug/Release actual APK ELF audits passed (arm64-v8a and x86_64).
+Release guard payload:
+  arm64-v8a 48920 bytes f1baeda691de86e161224daa8d7b3bcab04bbaa2c15a64b91fbe44e56cc7ae10
+  x86_64    50448 bytes 6d20d5da589ce3f361558fd3f5fc651192a45b00979b901218d7fc30198b00d3
+Standalone NDK30 Android36 guard / offline archive rebuild:
+  45 exact source/header hashes; offlineRebuild=true; 45136 stripped bytes.
+  matchedSha256=d0c2165ccb77ae3ee056806fc9b1b432ecc899472ed2f569e3ee4d571cd2ff40
+  sourceArchiveSha256=6bab1bace6f6a3ad7dff58463d5504c37d839457e6d5dccad3aa97182b8e0b90
+
+These are helper payload/standalone sizes, not APK delta, full Frida installation or RSS.
+Next CI verifies the new Java process tests on Linux, including completed TERM cleanup hook.
+No real providers, credentials, Android runtime execution or performance/cache claims.
