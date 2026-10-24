@@ -1,0 +1,23 @@
+Revision: 51620c66f200a86c35e53ed241291f892722fdaf
+Workflow: https://github.com/Asagnc/Aurora/actions/runs/40076439930
+Conclusion: success (all three jobs)
+frida-session: 120820670872 success
+managed-supervision: 120820671085 success
+test: 120820671145 success
+
+Selected raw results (UTC 2026-10-24):
+08:02:52 :core:test executed; BUILD SUCCESSFUL in 42s.
+  Includes new RootManagedProcessWaitTest on Linux. The Linux TERM case requires
+  the owned Java child's completed shutdown-hook marker before accepting return.
+08:03:11 Ran 25 tests in 58.492s / OK (actual Frida, owned Linux targets).
+08:03:34 Ran 19 tests in 73.453s / OK (Root guard/cgroup host cases).
+08:08:39 Android Debug/Release/test APK/lint BUILD SUCCESSFUL in 4m 8s.
+08:08:41 Both ABI APK audits and corresponding-source rebuild passed:
+  offlineRebuild=true; sourceHeaderCount=45; strippedBytes=45160
+  matchedSha256=ca45acc22784aaef09cb86acf5c07fa23590ac09be3dbc9c53062bc4383340a5
+  sourceArchiveSha256=dd5339346fb0025ab1b805c1be7f85ca49e6f2930d5045b3cc0c6ffb94bb6563
+
+Exact aggregate local Core count is recorded separately (252 total, 242 passed/10 skipped).
+Do not infer that same platform skip count from the CI task log.
+New Android pin/admission tests compiled only. No phone or provider calls.
+Root Binder/Agent dispatch and Frida worker packaging remain unfinished.

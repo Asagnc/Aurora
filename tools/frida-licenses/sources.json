@@ -1,0 +1,33 @@
+{
+  "scope": "Exact core/Gum license documents plus canonical LGPL2 text only; NOT a complete static dependency or Java bridge notice closure",
+  "apkPackaged": false,
+  "files": [
+    {
+      "file": "frida-core-COPYING",
+      "repository": "https://github.com/frida/frida-core",
+      "commit": "57161b0ddd2311adf18e84f4680f9cb935ce8376",
+      "upstreamPath": "COPYING",
+      "gitBlobSha1": "b01d49c670e55dbff638eb294ac1a52416fb32e8",
+      "sha256": "5ea1544b51a28bc823b03159190d4108f9fb4f4ef912389f5137c6d295e175b2",
+      "bytes": 2416
+    },
+    {
+      "file": "frida-gum-COPYING",
+      "repository": "https://github.com/frida/frida-gum",
+      "commit": "3f82ef6a5b2413867835a45fe341913455473303",
+      "upstreamPath": "COPYING",
+      "gitBlobSha1": "810ab7017801b3269dcee7931513e3e5e1910062",
+      "sha256": "00764fcc23f0f2ac6d2619a1f9192e55176ecaaa525e76a47aaabc5d87fb087f",
+      "bytes": 5696
+    },
+    {
+      "file": "LGPL-2.0-only.txt",
+      "repository": "https://github.com/spdx/license-list-data",
+      "commit": "31ba1a50e5397e00a304dbadc76531740e89ee48",
+      "upstreamPath": "text/LGPL-2.0-only.txt",
+      "gitBlobSha1": "843b00b561a44454249f6554c609b2899251b3fd",
+      "sha256": "86dc99d7e5060915ab1dfc1378b7dd351c62088bfa74067e8aa1868c6fdba7d8",
+      "bytes": 24877
+    }
+  ]
+}

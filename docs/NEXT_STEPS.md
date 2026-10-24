@@ -58,6 +58,8 @@
 
 ## 当前证据
 
+- 51620c6完整CI40076439930三job成功，包含新的Linux实际Java子进程取消/截止测试、19 guard/25真实Frida、Android构建/lint与离线源码重建。见ci-40076439930-passed.txt。继续发布输入盘点：官方Frida最新仍17.24.3，确认顶层Core/Gum/releng gitlinks、2,598个实际devkit成员、嵌入agent/helper与桥包缺少独立许可文件；已取得约33KiB固定许可文本，尚不是完整闭包/源码。见FRIDA_RELEASE_AUDIT.md；不因此声明已打包或ready。
+
 - 新执行器本地完整构建/lint成功；核心252项242通过/10平台跳过，含三项实际Java子进程用例。双ABI APK审计与45文件源码归档离线等哈希重建通过；见local-managed-runner-passed.txt。新增Android六项仅编译（五pin、一持久通道拒绝）。新CI推送后核实，Linux TERM清理hook尚不从Windows结果推断。
 
 - 9b42c24完整CI40075197598三job成功：19 guard、25真实Frida、Android构建/lint、双ABI APK审计与源码归档离线等哈希重建均通过。之后新增Root固定可执行inode/直接coordinator执行器、核心阻塞退出屏障和accept后读取READY的FD交付；三项实际Java子进程测试本地通过，五项Android固定文件与一项普通UID通道拒绝用例仅编译。见ROOT_MANAGED_PROCESS.md；Binder派发/账本收尾/Frida worker打包仍待接入，不显示ready，不操作手机。

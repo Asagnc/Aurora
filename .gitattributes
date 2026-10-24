@@ -16,3 +16,5 @@ gradlew.bat text eol=crlf
 *.gpg binary
 *.asc text eol=lf
 docs/evidence/**/SHA256SUMS -text
+tools/frida-licenses/*COPYING -text
+tools/frida-licenses/LGPL-2.0-only.txt -text
