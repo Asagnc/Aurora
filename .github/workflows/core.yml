@@ -84,6 +84,7 @@ jobs:
           python3 scripts/verify-linux-native.py app/build/outputs/apk/debug/app-debug.apk
           python3 scripts/verify-linux-native.py app/build/outputs/apk/release/app-release-unsigned.apk
           python3 scripts/package-linux-sources.py
+          python3 scripts/verify-managed-source-roundtrip.py app/build/outputs/linux-sources/aurora-linux-corresponding-source.zip --reference app/build/outputs/managed-qualification/report.json --ndk "$ANDROID_HOME/ndk/30.0.16248370" --report app/build/outputs/managed-qualification/source-rebuild.json
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: aurora-development-builds
@@ -95,6 +96,7 @@ jobs:
             app/build/outputs/frida-qualification/readelf.txt
             app/build/outputs/managed-qualification/report.json
             app/build/outputs/managed-qualification/readelf.txt
+            app/build/outputs/managed-qualification/source-rebuild.json
           if-no-files-found: error
           retention-days: 14
 

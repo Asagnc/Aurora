@@ -1,0 +1,12 @@
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/sources.txt")
+file(STRINGS "${CMAKE_CURRENT_LIST_DIR}/sources.txt" aurora_managed_sources)
+foreach(source IN LISTS aurora_managed_sources)
+    if(NOT source MATCHES "^(managed|linux|frida)/[a-z_]+[.]c$")
+        message(FATAL_ERROR "Invalid managed guard source: ${source}")
+    endif()
+endforeach()
+list(TRANSFORM aurora_managed_sources PREPEND "${CMAKE_CURRENT_LIST_DIR}/../")
+add_executable(aurora_managed_guard ${aurora_managed_sources})
+target_compile_options(aurora_managed_guard PRIVATE -Wall -Wextra -Werror -fstack-protector-strong
+    -ffunction-sections -fdata-sections)
+target_link_options(aurora_managed_guard PRIVATE -Wl,--as-needed,--gc-sections,-z,relro,-z,now,-z,noexecstack,-z,max-page-size=16384)

@@ -1,0 +1,16 @@
+Working tree based on c52f10a; subsequent commit records packaging changes.
+Actual corresponding-source ZIP extracted into owned temporary directory (selected native sources/scripts only), built offline using NDK30/API36.
+{
+  "protocol": 1,
+  "target": "aarch64-linux-android36",
+  "strippedBytes": 45136,
+  "sha256": "d0c2165ccb77ae3ee056806fc9b1b432ecc899472ed2f569e3ee4d571cd2ff40",
+  "needed": [
+    "libc.so",
+    "libdl.so"
+  ],
+  "androidRuntime": "NOT TESTED",
+  "packagedInApk": false
+}
+Exact source/header hash map and standalone binary SHA256 match current-tree build.
+No Android runtime execution. Temporary extracted sources/binaries removed.

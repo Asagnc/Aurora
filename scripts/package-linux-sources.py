@@ -33,12 +33,18 @@ def package():
                 if path.is_file():
                     archive.write(path, Path('upstream') / component / path.relative_to(source))
         for folder in ['app/src/main/cpp/linux', 'app/src/main/assets/licenses/linux',
-                       'app/src/main/cpp/packet', 'app/src/main/assets/licenses/packet']:
+                       'app/src/main/cpp/packet', 'app/src/main/assets/licenses/packet',
+                       'app/src/main/cpp/managed', 'app/src/main/cpp/frida']:
             for path in sorted((ROOT / folder).rglob('*')):
                 if path.is_file():
                     archive.write(path, Path(folder) / path.relative_to(ROOT / folder))
         archive.write(ROOT / 'docs/LINUX_NATIVE_BUILD.md', 'README.md')
         archive.write(ROOT / 'docs/PACKET_NATIVE_BUILD.md', 'PACKET_NATIVE_BUILD.md')
+        archive.write(ROOT / 'docs/ROOT_MANAGED_NATIVE_BUILD.md', 'ROOT_MANAGED_NATIVE_BUILD.md')
+        for name in ['CMakeLists.txt', 'runner.c', 'capture.c', 'pty.c']:
+            archive.write(ROOT / 'app/src/main/cpp' / name, 'app/src/main/cpp/' + name)
+        for name in ['build-managed-guard.py', 'managed_native_sources.py', 'build-frida-probe.py']:
+            archive.write(ROOT / 'scripts' / name, 'scripts/' + name)
     print(OUTPUT, OUTPUT.stat().st_size)
 
 

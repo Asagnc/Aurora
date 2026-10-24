@@ -58,6 +58,8 @@
 
 ## 当前证据
 
+- c52f10a完整CI40021399232三job成功：11观察/12放行/18 guard/25真实Frida通过；见ci-40021399232-passed.txt。guard现已接APK（Frida Core worker仍未打包/Agent未注册），共享显式sources清单、版本只读探测、严格系统依赖与ELF硬化检查。Debug/Release/testAPK/lint、双ABI APK审计及源码归档离线等哈希重建本地通过；Release guard ARM64 48,920字节、x86_64 50,448字节。新增2普通UID打包用例仅编译、guard主机用例增至19待新CI，未操作手机。
+
 - b89dbd8的CI40020643752放行回归发现启动前取消可丢最终流（无GO/无exec、exit125但flags0），未记整体通过，18 guard用例因此未执行；独立25真实Frida job成功。已修复：真实GO成功前禁止发送协作命令，仍按pidfd等待并读取最终流，增加专门观察器回归；放行前已知资源退出可形成独立未派发证明。NDK guard 44,936字节/16KiB通过，Core249项239通过/10跳过。新CI推送后核实，证据ci-40020643752-launch-failed.txt。
 
 - 82473bd完整CI40018887965三job成功，Root记录/target-exit代码及Android构建/lint通过；见ci-40018887965-passed.txt。随后新增可选cooperative-cancel开发模式（TERM/INT先通知guard、coordinator等收尾）、父线程死亡通知与有界收尾。12放行/18 guard/25真实Frida用例待新CI；NDK ARM64 guard 44,872字节/16KiB链接审计通过，Core249项本地239通过/10跳过。仍未打包或接Binder/Agent。

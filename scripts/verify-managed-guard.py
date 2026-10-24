@@ -117,6 +117,11 @@ class GuardTests(unittest.TestCase):
         self.assertEqual((127, 0), (result["workerFlags"], result["exitCode"]))
         self.assertEqual(52, (self.state / "managed.worker").stat().st_size)
 
+    def test_version_probe_does_not_create_task_state_or_claim_frida_ready(self):
+        result = subprocess.run([str(self.guard), "--version"], capture_output=True, text=True, timeout=5, check=True)
+        self.assertEqual({"protocol": 1, "kind": "aurora-managed-guard", "rootRequired": True, "cooperativeCancel": True}, json.loads(result.stdout))
+        self.assertFalse(self.state.exists())
+
     def test_duration_uses_cooperative_finish_before_forced_cleanup(self):
         process = self.start("wait", observe=500); result = self.finish(process)
         self.assertEqual(0, process.returncode); self.assertTrue(result["success"])

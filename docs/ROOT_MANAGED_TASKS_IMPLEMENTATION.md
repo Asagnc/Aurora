@@ -104,6 +104,12 @@ recover先持久退役，核实旧guard已退出、boot与worker身份；worker�
 
 ## 验证
 
+guard已接既有CMake/Gradle nativeLibraryDir打包，双ABI共享managed/sources.txt显式清单，独立资格与主机测试读取同一清单；清单变更触发CMake重新配置。没有链接/打包Frida Core SDK。--version仅返回静态协议/Root要求，普通UID的run/recover仍在创建状态前拒绝。新2项Android打包用例（普通加载/拒绝Root恢复）仅编译，主机guard版本无副作用用例增至19待CI。
+
+Debug/Release/testAPK/lint本地通过，实际两个APK的双ABI ELF均验证16KiB、非W+X/非执行栈；guard另验/system/bin/linker64、RELRO/NOW及仅libc/libdl系统依赖。CMake默认引入的未使用libm通过as-needed去掉，未放宽依赖白名单。Release guard ARM64 48,920字节、x86_64 50,448字节；是此helper的实际payload字节，不是整个Frida功能或APK增量测量。
+
+对应源码归档已补guard/共享Frida基础文件/原生顶层适配与独立构建脚本；当前45项源码/头文件SHA一致，离线重建得到与独立资格构建相同的45,136字节二进制SHA。CI新增同一重建检查，编译前核实归档脚本/清单及当前源码哈希，不执行不匹配的归档脚本；临时源/产物自动回收。见ROOT_MANAGED_NATIVE_BUILD.md、local-managed-package-passed.txt和local-managed-source-roundtrip-passed.txt。Android实际启动/Root/SELinux资格仍待最终手机，未注册Agent。
+
 40020643752独立25真实Frida job成功，但放行用例发现启动前取消会向未GO的launcher写停止字节，worker125退出时可能丢失严格EOF报告；没有把该轮记通过，18 guard用例也尚未运行。新增临时dispatched标记仅在实际GO发送成功后置位；未放行观察模式不发送命令、最多等待1秒读stub报告再强制收尾。新增“owner已死但未放行的stub绝不能收到命令”的直接观察器回归，防止只靠竞态偶然通过。
 
 独立未派发证明扩展为持久退役且无RELEASED/GO、所有已创建worker/domain明确退出（不能是UNKNOWN）；可含READY和NoSession报告，不含attach-attempt事实。这样取消落在fork/READY窗口也不会永久卡住删除，不伪造unload事实。Core249项239通过/10跳过，ARM64 guard 44,936字节/16KiB链接通过；11观察/12放行/18 guard及25真实Frida待修复后的CI。见ci-40020643752-launch-failed.txt。

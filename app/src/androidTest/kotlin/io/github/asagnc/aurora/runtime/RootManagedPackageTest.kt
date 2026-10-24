@@ -1,0 +1,45 @@
+package io.github.asagnc.aurora.runtime
+
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import io.github.asagnc.aurora.core.*
+import java.nio.file.Files
+import java.nio.file.Path
+import java.util.UUID
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.jsonObject
+import org.junit.Assert.*
+import org.junit.Test
+import org.junit.runner.RunWith
+
+/** Ordinary-UID loader/refusal checks; does not qualify privileged cgroup or Frida execution. */
+@RunWith(AndroidJUnit4::class)
+class RootManagedPackageTest {
+    private val context = InstrumentationRegistry.getInstrumentation().targetContext
+    private val binary get() = Path.of(context.applicationInfo.nativeLibraryDir, "libaurora_managed_guard.so").toString()
+
+    @Test fun packagedGuardMetadataStartsWithoutRoot() = runBlocking { fixture { root ->
+        val reply = NativeCommandRunner(context).execute(root, CommandRequest(listOf(binary, "--version")))
+        assertEquals(reply.toString(), 0L, reply.number("exitCode"))
+        val metadata = WireJson.parseToJsonElement(requireNotNull(reply["stdout"]?.jsonObject?.text("text"))).jsonObject
+        assertEquals(1L, metadata.number("protocol")); assertEquals("aurora-managed-guard", metadata.text("kind"))
+        assertEquals(JsonPrimitive(true), metadata["rootRequired"])
+        assertEquals(JsonPrimitive(true), metadata["cooperativeCancel"])
+        assertFalse(metadata.containsKey("fridaReady"))
+    } }
+
+    @Test fun ordinaryUidCannotCreateOrRecoverRootTaskState() = runBlocking { fixture { root ->
+        assertTrue(android.os.Process.myUid() != 0)
+        val state = root.resolve("native-state")
+        val reply = NativeCommandRunner(context).execute(root, CommandRequest(listOf(binary, "recover",
+            "--state-dir", state.toString(), "--run-id", UUID.randomUUID().toString(), "--ticket-sha", "a".repeat(64))))
+        assertEquals(reply.toString(), 77L, reply.number("exitCode"))
+        assertFalse(Files.exists(state))
+    } }
+
+    private suspend fun fixture(block: suspend (Path) -> Unit) {
+        val root = Files.createTempDirectory(context.cacheDir.toPath(), "managed-package-")
+        try { block(root) } finally { removeSkillTree(root) }
+    }
+}

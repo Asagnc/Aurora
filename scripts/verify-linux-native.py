@@ -7,10 +7,10 @@ import struct
 import zipfile
 
 MACHINES = {'arm64-v8a': 183, 'x86_64': 62}
-FILES = ['libaurora_proot.so', 'libaurora_proot_loader.so', 'libaurora_talloc.so', 'libaurora_linux_namespace.so', 'libaurora_linux_scope.so', 'libaurora_tcpdump.so', 'libaurora_packet_worker.so']
+FILES = ['libaurora_proot.so', 'libaurora_proot_loader.so', 'libaurora_talloc.so', 'libaurora_linux_namespace.so', 'libaurora_linux_scope.so', 'libaurora_tcpdump.so', 'libaurora_packet_worker.so', 'libaurora_managed_guard.so']
 
 
-def inspect(data, machine, loader):
+def inspect(data, machine, loader, executable=False):
     if data[:7] != b'\x7fELF\x02\x01\x01':
         raise ValueError('Expected ELF64 little-endian')
     kind, actual_machine = struct.unpack_from('<HH', data, 16)
@@ -28,6 +28,12 @@ def inspect(data, machine, loader):
         raise ValueError('Executable stack')
     if any(h[1] & 3 == 3 for h in loads):
         raise ValueError('Writable executable load segment')
+    if executable:
+        interpreters = [h for h in headers if h[0] == 3]
+        if len(interpreters) != 1 or data[interpreters[0][2]:interpreters[0][2] + interpreters[0][5]] != b'/system/bin/linker64\0':
+            raise ValueError('Guard must be an Android executable with the system interpreter')
+        if not any(h[0] == 0x6474e552 for h in headers):
+            raise ValueError('Guard lacks RELRO')
     if loader:
         if any(h[0] in (2, 3) for h in headers):
             raise ValueError('Freestanding loader unexpectedly needs dynamic linking')
@@ -35,6 +41,9 @@ def inspect(data, machine, loader):
     dynamic = next(h for h in headers if h[0] == 2)
     tags = [struct.unpack_from('<QQ', data, i)
             for i in range(dynamic[2], dynamic[2] + dynamic[5], 16)]
+    if executable and not any(tag == 24 or (tag == 30 and value & 8) or (tag == 0x6ffffffb and value & 1)
+                              for tag, value in tags):
+        raise ValueError('Guard lacks immediate symbol binding')
     table_address = next(value for tag, value in tags if tag == 5)
     segment = next(h for h in loads if h[3] <= table_address < h[3] + h[5])
     table = segment[2] + table_address - segment[3]
@@ -51,8 +60,10 @@ def verify(apk):
         for abi, machine in MACHINES.items():
             for name in FILES:
                 data = archive.read(f'lib/{abi}/{name}')
-                needed = inspect(data, machine, name == 'libaurora_proot_loader.so')
+                needed = inspect(data, machine, name == 'libaurora_proot_loader.so', name == 'libaurora_managed_guard.so')
                 allowed = {'libc.so', 'libdl.so', 'libm.so', 'liblog.so', 'libandroid.so', 'libaurora_talloc.so'}
+                if name == 'libaurora_managed_guard.so':
+                    allowed = {'libc.so', 'libdl.so'}
                 if not needed <= allowed:
                     raise ValueError(f'Unpackaged dependency: {needed - allowed}')
                 if name == 'libaurora_proot.so' and 'libaurora_talloc.so' not in needed:

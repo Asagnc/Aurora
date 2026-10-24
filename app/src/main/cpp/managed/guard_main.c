@@ -103,6 +103,10 @@ static int coordinate(const struct managed_guard_spec *spec) {
 }
 
 int main(int argc, char **argv) {
+    if (argc == 2 && !strcmp(argv[1], "--version")) {
+        puts("{\"protocol\":1,\"kind\":\"aurora-managed-guard\",\"rootRequired\":true,\"cooperativeCancel\":true}");
+        return 0;
+    }
     struct options options;
     if (parse(argc, argv, &options)) return 64;
     if (geteuid()) return 77;

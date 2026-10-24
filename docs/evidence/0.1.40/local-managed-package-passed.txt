@@ -1,0 +1,10 @@
+Working tree based on c52f10a; subsequent commit records packaging changes.
+Core {'tests': 249, 'skipped': 10, 'failures': 0, 'errors': 0}
+Debug/Release/AndroidTest/lint full build: BUILD SUCCESSFUL in 1m17s; final CMake manifest-dependency reconfigure/build: BUILD SUCCESSFUL in 3s.
+Actual Debug+Release APK ELF audits passed both ABIs, including guard interpreter, RELRO/NOW, no W+X/executable-stack and16KiB.
+debug: arm64-v8a libaurora_managed_guard.so 75768 cf2dea21c5bed44b87d028b70500c492a1bb7dc3bbbae4d358a7291c5fdd6446
+debug: x86_64 libaurora_managed_guard.so 73600 157490b93e0eec411a95e98082145b163d7bcca664027b619f25b6f48faf4a6c
+release: arm64-v8a libaurora_managed_guard.so 48920 f1baeda691de86e161224daa8d7b3bcab04bbaa2c15a64b91fbe44e56cc7ae10
+release: x86_64 libaurora_managed_guard.so 50448 6d20d5da589ce3f361558fd3f5fc651192a45b00979b901218d7fc30198b00d3
+Source ZIP offline rebuild independently reproduced the standalone qualification binary.
+Two new Android package tests compiled only; no phone execution or Frida SDK payload/Agent registration.
