@@ -27,6 +27,8 @@ class RootCommandProtocolTest {
         catch (_: SecurityException) {}
         try { remote.discardLinux(operation); fail("Ordinary fixture discarded Root staging") }
         catch (_: SecurityException) {}
+        try { remote.recoverManagedRun(operation, Bundle(), callback); fail("Ordinary fixture recovered privileged task") }
+        catch (_: SecurityException) {}
         val ticket = LinuxRunTicket(operation, UUID.randomUUID().toString(), "a".repeat(64),
             LinuxRootIdentity(123, 456, UUID.randomUUID().toString(), UUID.randomUUID().toString()),
             context.applicationInfo.uid, listOf("/bin/sh"))
@@ -211,6 +213,9 @@ class RootCommandProtocolTest {
             override fun openLinuxTerminal(id: String, request: android.os.Bundle, callback: IRootResult): android.os.Bundle { throw SecurityException("Fixture is not Root") }
             override fun startLinuxRun(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
             override fun recoverLinuxRun(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
+            override fun recoverManagedRun(id: String, request: Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
+            override fun startManagedRun(id: String, request: Bundle, script: ParcelFileDescriptor,
+                bridge: ParcelFileDescriptor?, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
             override fun discardLinux(operation: String) {}
         }
         assertTrue(RootCommandClient(dead, context).execute(UUID.randomUUID().toString(),

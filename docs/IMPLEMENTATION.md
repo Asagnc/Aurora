@@ -1,3 +1,9 @@
+## 2026-10-24 受管Binder、活动账本与Agent恢复
+
+新增RootManagedDispatch/Recovery/Client/RunManager连接现有执行器、封印FD与schema8。RootManagedResult拒绝错票据/多重证明/任意错误原文；仅传输成功不清账，已确认清理与执行成功分开。Agent提供当前会话status/recover，开始任务和删除前尝试恢复，未知状态仍受数据库屏障保护。
+
+安装APK的guard摘要由stripDebugSymbols后生成，实际APK审计核对两个ABI；不允许调用者指定可执行文件。worker/桥仍缺完整发布输入，不生成可信资产、不开放注入。core255项243通过/12跳过，Debug/Release/testAPK/lint成功；新增6项Android用例仅编译。详情ROOT_MANAGED_BINDER.md，后续CI独立记录。
+
 ## 2026-10-24 独立原生guard与恢复主程序
 
 新增开发期独立coordinator/guard主程序，连上意图/创建计划/真实准入/单次GO、owner/worker pidfd观察、独立卸载报告、退出与域回收。持久worker报告在资源收尾前保存，正常成功还必须实际worker退出码为0；缺失/部分报告不从stdout补造。coordinator与guard都为专用subreaper，收尾仅用/proc真实children及P_PIDFD waitid核实自有/接管后代，再按pidfd停止/回收，既有附加目标不成为选择器。合作结束最多15秒，之后保留5秒强制收尾；coordinator对guard也有绝对等待截止，冻结不无限waitpid。

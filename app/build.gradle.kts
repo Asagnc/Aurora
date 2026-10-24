@@ -1,3 +1,5 @@
+import java.security.MessageDigest
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
@@ -109,4 +111,31 @@ androidComponents.onVariants { variant ->
         outputDirectory.set(layout.buildDirectory.dir("generated/runner/${variant.name}"))
     }
     variant.sources.jniLibs?.addGeneratedSourceDirectory(stage, StageNativeRunner::outputDirectory)
+    val manifest = tasks.register<StageManagedManifest>("stage${capital}ManagedManifest") {
+        dependsOn("strip${capital}DebugSymbols")
+        binaries.set(layout.buildDirectory.dir("intermediates/stripped_native_libs/${variant.name}/strip${capital}DebugSymbols/out/lib"))
+        outputDirectory.set(layout.buildDirectory.dir("generated/managed-manifest/${variant.name}"))
+    }
+    variant.sources.assets?.addGeneratedSourceDirectory(manifest, StageManagedManifest::outputDirectory)
+}
+
+/** Digests of the actual APK payload, after symbol stripping; never hashes a caller-supplied path. */
+abstract class StageManagedManifest : DefaultTask() {
+    @get:InputDirectory @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val binaries: DirectoryProperty
+    @get:OutputDirectory abstract val outputDirectory: DirectoryProperty
+    @TaskAction fun stage() {
+        val output = outputDirectory.get().asFile.resolve("managed")
+        output.mkdirs()
+        for (abi in listOf("arm64-v8a", "x86_64")) {
+            val guard = binaries.get().asFile.resolve("$abi/libaurora_managed_guard.so")
+            check(guard.isFile)
+            val digest = MessageDigest.getInstance("SHA-256")
+            guard.inputStream().use { input ->
+                val buffer = ByteArray(65536)
+                while (true) { val size = input.read(buffer); if (size < 0) break; digest.update(buffer, 0, size) }
+            }
+            output.resolve("$abi.guard.sha256").writeText(digest.digest().joinToString("") { "%02x".format(it.toInt() and 255) })
+        }
+    }
 }

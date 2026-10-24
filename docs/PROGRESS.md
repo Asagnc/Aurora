@@ -1,3 +1,9 @@
+## 2026-10-24 受管Binder、活动账本与Agent恢复
+
+已接派发/恢复Binder、PFD所有权、进程屏障后的三类精确证明清账、Agent status/recover和删除前恢复。guard可信摘要来自最终APK载荷，双ABI摘要/ELF审计通过。核心255项243通过/12跳过，Debug/Release/testAPK/lint成功；新增6项Android用例仅编译。Frida worker/桥仍未打包，不显示注入ready，见ROOT_MANAGED_BINDER.md与local-managed-binder-passed.txt。
+
+发布资格增加最终链接map，ARM64实际worker保留1,894归档成员（含调试段来源），继续嵌入资源与源码/notice闭包，不以外层ELF检查替代整个发布。手机和真实模型仍未操作。
+
 ## 2026-10-24 独立原生guard与恢复主程序
 
 新增开发期独立coordinator/guard主程序，连上意图/创建计划/真实准入/单次GO、owner/worker pidfd观察、独立卸载报告、退出与域回收。持久worker报告在资源收尾前保存，正常成功还必须实际worker退出码为0；缺失/部分报告不从stdout补造。coordinator与guard都为专用subreaper，收尾仅用/proc真实children及P_PIDFD waitid核实自有/接管后代，再按pidfd停止/回收，既有附加目标不成为选择器。合作结束最多15秒，之后保留5秒强制收尾；coordinator对guard也有绝对等待截止，冻结不无限waitpid。

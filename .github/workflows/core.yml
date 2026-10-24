@@ -94,6 +94,8 @@ jobs:
             app/build/outputs/linux-sources/*.zip
             app/build/outputs/frida-qualification/report.json
             app/build/outputs/frida-qualification/readelf.txt
+            app/build/outputs/frida-qualification/linked-members.json
+            app/build/outputs/frida-qualification/worker.map
             app/build/outputs/managed-qualification/report.json
             app/build/outputs/managed-qualification/readelf.txt
             app/build/outputs/managed-qualification/source-rebuild.json

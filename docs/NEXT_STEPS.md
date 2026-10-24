@@ -58,6 +58,10 @@
 
 ## 当前证据
 
+- 本轮已接Root受管Binder派发/恢复、PFD所有权、精确结果清账、Agent status/recover与删除前恢复。三项新Core回归通过，255项243通过/12跳过（含2未提供样本）；Debug/Release/testAPK/lint及双ABI guard可信摘要/ELF审计通过。新增6项Android用例仅编译。worker/桥尚未打包，注入仍不可用，不显示ready。见ROOT_MANAGED_BINDER.md；接续发布材料闭包、真正Agent注入入口和最终手机资格。
+
+- 发布构建已增加最终LLD map并实际交叉链接：ARM64 worker89,143,968字节、1,894个保留归档成员（含调试段来源，非精确运行时依赖闭包），SHA256 a1486cd58c2d25ca2caa014075fb5eb9ac85623c5a135f03ba87c4b28ab49fb1。CI将保存map/成员清单，继续逐项固定源码/notice和嵌入资源核实；尚未完整发布打包。
+
 - 51620c6完整CI40076439930三job成功，包含新的Linux实际Java子进程取消/截止测试、19 guard/25真实Frida、Android构建/lint与离线源码重建。见ci-40076439930-passed.txt。继续发布输入盘点：官方Frida最新仍17.24.3，确认顶层Core/Gum/releng gitlinks、2,598个实际devkit成员、嵌入agent/helper与桥包缺少独立许可文件；已取得约33KiB固定许可文本，尚不是完整闭包/源码。见FRIDA_RELEASE_AUDIT.md；不因此声明已打包或ready。
 
 - 新执行器本地完整构建/lint成功；核心252项242通过/10平台跳过，含三项实际Java子进程用例。双ABI APK审计与45文件源码归档离线等哈希重建通过；见local-managed-runner-passed.txt。新增Android六项仅编译（五pin、一持久通道拒绝）。新CI推送后核实，Linux TERM清理hook尚不从Windows结果推断。

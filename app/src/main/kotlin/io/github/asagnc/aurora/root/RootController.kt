@@ -29,9 +29,10 @@ class RootController(private val context: Context) {
     private data class Endpoint(
         val remote: IRootControl,
         val identity: io.github.asagnc.aurora.core.LinuxRootIdentity?,
-        val prepare: Int, val run: Int, val file: Int, val terminal: Int, val metadata: Int, val packet: Int,
+        val prepare: Int, val run: Int, val file: Int, val terminal: Int, val metadata: Int, val packet: Int, val managedRecovery: Int,
     )
     @Volatile private var endpoint: Endpoint? = null
+    internal val managedClient get() = endpoint?.takeIf { it.managedRecovery == 1 }?.let { RootManagedClient(it.remote, context) }
     internal val packetClient get() = endpoint?.takeIf { it.packet == 1 }?.let { RootPacketClient(it.remote, context) }
     internal val metadataClient get() = endpoint?.takeIf { it.metadata == 1 }?.let { RootMetadataClient(it.remote, context) }
     internal val linuxTerminalClient get() = endpoint?.takeIf { it.terminal == 1 && it.run == 3 }?.let { RootTerminalClient(it.remote) }
@@ -75,7 +76,8 @@ class RootController(private val context: Context) {
                 endpoint = Endpoint(remote, identity,
                     if (identity != null) snapshot.getInt("linuxPrepareProtocol") else 0,
                     snapshot.getInt("linuxRunProtocol"), snapshot.getInt("linuxFileProtocol"),
-                    snapshot.getInt("linuxTerminalProtocol"), snapshot.getInt("linuxMetadataProtocol"), snapshot.getInt("packetCaptureProtocol"))
+                    snapshot.getInt("linuxTerminalProtocol"), snapshot.getInt("linuxMetadataProtocol"), snapshot.getInt("packetCaptureProtocol"),
+                    snapshot.getInt("managedRecoveryProtocol"))
                 mutable.value = RootState(RootPhase.READY, detail)
             }
         } catch (cancel: CancellationException) {

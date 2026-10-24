@@ -74,12 +74,14 @@ def build(args, archive, output):
         work = Path(temporary)
         extract(archive, work)
         binary = work / "worker"
+        link_map = work / "worker.map"
         argv = [str(compiler), "-DANDROID", "-Wall", "-Wextra", "-Werror", "-Os",
                 "-ffunction-sections", "-fdata-sections", "-fstack-protector-strong", "-I" + str(work),
                 *[str(ROOT / "app/src/main/cpp/frida" / name) for name in ["worker.c", "input.c", "channel_input.c", "fd_channel.c", "fd_io.c", "managed_control.c", "managed_protocol.c", "managed_watch.c", "events.c", "session.c"]],
                 "-o", str(binary), "-L" + str(work),
                 "-lfrida-core", "-llog", "-ldl", "-lm", "-latomic", "-pthread", "-Wl,--export-dynamic",
-                "-Wl,--gc-sections", "-Wl,-z,relro,-z,now", "-Wl,-z,noexecstack", "-Wl,-z,max-page-size=16384"]
+                "-Wl,--gc-sections", "-Wl,-Map," + str(link_map),
+                "-Wl,-z,relro,-z,now", "-Wl,-z,noexecstack", "-Wl,-z,max-page-size=16384"]
         subprocess.run(argv, check=True)
         unstripped = binary.stat().st_size
         stripped = work / "worker.stripped"
@@ -97,6 +99,15 @@ def build(args, archive, output):
                   "alignmentScope": "Outer worker only; not injected agents or loader/SELinux qualification"}
         stripped.replace(output / "aurora-frida-probe")
         (output / "readelf.txt").write_text(elf, encoding="utf-8")
+        # This is the final link's retained section provenance, not the entire devkit inventory.
+        map_text = link_map.read_text(encoding="utf-8")
+        members = sorted(set(re.findall(r"libfrida-core\.a\(([^)]+)\):", map_text)))
+        if not members:
+            raise ValueError("Final linker map has no retained Frida archive members")
+        (output / "linked-members.json").write_text(json.dumps(members, indent=2) + "\n", encoding="utf-8")
+        report["retainedArchiveMembers"] = len(members)
+        report["linkMapSha256"] = hashlib.sha256(link_map.read_bytes()).hexdigest()
+        link_map.replace(output / "worker.map")
         (output / "report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
         print(json.dumps(report, indent=2))
 

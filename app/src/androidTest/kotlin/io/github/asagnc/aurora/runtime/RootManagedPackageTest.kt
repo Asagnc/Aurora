@@ -19,6 +19,13 @@ class RootManagedPackageTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val binary get() = Path.of(context.applicationInfo.nativeLibraryDir, "libaurora_managed_guard.so").toString()
 
+    @Test fun packagedManifestPinsTheInstalledExecutable() = runBlocking {
+        io.github.asagnc.aurora.root.RootManagedBundle(context).guard().use { guard ->
+            assertEquals(64, guard.sha256.length)
+            guard.usePath { assertTrue(it.startsWith("/proc/${android.os.Process.myPid()}/fd/")) }
+        }
+    }
+
     @Test fun packagedGuardMetadataStartsWithoutRoot() = runBlocking { fixture { root ->
         val reply = NativeCommandRunner(context).execute(root, CommandRequest(listOf(binary, "--version")))
         assertEquals(reply.toString(), 0L, reply.number("exitCode"))

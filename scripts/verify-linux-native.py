@@ -64,6 +64,9 @@ def verify(apk):
                 allowed = {'libc.so', 'libdl.so', 'libm.so', 'liblog.so', 'libandroid.so', 'libaurora_talloc.so'}
                 if name == 'libaurora_managed_guard.so':
                     allowed = {'libc.so', 'libdl.so'}
+                    manifest = archive.read(f'assets/managed/{abi}.guard.sha256')
+                    if manifest != hashlib.sha256(data).hexdigest().encode('ascii'):
+                        raise ValueError('Guard digest differs from packaged trusted manifest')
                 if not needed <= allowed:
                     raise ValueError(f'Unpackaged dependency: {needed - allowed}')
                 if name == 'libaurora_proot.so' and 'libaurora_talloc.so' not in needed:

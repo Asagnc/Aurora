@@ -13,6 +13,21 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class RootManagedRunRegistryTest {
+    @Test fun binderTransportWithoutProofRetainsIntentAndExactCleanupReleasesIt() = runBlocking { fixture { _, store, ticket ->
+        val runs = RootManagedRunRegistry(store)
+        runs.begin(ticket)
+        val result = RootManagedResult(ticket.runId, ticket.digest(), exitCode = 0, workerStatus = 0)
+        try { runs.finish(ticket, result); fail("Transport exit cleared injection intent") }
+        catch (_: IllegalArgumentException) { }
+        assertEquals(1L, runs.count(ticket.owner))
+        try { runs.finish(ticket, result.copy(cleanup = proof(ticket.copy(appBuild = "wrong"))))
+            fail("Wrong ticket cleared injection intent") }
+        catch (_: IllegalArgumentException) { }
+        assertEquals(1L, runs.count(ticket.owner))
+        runs.finish(ticket, result.copy(cleanup = proof(ticket), exitCode = 1, workerStatus = 1,
+            error = "managed_execution_failed"))
+        assertEquals(0L, runs.count(ticket.owner))
+    } }
     private val context get() = InstrumentationRegistry.getInstrumentation().targetContext
     private fun ticket(owner: String) = RootManagedRunTicket(UUID.randomUUID().toString(), owner,
         LinuxRootIdentity(123, 456, UUID.randomUUID().toString(), UUID.randomUUID().toString()),

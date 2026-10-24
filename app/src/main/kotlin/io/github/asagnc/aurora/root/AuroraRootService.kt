@@ -23,6 +23,8 @@ class AuroraRootService : RootService() {
     private val linuxRuns by lazy { RootLinuxRuns(this) { linux.identity } }
     private val linux by lazy { RootLinuxPreparation(this) }
     private val metadata by lazy { RootMetadataMaintenance(this) { linux.identity } }
+    private val managed by lazy { RootManagedRecovery(this) { linux.identity } }
+    private val managedDispatch by lazy { RootManagedDispatch(this) { linux.identity } }
 
     private fun verifyCaller() {
         check(Binder.getCallingUid() == applicationInfo.uid) { "Caller is outside Aurora" }
@@ -84,6 +86,24 @@ class AuroraRootService : RootService() {
             runBlocking(kotlinx.coroutines.Dispatchers.IO) { commands.cancelAndWait(id); terminals.stop(id) }
             commands.start(id, callback) { linuxRuns.recover(ticket) }
         }
+        override fun recoverManagedRun(id: String, request: Bundle, callback: IRootResult) {
+            verifyCaller()
+            val ticket = RootManagedWire.ticket(id, request, applicationInfo.uid)
+            runBlocking(kotlinx.coroutines.Dispatchers.IO) { commands.cancelAndWait(id) }
+            commands.start(id, callback) { managed.recover(ticket) }
+        }
+        override fun startManagedRun(id: String, request: Bundle, script: android.os.ParcelFileDescriptor,
+            bridge: android.os.ParcelFileDescriptor?, callback: IRootResult) {
+            var owned = emptyList<android.os.ParcelFileDescriptor>()
+            try {
+                verifyCaller()
+                val ticket = RootManagedWire.ticket(id, request, applicationInfo.uid)
+                owned = RootManagedWire.snapshots(ticket, script, bridge)
+                val captured = owned
+                commands.start(id, callback, { RootManagedWire.close(captured) }) { managedDispatch.start(ticket, captured) }
+            } catch (failure: Throwable) { RootManagedWire.close(owned); throw failure }
+            finally { RootManagedWire.close(listOfNotNull(script, bridge)) }
+        }
         override fun openLinuxTerminal(id: String, request: Bundle, callback: IRootResult): Bundle {
             verifyCaller()
             val ticket = runTicket(id, request)
@@ -127,6 +147,9 @@ class AuroraRootService : RootService() {
                 putInt("linuxFileProtocol", 1)
                 putInt("linuxTerminalProtocol", 1)
                 putInt("linuxMetadataProtocol", 1)
+                putInt("managedRecoveryProtocol", 1)
+                // Transport support is separate from worker/ART qualification; no ready claim.
+                putInt("managedRunProtocol", 1)
                 runCatching {
                     val encoded = io.github.asagnc.aurora.core.WireJson.encodeToString(
                         io.github.asagnc.aurora.core.LinuxRootIdentity.serializer(), linux.identity)

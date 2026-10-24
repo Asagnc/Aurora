@@ -43,6 +43,11 @@ class RootProtocolFixtureService : Service() {
         override fun startLinuxRun(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
         override fun recoverLinuxRun(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
         override fun discardLinux(operation: String) { throw SecurityException("Fixture is not Root") }
+        override fun recoverManagedRun(id: String, request: Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
+        override fun startManagedRun(id: String, request: Bundle, script: ParcelFileDescriptor,
+            bridge: ParcelFileDescriptor?, callback: IRootResult) {
+            RootManagedWire.close(listOfNotNull(script, bridge)); throw SecurityException("Fixture is not Root")
+        }
     }
     override fun onDestroy() { runBlocking { commands.close(); terminals.close() }; super.onDestroy() }
 }

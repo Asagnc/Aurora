@@ -1,6 +1,6 @@
 # Root受管执行器（2026-10-24）
 
-这是已批准受管任务方案内的执行/FD接入，不新增依赖、常驻进程或持久化格式。当前没有打包Frida Core worker、注册Agent工具或声明Android运行资格；完整Binder派发与账本收尾仍待接入。
+这是已批准受管任务方案内的执行/FD接入，不新增依赖、常驻进程或持久化格式。Binder派发/恢复与账本收尾已接，见ROOT_MANAGED_BINDER.md；Agent已有status/recover，尚无注入工具、打包Frida Core worker或Android运行资格。
 
 ## 可执行文件固定
 

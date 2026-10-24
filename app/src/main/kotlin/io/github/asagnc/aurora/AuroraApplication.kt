@@ -35,6 +35,7 @@ class AuroraApplication : Application() {
     internal val linux by lazy { io.github.asagnc.aurora.linux.LinuxEnvironmentManager(this) }
     internal val chat by lazy { io.github.asagnc.aurora.runtime.ChatController(this) }
     val root by lazy { io.github.asagnc.aurora.root.RootController(this) }
+    internal val managedRuns by lazy { io.github.asagnc.aurora.root.RootManagedRunManager(this) }
     internal val browser by lazy { io.github.asagnc.aurora.browser.BrowserController(this) }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     val ready by lazy { scope.async {

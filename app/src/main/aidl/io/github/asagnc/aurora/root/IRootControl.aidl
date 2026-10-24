@@ -1,6 +1,7 @@
 package io.github.asagnc.aurora.root;
 
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import io.github.asagnc.aurora.root.IRootResult;
 
 interface IRootControl {
@@ -19,4 +20,6 @@ interface IRootControl {
     Bundle openLinuxTerminal(String id, in Bundle request, IRootResult callback);
     void maintainLinuxMetadata(String id, in Bundle request, IRootResult callback);
     void capturePackets(String id, String conversation, in Bundle request, IRootResult callback);
+    void recoverManagedRun(String id, in Bundle request, IRootResult callback);
+    void startManagedRun(String id, in Bundle request, in ParcelFileDescriptor script, in ParcelFileDescriptor bridge, IRootResult callback);
 }

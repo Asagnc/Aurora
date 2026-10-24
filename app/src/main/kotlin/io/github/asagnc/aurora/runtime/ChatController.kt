@@ -176,7 +176,7 @@ internal class ChatController(application: Application,
         if (activeOwner in ids) { preparing?.cancelAndJoin(); app.agentTasks.stopAndJoin() }
         if (state.value.current?.id in ids) mutable.update { it.copy(current = null, messages = emptyList(), streaming = "", toolRuns = emptyList(), taskId = null) }
         ids.forEach { id ->
-            app.spaces.delete(id, app.tasks::quiesce) { owner ->
+            app.spaces.delete(id, { owner -> app.tasks.quiesce(owner); app.managedRuns.recover(owner) }) { owner ->
                 app.terminals.forget(owner)
                 app.browser.deleteOwner(owner)
                 app.imageLoader.memoryCache?.let { cache -> cache.keys.filter { it.key.startsWith("$owner:") }.forEach(cache::remove) }

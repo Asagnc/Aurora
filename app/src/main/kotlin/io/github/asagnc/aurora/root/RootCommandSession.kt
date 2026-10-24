@@ -10,7 +10,7 @@ internal class RootCommandSession {
     private val tasks = mutableMapOf<String, Job>()
     private var closed = false
 
-    @Synchronized fun start(id: String, callback: IRootResult, execute: suspend () -> String) {
+    @Synchronized fun start(id: String, callback: IRootResult, release: () -> Unit = {}, execute: suspend () -> String) {
         require(java.util.UUID.fromString(id).toString() == id)
         check(!closed && tasks.size < 2 && id !in tasks) { "Root session closed, busy or duplicate command" }
         val token = callback.asBinder()
@@ -27,6 +27,7 @@ internal class RootCommandSession {
         // Register before linking: death or cancellation may occur before launch starts.
         tasks[id] = job
         job.invokeOnCompletion { failure ->
+            runCatching { release() }
             runCatching { token.unlinkToDeath(death, 0) }
             if (failure is CancellationException) runCatching {
                 callback.complete(objectOf("error" to string("command_outcome_uncertain"),
