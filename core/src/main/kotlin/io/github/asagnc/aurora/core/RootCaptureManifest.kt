@@ -1,6 +1,8 @@
+@file:OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
 package io.github.asagnc.aurora.core
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.EncodeDefault
 
 @Serializable data class RootCaptureSealRecord(val binding: CaptureRunBinding, val ticketSha256: String,
     val startedBootMs: Long, val segment: CaptureSegmentSeal, val protocol: Int = 1) {
@@ -28,7 +30,8 @@ import kotlinx.serialization.Serializable
 
 /** Only an ordered registered prefix may be published; partial/orphan files never become a sealed entry by guessing. */
 @Serializable data class RootCaptureManifest(val binding: CaptureRunBinding, val ticketSha256: String,
-    val startedBootMs: Long, val segments: List<CaptureSegmentSeal> = emptyList(), val protocol: Int = 1) {
+    val startedBootMs: Long, val segments: List<CaptureSegmentSeal> = emptyList(), val protocol: Int = 1,
+    @EncodeDefault(EncodeDefault.Mode.NEVER) val finalRecord: RootCaptureFinalRecord? = null) {
     fun validate(expectedBinding: CaptureRunBinding, expectedTicket: String, options: CaptureRotationOptions) {
         require(binding == expectedBinding && ticketSha256 == expectedTicket) { "Capture manifest belongs to another immutable intent" }
         validateContents(options)
@@ -50,6 +53,11 @@ import kotlinx.serialization.Serializable
             }
             bytes += segment.bytes; packets += segment.packets
             require(bytes <= options.bytes && packets <= options.packets)
+        }
+        finalRecord?.let {
+            it.validate(binding, ticketSha256, options)
+            require(it.startedBootMs == startedBootMs && it.segments == segments.size && it.bytes == bytes && it.packets == packets)
+            require(segments.lastOrNull()?.let { seal -> it.finishedBootMs >= seal.sealedBootMs } != false)
         }
     }
 

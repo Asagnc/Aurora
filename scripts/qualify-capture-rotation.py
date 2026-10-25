@@ -36,7 +36,7 @@ def qualify():
     subprocess.run(common + [str(ROOT / 'scripts/capture-store-driver.c'), *map(str, store_sources),
         str(prefix / 'lib/libpcap.a'), '-Wl,--wrap=fsync', '-o', str(store)], check=True)
     subprocess.run(['sudo', '-n', sys.executable, str(ROOT / 'scripts/verify-capture-store.py'), str(store)], check=True, timeout=60)
-    worker_sources = store_sources + [packet / (name + '.c') for name in ['RotateMain', 'RotateSource', 'RotateLoop', 'RotateChannel', 'RotateConfig']]
+    worker_sources = store_sources + [packet / (name + '.c') for name in ['RotateMain', 'RotateSource', 'RotateLoop', 'RotateChannel', 'RotateConfig', 'RotateStats']]
     worker_sources += [packet.parent / 'frida' / (name + '.c') for name in ['managed_control', 'input', 'fd_channel', 'fd_io']]
     worker = directory / 'worker'
     subprocess.run(common + list(map(str, worker_sources)) + [str(prefix / 'lib/libpcap.a'), '-o', str(worker)], check=True)

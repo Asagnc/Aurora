@@ -30,6 +30,11 @@ int aurora_capture_register(struct aurora_capture_store *store) {
     if (size <= 0 || size >= (int)sizeof(data)) return -1;
     snprintf(temporary, sizeof(temporary), "capture-%03u.sealing", store->segments);
     snprintf(final, sizeof(final), "capture-%03u.seal", store->segments);
+    return aurora_capture_private_record(store, temporary, final, data, size);
+}
+
+int aurora_capture_private_record(struct aurora_capture_store *store, const char *temporary, const char *final, const char *data, int size) {
+    if (size <= 0 || size >= 1024) return -1;
     int fd = openat(store->directory, temporary, O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC | O_NOFOLLOW, 0600);
     if (fd < 0) return -1;
     int used = 0, result = -1;

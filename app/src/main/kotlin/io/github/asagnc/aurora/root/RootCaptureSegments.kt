@@ -21,6 +21,14 @@ internal object RootCaptureSegments {
         metadata(directory, "capture-%03d.seal".format(java.util.Locale.ROOT, it)) != null
     }
 
+    fun finalRecord(directory: ParcelFileDescriptor, ticket: RootManagedRunTicket, workerStatus: Int?): RootCaptureFinalRecord? {
+        val raw = metadata(directory, "capture.final") ?: return null
+        val config = requireNotNull(configuration(directory, ticket))
+        val record = WireJson.decodeFromString<RootCaptureFinalRecord>(raw.toString(Charsets.UTF_8))
+        record.validate(config.binding, ticket.digest(), config.options)
+        return record.takeIf { workerStatus == null || it.status == workerStatus }
+    }
+
     fun read(directory: ParcelFileDescriptor, ticket: RootManagedRunTicket, config: RootCaptureConfiguration): RootCaptureManifest? {
         config.validateTicket(ticket)
         check(Process.myUid() == 0)
@@ -42,7 +50,9 @@ internal object RootCaptureSegments {
                 val prefix = manifest ?: RootCaptureManifest(config.binding, ticket.digest(), record.startedBootMs)
                 manifest = prefix.appendRecord(record, config.options)
             }
-            return manifest
+            return manifest?.copy(finalRecord = finalRecord(owned, ticket, state.workerStatus))?.also {
+                it.validate(config.binding, ticket.digest(), config.options)
+            }
         }
     }
 

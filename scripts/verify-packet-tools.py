@@ -94,7 +94,7 @@ class PacketToolsTest(unittest.TestCase):
 
     def test_rotating_authenticated_worker_in_private_network_namespace(self):
         prefix = self.root / 'prefix'; module = ROOT / 'app/src/main/cpp/packet'; binary = self.root / 'rotate-worker'
-        sources = [module / (name + '.c') for name in ['RotateMain', 'RotateSource', 'RotateLoop', 'RotateStore', 'RotateSeal', 'RotateChannel', 'RotateConfig', 'Sha256']]
+        sources = [module / (name + '.c') for name in ['RotateMain', 'RotateSource', 'RotateLoop', 'RotateStore', 'RotateSeal', 'RotateChannel', 'RotateConfig', 'RotateStats', 'Sha256']]
         sources += [module.parent / 'frida' / (name + '.c') for name in ['managed_control', 'input', 'fd_channel', 'fd_io']]
         subprocess.run(['cc', '-Wall', '-Wextra', '-Werror', '-I' + str(prefix / 'include'), *map(str, sources),
             str(prefix / 'lib/libpcap.a'), '-o', str(binary)], check=True)

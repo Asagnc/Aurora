@@ -28,4 +28,6 @@ int aurora_capture_store_packet(struct aurora_capture_store *store, const struct
 int aurora_capture_store_seal(struct aurora_capture_store *store);
 void aurora_capture_store_abort(struct aurora_capture_store *store);
 int aurora_capture_register(struct aurora_capture_store *store);
+int aurora_capture_private_record(struct aurora_capture_store *store, const char *temporary, const char *final, const char *data, int size);
+int aurora_capture_final(struct aurora_capture_store *store, const char *reason, int status, const struct pcap_stat *kernel);
 #endif

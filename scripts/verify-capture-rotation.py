@@ -85,7 +85,15 @@ class RotationTest(unittest.TestCase):
         self.assertGreater(struct.unpack_from('<Q', frame, 44)[0], 0)
         self.assertEqual(frame[6], process.returncode); self.assertEqual(frame[5], 193 if not process.returncode else 129)
         self.assertEqual(control.recv(1), b'')
-        return json.loads(output) if output else None
+        report = json.loads(output) if output else None
+        if report is not None:
+            final = json.loads((self.root / 'capture.final').read_text())
+            self.assertEqual(final['status'], process.returncode)
+            self.assertEqual(final['reason'], report['reason'])
+            self.assertEqual(final['kernel'], report['kernel'])
+            self.assertEqual((final['segments'], final['bytes'], final['packets']), (report['segments'], report['bytes'], report['packets']))
+            self.assertEqual((self.root / 'capture.final').stat().st_mode & 0o777, 0o400)
+        return report
 
     def send(self, count):
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as output:

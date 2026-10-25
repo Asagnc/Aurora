@@ -59,6 +59,25 @@ class RootCaptureRotationTest {
             proof.copy(spawnTarget = RootTargetIdentity(1, 2)))) assertFalse(ticket.confirms(changed))
     }
 
+    @Test fun finalCountersAreBoundToTheOriginalIntervalAndRegisteredPrefix() {
+        val config = RootCaptureConfiguration(binding(), options()); val ticket = ticket(config)
+        val segment = seal()
+        val record = RootCaptureFinalRecord(config.binding, ticket.digest(), 0, 20, 1, segment.bytes, segment.packets,
+            "duration", 0, CaptureKernelCounters(100, 7, null))
+        record.validate(ticket); record.validate(config.binding, ticket.digest(), config.options)
+        val manifest = RootCaptureManifest(config.binding, ticket.digest(), 0, listOf(segment), finalRecord = record)
+        manifest.validate(config.binding, ticket.digest(), config.options)
+        assertEquals(7L, manifest.finalRecord?.kernel?.dropped)
+        for (changed in listOf(record.copy(ticketSha256 = "b".repeat(64)), record.copy(binding = config.binding.copy(owner = uuid())),
+            record.copy(finishedBootMs = 50001), record.copy(status = 2), record.copy(reason = "unknown"),
+            record.copy(kernel = CaptureKernelCounters(-1, null, null)), record.copy(bytes = 257)))
+            assertFailsWith<IllegalArgumentException> { changed.validate(config.binding, ticket.digest(), config.options) }
+        assertFailsWith<IllegalArgumentException> {
+            manifest.copy(finalRecord = record.copy(packets = 2)).validate(config.binding, ticket.digest(), config.options)
+        }
+        assertTrue(WireJson.encodeToString(record).toByteArray().size < 1024)
+    }
+
     @Test fun nativeAndJvmUseTheSameFixedConfigurationGoldenVector() {
         fun fixed(i: Int) = "00000000-0000-0000-0000-%012d".format(java.util.Locale.ROOT, i)
         val value = RootCaptureConfiguration(CaptureRunBinding(fixed(1), fixed(2), LinuxRootIdentity(123, 456, fixed(3), fixed(4))), options())

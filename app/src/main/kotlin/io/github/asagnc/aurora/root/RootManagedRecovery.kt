@@ -35,7 +35,10 @@ internal class RootManagedRecovery(context: Context, identity: () -> LinuxRootId
                         if (ticket.kind == "capture") {
                             if (cleanup == null) result
                             else if (discardCapture) { capturePublication.discard(ticket, directory); result.copy(captureDiscarded = true) }
-                            else result.copy(captureArtifact = capturePublication.publish(ticket, directory))
+                            else {
+                                val completed = result.copy(captureFinal = RootCaptureSegments.finalRecord(directory, ticket, records.workerStatus))
+                                completed.copy(captureArtifact = capturePublication.publish(ticket, directory))
+                            }
                         } else if (records.workerState == 0) result.copy(artifactError = "frida_log_unavailable")
                         else result.copy(artifact = publication.publish(ticket, directory))
                     }

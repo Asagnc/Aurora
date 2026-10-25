@@ -47,6 +47,7 @@ finish:
     struct pcap_stat counters; int known = store.pcap && pcap_stats(store.pcap, &counters) == 0;
     /* Close the packet handle before sending capture completion facts. Guard must separately prove worker/domain exit. */
     if (store.pcap) pcap_close(store.pcap);
+    if (aurora_capture_final(&store, reason, status, known ? &counters : NULL)) { reason = "metadata_error"; status = 1; }
     if (store.directory >= 0) close(store.directory);
     for (unsigned i = 0; i < 2; i++) if (descriptors[i] >= 0) close(descriptors[i]);
     printf("{\"protocol\":1,\"reason\":\"%s\",\"segments\":%u,\"bytes\":%llu,\"packets\":%llu,",

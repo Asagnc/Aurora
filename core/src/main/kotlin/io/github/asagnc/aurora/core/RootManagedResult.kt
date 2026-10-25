@@ -17,6 +17,7 @@ data class RootManagedResult(
     val probeObserved: Boolean? = null,
     @EncodeDefault(EncodeDefault.Mode.NEVER) val captureArtifact: String? = null,
     @EncodeDefault(EncodeDefault.Mode.NEVER) val captureDiscarded: Boolean = false,
+    @EncodeDefault(EncodeDefault.Mode.NEVER) val captureFinal: RootCaptureFinalRecord? = null,
 ) {
     fun validate(ticket: RootManagedRunTicket) {
         ticket.validate()
@@ -33,6 +34,7 @@ data class RootManagedResult(
         require(captureArtifact == null || (ticket.kind == "capture" && captureArtifact == "runs/${ticket.runId}/segments/capture-manifest.json"))
         require(captureArtifact == null || (cleanup != null && artifactError == null))
         require(!captureDiscarded || (ticket.kind == "capture" && cleanup != null && captureArtifact == null && artifactError == null && probeObserved == null))
+        captureFinal?.let { it.validate(ticket); require(cleanup != null && (workerStatus == null || workerStatus == it.status)) }
         require(probeObserved == null || (if (ticket.kind == "capture") ticket.action == "capture_probe" && ticket.observeMs == 1000L else
             ticket.script == FridaManagedProbe.snapshot(ticket.bridge != null) &&
                 ticket.target == RootTargetIdentity(ticket.identity.pid, ticket.identity.startTicks) && ticket.observeMs == 10_000L))

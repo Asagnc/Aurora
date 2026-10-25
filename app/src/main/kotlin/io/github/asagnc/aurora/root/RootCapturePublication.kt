@@ -20,8 +20,7 @@ internal class RootCapturePublication(private val context: Context) {
         requireStopped(ticket, state)
         val config = RootCaptureSegments.configuration(state, ticket)
         if (config == null) { require(!RootCaptureSegments.hasSealedPrefix(state)); return }
-        val manifest = RootCaptureSegments.read(state, ticket, config) ?: RootCaptureManifest(config.binding, ticket.digest(), 0)
-        RootCapturePayloadCleanup.remove(state, config, manifest)
+        RootCapturePayloadCleanup.remove(state, config, RootCaptureManifest(config.binding, ticket.digest(), 0))
     }
 
     fun publish(ticket: RootManagedRunTicket, state: ParcelFileDescriptor): String? {
