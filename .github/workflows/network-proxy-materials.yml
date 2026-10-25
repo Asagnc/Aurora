@@ -1,0 +1,32 @@
+name: Fixed proxy source and notice correspondence audit
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  materials:
+    runs-on: ubuntu-26.04-arm
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Verify read-only material audit boundaries
+        run: |
+          python3 scripts/verify-python-bundle.py
+          python3 scripts/verify-network-proxy-materials.py
+          python3 scripts/verify-proxy-rust-materials.py
+      - name: Collect fixed source and candidate native wheel correspondence without executing downloads
+        run: |
+          python3 scripts/prepare-network-proxy.py --directory app/build/outputs/network-proxy-qualification
+          python3 scripts/prepare-network-proxy-materials.py --directory app/build/outputs/network-proxy-materials --audit app/build/outputs/network-proxy-qualification/archive-audit.json
+          python3 scripts/prepare-proxy-rust-materials.py --directory app/build/outputs/proxy-rust-materials --materials app/build/outputs/network-proxy-materials
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: network-proxy-source-audit
+          path: |
+            app/build/outputs/network-proxy-materials/report.json
+            app/build/outputs/network-proxy-materials/notices/*
+            app/build/outputs/proxy-rust-materials/report.json
+            app/build/outputs/proxy-rust-materials/notices/*
+          if-no-files-found: warn
+          retention-days: 14

@@ -1,0 +1,49 @@
+{
+  "linuxArm64CmakeNinjaAndroidJniQualified": true,
+  "versions": {
+    "cmake": "cmake version 4.1.2\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).\n",
+    "ninja": "1.13.2\n"
+  },
+  "jni": [
+    {
+      "abi": "arm64-v8a",
+      "machine": 183,
+      "bytes": 148376,
+      "sha256": "7f690f38774b2bfc421c3079901c38106f514fda30c756e96aedf269f3122ea8",
+      "needed": [
+        "libc++_shared.so",
+        "libc.so",
+        "libdl.so",
+        "libm.so"
+      ],
+      "binutils": {
+        "stripOutputSha256": "31c6eb48d4b7cc05587ea524ba8ce2858fb1c143c52329b3e0f2fe2427ad6168",
+        "ranlibIndexCreated": true
+      }
+    },
+    {
+      "abi": "x86_64",
+      "machine": 62,
+      "bytes": 145376,
+      "sha256": "a9e3d7a23e3a2886d6ee3d25d57ca14f752aac3f13fb45507d6c1fb8207e01b5",
+      "needed": [
+        "libc++_shared.so",
+        "libc.so",
+        "libdl.so",
+        "libm.so"
+      ],
+      "binutils": {
+        "stripOutputSha256": "b8e7d01b8618050829bfe7adc32503502292973fc342f4be0e9ad8e352d21ba9",
+        "ranlibIndexCreated": true
+      }
+    }
+  ],
+  "ndkArchiveSha256": "753611f410d002cfcd3f3dc2ef49aad532089d3180b436c060a90bf0fcb64df2",
+  "compilerSourceArchives": 6,
+  "targetFiles": 3318,
+  "targetBytes": 168450397,
+  "ndkEquivalenceVerified": false,
+  "fullAgpJniBuildQualified": false,
+  "androidRuntime": "NOT TESTED",
+  "phoneInstallReady": false
+}

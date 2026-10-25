@@ -58,7 +58,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends libprotobuf-dev libfmt-dev libexpat1-dev libpng-dev zlib1g-dev
       - name: Build owned Java then Kotlin Compose APKs using actual ARM64 tools
-        run: python3 scripts/qualify-apk-agp.py --directory app/build/outputs/apk-agp-jni-qualification --resources app/build/outputs/qualified-resources --compiler app/build/outputs/qualified-compiler
+        run: |
+          python3 scripts/verify-apk-owned-dex.py
+          python3 scripts/qualify-apk-agp.py --directory app/build/outputs/apk-agp-jni-qualification --resources app/build/outputs/qualified-resources --compiler app/build/outputs/qualified-compiler
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:

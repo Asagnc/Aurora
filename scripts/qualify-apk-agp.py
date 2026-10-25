@@ -12,6 +12,7 @@ import stat
 import subprocess
 import tempfile
 import zipfile
+from apk_owned_dex import verify as verify_owned_dex
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -106,10 +107,8 @@ def build(gradle, environment, work, directory, stage):
     # Preserve the actual APK even if a following correspondence check fails.
     shutil.copyfile(apk, directory / (name + '-owned-unsigned.apk'))
     with zipfile.ZipFile(apk) as archive:
-        dex = archive.read('classes.dex')
-        if not dex.startswith(b'dex\n') or b'Owned;' not in dex or (compose and b'OwnedScreenKt;' not in dex):
-            raise ValueError('Actual generated DEX lacks owned Java/Compose fixture')
-    result = {'stage': name, 'apkBytes': apk.stat().st_size, 'apkSha256': hashlib.sha256(apk.read_bytes()).hexdigest()}
+        classes = verify_owned_dex(archive, compose)
+    result = {'stage': name, 'apkBytes': apk.stat().st_size, 'apkSha256': hashlib.sha256(apk.read_bytes()).hexdigest(), 'ownedClassDefinitions': classes}
     if native:
         result['jni'] = native.inspect(apk)
     return result
