@@ -1,8 +1,24 @@
 package io.github.asagnc.aurora.core
 
 import kotlin.test.*
+import kotlinx.serialization.json.*
 
 class ProviderCatalogTest {
+    @Test fun currentKimiAndMiniMaxEffortWireShapesRejectUnsupportedNone() {
+        val kimi = Connection(name = "Kimi", baseUrl = "https://api.moonshot.cn/v1", protocol = Protocol.CHAT, model = "kimi-k3.1-pro", effort = "high")
+        val mini = kimi.copy(name = "MiniMax", baseUrl = "https://api.minimax.cn/anthropic/v1",
+            protocol = Protocol.ANTHROPIC, model = "MiniMax-M3.1-Flash", effort = "xhigh")
+        fun encode(connection: Connection) = RequestEncoder.encode(ModelRequest(connection, "fixture", emptyList(), emptyList()))
+        assertEquals("high", encode(kimi).text("reasoning_effort"))
+        assertEquals("xhigh", encode(mini)["output_config"]!!.jsonObject.text("effort"))
+        assertEquals("adaptive", encode(mini)["thinking"]!!.jsonObject.text("type"))
+        for (connection in listOf(kimi, mini)) {
+            assertFailsWith<ConfigurationException> { encode(connection.copy(effort = "none")) }
+            assertFalse("reasoning_effort" in encode(connection.copy(effort = "auto")))
+        }
+        assertFalse(CachePolicy.supportsEffortUpdates(kimi))
+        assertFalse(CachePolicy.supportsEffortUpdates(mini))
+    }
     @Test fun aliWorkspaceCannotInjectAnUnrelatedCredentialDestination() {
         val preset = ProviderCatalog.presets.first { it.requiresWorkspace }
         assertFailsWith<IllegalArgumentException> { preset.endpoint() }

@@ -49,12 +49,38 @@ def verify_signature(apk, args):
         return {'verified': False, 'reason': 'unsigned-review-only'}
     if not args.apksigner or not re.fullmatch('[a-f0-9]{64}', args.certificate_sha256 or ''):
         raise ValueError('Release requires apksigner and the expected certificate SHA256')
-    result = subprocess.run([str(args.apksigner), 'verify', '--verbose', '--print-certs', str(apk)],
+    signer = [str(args.apksigner)]
+    if args.apksigner.suffix == '.jar':
+        signer = [str(args.java), '-jar', str(args.apksigner)]
+    result = subprocess.run(signer + ['verify', '--verbose', '--print-certs', str(apk)],
                             capture_output=True, text=True, check=True)
     certificates = re.findall(r'^Signer #\d+ certificate SHA-256 digest: ([a-fA-F0-9]{64})$', result.stdout, re.M)
     if [item.lower() for item in certificates] != [args.certificate_sha256]:
         raise ValueError('APK signer differs from the selected release certificate')
     return {'verified': True, 'certificateSha256': args.certificate_sha256}
+
+
+def manifest_identity(badging):
+    source = (ROOT / 'app/build.gradle.kts').read_text(encoding='utf-8')
+    code = re.search(r'versionCode = (\d+)', source).group(1)
+    version = re.search(r'versionName = "([^"]+)"', source).group(1)
+    package = re.search(r"^package: name='([^']+)' versionCode='([^']+)' versionName='([^']+)'", badging, re.M)
+    if not package or package.groups() != ('io.github.asagnc.aurora', code, version):
+        raise ValueError('APK identity differs from this checkout')
+    if "minSdkVersion:'36'" not in badging or "targetSdkVersion:'37'" not in badging or 'application-debuggable' in badging:
+        raise ValueError('Release requires Android36+, target37 and a non-debuggable APK')
+    return {'applicationId': package[1], 'versionCode': int(code), 'versionName': version}
+
+
+def android_identity(apk, args):
+    suffix = '.exe' if __import__('os').name == 'nt' else ''
+    tools = args.build_tools.resolve()
+    result = subprocess.run([str(tools / ('aapt2' + suffix)), 'dump', 'badging', str(apk)],
+                            capture_output=True, text=True, check=True)
+    identity = manifest_identity(result.stdout)
+    subprocess.run([str(tools / ('zipalign' + suffix)), '-c', '-P', '16', '4', str(apk)],
+                   capture_output=True, check=True)
+    return identity
 
 
 def audit(apk):
@@ -80,6 +106,7 @@ def stage(args):
                 raise ValueError('Missing selected release input: ' + name)
             shutil.copyfile(source, work / name)
         audit(work / 'Aurora.apk')
+        application = android_identity(work / 'Aurora.apk', args)
         identity = source_identity(work / 'Aurora.apk', work / 'frida-source-materials.zip')
         reference = json.loads(args.frida_reference.read_text(encoding='utf-8'))
         if identity['workerSha256'] != reference['workerSha256']:
@@ -93,8 +120,9 @@ def stage(args):
             str(work / 'native-corresponding-source.zip'), '--reference', str(args.guard_reference.resolve()),
             '--ndk', str(args.ndk.resolve()), '--report', str(work / 'native-rebuild.json')], check=True)
         manifest = {'format': 1, 'androidRuntime': 'NOT VERIFIED BY PACKAGING',
-            'releaseReady': False, 'signature': signature, **identity,
+            'releaseReady': False, 'signature': signature, **identity, **application,
             'gitCommit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
+            'workTreeDirty': bool(subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=no'], cwd=ROOT)),
             'files': [{'name': name, 'bytes': (work / name).stat().st_size, 'sha256': sha(work / name)}
                       for name in sorted(path.name for path in work.iterdir())]}
         (work / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
@@ -115,10 +143,11 @@ def stage(args):
 if __name__ == '__main__':
     import sys
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ['apk', 'frida-sources', 'native-sources', 'frida-reference', 'guard-reference', 'ndk', 'output']:
+    for name in ['apk', 'frida-sources', 'native-sources', 'frida-reference', 'guard-reference', 'ndk', 'build-tools', 'output']:
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--unsigned-review', action='store_true')
-    parser.add_argument('--apksigner', type=Path, help='Java executable wrapper; use apksigner JAR via a local launcher if needed')
+    parser.add_argument('--apksigner', type=Path, help='SDK lib/apksigner.jar or native launcher')
+    parser.add_argument('--java', type=Path, default=Path(shutil.which('java') or 'java'))
     parser.add_argument('--certificate-sha256')
     parser.add_argument('--python', default=sys.executable)
     stage(parser.parse_args())

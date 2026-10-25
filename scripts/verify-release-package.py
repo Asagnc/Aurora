@@ -15,6 +15,13 @@ spec.loader.exec_module(release)
 
 
 class ReleaseTest(unittest.TestCase):
+    def test_wrong_package_debuggable_and_wrong_platform_are_rejected(self):
+        sample = "package: name='io.github.asagnc.aurora' versionCode='41' versionName='0.1.40'\nminSdkVersion:'36'\ntargetSdkVersion:'37'\n"
+        self.assertEqual('io.github.asagnc.aurora', release.manifest_identity(sample)['applicationId'])
+        for invalid in [sample.replace('io.github.asagnc.aurora', 'other.app'), sample + 'application-debuggable',
+                        sample.replace("minSdkVersion:'36'", "minSdkVersion:'35'"), sample.replace("versionCode='41'", "versionCode='40'")]:
+            with self.assertRaises(ValueError):
+                release.manifest_identity(invalid)
     def test_wrong_worker_and_bridge_cannot_accompany_apk(self):
         with tempfile.TemporaryDirectory() as temporary:
             apk = Path(temporary) / 'app.apk'

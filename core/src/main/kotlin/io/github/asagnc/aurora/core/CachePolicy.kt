@@ -54,7 +54,10 @@ object CachePolicy {
                 listOf("auto", "low", "medium", "high", "xhigh", "max")
             model == "gpt-6-luna" && connection.protocol in setOf(Protocol.CHAT, Protocol.RESPONSES) ->
                 listOf("auto", "none", "low", "medium", "high", "xhigh", "max")
-            model == "kimi-k3" && connection.protocol == Protocol.CHAT -> listOf("auto", "low", "high", "max")
+            model in setOf("kimi-k3", "kimi-k3.1-pro", "kimi-k3.1-pro-highspeed") && connection.protocol == Protocol.CHAT ->
+                listOf("auto", "low", "high", "max")
+            model == "minimax-m3.1-flash" && connection.protocol == Protocol.ANTHROPIC ->
+                listOf("auto", "low", "medium", "high", "xhigh", "max")
             model in setOf("claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5", "claude-fable-5-1") && connection.protocol == Protocol.ANTHROPIC ->
                 listOf("auto", "low", "medium", "high", "xhigh", "max")
             else -> listOf("auto")

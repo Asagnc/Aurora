@@ -1,5 +1,11 @@
 # 当前接续清单（2026-10-25，0.1.40）
 
+## 2026-10-25 构建链路线确认与公开模型核对
+
+用户已确认APK_BUILD_PROPOSAL的Root chroot/共享ARM64 JDK25＋完整Gradle/AGP路线，先来源与主机资格、通过后再安装。签名密钥在手机公共下载目录，留最终集中验收处理，当前不访问手机。模型目录已按10家官方公开文档复核至10-25，新增Kimi K3.1 Pro/高速版、MiniMax M3.1 Flash与严格effort编码，核心269项257通过/12跳过。Debug/Release/testAPK/lint/自有fixture本地通过；无付费请求。见PROVIDER_REVIEW_20261025.md。
+
+发布包补aapt2身份/版本/SDK与非debuggable、zipalign检查、dirty标记；4项打包回归通过。当前最终手机与真实账号缓存/费用仍未验收。新增工具链资格实验接续进行，不能把方案获批记成工具已安装可用。
+
 ## 2026-10-25 spawn 首轮完整CI与最终设备夹具
 
 fc6b4c8完整CI40157675374三job成功，28项真实Frida（新增2项自有原生spawn）、原生监督与Android/载荷审计通过；独立源码CI40157695350也成功，24份自有源码/65份上游材料离线重链接通过。Windows完整材料包已实际生成并核实。后续补同boot暂停目标恢复、resume意图/旧boot不终止的2项主机用例与pidfd回收绝对截止，等待新CI。
