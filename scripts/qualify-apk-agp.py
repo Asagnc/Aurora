@@ -88,9 +88,12 @@ import androidx.compose.foundation.text.BasicText
 ''')
 
 
-def build(gradle, environment, work, directory, compose):
-    name = 'compose' if compose else 'java'
+def build(gradle, environment, work, directory, stage):
+    compose, native = stage
+    name = ('compose' if compose else 'java') + ('-jni' if native else '')
     fixture = work / 'project'; project(fixture, compose)
+    if native:
+        native.configure(fixture)
     command = [str(gradle / 'bin/gradle'), '--no-daemon', '--console=plain', '--rerun-tasks',
                '-p', str(fixture), 'assembleRelease']
     with (directory / (name + '-agp.txt')).open('wb') as log:
@@ -105,11 +108,13 @@ def build(gradle, environment, work, directory, compose):
         if not dex.startswith(b'dex\n') or b'Owned;' not in dex or (compose and b'OwnedScreenKt;' not in dex):
             raise ValueError('Actual generated DEX lacks owned Java/Compose fixture')
     result = {'stage': name, 'apkBytes': apk.stat().st_size, 'apkSha256': hashlib.sha256(apk.read_bytes()).hexdigest()}
+    if native:
+        result['jni'] = native.inspect(apk)
     shutil.copyfile(apk, directory / (name + '-owned-unsigned.apk'))
     return result
 
 
-def qualify(directory, resources):
+def qualify(directory, resources, compiler=None):
     if platform.system() != 'Linux' or platform.machine().lower() not in {'aarch64', 'arm64'}:
         raise ValueError('Requires real Linux ARM64')
     directory = directory.resolve(); resources = resources.resolve(); directory.mkdir(parents=True, exist_ok=True)
@@ -153,11 +158,14 @@ def qualify(directory, resources):
             environment.pop(key, None)
         environment.update(JAVA_HOME=str(tools['jdk']), GRADLE_USER_HOME=str(work / 'cache'), HOME=str(work / 'home'))
         environment['PATH'] = str(tools['jdk'] / 'bin') + ':/usr/bin:/bin'
-        results = [build(tools['gradle'], environment, work, directory, compose) for compose in [False, True]]
+        native_fixture = module('agp_jni', 'apk_agp_jni_fixture.py').NativeAgpFixture(directory, compiler, work,
+            environment, native / 'zipalign') if compiler is not None else None
+        results = [build(tools['gradle'], environment, work, directory, (compose, native_fixture)) for compose in [False, True]]
     report = {'linuxArm64AgpJavaComposeQualified': True, 'agp': '9.4.1', 'kotlin': '2.4.21',
               'artifacts': results, 'foreignElfReplacedByRejection': rejected,
               'sdkMetadataSha256': {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(metadata.glob('*.xml'))},
-              'androidRuntime': 'NOT TESTED', 'androidJniQualified': False, 'phoneInstallReady': False}
+              'androidRuntime': 'NOT TESTED', 'androidJniQualified': False, 'fullAgpJniBuildQualified': compiler is not None,
+              'ndkEquivalenceVerified': False, 'phoneInstallReady': False}
     (directory / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report))
 
@@ -166,4 +174,5 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--directory', type=Path, required=True)
     parser.add_argument('--resources', type=Path, required=True)
-    args = parser.parse_args(); qualify(args.directory, args.resources)
+    parser.add_argument('--compiler', type=Path)
+    args = parser.parse_args(); qualify(args.directory, args.resources, args.compiler)

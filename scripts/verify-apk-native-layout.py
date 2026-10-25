@@ -27,11 +27,13 @@ class NativeLayoutTest(unittest.TestCase):
     def test_cmake_data_is_preserved_and_foreign_host_bin_not_extracted(self):
         archive = self.archive([('android-ndk-r30/build/cmake/android.toolchain.cmake', 'set(OWNED 1)'),
             ('android-ndk-r30/meta/platforms.json', '{}'), ('android-ndk-r30/source.properties', 'Pkg.Revision=30'),
+            ('android-ndk-r30/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/21/lib/linux/aarch64/libatomic.a', b'!<arch>\nowned'),
             ('android-ndk-r30/toolchains/llvm/prebuilt/linux-x86_64/bin/foreign', b'\x7fELFFOREIGN')])
         ndk, toolchain, _ = prepare_ndk(archive, self.pin, self.candidate, self.root / 'work')
         self.assertEqual((ndk / 'build/cmake/android.toolchain.cmake').read_text(), 'set(OWNED 1)')
         self.assertEqual((toolchain / 'bin/clang').read_bytes(), b'OWNED VERIFIED COMPILER FIXTURE')
         self.assertFalse((toolchain / 'bin/foreign').exists())
+        self.assertEqual((toolchain / 'lib/clang/21/lib/linux/aarch64/libatomic.a').read_bytes(), b'!<arch>\nowned')
         self.assertIn('llvm-ar', (toolchain / 'bin/llvm-ranlib').read_text())
 
     def test_metadata_traversal_is_rejected(self):

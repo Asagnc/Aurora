@@ -15,10 +15,8 @@ from apk_native_host import prepare_host, prepare_ndk
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def fixture(tools, work, directory, target, environment):
-    cmake, ndk, toolchain = tools
-    abi, machine = target
-    project = work / abi; project.mkdir()
+def write_project(project):
+    project.mkdir(parents=True, exist_ok=True)
     (project / 'owned.cpp').write_text('''#include <jni.h>
 #include <vector>
 #include <string>
@@ -34,6 +32,12 @@ add_library(owned SHARED owned.cpp)
 target_compile_features(owned PRIVATE cxx_std_17)
 target_link_options(owned PRIVATE -Wl,--no-undefined,-z,relro,-z,now,-z,noexecstack,-z,max-page-size=16384,-z,common-page-size=16384)
 ''')
+
+
+def fixture(tools, work, directory, target, environment):
+    cmake, ndk, toolchain = tools
+    abi, machine = target
+    project = work / abi; write_project(project)
     build = project / 'build'
     commands = [[str(cmake / 'bin/cmake'), '-S', str(project), '-B', str(build), '-G', 'Ninja',
         '-DCMAKE_MAKE_PROGRAM=' + str(cmake / 'bin/ninja'), '-DCMAKE_TOOLCHAIN_FILE=' + str(ndk / 'build/cmake/android.toolchain.cmake'),
@@ -83,6 +87,7 @@ def qualify(directory, compiler):
                    for abi, machine in [('arm64-v8a', 183), ('x86_64', 62)]]
         report = {'linuxArm64CmakeNinjaAndroidJniQualified': True, 'versions': versions, 'jni': results,
             'ndkArchiveSha256': pin['sha256'], 'compilerSourceArchives': proof['sourceArchives'],
+            'targetFiles': len(files), 'targetBytes': sum(item['bytes'] for item in files),
             'ndkEquivalenceVerified': False, 'fullAgpJniBuildQualified': False, 'androidRuntime': 'NOT TESTED', 'phoneInstallReady': False}
         (directory / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
         print(json.dumps(report))

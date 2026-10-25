@@ -48,7 +48,7 @@ def destination(name, pin):
             return relative
     runtime = 'lib/clang/' + pin['resourceVersion'] + '/lib/linux/'
     selected = {'libclang_rt.builtins-aarch64-android.a', 'libclang_rt.builtins-x86_64-android.a',
-                'aarch64/libunwind.a', 'x86_64/libunwind.a'}
+                'aarch64/libunwind.a', 'x86_64/libunwind.a', 'aarch64/libatomic.a', 'x86_64/libatomic.a'}
     if relative.startswith(runtime) and relative.removeprefix(runtime) in selected:
         return relative
     return None

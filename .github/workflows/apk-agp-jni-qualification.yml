@@ -1,0 +1,71 @@
+name: ARM64 real AGP Compose JNI qualification
+on:
+  workflow_dispatch:
+    inputs:
+      resource_run:
+        description: Successful owned API37 ARM64 resource workflow run
+        required: true
+        default: '40180937353'
+      resource_sha:
+        description: Exact reviewed resource workflow commit
+        required: true
+        default: b2cbed2003c6cc5c3cd0483d0833ce466fccf898
+permissions:
+  contents: read
+  actions: read
+jobs:
+  agp:
+    runs-on: ubuntu-26.04-arm
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Obtain exact successful owned source-built resource tools
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESOURCE_RUN: ${{ inputs.resource_run }}
+          RESOURCE_SHA: ${{ inputs.resource_sha }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, subprocess
+          run = os.environ['RESOURCE_RUN']; sha = os.environ['RESOURCE_SHA']
+          if not re.fullmatch(r'[0-9]+', run) or not re.fullmatch(r'[0-9a-f]{40}', sha):
+              raise ValueError('Invalid explicit resource identity')
+          proof = json.loads(subprocess.check_output(['gh', 'api', 'repos/Asagnc/Aurora/actions/runs/' + run]))
+          if proof['conclusion'] != 'success' or proof['head_sha'] != sha or proof['path'] != '.github/workflows/apk-build-qualification.yml':
+              raise ValueError('Resource workflow identity or success differs')
+          subprocess.run(['gh', 'run', 'download', run, '--name', 'apk-arm64-resource-qualification',
+              '--dir', 'app/build/outputs/qualified-resources'], check=True)
+          PY
+      - name: Obtain exact successful owned compiler candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COMPILER_RUN: '40183812668'
+          COMPILER_SHA: 0efbd18e54a5fe8c7cb3037f5e77e51faac95c4a
+        run: |
+          python3 - <<'PY'
+          import json, os, re, subprocess
+          run = os.environ['COMPILER_RUN']; sha = os.environ['COMPILER_SHA']
+          if not re.fullmatch(r'[0-9]+', run) or not re.fullmatch(r'[0-9a-f]{40}', sha):
+              raise ValueError('Invalid explicit compiler identity')
+          proof = json.loads(subprocess.check_output(['gh', 'api', 'repos/Asagnc/Aurora/actions/runs/' + run]))
+          if proof['conclusion'] != 'success' or proof['head_sha'] != sha or proof['path'] != '.github/workflows/apk-compiler-qualification.yml':
+              raise ValueError('Compiler workflow identity or success differs')
+          subprocess.run(['gh', 'run', 'download', run, '--name', 'apk-arm64-compiler-qualification',
+              '--dir', 'app/build/outputs/qualified-compiler'], check=True)
+          PY
+      - name: Install matching native runtime libraries on qualification host
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libprotobuf-dev libfmt-dev libexpat1-dev libpng-dev zlib1g-dev
+      - name: Build owned Java then Kotlin Compose APKs using actual ARM64 tools
+        run: python3 scripts/qualify-apk-agp.py --directory app/build/outputs/apk-agp-jni-qualification --resources app/build/outputs/qualified-resources --compiler app/build/outputs/qualified-compiler
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: apk-arm64-agp-jni-qualification
+          path: |
+            app/build/outputs/apk-agp-jni-qualification/*.json
+            app/build/outputs/apk-agp-jni-qualification/*.txt
+            app/build/outputs/apk-agp-jni-qualification/*-owned-unsigned.apk
+          if-no-files-found: warn
+          retention-days: 14
