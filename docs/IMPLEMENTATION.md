@@ -1,3 +1,7 @@
+## 2026-10-25 当前完整验证结果
+
+实现提交3e3c227的完整CI40155403134三个job全部成功，含26项真实Frida、原生监督、核心与Android Debug/Release/testAPK/lint、APK资产/ELF和源码重建审计；独立源码CI40155411773也成功，65输入获取与离线重链接通过。此前18c1474的桥输入换行失败已修复，失败记录保留。当前本地核心263项251通过/12跳过。手机、付费模型、正式签名均未执行，下一步是集中设备资格与签名发布准备，参照FRIDA_AGENT_ACCEPTANCE.md。
+
 ## 2026-10-25 Frida APK、Agent 与精确探测证据
 
 ARM64 worker、固定 Java 桥及许可文本已打包；Agent `frida` 提供 status/probe/attach，固定当前 Root 身份、目标 PID/start、脚本 SHA 和桥版本。原生与 Java 资格仅在当前 Root 服务内存中有效，须固定自测成功、独立清理证明与 Root 私有日志实际调用证据同时成立。workerSucceeded 不代表异步用户脚本完成。退出屏障后发布有界会话日志，日志发布失败不丢失清账证明。
