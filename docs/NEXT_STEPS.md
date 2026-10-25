@@ -46,11 +46,11 @@
 
 - 官方归档98,927,179字节与3个成员已固定摘要，仅选择mitmdump；只读审计121条目、14个ARM64 ELF、1176个冻结Python模块。冻结模块索引禁止代码对象，不导入执行冻结代码。
 - 真实ARM64 HTTP/HTTPS请求响应修改、严格信任/未信任CA拒绝、WebSocket修改、完成流离线回读在CI40180289970成功；新增索引审计CI40180852638也成功。
-- 已取上游精确commit/UV锁和43份源码包69,723,152字节，12个内嵌原生组件逐字节匹配固定ARM64 wheel，许可材料已提取；新增ARM64运行身份/源码材料CI40206942052通过；496个Cargo固定crate共91,852,188字节已校验采集，补充项目许可后CI40210692480已通过（没有缺失的独立许可项）；Python3.14.0已逐字节匹配官方20251010 ARM64归档，15份源码和21份所需许可本地采集通过；libgcc已逐字节匹配Debian12.2.0-14+deb12u1并取得对应源码、Debian修改和运行库例外。14个内嵌原生ELF均已有精确二进制对应；静态OpenSSL来源闭包仍需补全，手机chroot运行闭包、共享安装/持久租约/Agent规则与产物入口；不显示proxyReady。
+- 已取上游精确commit/UV锁和43份源码包69,723,152字节，12个内嵌原生组件逐字节匹配固定ARM64 wheel，许可材料已提取；新增ARM64运行身份/源码材料CI40206942052通过；496个Cargo固定crate共91,852,188字节已校验采集，补充项目许可后CI40210692480已通过（没有缺失的独立许可项）；Python3.14.0已逐字节匹配官方20251010 ARM64归档，15份源码和21份所需许可本地采集通过；libgcc已逐字节匹配Debian12.2.0-14+deb12u1并取得对应源码、Debian修改和运行库例外。14个内嵌原生ELF均已有精确二进制对应；静态OpenSSL来源闭包仍需补全，Python/GCC源码采集与只读边界已在CI40224295518整体通过。手机chroot运行闭包、共享安装/持久租约/Agent规则与产物入口仍待接；不显示proxyReady。
 - 首版明确regular loopback代理，不自动改全局路由或安装系统CA；只导出公有CA，私钥留所有者私有。规则固定结构化数据，不把任意Python脚本当产品规则接口。
 - 单次HTTP构造/重放 `http_request` 已接Agent/账本/会话产物，显式路由、TLS验证、禁止自动重试、取消/超时/解压预算与11项主机回归通过；2项Android已编译未执行，见HTTP_REPLAY_IMPLEMENTATION.md。原始帧packet_inject_root已接Root Binder/受管worker/账本，双ABI构建与4项核心证明回归通过，7项私有veth/短写实验已通过CI40185946093；新增classic PCAP精确片段回放，核心参数/选择/多帧证明与完整本地构建通过，扩展13项Linux实验及整体CI40202879875已通过，见PACKET_INJECTION_IMPLEMENTATION.md。
 - UID精确socket快照和复用现有受管引擎的长时分段轮转均获用户确认，见NETWORK_UID_ROTATION_PROPOSAL；socket_owner_root已接Agent/账本和有界原生查询，本地291核心及完整构建通过，Linux内核7项已通过CI40204214212专属job，整体CI另跟踪，Android2项仅编译。轮转继续按验证后开放推进，不把快照当历史逐包归属。
-- 轮转配置/封口记录已实现独立有界契约，AURC封印memfd解码、固定小端黄金向量、Root身份/票据/顺序/物理inode/总预算验证、原始内核计数未知处理和流式SHA256；300项核心288通过/12跳过。原生配置/摘要仅双ABI对象编译，Linux实际执行CI待跟踪；尚未接实时worker、guard恢复、Root发布和Agent，不开放轮转入口。
+- 轮转配置/封口记录已实现独立有界契约，AURC封印memfd解码、固定小端黄金向量、Root身份/票据/顺序/物理inode/总预算验证、原始内核计数未知处理和流式SHA256；300项核心288通过/12跳过。原生配置/摘要双ABI对象编译通过，CI40224294297的capture-primitives已实际执行8组Linux测试通过（完整构建另跟踪）；新增单句柄分段写入/封口存储层：整包预算、Root私有目录、不覆盖/不跟随链接、关闭写句柄、fsync、物理inode/SHA256和原子封口记录；双ABI对象编译通过，Linux真实libpcap及写入/fsync/冲突故障验收已加入。尚未接实时worker、guard恢复、Root发布和Agent，不开放轮转入口。
 
 ## 其余尚未完成
 

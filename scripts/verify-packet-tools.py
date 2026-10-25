@@ -85,6 +85,13 @@ class PacketToolsTest(unittest.TestCase):
         subprocess.run(['sudo', '-n', 'unshare', '--net', '--', sys.executable,
                         str(ROOT / 'scripts/verify-packet-capture.py'), str(binary)], check=True, timeout=60)
 
+    def test_rotating_closed_segments_and_failed_registration(self):
+        prefix = self.root / 'prefix'; module = ROOT / 'app/src/main/cpp/packet'; binary = self.root / 'rotate-store'
+        subprocess.run(['cc', '-Wall', '-Wextra', '-Werror', '-I' + str(prefix / 'include'), '-I' + str(module),
+            str(ROOT / 'scripts/capture-store-driver.c'), str(module / 'RotateStore.c'), str(module / 'RotateSeal.c'),
+            str(module / 'Sha256.c'), str(prefix / 'lib/libpcap.a'), '-Wl,--wrap=fsync', '-o', str(binary)], check=True)
+        subprocess.run(['sudo', '-n', sys.executable, str(ROOT / 'scripts/verify-capture-store.py'), str(binary)], check=True, timeout=60)
+
     def test_exact_stable_versions(self):
         result = self.run_tool('--version')
         self.assertEqual(result.returncode, 0, result.stderr)
