@@ -2,6 +2,7 @@
 """Bounded qualification archive rejection paths; no downloads or external JVM execution."""
 import importlib.util
 import io
+import os
 from pathlib import Path
 import tarfile
 import tempfile
@@ -25,6 +26,10 @@ class JvmInputsTest(unittest.TestCase):
                 output.addfile(data, io.BytesIO(b'owned'))
                 link = tarfile.TarInfo('include/utils/TypeHelpers.h'); link.type = tarfile.SYMTYPE
                 link.linkname = '../../binder/include/utils/TypeHelpers.h'; output.addfile(link)
+                directory = tarfile.TarInfo('include/utils'); directory.type = tarfile.DIRTYPE; output.addfile(directory)
+                if os.name != 'nt':
+                    alias = tarfile.TarInfo('legacy/utils'); alias.type = tarfile.SYMTYPE
+                    alias.linkname = '../include/utils'; output.addfile(alias)
                 external = tarfile.TarInfo('.clang-format'); external.type = tarfile.SYMTYPE
                 external.linkname = '../../outside'; output.addfile(external)
             report = resources.unpack({'destination': 'vendor/core', 'repository': 'https://android.googlesource.com/platform/system/core',
@@ -32,6 +37,8 @@ class JvmInputsTest(unittest.TestCase):
             header = work / 'vendor/core/include/utils/TypeHelpers.h'
             self.assertEqual(b'owned', header.read_bytes())
             self.assertFalse(header.is_symlink())
+            if os.name != 'nt':
+                self.assertEqual(b'owned', (work / 'vendor/core/legacy/utils/TypeHelpers.h').read_bytes())
             self.assertEqual(['.clang-format'], report['linksNotMaterialized'])
             self.assertFalse((root / 'outside').exists())
     def test_noncanonical_cross_root_and_windows_paths_are_rejected(self):

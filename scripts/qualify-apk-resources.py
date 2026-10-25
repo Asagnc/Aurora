@@ -30,9 +30,9 @@ def unpack(entry, archive, work):
     if destination != '.' and (destination.startswith('/') or '..' in destination.split('/') or '\\' in destination):
         raise ValueError('Unsafe source destination')
     prefix = entry['repository'].startswith('https://github.com/')
-    skipped = []; materialized = []
+    skipped = []; materialized = []; directories = []
     with tarfile.open(archive) as source:
-        members = {}
+        members = {}; member_names = {}
         for item in source:
             parts = PurePosixPath(item.name).parts
             if prefix:
@@ -40,6 +40,7 @@ def unpack(entry, archive, work):
             if not parts:
                 continue
             members['/'.join(parts)] = item
+            member_names[id(item)] = '/'.join(parts)
             if item.issym() or item.islnk():
                 continue
             target = work / destination / Path(*parts)
@@ -56,28 +57,37 @@ def unpack(entry, archive, work):
         for name, item in members.items():
             if not (item.issym() or item.islnk()):
                 continue
-            resolved = linked_file(name, members)
+            resolved = linked_member(name, members)
             if resolved is None:
                 skipped.append(name)
                 continue
             target = work / destination / name
             target.resolve().relative_to(work.resolve())
             target.parent.mkdir(parents=True, exist_ok=True)
+            if resolved.isdir():
+                actual = work / destination / member_names[id(resolved)]
+                actual.resolve().relative_to(work.resolve())
+                if not actual.is_dir():
+                    raise ValueError('Source directory alias has no extracted target')
+                target.symlink_to(os.path.relpath(actual, target.parent), target_is_directory=True)
+                directories.append(name)
+                continue
             with source.extractfile(resolved) as incoming, target.open('xb') as output:
                 shutil.copyfileobj(incoming, output, 65536)
             target.chmod(0o755 if resolved.mode & 0o111 else 0o644)
             materialized.append(name)
-    return {'source': entry['id'], 'linksNotMaterialized': skipped, 'linksMaterializedAsFiles': materialized}
+    return {'source': entry['id'], 'linksNotMaterialized': skipped,
+            'linksMaterializedAsFiles': materialized, 'internalDirectoryAliases': directories}
 
 
-def linked_file(name, members):
+def linked_member(name, members):
     seen = set()
     while name not in seen and len(seen) < 16:
         seen.add(name)
         item = members.get(name)
         if item is None:
             return None
-        if item.isfile():
+        if item.isfile() or item.isdir():
             if item.size > 2_097_152:
                 raise ValueError('Oversized source link destination')
             return item
