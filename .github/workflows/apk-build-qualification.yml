@@ -4,6 +4,27 @@ on:
 permissions:
   contents: read
 jobs:
+  resources:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install owned host compilation prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends cmake ninja-build g++ bison flex patch pkg-config libexpat1-dev libfmt-dev libgtest-dev libprotobuf-dev protobuf-compiler libpng-dev zlib1g-dev
+          dpkg-query -W cmake ninja-build g++ bison flex libexpat1-dev libfmt-dev libgtest-dev libprotobuf-dev protobuf-compiler libpng-dev zlib1g-dev
+      - name: Build fixed source resource tools natively on ARM64
+        run: python3 scripts/qualify-apk-resources.py --directory app/build/outputs/apk-resource-qualification
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: apk-arm64-resource-qualification
+          path: |
+            app/build/outputs/apk-resource-qualification/*.json
+            app/build/outputs/apk-resource-qualification/*.txt
+          if-no-files-found: warn
+          retention-days: 14
   jvm:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 15

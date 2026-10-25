@@ -1,0 +1,189 @@
+{
+  "scope": "Fixed resource-tool adapter and selected actual Git submodule subtrees; native build closure not yet qualified",
+  "sourceClosureVerified": false,
+  "repositories": [
+    {
+      "id": "android-build-tools",
+      "repository": "https://github.com/termux/android-build-tools",
+      "commit": "c4edf8539a34a8600538e6642c1ecb170452a79e",
+      "role": "approved-source-build-candidate",
+      "archive": "android-build-tools-c4edf8539a34a8600538e6642c1ecb170452a79e.tar.gz",
+      "archiveSha256": "b0ae9a1d14eca347212abae6f62fd71d34d17f9c3e5ae5029b8ffa168858aa5f",
+      "archiveBytes": 17474,
+      "entries": 57,
+      "expandedBytes": 55234,
+      "notices": [
+        {
+          "path": "LICENSE.txt",
+          "bytes": 11358,
+          "gitBlobSha1": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        }
+      ],
+      "missingNoticeCandidates": [],
+      "destination": "."
+    },
+    {
+      "id": "aapt-build-tools-zipalign",
+      "repository": "https://android.googlesource.com/platform/build",
+      "commit": "b815dded1eafbf06191a6ae306956bb6ed6fb415",
+      "role": "resource-tool-source",
+      "destination": "vendor/build/tools/zipalign",
+      "subdirectory": "tools/zipalign",
+      "archiveSha256": "4fccab7c5199e64b1877b016641d27a2e85a1829568c3b19a6ac4e5158c67730",
+      "archiveBytes": 26298,
+      "contentSha256": "3caf2165705873499b0c078d36d3df8f4d2789c800b4707d313190ffe5c0f29a",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    },
+    {
+      "id": "aapt-zopfli",
+      "repository": "https://android.googlesource.com/platform/external/zopfli",
+      "commit": "610a2d4f13c64608d21b083177838368c9fcb1cc",
+      "role": "resource-tool-source",
+      "destination": "vendor/zopfli",
+      "archiveSha256": "00bd6760fe69403de1f1c5864b44076b2d2435982ded7f4ff7bf5e86745e1cbc",
+      "archiveBytes": 200298,
+      "contentSha256": "5d47c5b0f1ad9fa739c9cdd6d1be2ea56d6db44ac52b138ab2cd48b7d42dbba7",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    },
+    {
+      "id": "aapt-base-tools-aapt",
+      "repository": "https://android.googlesource.com/platform/frameworks/base",
+      "commit": "45034f0663f960d9ee5fb0a101a4732b71f6e2f4",
+      "role": "resource-tool-source",
+      "destination": "vendor/base/tools/aapt",
+      "subdirectory": "tools/aapt",
+      "archiveSha256": "23ef97796ef8411c4eb1587c77c98fa0f42ccab07b2d8f08e96a5c975281e08d",
+      "archiveBytes": 207978,
+      "contentSha256": "2b3b68dcc8151f4e5899d58de5997c8873f7e8a17f02616c5084f5fd67ac752f",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    },
+    {
+      "id": "aapt-base-tools-aapt2",
+      "repository": "https://android.googlesource.com/platform/frameworks/base",
+      "commit": "45034f0663f960d9ee5fb0a101a4732b71f6e2f4",
+      "role": "resource-tool-source",
+      "destination": "vendor/base/tools/aapt2",
+      "subdirectory": "tools/aapt2",
+      "archiveSha256": "547e0a21995dd5d330300490fac345cf72cf210e3bf4f05b648ee1b3c7ae00f9",
+      "archiveBytes": 40736933,
+      "contentSha256": "289dca4d64c7aaebdef5e2ca530f58530b1f9781306630391da667d20776616f",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    },
+    {
+      "id": "aapt-base-libs-androidfw",
+      "repository": "https://android.googlesource.com/platform/frameworks/base",
+      "commit": "45034f0663f960d9ee5fb0a101a4732b71f6e2f4",
+      "role": "resource-tool-source",
+      "destination": "vendor/base/libs/androidfw",
+      "subdirectory": "libs/androidfw",
+      "archiveSha256": "72ec418837c1794cdbe06d7c864509c87043afcff8020fbe2b6b992823ab65d9",
+      "archiveBytes": 544689,
+      "contentSha256": "4e8fdafc532bb0335cfbf46247268a799370e160f794347b20ecd201dad6d4e4",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    },
+    {
+      "id": "aapt-base-cmds-idmap2-libidmap2_policies-include",
+      "repository": "https://android.googlesource.com/platform/frameworks/base",
+      "commit": "45034f0663f960d9ee5fb0a101a4732b71f6e2f4",
+      "role": "resource-tool-source",
+      "destination": "vendor/base/cmds/idmap2/libidmap2_policies/include",
+      "subdirectory": "cmds/idmap2/libidmap2_policies/include",
+      "archiveSha256": "6dbbe90694414ff7c347d6362382277fa63d7d8e00fb0b8771fb3e978041b7ef",
+      "archiveBytes": 1311,
+      "contentSha256": "9eb3da1478472f531c47e8277d6141367e7aec10732d0a273cf7c57a97ce3e87",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    },
+    {
+      "id": "aapt-native-include",
+      "repository": "https://android.googlesource.com/platform/frameworks/native",
+      "commit": "fcbde2bcff56ca1d7bec9cabf8bdca5e288bf103",
+      "role": "resource-tool-source",
+      "destination": "vendor/native/include",
+      "subdirectory": "include",
+      "archiveSha256": "c70e768ee137174119d52252f4d1cb4983ee1246953f6d8022782ffe57eacfc7",
+      "archiveBytes": 213454,
+      "contentSha256": "d1f6db74ded878ab7504eb9e9354ff26ac59f8a76b618039aa90d9b13b451fca",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    },
+    {
+      "id": "aapt-core",
+      "repository": "https://android.googlesource.com/platform/system/core",
+      "commit": "e9d1fa3705d7fbd0ac1c942bc4c276161bfbfed1",
+      "role": "resource-tool-source",
+      "destination": "vendor/core",
+      "archiveSha256": "140f1916248452a75947726ebc9e45e86060c94e6aa5e7777eb65505e8392990",
+      "archiveBytes": 2176797,
+      "contentSha256": "68c33e5292e37c1968ba4d266be97a67a8baa703397e2cc38ed978c3b614d45d",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    },
+    {
+      "id": "aapt-incremental_delivery-incfs",
+      "repository": "https://android.googlesource.com/platform/system/incremental_delivery",
+      "commit": "6d8b9b339e7cc9abfeba475fc4c89984c2824cd9",
+      "role": "resource-tool-source",
+      "destination": "vendor/incremental_delivery/incfs",
+      "subdirectory": "incfs",
+      "archiveSha256": "2332c23af5b3b3a21d33f9a9718aa23d619a9bacf9205d5a690750da49a3f135",
+      "archiveBytes": 59675,
+      "contentSha256": "9b0a84f3455a939babecd5cab2023c1dd0407609968c9a62ba6678e6b625ed19",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    },
+    {
+      "id": "aapt-libbase",
+      "repository": "https://android.googlesource.com/platform/system/libbase",
+      "commit": "bdf0f4db82fae78492c92a55d473aacc4e963e79",
+      "role": "resource-tool-source",
+      "destination": "vendor/libbase",
+      "archiveSha256": "1362c65d65f7fd30bf4178a8902105c3b9e512ed9a79f1109fe2842388617394",
+      "archiveBytes": 110294,
+      "contentSha256": "8d82a6de436980a2bd9826e0686cf39d9052681362bd23b2b68904f881a335e0",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    },
+    {
+      "id": "aapt-libziparchive",
+      "repository": "https://android.googlesource.com/platform/system/libziparchive",
+      "commit": "94db64a81930e4cc8bacca4010bf935f664c97e1",
+      "role": "resource-tool-source",
+      "destination": "vendor/libziparchive",
+      "archiveSha256": "c0867accf91492c0b78e7ca5714dc079e18a47145448d99bb9d6cb2207c4fd1a",
+      "archiveBytes": 1187477,
+      "contentSha256": "d513e41af2768b22a419f98616595567e9082b1e114fdc2cb584df05436ffc29",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    },
+    {
+      "id": "aapt-logging",
+      "repository": "https://android.googlesource.com/platform/system/logging",
+      "commit": "58dac317ea08b8f275ebd01ce864acab2de30b93",
+      "role": "resource-tool-source",
+      "destination": "vendor/logging",
+      "archiveSha256": "6f8f49d09076569553d80f936a31760ef7e9a2e0f8d012c8c89546ccd178dba8",
+      "archiveBytes": 846876,
+      "contentSha256": "346956c6cc3535da8a2f5f73b07ca7b3e69b15fb9978f9befc933c1a42c9f073",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    },
+    {
+      "id": "aapt-aidl",
+      "repository": "https://android.googlesource.com/platform/system/tools/aidl",
+      "commit": "3747384b876442e7ea0c355fe5adc75b29362833",
+      "role": "resource-tool-source",
+      "destination": "vendor/aidl",
+      "archiveSha256": "72ca5135edb43ab8f06e71fa2fe74a2ad4648f2fc22bc953707f1c72a13f43a6",
+      "archiveBytes": 1274924,
+      "contentSha256": "7d183c07385a01226b846905bb804779f511fb374c19097571ffe7be7eb37655",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    },
+    {
+      "id": "aapt-sysprop",
+      "repository": "https://android.googlesource.com/platform/system/tools/sysprop",
+      "commit": "bd6e32a74ee891ec03c5b27c7f3c63501f4a623f",
+      "role": "resource-tool-source",
+      "destination": "vendor/sysprop",
+      "archiveSha256": "14d0ec79c790ce29cbb9611ea3fe0651e472589321449a2e3deac246d3d25507",
+      "archiveBytes": 29457,
+      "contentSha256": "3f3a76e00c9c182010514752539daff23399a643460905563b317bd01a9415b8",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    }
+  ],
+  "observedArchives": 15
+}

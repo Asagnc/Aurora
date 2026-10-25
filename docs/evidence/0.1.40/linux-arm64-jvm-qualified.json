@@ -1,0 +1,21 @@
+{
+  "linuxArm64JvmQualified": true,
+  "jdk": "25.0.5+8",
+  "gradle": "9.8.2",
+  "androidRuntime": "NOT TESTED",
+  "apkBuildQualified": false,
+  "inputs": [
+    {
+      "id": "jdk",
+      "version": "25.0.5+8",
+      "bytes": 140178170,
+      "sha256": "bb5b2ded252f21c6090cf780b0a408ad0d83bbb557e702955643557f13231880"
+    },
+    {
+      "id": "gradle",
+      "version": "9.8.2",
+      "bytes": 151620138,
+      "sha256": "21bd5da2de49b642904077f38c0efdc7778e92b3ed0889392dca61b97e389607"
+    }
+  ]
+}

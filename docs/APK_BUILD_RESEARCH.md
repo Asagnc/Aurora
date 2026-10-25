@@ -21,3 +21,5 @@
 5. 签名私钥保管、debug与用户release签名的区分、可核验签名产物；安装普通PackageInstaller与Root安装是显式动作，不因build成功自动替换手机应用。
 
 后续给出具体组件/来源/闭包/体积/任务与缓存方案再确认，不能在这份研究笔记阶段安装任意半成品SDK或承诺任意Gradle工程可编译。当前不下载额外IDE、不重装Android Studio/WSL/模拟器。
+
+2026-10-25补充：Google官方prebuilts/clang/host/linux-arm64仓库存在，但main当前为空树；不能据仓库名声称有匹配NDK30的完整ARM64工具链。仍按已确认路线核实实际来源/版本/ELF与源码，不下载桌面x86工具假装可运行。官方入口：https://android.googlesource.com/platform/prebuilts/clang/host/linux-arm64/ 。
