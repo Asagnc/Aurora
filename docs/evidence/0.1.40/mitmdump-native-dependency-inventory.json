@@ -1,0 +1,335 @@
+{
+  "archiveSha256": "f8756fa831c4abe431dd922ae7291b158b465285562b35d12e5669cbfc29d1f3",
+  "native": [
+    {
+      "name": "_brotli.cpython-314-aarch64-linux-gnu.so",
+      "machine": 183,
+      "elfType": 3,
+      "loadAlignments": [
+        65536
+      ],
+      "page16kCompatible": true,
+      "writableExecutable": false,
+      "interpreters": [],
+      "sha256": "3501ec6e44906142591c61bf979896a8510da32c263d8d15829714b2d6750d16",
+      "bytes": 5623216,
+      "needed": [
+        "libpthread.so.0",
+        "libc.so.6"
+      ],
+      "rpath": [],
+      "runpath": [],
+      "soname": []
+    },
+    {
+      "name": "_cffi_backend.cpython-314-aarch64-linux-gnu.so",
+      "machine": 183,
+      "elfType": 3,
+      "loadAlignments": [
+        65536
+      ],
+      "page16kCompatible": true,
+      "writableExecutable": false,
+      "interpreters": [],
+      "sha256": "525f28c9d0e92769bc4bb6a6952c0a795e24428d8e7afba5cf0866ba01ca6619",
+      "bytes": 452552,
+      "needed": [
+        "libpthread.so.0",
+        "libc.so.6"
+      ],
+      "rpath": [],
+      "runpath": [],
+      "soname": []
+    },
+    {
+      "name": "aioquic/_buffer.abi3.so",
+      "machine": 183,
+      "elfType": 3,
+      "loadAlignments": [
+        65536
+      ],
+      "page16kCompatible": true,
+      "writableExecutable": false,
+      "interpreters": [],
+      "sha256": "c5643c1871d8a206a9869d18d5f85d7ed2fc9fd037d77eaacf575b25fa9c3f0d",
+      "bytes": 93768,
+      "needed": [
+        "libpthread.so.0",
+        "libc.so.6"
+      ],
+      "rpath": [],
+      "runpath": [],
+      "soname": []
+    },
+    {
+      "name": "aioquic/_crypto.abi3.so",
+      "machine": 183,
+      "elfType": 3,
+      "loadAlignments": [
+        65536
+      ],
+      "page16kCompatible": true,
+      "writableExecutable": false,
+      "interpreters": [],
+      "sha256": "1d7f66dd86cdf93998efff00ef411ddbc3a9c1d7199b923867f941fae597478b",
+      "bytes": 5642768,
+      "needed": [
+        "libpthread.so.0",
+        "libc.so.6"
+      ],
+      "rpath": [],
+      "runpath": [],
+      "soname": []
+    },
+    {
+      "name": "bcrypt/_bcrypt.abi3.so",
+      "machine": 183,
+      "elfType": 3,
+      "loadAlignments": [
+        65536
+      ],
+      "page16kCompatible": true,
+      "writableExecutable": false,
+      "interpreters": [],
+      "sha256": "deb31d8fea190d0737e48bc3475548fd64b24bd60556681575fdc14381452afb",
+      "bytes": 715816,
+      "needed": [
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "rpath": [],
+      "runpath": [],
+      "soname": []
+    },
+    {
+      "name": "charset_normalizer/md.cpython-314-aarch64-linux-gnu.so",
+      "machine": 183,
+      "elfType": 3,
+      "loadAlignments": [
+        65536
+      ],
+      "page16kCompatible": true,
+      "writableExecutable": false,
+      "interpreters": [],
+      "sha256": "788bc30e8e9476aad164506ad81013f04642ab7697349b1124af1cab03dbc61d",
+      "bytes": 201304,
+      "needed": [
+        "libpthread.so.0",
+        "libc.so.6"
+      ],
+      "rpath": [],
+      "runpath": [],
+      "soname": []
+    },
+    {
+      "name": "charset_normalizer/md__mypyc.cpython-314-aarch64-linux-gnu.so",
+      "machine": 183,
+      "elfType": 3,
+      "loadAlignments": [
+        65536
+      ],
+      "page16kCompatible": true,
+      "writableExecutable": false,
+      "interpreters": [],
+      "sha256": "0bbf6ce2394009bd110cbc962d5b74e24aa65bd83406289b30447bea4cc4f88c",
+      "bytes": 324400,
+      "needed": [
+        "libpthread.so.0",
+        "libc.so.6"
+      ],
+      "rpath": [],
+      "runpath": [],
+      "soname": []
+    },
+    {
+      "name": "cryptography/hazmat/bindings/_rust.abi3.so",
+      "machine": 183,
+      "elfType": 3,
+      "loadAlignments": [
+        65536
+      ],
+      "page16kCompatible": true,
+      "writableExecutable": false,
+      "interpreters": [],
+      "sha256": "9bf8a3199bdc2ec28fdf066d442646b084a02345eb1c2893a30ae1c742ed8e79",
+      "bytes": 11578368,
+      "needed": [
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "rpath": [],
+      "runpath": [],
+      "soname": []
+    },
+    {
+      "name": "libgcc_s.so.1",
+      "machine": 183,
+      "elfType": 3,
+      "loadAlignments": [
+        65536
+      ],
+      "page16kCompatible": true,
+      "writableExecutable": false,
+      "interpreters": [],
+      "sha256": "046856f95f4636f1fc7c3a12bf4f3cd5634c2fc5145c3fdf7395d4f349fa69c7",
+      "bytes": 133448,
+      "needed": [
+        "libc.so.6"
+      ],
+      "rpath": [],
+      "runpath": [],
+      "soname": [
+        "libgcc_s.so.1"
+      ]
+    },
+    {
+      "name": "libpython3.14.so.1.0",
+      "machine": 183,
+      "elfType": 3,
+      "loadAlignments": [
+        65536
+      ],
+      "page16kCompatible": true,
+      "writableExecutable": false,
+      "interpreters": [],
+      "sha256": "ffca416f5c3bc37551d0345e8c4e2f35a1ab726b87547f14fa09c67b30060257",
+      "bytes": 25469936,
+      "needed": [
+        "libdl.so.2",
+        "librt.so.1",
+        "libm.so.6",
+        "libpthread.so.0",
+        "libutil.so.1",
+        "libc.so.6"
+      ],
+      "rpath": [],
+      "runpath": [],
+      "soname": [
+        "libpython3.14.so.1.0"
+      ]
+    },
+    {
+      "name": "markupsafe/_speedups.cpython-314-aarch64-linux-gnu.so",
+      "machine": 183,
+      "elfType": 3,
+      "loadAlignments": [
+        65536
+      ],
+      "page16kCompatible": true,
+      "writableExecutable": false,
+      "interpreters": [],
+      "sha256": "ea10623788edaf74816f0200c6265f197d674f7077a9574fffcb5eb1a2f80f2c",
+      "bytes": 230848,
+      "needed": [
+        "libpthread.so.0",
+        "libc.so.6"
+      ],
+      "rpath": [],
+      "runpath": [],
+      "soname": []
+    },
+    {
+      "name": "mitmproxy-linux-redirector",
+      "machine": 183,
+      "elfType": 3,
+      "loadAlignments": [
+        65536
+      ],
+      "page16kCompatible": true,
+      "writableExecutable": false,
+      "interpreters": [
+        "/lib/ld-linux-aarch64.so.1"
+      ],
+      "sha256": "c25061e23f326afa746c14c5ae302082fe485ce90dd6e90296aca3adb703d79e",
+      "bytes": 3489248,
+      "needed": [
+        "libm.so.6",
+        "libc.so.6",
+        "libpthread.so.0",
+        "libdl.so.2"
+      ],
+      "rpath": [],
+      "runpath": [],
+      "soname": []
+    },
+    {
+      "name": "mitmproxy_rs/mitmproxy_rs.abi3.so",
+      "machine": 183,
+      "elfType": 3,
+      "loadAlignments": [
+        65536
+      ],
+      "page16kCompatible": true,
+      "writableExecutable": false,
+      "interpreters": [],
+      "sha256": "237c6ebcae03bfbd73650d769d9d468df2981e709ea4e35eb276a0fb0a1aead8",
+      "bytes": 7474080,
+      "needed": [
+        "libm.so.6",
+        "libc.so.6",
+        "libpthread.so.0",
+        "libdl.so.2"
+      ],
+      "rpath": [],
+      "runpath": [],
+      "soname": []
+    },
+    {
+      "name": "pylsqpack/_binding.abi3.so",
+      "machine": 183,
+      "elfType": 3,
+      "loadAlignments": [
+        65536
+      ],
+      "page16kCompatible": true,
+      "writableExecutable": false,
+      "interpreters": [],
+      "sha256": "8b4184574dec8db03516ecd68e3dbce8549f6a0b63042b866abe6affde87ccfd",
+      "bytes": 1233456,
+      "needed": [
+        "libpthread.so.0",
+        "libc.so.6"
+      ],
+      "rpath": [],
+      "runpath": [],
+      "soname": []
+    }
+  ],
+  "selectedOuter": {
+    "name": "mitmdump",
+    "machine": 183,
+    "elfType": 2,
+    "loadAlignments": [
+      65536
+    ],
+    "page16kCompatible": true,
+    "writableExecutable": false,
+    "interpreters": [
+      "/lib/ld-linux-aarch64.so.1"
+    ],
+    "sha256": "3adf33868f5477ff65d954b3fbe5dc5eca9703b5f02692500e880b8789caccb1",
+    "bytes": 32495056,
+    "needed": [
+      "libdl.so.2",
+      "libz.so.1",
+      "libpthread.so.0",
+      "libc.so.6",
+      "ld-linux-aarch64.so.1"
+    ],
+    "rpath": [],
+    "runpath": [],
+    "soname": []
+  },
+  "neededFromGuest": [
+    "ld-linux-aarch64.so.1",
+    "libc.so.6",
+    "libdl.so.2",
+    "libm.so.6",
+    "libpthread.so.0",
+    "librt.so.1",
+    "libutil.so.1",
+    "libz.so.1"
+  ],
+  "androidRuntime": "NOT TESTED",
+  "licenseClosureVerified": false
+}

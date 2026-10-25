@@ -21,6 +21,17 @@ def fixture(name='owned', raw=b'payload', declared=None, position=0):
 
 
 class BundleTest(unittest.TestCase):
+    def test_native_dependency_strings_require_file_backed_bounds(self):
+        data = bytearray(256)
+        for index, pair in enumerate([(5, 160), (10, 32), (1, 1), (0, 0)]):
+            struct.pack_into('<qQ', data, index * 16, *pair)
+        data[160:171] = b'\0libc.so.6\0'
+        headers = [(1, 5, 0, 0, 0, 256, 256, 65536), (2, 4, 0, 0, 0, 64, 64, 8)]
+        self.assertEqual(['libc.so.6'], bundle.dynamic_libraries(data, headers)['needed'])
+        struct.pack_into('<qQ', data, 32, 1, 1000)
+        with self.assertRaises(ValueError):
+            bundle.dynamic_libraries(data, headers)
+
     @unittest.skipIf(sys.version_info < (3, 13), 'code-disabled marshal requires Python 3.13+')
     def test_python_inventory_disallows_code_and_invalid_locations(self):
         def pyz(table):

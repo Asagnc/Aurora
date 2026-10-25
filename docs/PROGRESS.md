@@ -1,3 +1,9 @@
+## 2026-10-25 真实ARM64 AGP Java/Compose APK成功
+
+CI40181701787整体成功：真实JDK25/Gradle9.8.2/AGP9.4.1/Kotlin2.4.21、固定API37/SDK36 Java材料与自建ARM64 aapt2，实际执行43/48个任务，分别生成2,286,626和18,025,198字节unsigned自有APK，验证DEX包含自有Java/Compose类。39个SDK原ELF均先替换拒绝入口，只有3个已验证ARM64资源工具恢复可执行；未执行x86替代。保留前两轮失败与最终成功报告。仍没有JNI、手机运行/安装或完整工具发布资格。
+
+网络固定归档追加只读DT_NEEDED/RPATH/RUNPATH/SONAME盘点及越界字符串回归，明确外层libz和guest glibc系列依赖，不把14个可见ELF误称完整静态链接源码/许可闭包。LLVM独立源码编译CI40178609738仍在运行；无手机或付费调用。
+
 ## 2026-10-25 AGP SDK注册元数据修复
 
 CI40181504510已越过旧Kotlin/JVM25错误，在查找android-37.0目标时失败。固定SDK ZIP只有source.properties，缺sdkmanager安装时另行生成的package.xml；现保留原ZIP及API37.0身份不变，复制现有官方SDK安装的两份精确注册元数据（含原许可），只写CI私有SDK，报告记录其摘要。不重装IDE、不访问手机。失败日志保留，完整AGP成功仍待新实验。

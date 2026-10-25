@@ -1,0 +1,65 @@
+{
+  "linuxArm64AgpJavaComposeQualified": true,
+  "agp": "9.4.1",
+  "kotlin": "2.4.21",
+  "artifacts": [
+    {
+      "stage": "java",
+      "apkBytes": 2286626,
+      "apkSha256": "e1d3b2db99a2617f9f6d836098952dc2b3b0bbf8ec4d6bab7eb39fb50031cb9e"
+    },
+    {
+      "stage": "compose",
+      "apkBytes": 18025198,
+      "apkSha256": "d07b9de2b605a9dc9605049e812c509136347560ce3e59979e7123a0b2177344"
+    }
+  ],
+  "foreignElfReplacedByRejection": [
+    "aapt",
+    "aapt2",
+    "aidl",
+    "bcc_compat",
+    "dexdump",
+    "llvm-rs-cc",
+    "split-select",
+    "zipalign",
+    "lib64/libLLVM_android.so",
+    "lib64/libbcc.so",
+    "lib64/libbcinfo.so",
+    "lib64/libc++.so",
+    "lib64/libc++.so.1",
+    "lib64/libclang_android.so",
+    "lld-bin/lld",
+    "renderscript/lib/blas/arm64-v8a/libblasV8.so",
+    "renderscript/lib/blas/armeabi-v7a/libblasV8.so",
+    "renderscript/lib/blas/x86/libblasV8.so",
+    "renderscript/lib/blas/x86_64/libblasV8.so",
+    "renderscript/lib/intermediates/arm64-v8a/libc.so",
+    "renderscript/lib/intermediates/arm64-v8a/libm.so",
+    "renderscript/lib/intermediates/armeabi-v7a/libc.so",
+    "renderscript/lib/intermediates/armeabi-v7a/libm.so",
+    "renderscript/lib/intermediates/x86/libc.so",
+    "renderscript/lib/intermediates/x86/libm.so",
+    "renderscript/lib/intermediates/x86_64/libc.so",
+    "renderscript/lib/intermediates/x86_64/libm.so",
+    "renderscript/lib/packaged/arm64-v8a/libRSSupport.so",
+    "renderscript/lib/packaged/arm64-v8a/librsjni.so",
+    "renderscript/lib/packaged/arm64-v8a/librsjni_androidx.so",
+    "renderscript/lib/packaged/armeabi-v7a/libRSSupport.so",
+    "renderscript/lib/packaged/armeabi-v7a/librsjni.so",
+    "renderscript/lib/packaged/armeabi-v7a/librsjni_androidx.so",
+    "renderscript/lib/packaged/x86/libRSSupport.so",
+    "renderscript/lib/packaged/x86/librsjni.so",
+    "renderscript/lib/packaged/x86/librsjni_androidx.so",
+    "renderscript/lib/packaged/x86_64/libRSSupport.so",
+    "renderscript/lib/packaged/x86_64/librsjni.so",
+    "renderscript/lib/packaged/x86_64/librsjni_androidx.so"
+  ],
+  "sdkMetadataSha256": {
+    "build-tools-package.xml": "4bda9eb99979d0d0af13821b250479a94fa021cf4cfdf284a207068e36dddadc",
+    "platform-package.xml": "9efedaa8306dc2b690b3ed328b417f19dde7537000701fc761241c6b6ed94c32"
+  },
+  "androidRuntime": "NOT TESTED",
+  "androidJniQualified": false,
+  "phoneInstallReady": false
+}

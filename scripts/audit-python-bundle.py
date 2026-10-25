@@ -103,4 +103,43 @@ def elf(data):
     return {'machine': machine, 'elfType': kind, 'loadAlignments': sorted({item[7] for item in loads}),
         'page16kCompatible': all(item[7] >= 16384 and (item[2] - item[3]) % 16384 == 0 for item in loads),
         'writableExecutable': any(item[1] & 3 == 3 for item in loads), 'interpreters': interpreters,
-        'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data)}
+        'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data), **dynamic_libraries(data, headers)}
+
+
+def dynamic_libraries(data, headers):
+    entries = []
+    for header in headers:
+        if header[0] != 2:
+            continue
+        if header[5] % 16 or header[5] > 1024 * 1024:
+            raise ValueError('Invalid ELF dynamic table')
+        terminated = False
+        for offset in range(header[2], header[2] + header[5], 16):
+            tag, value = struct.unpack_from('<qQ', data, offset)
+            if tag == 0:
+                terminated = True; break
+            entries.append((tag, value))
+        if not terminated:
+            raise ValueError('Unterminated ELF dynamic table')
+    if not entries:
+        return {'needed': [], 'rpath': [], 'runpath': [], 'soname': []}
+    addresses = [value for tag, value in entries if tag == 5]
+    sizes = [value for tag, value in entries if tag == 10]
+    if len(addresses) != 1 or len(sizes) != 1 or not 0 < sizes[0] <= 2 * 1024 ** 2:
+        raise ValueError('Invalid ELF dynamic string table')
+    positions = [h[2] + addresses[0] - h[3] for h in headers if h[0] == 1 and
+                 h[3] <= addresses[0] and addresses[0] + sizes[0] <= h[3] + h[5]]
+    if len(positions) != 1:
+        raise ValueError('ELF dynamic strings lack one file-backed load segment')
+    strings = data[positions[0]:positions[0] + sizes[0]]
+    def selected(tag):
+        result = []
+        for kind, offset in entries:
+            if kind != tag:
+                continue
+            end = strings.find(b'\0', offset) if offset < len(strings) else -1
+            if end < 0 or end - offset > 4096:
+                raise ValueError('Invalid ELF dependency string')
+            result.append(strings[offset:end].decode('utf-8'))
+        return result
+    return {name: selected(tag) for name, tag in [('needed', 1), ('rpath', 15), ('runpath', 29), ('soname', 14)]}
