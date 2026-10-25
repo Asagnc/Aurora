@@ -1,11 +1,43 @@
 #!/usr/bin/env python3
 """Bounded read-only CArchive inspection; never imports or executes embedded Python code."""
 import hashlib
+import io
+import marshal
 from pathlib import PurePosixPath
 import struct
+import sys
 import zlib
 
 MAGIC = b'MEI\x0c\x0b\x0a\x0b\x0e'
+
+
+def python_modules(data):
+    """Read the primitive module table only; code objects are explicitly disallowed."""
+    if sys.version_info < (3, 13):
+        raise ValueError('Code-disabled module inventory requires Python 3.13 or newer')
+    if len(data) < 12 or data[:4] != b'PYZ\0':
+        raise ValueError('Missing Python module archive')
+    offset = struct.unpack_from('!I', data, 8)[0]
+    if not 12 <= offset < len(data) or len(data) - offset > 2 * 1024 ** 2:
+        raise ValueError('Python module table exceeds budget')
+    stream = io.BytesIO(data[offset:])
+    table = marshal.load(stream, allow_code=False)
+    if stream.tell() != len(data) - offset or not isinstance(table, list) or len(table) > 10000:
+        raise ValueError('Unexpected Python module table')
+    names = set()
+    for item in table:
+        if not isinstance(item, tuple) or len(item) != 2:
+            raise ValueError('Invalid Python module entry')
+        name, location = item
+        if not isinstance(name, str) or len(name) > 512 or not all(part.replace('-', '_').isidentifier() for part in name.split('.')):
+            raise ValueError('Invalid Python module name')
+        if name in names or not isinstance(location, tuple) or len(location) != 3:
+            raise ValueError('Duplicate or invalid Python module location')
+        kind, position, size = location
+        if any(type(value) is not int for value in location) or kind not in {0, 1, 3} or position < 12 or size < 0 or position + size > offset:
+            raise ValueError('Python module data exceeds archive bounds')
+        names.add(name)
+    return sorted(names)
 
 
 def archive(data):

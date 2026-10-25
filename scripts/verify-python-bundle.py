@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Embedded archive corruption must fail without importing frozen Python modules."""
 import importlib.util
+import marshal
 from pathlib import Path
 import struct
+import sys
 import unittest
 import zlib
 
@@ -19,6 +21,16 @@ def fixture(name='owned', raw=b'payload', declared=None, position=0):
 
 
 class BundleTest(unittest.TestCase):
+    @unittest.skipIf(sys.version_info < (3, 13), 'code-disabled marshal requires Python 3.13+')
+    def test_python_inventory_disallows_code_and_invalid_locations(self):
+        def pyz(table):
+            return b'PYZ\0MAGC' + struct.pack('!I', 16) + b'data' + marshal.dumps(table)
+        self.assertEqual(['owned.module'], bundle.python_modules(pyz([('owned.module', (0, 12, 4))])))
+        for table in [[('owned', (0, 12, 5))], [('owned', (0, 12, 4))] * 2,
+                      [('owned', compile('raise RuntimeError()', '<owned>', 'exec'))], [('../escape', (0, 12, 4))]]:
+            with self.assertRaises(ValueError):
+                bundle.python_modules(pyz(table))
+
     def test_checked_table_and_exact_decompression(self):
         data = fixture()
         metadata, entries = bundle.archive(data)

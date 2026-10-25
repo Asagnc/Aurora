@@ -15,9 +15,26 @@ spec.loader.exec_module(qualification)
 resource_spec = importlib.util.spec_from_file_location('resources', Path(__file__).with_name('qualify-apk-resources.py'))
 resources = importlib.util.module_from_spec(resource_spec)
 resource_spec.loader.exec_module(resources)
+agp_spec = importlib.util.spec_from_file_location('agp', Path(__file__).with_name('qualify-apk-agp.py'))
+agp = importlib.util.module_from_spec(agp_spec); agp_spec.loader.exec_module(agp)
 
 
 class JvmInputsTest(unittest.TestCase):
+    def test_sdk_java_data_preserved_but_foreign_elf_cannot_launch(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary); archive = root / 'sdk.zip'; work = root / 'work'
+            with zipfile.ZipFile(archive, 'w') as output:
+                output.writestr('sdk/lib/d8.jar', b'owned-java')
+                output.writestr('sdk/aapt2', b'\x7fELFowned-foreign')
+            self.assertEqual(['aapt2'], agp.extract_sdk(archive, work))
+            self.assertEqual(b'owned-java', (work / 'lib/d8.jar').read_bytes())
+            self.assertIn(b'exit 126', (work / 'aapt2').read_bytes())
+            with zipfile.ZipFile(archive, 'w') as output:
+                output.writestr('sdk/../../outside', b'escape')
+            with self.assertRaises(ValueError):
+                agp.extract_sdk(archive, work)
+            self.assertFalse((root / 'outside').exists())
+
     def test_resource_header_links_materialize_only_within_the_pinned_archive(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary); archive = root / 'source.tar.gz'; work = root / 'work'; work.mkdir()

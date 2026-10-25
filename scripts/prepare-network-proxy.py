@@ -43,9 +43,11 @@ def prepare(directory):
             if entry.name == pin['selected']:
                 selected = data
     metadata, contents = parser.archive(selected)
-    native = []; licenses = []; packages = []; total = 0
+    native = []; licenses = []; packages = []; total = 0; modules = []
     for entry in contents:
         data = parser.content(selected, entry); name = entry[0]; total += len(data)
+        if name == 'PYZ.pyz':
+            modules = parser.python_modules(data)
         if data.startswith(b'\x7fELF'):
             native.append({'name': name, **parser.elf(data)})
         if name.lower().split('/')[-1].startswith(('license', 'copying', 'notice', 'copyright')):
@@ -60,6 +62,7 @@ def prepare(directory):
     report = {'version': pin['version'], 'archiveSha256': pin['sha256'], 'selected': pin['selected'], **metadata,
         'embeddedEntries': len(contents), 'embeddedBytes': total, 'outer': outer, 'native': native,
         'packagedNotices': licenses, 'packagedMetadata': packages,
+        'pythonModules': modules, 'pythonTopLevelModules': sorted({name.split('.')[0] for name in modules}),
         'runtimeQualified': False, 'licenseClosureVerified': False, 'androidRuntime': 'NOT TESTED'}
     (directory / 'archive-audit.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
     print(json.dumps({key: report[key] for key in ['version', 'embeddedEntries', 'embeddedBytes', 'pythonVersion', 'runtimeQualified', 'licenseClosureVerified']}))
