@@ -1,0 +1,19 @@
+{
+  "core": {
+    "tests": 280,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 12
+  },
+  "androidBuild": [
+    "assembleDebug",
+    "assembleRelease",
+    "assembleDebugAndroidTest",
+    "lintDebug"
+  ],
+  "result": "passed",
+  "httpLoopbackTests": 11,
+  "androidHttpTests": "COMPILED ONLY",
+  "phoneOperations": false,
+  "paidModelCalls": false
+}

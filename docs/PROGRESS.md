@@ -1,3 +1,11 @@
+## 2026-10-25 单次HTTP产品工具与Android网络权限
+
+已实现http_request Agent工具，复用OkHttp5.5、既有tool_runs/schema8/OwnedTasks和download.bin发布器；显式direct/http/socks，精确文件体SHA、无自动重定向/重试/凭据继承、TLS正常验证、有界解压响应、取消/超时与未知结果提示。特别处理OkHttp503/Retry-After:0内部follow-up，不重放GET并恢复原头。11项真实loopback测试通过（含SOCKS远端DNS、自签名TLS拒绝、失败发布/取消不重发），核心280项268通过/12跳过，完整Debug/Release/testAPK/lint本地通过；新增2项Android只编译。
+
+显式HTTP需要允许cleartext，模型/Skills/图片仍保持原HTTPS检查；Android17声明局域网运行权限并提供用户主动申请与系统设置入口，不在后台自动弹窗。更新能力页过时的“Linux/抓包/逆向尚未接入”说明，仍明确APK/JNI/代理产品工具未全部完成。无手机或付费调用。详见HTTP_REPLAY_IMPLEMENTATION.md。
+
+此前a6aa95a完整CI40182008579成功，证据已保留；新生产变更CI推送后跟踪。
+
 ## 2026-10-25 LLVM真实编译缺同基线libunwind头修复
 
 CI40178609738实际编译约66分钟，在3068/3153项Mach-O/ARM64.cpp因缺mach-o/compact_unwind_encoding.h失败；不是成功、不是超时或内存失败。补同一已批准2d287f51…基线的libunwind源码，新增第6份归档168,152字节/固定内容身份，不删除Mach-O能力或改用其他编译器。构建前检查所需头，保留失败日志。

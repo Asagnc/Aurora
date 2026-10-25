@@ -52,6 +52,7 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
             io.github.asagnc.aurora.terminal.TerminalToolExecutor(app.terminals, id, app.root.terminalClient != null),
             CommandToolExecutor(app.commands, directory, prepared = prepared),
             PacketInspectionTool(app, directory, app.commands, prepared),
+            HttpReplayTool(directory, prepared),
             app.root.packetClient?.let { PacketCaptureTool(it, id, prepared) },
             LinuxCommandTool({ runId, argv, timeout -> app.linux.runs.execute(id, argv, timeout, runId, linux.generation()) }, prepared),
             LinuxTerminalTool { options -> app.terminals.startLinux(id, io.github.asagnc.aurora.terminal.PtyRequest(
