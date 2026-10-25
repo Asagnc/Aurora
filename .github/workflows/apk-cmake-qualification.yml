@@ -1,0 +1,52 @@
+name: ARM64 host CMake Ninja Android JNI qualification
+on:
+  workflow_dispatch:
+    inputs:
+      compiler_run:
+        description: Successful fixed-source relocated ARM64 compiler workflow run
+        required: true
+        default: '40183812668'
+      compiler_sha:
+        description: Exact reviewed compiler workflow commit
+        required: true
+        default: 0efbd18e54a5fe8c7cb3037f5e77e51faac95c4a
+permissions:
+  contents: read
+  actions: read
+jobs:
+  jni:
+    runs-on: ubuntu-26.04-arm
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Obtain exact successful owned compiler candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COMPILER_RUN: ${{ inputs.compiler_run }}
+          COMPILER_SHA: ${{ inputs.compiler_sha }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, subprocess
+          run = os.environ['COMPILER_RUN']; sha = os.environ['COMPILER_SHA']
+          if not re.fullmatch(r'[0-9]+', run) or not re.fullmatch(r'[0-9a-f]{40}', sha):
+              raise ValueError('Invalid explicit compiler identity')
+          proof = json.loads(subprocess.check_output(['gh', 'api', 'repos/Asagnc/Aurora/actions/runs/' + run]))
+          if proof['conclusion'] != 'success' or proof['head_sha'] != sha or proof['path'] != '.github/workflows/apk-compiler-qualification.yml':
+              raise ValueError('Compiler workflow identity or success differs')
+          subprocess.run(['gh', 'run', 'download', run, '--name', 'apk-arm64-compiler-qualification',
+              '--dir', 'app/build/outputs/qualified-compiler'], check=True)
+          PY
+      - name: Compile and link owned Android JNI using actual ARM64 host binaries
+        run: |
+          python3 scripts/verify-apk-native-layout.py
+          python3 scripts/qualify-apk-cmake.py --directory app/build/outputs/apk-cmake-qualification --compiler app/build/outputs/qualified-compiler
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: apk-arm64-cmake-qualification
+          path: |
+            app/build/outputs/apk-cmake-qualification/*.json
+            app/build/outputs/apk-cmake-qualification/*.txt
+            app/build/outputs/apk-cmake-qualification/*.so
+          if-no-files-found: warn
+          retention-days: 14

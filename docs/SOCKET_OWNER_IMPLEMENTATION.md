@@ -8,6 +8,6 @@
 
 普通UDP/TCP命令不改路由/接口/权限。失败保留原命令未知状态；每次独立查询，不自动重试。此接口不能证明历史PCAP逐包归属，后续eBPF仍须独立资格。
 
-本地核心291项279通过/12跳过（含3项socket参数/证明测试），Debug/Release/testAPK/lint通过。新增7项Linux实验：双真实UID connected UDP、关闭后unknown、同tuple跨UID所有候选、unconnected UDP、IPv6、TCP双向不同socket、普通UID拒绝和损坏netlink解析；结果追踪实际CI。新增2项Android仅编译：普通UID拒绝、Root Binder查询自有loopback TCP的实际App UID与账本。当前未操作手机，SELinux/Root管理器与设备内核资格不作通过声明。
+本地核心291项279通过/12跳过（含3项socket参数/证明测试），Debug/Release/testAPK/lint通过。新增7项Linux实验：双真实UID connected UDP、关闭后unknown、同tuple跨UID所有候选、unconnected UDP、IPv6、TCP双向不同socket、普通UID拒绝和损坏netlink解析；已通过CI40204214212的socket-diag job121201573938；该轮整体构建另行追踪。新增2项Android仅编译：普通UID拒绝、Root Binder查询自有loopback TCP的实际App UID与账本。当前未操作手机，SELinux/Root管理器与设备内核资格不作通过声明。
 
 依据：Linux官方include/uapi/linux/inet_diag.h、sock_diag.h及net/ipv4/inet_diag.c；详细比较见NETWORK_UID_ROTATION_PROPOSAL.md。

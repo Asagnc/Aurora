@@ -1,0 +1,11 @@
+Run40204214212 / commit1cde33ca975ceb8ef3e89bfd066218b4ff0db700 / socket-diag job121201573938 SUCCESS
+2026-10-25T14:51:50.3165441Z test_connected_udp_two_real_uids_and_closed_unknown (__main__.SocketDiagTest.test_connected_udp_two_real_uids_and_closed_unknown) ... ok
+2026-10-25T14:51:50.3425267Z test_ipv6_connected_uid (__main__.SocketDiagTest.test_ipv6_connected_uid) ... ok
+2026-10-25T14:51:50.3439761Z test_malformed_netlink_and_partial_scan_are_rejected (__main__.SocketDiagTest.test_malformed_netlink_and_partial_scan_are_rejected) ... ok
+2026-10-25T14:51:50.3462017Z test_ordinary_uid_fails_closed_and_bad_address_not_resolved (__main__.SocketDiagTest.test_ordinary_uid_fails_closed_and_bad_address_not_resolved) ... ok
+2026-10-25T14:51:50.3979021Z test_same_tuple_all_uids_remain_multiple (__main__.SocketDiagTest.test_same_tuple_all_uids_remain_multiple) ... ok
+2026-10-25T14:51:50.4158592Z test_tcp_live_tuple_and_inverse_are_different_sockets (__main__.SocketDiagTest.test_tcp_live_tuple_and_inverse_are_different_sockets) ... ok
+2026-10-25T14:51:50.4167881Z test_unconnected_udp_retains_raw_match_but_unknown (__main__.SocketDiagTest.test_unconnected_udp_retains_raw_match_but_unknown) ... ok
+2026-10-25T14:51:50.4172094Z Ran 7 tests in 0.873s
+2026-10-25T14:51:50.4172456Z OK
+Android device NOT TESTED

@@ -1,0 +1,19 @@
+{
+  "cmake": {
+    "id": "cmake",
+    "version": "4.1.2",
+    "archive": "cmake-4.1.2-linux-aarch64.tar.gz",
+    "prefix": "cmake-4.1.2-linux-aarch64",
+    "url": "https://github.com/Kitware/CMake/releases/download/v4.1.2/cmake-4.1.2-linux-aarch64.tar.gz",
+    "bytes": 57731946,
+    "sha256": "0634996f918b3bab11f45522899c81c987b09c9a64d15f6a0d2bb51c42099534"
+  },
+  "ninja": {
+    "id": "ninja",
+    "version": "1.13.2",
+    "archive": "ninja-linux-aarch64.zip",
+    "url": "https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-linux-aarch64.zip",
+    "bytes": 126256,
+    "sha256": "fd2cacc8050a7f12a16a2e48f9e06fca5c14fc4c2bee2babb67b58be17a607fc"
+  }
+}

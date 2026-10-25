@@ -8,4 +8,4 @@ firstPacket从0开始，count精确1..64，总帧数据最多16384字节。支�
 
 普通解析器具有15秒alarm和实际创建父进程死亡SIGKILL；App最终等待真实退出并关闭流。解析失败返回injectionStarted=false。Root请求开始后的未知结果仍保留既有账本屏障。
 
-本地核心选择/参数/变长帧证明回归、Debug/Release/testAPK/lint通过；Android普通UID解析用例只编译。新增Linux13项实验含私有veth真实帧序、四种classic格式、全选择拒绝及父死亡；结果以实际CI为准。尚未操作手机。
+本地核心选择/参数/变长帧证明回归、Debug/Release/testAPK/lint通过；Android普通UID解析用例只编译。新增Linux13项实验含私有veth真实帧序、四种classic格式、全选择拒绝及父死亡；13项已通过CI40202879875，且该轮完整Android构建/ELF源码审计与Frida/受管任务全部job成功。尚未操作手机。
