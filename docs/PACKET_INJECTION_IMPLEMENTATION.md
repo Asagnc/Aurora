@@ -17,12 +17,12 @@ Agent `packet_inject_root` 必须给出明确接口和完整帧的Base64。`any`
 Root客户端沿用有限CPU锁及NonCancellable cancelAndWait，活动账本在发送前登记目录，UI区分未知结果。
 
 pcap接受不是送达保证：驱动可能拒绝/改写头部，接收端可能丢包。这里没有TCP状态机、HTTP重放、TLS解密或UID归属。
-PCAP选定片段重放仍在接续，不能把新接口当完整PCAP/PCAPNG重放器。
+classic PCAP选定片段回放已接packet_replay_root，范围和拒绝边界见PACKET_REPLAY_IMPLEMENTATION.md。发送结果升级内部protocol2，记录selectedFrames和选定帧总字节，逐前缀核验变长帧计数。
 
 ## 验证状态
 
 - 本地NDK30双ABI、16KiB ELF/依赖审计、Debug/Release/testAPK/lint通过；核心284项272通过/12跳过，新增4项参数/证明测试。
-- 新Linux实验仅在fresh private netns中创建自有veth对：真实收帧字节与内核时间戳、整帧预算、截止、取消、MTU拒绝和非法输入；额外host-only链接替身验证短写不重试，不将其当真实网卡短写证据。7项结果须追踪CI，不预报通过。
+- 新Linux实验仅在fresh private netns中创建自有veth对：真实收帧字节与内核时间戳、整帧预算、截止、取消、MTU拒绝和非法输入；额外host-only链接替身验证短写不重试，不将其当真实网卡短写证据。7项已通过CI40185946093；扩展PCAP选择/多帧实验另行追踪。
 - 新普通UID拒绝用例和显式Root/loopback/实验EtherType自有帧用例只编译，尚未操作手机。
 - 真机用例要求auroraRootTest和auroraPacketInjectionTest显式开启；只选lo、发1个自有实验帧，不改路由/接口配置。不能证明实际结果时保留诊断会话。
 

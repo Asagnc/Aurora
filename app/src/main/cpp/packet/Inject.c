@@ -16,7 +16,8 @@
 struct options {
     uint64_t seconds, rate, packets, budget;
     unsigned char frame[16384];
-    size_t length;
+    struct { size_t offset, length; } frames[64];
+    size_t length, frame_count;
 };
 struct outcome { uint64_t packets, bytes, partial; const char *reason; int error; };
 
@@ -35,19 +36,24 @@ static int nibble(unsigned char c) {
 }
 
 static int arguments(int argc, char **argv, struct options *options) {
-    if (argc != 7 || getuid() != 0 || !argv[1][0] || strlen(argv[1]) > 64 || !strcmp(argv[1], "any")) return -1;
+    if (argc < 7 || argc > 70 || getuid() != 0 || !argv[1][0] || strlen(argv[1]) > 64 || !strcmp(argv[1], "any")) return -1;
     for (const unsigned char *p = (unsigned char *)argv[1]; *p; p++)
         if (!isalnum(*p) && !strchr("_.:@-", *p)) return -1;
     if (number(argv[2], 30, &options->seconds) || number(argv[3], 1000, &options->rate) ||
         number(argv[4], 4096, &options->packets) || number(argv[5], 16777216, &options->budget)) return -1;
-    size_t length = strlen(argv[6]);
-    if (length < 28 || length > 32768 || length % 2) return -1;
-    options->length = length / 2;
-    for (size_t i = 0; i < options->length; i++) {
-        int high = nibble((unsigned char)argv[6][i * 2]), low = nibble((unsigned char)argv[6][i * 2 + 1]);
-        if (high < 0 || low < 0) return -1;
-        options->frame[i] = (unsigned char)(high * 16 + low);
+    for (int index = 6; index < argc; index++) {
+        size_t length = strlen(argv[index]);
+        if (length < 28 || length > 32768 || length % 2 || length / 2 > sizeof(options->frame) - options->length) return -1;
+        options->frames[index - 6].offset = options->length;
+        options->frames[index - 6].length = length / 2;
+        for (size_t i = 0; i < length / 2; i++) {
+            int high = nibble((unsigned char)argv[index][i * 2]), low = nibble((unsigned char)argv[index][i * 2 + 1]);
+            if (high < 0 || low < 0) return -1;
+            options->frame[options->length++] = (unsigned char)(high * 16 + low);
+        }
     }
+    options->frame_count = (size_t)(argc - 6);
+    if (options->frame_count > 1 && options->packets != options->frame_count) return -1;
     return 0;
 }
 
@@ -91,11 +97,12 @@ static void inject(pcap_t *pcap, const struct options *options, struct outcome *
     while (out->packets < options->packets) {
         int state = ready(fds[0], fds[1], fds[2], out->packets != 0);
         if (state) { out->reason = state == 1 ? "cancelled" : state == 2 ? "duration" : "poll_error"; return; }
-        if (options->length > options->budget - out->bytes) { out->reason = "byte_budget"; return; }
+        size_t index = (size_t)(out->packets % options->frame_count), length = options->frames[index].length;
+        if (length > options->budget - out->bytes) { out->reason = "byte_budget"; return; }
         errno = 0;
-        int sent = pcap_inject(pcap, options->frame, options->length);
+        int sent = pcap_inject(pcap, options->frame + options->frames[index].offset, length);
         if (sent < 0) { out->error = errno; out->reason = "inject_error"; return; }
-        if ((size_t)sent != options->length) {
+        if ((size_t)sent != length) {
             out->partial = (uint64_t)sent; out->bytes += (uint64_t)sent;
             out->reason = "partial_write"; return;
         }
@@ -106,6 +113,8 @@ static void inject(pcap_t *pcap, const struct options *options, struct outcome *
 }
 
 int main(int argc, char **argv) {
+    extern int select_pcap(int, char **);
+    if (argc == 6 && !strcmp(argv[1], "--select")) return select_pcap(argc, argv);
     struct options options = {0};
     if (arguments(argc, argv, &options)) return 64;
     sigset_t mask; sigemptyset(&mask); sigaddset(&mask, SIGTERM); sigaddset(&mask, SIGINT);
@@ -123,9 +132,9 @@ int main(int argc, char **argv) {
     inject(pcap, &options, &out, fds);
 finish:;
     int complete = out.packets == options.packets && !out.partial && !strcmp(out.reason, "packet_budget");
-    printf("{\"protocol\":1,\"reason\":\"%s\",\"frameBytes\":%zu,\"requestedPackets\":%llu,"
+    printf("{\"protocol\":2,\"reason\":\"%s\",\"frameBytes\":%zu,\"selectedFrames\":%zu,\"requestedPackets\":%llu,"
            "\"acceptedPackets\":%llu,\"acceptedBytes\":%llu,\"partialBytes\":%llu,\"systemErrno\":%d,\"complete\":%s}\n",
-           out.reason, options.length, (unsigned long long)options.packets, (unsigned long long)out.packets,
+           out.reason, options.length, options.frame_count, (unsigned long long)options.packets, (unsigned long long)out.packets,
            (unsigned long long)out.bytes, (unsigned long long)out.partial, out.error, complete ? "true" : "false");
     if (pcap) pcap_close(pcap);
     for (size_t i = 0; i < 3; i++) if (fds[i] >= 0) close(fds[i]);

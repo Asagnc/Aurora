@@ -8,7 +8,7 @@ class PacketInjectionTest {
     private val frame = ByteArray(60) { it.toByte() }
     private fun args() = objectOf("interface" to string("owned0"), "frameBase64" to string(Base64.getEncoder().encodeToString(frame)),
         "packets" to JsonPrimitive(2))
-    private fun record() = objectOf("protocol" to JsonPrimitive(1), "reason" to string("packet_budget"), "frameBytes" to JsonPrimitive(60),
+    private fun record() = objectOf("protocol" to JsonPrimitive(2), "selectedFrames" to JsonPrimitive(1), "reason" to string("packet_budget"), "frameBytes" to JsonPrimitive(60),
         "requestedPackets" to JsonPrimitive(2), "acceptedPackets" to JsonPrimitive(2), "acceptedBytes" to JsonPrimitive(120),
         "partialBytes" to JsonPrimitive(0), "systemErrno" to JsonPrimitive(0), "complete" to JsonPrimitive(true))
     private fun command(record: JsonObject = record(), code: Long = 0): JsonObject = JsonObject(linkedMapOf<String, JsonElement>(

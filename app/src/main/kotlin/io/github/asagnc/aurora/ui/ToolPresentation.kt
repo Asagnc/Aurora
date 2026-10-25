@@ -20,6 +20,7 @@ internal fun presentTool(event: ToolRun): ToolPresentation {
         "command_execute_linux" -> "执行 Linux 命令"
         "packet_capture_root" -> "采集网络数据包"
         "packet_inject_root" -> "发送原始数据帧"
+        "packet_replay_root" -> "重放 PCAP 片段"
         "packet_inspect" -> "分析网络数据包"
         "http_request" -> "发送 HTTP 请求"
         "terminal_start_linux" -> "启动 Linux 终端"

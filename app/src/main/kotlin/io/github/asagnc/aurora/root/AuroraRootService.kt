@@ -64,7 +64,7 @@ class AuroraRootService : RootService() {
             verifyCaller()
             val encoded = requireNotNull(request.getString("arguments")).also { require(it.length <= 32768) }
             val args = io.github.asagnc.aurora.core.WireJson.parseToJsonElement(encoded) as kotlinx.serialization.json.JsonObject
-            val options = io.github.asagnc.aurora.core.PacketInjectionRequest.parse(args)
+            val options = io.github.asagnc.aurora.core.PacketInjectionRequest.parseWire(args)
             commands.start(id, callback) { injection.execute(conversationRoot(conversation), id, options) }
         }
 

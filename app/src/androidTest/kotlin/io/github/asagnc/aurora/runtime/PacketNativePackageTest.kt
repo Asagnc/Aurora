@@ -93,4 +93,17 @@ class PacketNativePackageTest {
         assertEquals(result.toString(), 64L, result.number("exitCode"))
         assertEquals("", result["stdout"]!!.jsonObject.text("text"))
     } }
+
+    @Test fun ordinaryUidSelectsSealedClassicPcapWithoutOpeningRootOrNetwork() = runBlocking { fixture { _ ->
+        val frame = ByteArray(60) { it.toByte() }
+        val data = ByteBuffer.allocate(24 + 16 + frame.size).order(ByteOrder.LITTLE_ENDIAN)
+            .putInt(0xa1b2c3d4.toInt()).putShort(2).putShort(4).putInt(0).putInt(0).putInt(65535).putInt(1)
+            .putInt(1).putInt(0).putInt(frame.size).putInt(frame.size).put(frame).array()
+        val sha = java.security.MessageDigest.getInstance("SHA-256").digest(data).joinToString("") { "%02x".format(it) }
+        val request = PacketReplayRequest.parse(objectOf("path" to string("owned.pcap"), "sourceSha256" to string(sha), "interface" to string("lo")))
+        val selected = PacketPcapSelector(context).select(data, request)
+        assertNull(selected.toString(), selected["error"])
+        val injection = packetReplaySelection(selected, request, data.size)
+        assertArrayEquals(frame, injection.frame); assertEquals(1L, injection.packets)
+    } }
 }

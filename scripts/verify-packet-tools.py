@@ -95,10 +95,10 @@ class PacketToolsTest(unittest.TestCase):
         prefix = self.root / 'prefix'; module = ROOT / 'app/src/main/cpp/packet'
         binary = self.root / 'inject-worker'
         subprocess.run(['cc', '-Wall', '-Wextra', '-Werror', '-I' + str(prefix / 'include'),
-            str(module / 'Inject.c'), str(prefix / 'lib/libpcap.a'), '-o', str(binary)], check=True)
+            str(module / 'Inject.c'), str(module / 'Select.c'), str(prefix / 'lib/libpcap.a'), '-o', str(binary)], check=True)
         fault = self.root / 'inject-short-write'
         subprocess.run(['cc', '-Wall', '-Wextra', '-Werror', '-I' + str(prefix / 'include'),
-            str(module / 'Inject.c'), str(ROOT / 'scripts/packet-injection-fault.c'), str(prefix / 'lib/libpcap.a'),
+            str(module / 'Inject.c'), str(module / 'Select.c'), str(ROOT / 'scripts/packet-injection-fault.c'), str(prefix / 'lib/libpcap.a'),
             '-Wl,--wrap=pcap_inject', '-o', str(fault)], check=True)
         subprocess.run(['sudo', '-n', 'unshare', '--net', '--', sys.executable,
             str(ROOT / 'scripts/verify-packet-injection.py'), str(binary), str(fault)], check=True, timeout=45)

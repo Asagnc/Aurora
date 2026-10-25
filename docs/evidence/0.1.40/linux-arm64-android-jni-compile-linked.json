@@ -1,0 +1,42 @@
+{
+  "linuxArm64AndroidJniCompileLinked": true,
+  "jni": [
+    {
+      "triple": "aarch64-linux-android",
+      "machine": 183,
+      "api": 36,
+      "bytes": 42936,
+      "sha256": "d7f3cb433603315236cb7cf0fc422eaafa73c129d4d6882dafb5afad28c6c8fc",
+      "needed": [
+        "libc++_shared.so",
+        "libc.so",
+        "libdl.so",
+        "libm.so"
+      ],
+      "cxxRuntimeSha256": "7466ed097631a564ed6bff0b47768caa76bf03270d2047b5a65c03f497b824df"
+    },
+    {
+      "triple": "x86_64-linux-android",
+      "machine": 62,
+      "api": 36,
+      "bytes": 38400,
+      "sha256": "f675bd3913b24a81937e5c8dc9240bf666eba8f013b962938ce5cb31f0c5b552",
+      "needed": [
+        "libc++_shared.so",
+        "libc.so",
+        "libdl.so",
+        "libm.so"
+      ],
+      "cxxRuntimeSha256": "7918ebd0b8074c312d0c610205d49760b98c008026e6b817cd92103a3e12241b"
+    }
+  ],
+  "ndkVersion": "30.0.16248370",
+  "ndkArchiveSha256": "753611f410d002cfcd3f3dc2ef49aad532089d3180b436c060a90bf0fcb64df2",
+  "compilerSourceArchives": 6,
+  "targetFiles": 3316,
+  "targetBytes": 168450097,
+  "ndkEquivalenceVerified": false,
+  "androidRuntime": "NOT TESTED",
+  "fullAgpJniBuildQualified": false,
+  "phoneInstallReady": false
+}

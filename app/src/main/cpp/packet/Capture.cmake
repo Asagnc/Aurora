@@ -84,7 +84,7 @@ target_include_directories(aurora_packet_worker PRIVATE "${capture_prefix}/inclu
 target_link_libraries(aurora_packet_worker PRIVATE "${capture_prefix}/lib/libpcap.a")
 target_compile_options(aurora_packet_worker PRIVATE -Wall -Wextra -Werror -fstack-protector-strong)
 target_link_options(aurora_packet_worker PRIVATE -Wl,-z,relro,-z,now,-z,noexecstack,-z,max-page-size=16384)
-add_executable(aurora_packet_inject "${capture_module}/Inject.c")
+add_executable(aurora_packet_inject "${capture_module}/Inject.c" "${capture_module}/Select.c")
 add_dependencies(aurora_packet_inject aurora_pcap_build)
 target_include_directories(aurora_packet_inject PRIVATE "${capture_prefix}/include")
 target_link_libraries(aurora_packet_inject PRIVATE "${capture_prefix}/lib/libpcap.a")
