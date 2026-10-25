@@ -62,7 +62,11 @@ implementation platform('androidx.compose:compose-bom:2026.09.00')
 implementation 'androidx.compose.foundation:foundation'
 }''' if compose else ''
     (directory / 'build.gradle').write_text('''
-plugins { id 'com.android.application' version '9.4.1'; ''' + plugin + ''' }
+plugins {
+ id 'com.android.application' version '9.4.1'
+ id 'org.jetbrains.kotlin.jvm' version '2.4.21' apply false
+ ''' + plugin + '''
+}
 android {
  namespace 'io.github.asagnc.aurora.buildfixture'
  compileSdk 37

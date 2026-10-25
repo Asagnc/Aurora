@@ -5,11 +5,11 @@ on:
       resource_run:
         description: Successful owned API37 ARM64 resource workflow run
         required: true
-        default: '40180474337'
+        default: '40180937353'
       resource_sha:
         description: Exact reviewed resource workflow commit
         required: true
-        default: c5a656f90bedaec5df82a60edcbb3d1b39b1a58c
+        default: b2cbed2003c6cc5c3cd0483d0833ce466fccf898
 permissions:
   contents: read
   actions: read

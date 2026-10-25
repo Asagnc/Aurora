@@ -1,0 +1,9 @@
+{
+  "linuxArm64Api37ResourcesQualified": true,
+  "aidlJavaGenerated": true,
+  "malformedResourceRejected": true,
+  "zipalign16kChecked": true,
+  "platformSha256": "840b23e827f96e64aea4c89a1194aac3dc5f6bad37edb231c5c795d890330e8d",
+  "fullAgpBuildQualified": false,
+  "androidRuntime": "NOT TESTED"
+}
