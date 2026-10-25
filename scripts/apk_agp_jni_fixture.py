@@ -29,6 +29,7 @@ class NativeAgpFixture:
         with (project / 'build.gradle').open('a') as output:
             output.write('''
 android {
+ ndkVersion '30.0.16248370'
  ndkPath 'REPLACE_NDK'
  defaultConfig {
    ndk { abiFilters 'arm64-v8a', 'x86_64' }
