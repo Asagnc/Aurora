@@ -34,6 +34,25 @@ target_link_options(owned PRIVATE -Wl,--no-undefined,-z,relro,-z,now,-z,noexecst
 ''')
 
 
+def verify_binutils(toolchain, build, environment):
+    source = build / 'libowned.so'; stripped = build / 'libowned-stripped.so'
+    before = hashlib.sha256(source.read_bytes()).hexdigest()
+    subprocess.run([str(toolchain / 'bin/llvm-strip'), '--strip-unneeded', '-o', str(stripped), str(source)],
+        env=environment, check=True, timeout=30)
+    symbols = subprocess.check_output([str(toolchain / 'bin/llvm-readobj'), '--dyn-symbols', str(stripped)],
+        env=environment, text=True, timeout=15)
+    if 'Java_io_github_asagnc_aurora_buildfixture_Owned_nativeMarker' not in symbols or hashlib.sha256(source.read_bytes()).hexdigest() != before:
+        raise ValueError('Strip lost JNI export or modified the original input')
+    archive = build / 'owned.a'; obj = build / 'CMakeFiles/owned.dir/owned.cpp.o'
+    subprocess.run([str(toolchain / 'bin/llvm-ar'), 'rcS', str(archive), str(obj)], env=environment, check=True, timeout=30)
+    if archive.read_bytes()[8:24].rstrip() == b'/':
+        raise ValueError('Archive fixture unexpectedly already has a symbol index')
+    subprocess.run([str(toolchain / 'bin/llvm-ranlib'), str(archive)], env=environment, check=True, timeout=30)
+    if archive.read_bytes()[8:24].rstrip() != b'/':
+        raise ValueError('Ranlib did not create an actual archive symbol index')
+    return {'stripOutputSha256': hashlib.sha256(stripped.read_bytes()).hexdigest(), 'ranlibIndexCreated': True}
+
+
 def fixture(tools, work, directory, target, environment):
     cmake, ndk, toolchain = tools
     abi, machine = target
@@ -55,7 +74,8 @@ def fixture(tools, work, directory, target, environment):
     if 'Java_io_github_asagnc_aurora_buildfixture_Owned_nativeMarker' not in symbols:
         raise ValueError('JNI dynamic export missing')
     shutil.copyfile(source, directory / (abi + '-libowned.so'))
-    return {'abi': abi, 'machine': machine, 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest(), 'needed': sorted(needed)}
+    return {'abi': abi, 'machine': machine, 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest(), 'needed': sorted(needed),
+        'binutils': verify_binutils(toolchain, build, environment)}
 
 
 def qualify(directory, compiler):

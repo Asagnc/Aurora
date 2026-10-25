@@ -10,9 +10,13 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Verify frozen archive rejection paths
-        run: python3 scripts/verify-python-bundle.py
+        run: |
+          python3 scripts/verify-python-bundle.py
+          python3 scripts/verify-network-proxy-materials.py
       - name: Verify fixed archive and owned HTTP TLS WebSocket flows
-        run: python3 scripts/qualify-network-proxy.py --directory app/build/outputs/network-proxy-qualification
+        run: |
+          python3 scripts/qualify-network-proxy.py --directory app/build/outputs/network-proxy-qualification
+          python3 scripts/prepare-network-proxy-materials.py --directory app/build/outputs/network-proxy-materials --audit app/build/outputs/network-proxy-qualification/archive-audit.json
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
@@ -20,5 +24,7 @@ jobs:
           path: |
             app/build/outputs/network-proxy-qualification/*.json
             app/build/outputs/network-proxy-qualification/*.txt
+            app/build/outputs/network-proxy-materials/report.json
+            app/build/outputs/network-proxy-materials/notices/*
           if-no-files-found: warn
           retention-days: 14

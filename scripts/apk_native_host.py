@@ -79,10 +79,11 @@ def prepare_ndk(archive, pin, candidate, work):
             if data.startswith(b'\x7fELF'):
                 raise ValueError('Foreign executable in NDK metadata')
             target.parent.mkdir(parents=True, exist_ok=True); target.write_bytes(data); target.chmod(0o644)
-    wrappers = {'llvm-ranlib': 'llvm-ar s', 'llvm-strip': 'llvm-objcopy --strip-all'}
-    for name, invocation in wrappers.items():
-        executable, *flags = invocation.split()
+    # LLVM's native multi-call drivers select strip/ranlib semantics from argv[0].
+    # A shell forwarding objcopy arguments breaks strip's -o output option used by AGP.
+    aliases = {'llvm-ranlib': 'llvm-ar', 'llvm-strip': 'llvm-objcopy'}
+    for name, executable in aliases.items():
         target = toolchain / 'bin' / name
-        target.write_text('#!/bin/sh\nexec "$(dirname "$0")/' + executable + '" ' + ' '.join(flags) + ' "$@"\n')
+        shutil.copyfile(toolchain / 'bin' / executable, target)
         target.chmod(0o755)
     return ndk, toolchain, files

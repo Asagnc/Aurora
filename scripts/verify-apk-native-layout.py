@@ -14,6 +14,8 @@ class NativeLayoutTest(unittest.TestCase):
         self.root = Path(self.stage.name)
         self.candidate = self.root / 'candidate'; (self.candidate / 'bin').mkdir(parents=True)
         (self.candidate / 'bin/clang').write_bytes(b'OWNED VERIFIED COMPILER FIXTURE')
+        (self.candidate / 'bin/llvm-ar').write_bytes(b'OWNED AR FIXTURE')
+        (self.candidate / 'bin/llvm-objcopy').write_bytes(b'OWNED OBJCOPY FIXTURE')
         self.pin = {'targetTriples': ['aarch64-linux-android', 'x86_64-linux-android'], 'androidApis': [36, 37], 'resourceVersion': '21'}
 
     def archive(self, entries):
@@ -34,7 +36,8 @@ class NativeLayoutTest(unittest.TestCase):
         self.assertEqual((toolchain / 'bin/clang').read_bytes(), b'OWNED VERIFIED COMPILER FIXTURE')
         self.assertFalse((toolchain / 'bin/foreign').exists())
         self.assertEqual((toolchain / 'lib/clang/21/lib/linux/aarch64/libatomic.a').read_bytes(), b'!<arch>\nowned')
-        self.assertIn('llvm-ar', (toolchain / 'bin/llvm-ranlib').read_text())
+        self.assertEqual((toolchain / 'bin/llvm-ar').read_bytes(), (toolchain / 'bin/llvm-ranlib').read_bytes())
+        self.assertEqual((toolchain / 'bin/llvm-objcopy').read_bytes(), (toolchain / 'bin/llvm-strip').read_bytes())
 
     def test_metadata_traversal_is_rejected(self):
         archive = self.archive([('android-ndk-r30/build/cmake/../../../escape', 'bad')])

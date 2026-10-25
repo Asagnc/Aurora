@@ -82,6 +82,29 @@ def running():
         raise ValueError('Completed flow archive failed offline correspondence checks')
 
 
+def runtime_identity(binary, environment, work):
+    script = work / 'runtime-identity.py'
+    script.write_text('''
+import json, sys, ssl, sysconfig
+from mitmproxy import ctx
+from cryptography.hazmat.backends.openssl.backend import backend
+def running():
+    value = {'python':sys.version, 'builtinModules':list(sys.builtin_module_names), 'stdlibModules':sorted(sys.stdlib_module_names),
+        'stdlibOpenSsl':ssl.OPENSSL_VERSION, 'cryptographyOpenSsl':backend.openssl_version_text(),
+        'build':{key:sysconfig.get_config_var(key) for key in ['CONFIG_ARGS','CC','CFLAGS','Py_ENABLE_SHARED']}}
+    print('AURORA_RUNTIME ' + json.dumps(value), flush=True)
+    ctx.master.shutdown()
+''')
+    result = subprocess.run([str(binary), '-q', '-n', '--set', 'confdir=' + str(work / 'config'), '-s', str(script)],
+        env=environment, capture_output=True, text=True, timeout=30, check=True)
+    if len(result.stdout) > 32768 or len(result.stderr) > 32768:
+        raise ValueError('Runtime identity exceeds budget')
+    lines = [line.removeprefix('AURORA_RUNTIME ') for line in result.stdout.splitlines() if line.startswith('AURORA_RUNTIME ')]
+    if len(lines) != 1:
+        raise ValueError('Missing actual frozen runtime identity')
+    return json.loads(lines[0])
+
+
 def qualify(directory):
     if platform.system() != 'Linux' or platform.machine().lower() not in {'arm64', 'aarch64'}:
         raise ValueError('Requires a real Linux ARM64 host')
@@ -129,6 +152,8 @@ def qualify(directory):
         if not dump.is_file() or not 0 < dump.stat().st_size <= 5 * 1024 ** 2:
             raise ValueError('Missing or oversized owned flow archive')
         offline(binary, environment, work, dump)
+        identity = runtime_identity(binary, environment, work)
+        (directory / 'runtime-identity.json').write_text(json.dumps(identity, indent=2) + '\n')
         report = {'linuxArm64RuntimeQualified': True, 'httpModification': True, 'tlsStrictTrust': True,
                   'untrustedCaRejected': True, 'websocketModification': True, 'flowOfflineRead': True,
                   'archiveSha256': pin['sha256'], 'androidRuntime': 'NOT TESTED', 'licenseClosureVerified': False}

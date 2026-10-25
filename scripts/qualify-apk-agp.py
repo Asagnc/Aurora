@@ -103,6 +103,8 @@ def build(gradle, environment, work, directory, stage):
     if len(candidates) != 1:
         raise ValueError('Expected exactly one owned unsigned APK')
     apk = candidates[0]
+    # Preserve the actual APK even if a following correspondence check fails.
+    shutil.copyfile(apk, directory / (name + '-owned-unsigned.apk'))
     with zipfile.ZipFile(apk) as archive:
         dex = archive.read('classes.dex')
         if not dex.startswith(b'dex\n') or b'Owned;' not in dex or (compose and b'OwnedScreenKt;' not in dex):
@@ -110,7 +112,6 @@ def build(gradle, environment, work, directory, stage):
     result = {'stage': name, 'apkBytes': apk.stat().st_size, 'apkSha256': hashlib.sha256(apk.read_bytes()).hexdigest()}
     if native:
         result['jni'] = native.inspect(apk)
-    shutil.copyfile(apk, directory / (name + '-owned-unsigned.apk'))
     return result
 
 

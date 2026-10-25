@@ -1,3 +1,9 @@
+## 2026-10-25 AGP strip校验与代理源码对应
+
+AGP/JNI第三轮40206074783已实际构建50任务并生成APK，但最终审计发现C++运行库未按预期剥离；现有shell将strip转发objcopy不兼容AGP的-o选项，AGP明确警告退回原库。已根据固定LLVM源码改为同一原生二进制的strip/ranlib文件名分派，添加真实-o输出/JNI导出/原始输入不变及ranlib符号索引实验。APK现在在后置审计前保留以便诊断，失败不记资格通过。
+
+代理固定上游commit ac4f4cf7、UV锁git blob b96fe291已核对，43份源码与候选ARM64 wheel合计69,723,152字节只读审计。12个内嵌原生组件精确匹配上游wheel，均有来源/版本/摘要与许可材料；libpython/libgcc及静态Rust/OpenSSL许可闭包仍未完成，licenseClosureVerified=false。新增冻结运行时身份探测与5项源码边界回归，不导入下载代码。无手机/付费调用。
+
 ## 2026-10-25 原生CMake/Ninja JNI成功与Gradle对齐
 
 CMake首次40204855557已配置/编译，但官方NDK目标材料遗漏libatomic导致链接失败；补同固定归档的双ABI libatomic后，40205203214真实ARM64 CMake4.1.2/Ninja1.13.2通过双ABI JNI构建、16KiB/导出/依赖核验。目标数据3318项168450397字节，无外来host ELF执行，仍非NDK全部补丁等价或Android运行证明。

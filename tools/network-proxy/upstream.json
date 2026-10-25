@@ -1,0 +1,11 @@
+{
+  "version": "12.3.0",
+  "repository": "https://github.com/mitmproxy/mitmproxy",
+  "commit": "ac4f4cf7eab63effeb4b53b6bc09b5143aa42ae4",
+  "lockGitBlobSha1": "b96fe2919bdeabda820f343e3ddce46e031939f1",
+  "lockSha256": "d9bc0909ce7dd78cf16875805d1083f286dac21ce4fcb7ecbf66a262dab51ba4",
+  "lockBytes": 291846,
+  "licenseClosureVerified": false,
+  "licenseGitBlobSha1": "c08a0186d79d45a4647c31f5dfeabfbc4db82daf",
+  "licenseSha256": "cc4ab04ed7180af6c0ede7147f9ec2aa05212c088d7b3c8e38bbffe91c9c8f82"
+}
