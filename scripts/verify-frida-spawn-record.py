@@ -14,6 +14,19 @@ class Record(ctypes.Structure):
     _fields_ = [('ticket', ctypes.c_ubyte * 32), ('pid', ctypes.c_uint32), ('ticks', ctypes.c_uint64)]
 
 
+class Journal(ctypes.Structure):
+    _fields_ = [('directory', ctypes.c_int), ('lock', ctypes.c_int)]
+
+
+class Key(ctypes.Structure):
+    _fields_ = [('run', ctypes.c_char * 37), ('ticket', ctypes.c_char * 65)]
+
+
+class Admission(ctypes.Structure):
+    _fields_ = [('guard', ctypes.c_uint32), ('worker', ctypes.c_uint32), ('guardTicks', ctypes.c_uint64),
+                ('workerTicks', ctypes.c_uint64), ('boot', ctypes.c_char * 37)]
+
+
 @unittest.skipUnless(sys.platform.startswith('linux'), 'Linux pidfd host fixture')
 class SpawnRecordTest(unittest.TestCase):
     @classmethod
@@ -23,11 +36,14 @@ class SpawnRecordTest(unittest.TestCase):
         native = Path(__file__).resolve().parents[1] / 'app/src/main/cpp/frida'
         library = cls.root / 'record.so'
         subprocess.run(['cc', '-Wall', '-Wextra', '-Werror', '-fPIC', '-shared',
-            str(native / 'spawn_record.c'), str(native / 'input.c'), '-o', str(library)], check=True)
+            str(native / 'spawn_record.c'), str(native / 'input.c'),
+            str(native.parent / 'managed/spawn_recover.c'), str(native.parent / 'linux/scope_process.c'),
+            '-o', str(library)], check=True)
         cls.lib = ctypes.CDLL(str(library), use_errno=True)
         cls.lib.aurora_spawn_store.argtypes = [ctypes.c_int, ctypes.c_uint, ctypes.POINTER(Record)]
         cls.lib.aurora_spawn_read.argtypes = [ctypes.c_int, ctypes.c_uint, ctypes.POINTER(Record)]
         cls.lib.aurora_spawn_terminate.argtypes = [ctypes.POINTER(Record), ctypes.c_int]
+        cls.lib.managed_spawn_recover.argtypes = [ctypes.POINTER(Journal), ctypes.POINTER(Key), ctypes.POINTER(Admission), ctypes.c_uint]
 
     @classmethod
     def tearDownClass(cls):
@@ -76,6 +92,41 @@ class SpawnRecordTest(unittest.TestCase):
         finally:
             if child.poll() is None:
                 child.kill(); child.wait(timeout=3)
+
+    def recovery_fixture(self):
+        child = subprocess.Popen(['sleep', '60'])
+        def cleanup():
+            if child.poll() is None:
+                child.kill()
+            child.wait(timeout=3)
+        self.addCleanup(cleanup)
+        text = Path(f'/proc/{child.pid}/stat').read_text()
+        value = Record(); value.ticket[:] = bytes(range(32))
+        self.assertEqual(0, self.lib.aurora_spawn_store(self.fd, 1, ctypes.byref(value)))
+        value.pid = child.pid; value.ticks = int(text[text.rfind(')') + 1:].split()[19])
+        self.assertEqual(0, self.lib.aurora_spawn_store(self.fd, 2, ctypes.byref(value)))
+        return child, value
+
+    def recover(self, boot=None):
+        journal = Journal(self.fd, -1); key = Key(); key.ticket = bytes(range(32)).hex().encode()
+        admission = Admission(); admission.boot = (boot or Path('/proc/sys/kernel/random/boot_id').read_text().strip()).encode()
+        return self.lib.managed_spawn_recover(ctypes.byref(journal), ctypes.byref(key), ctypes.byref(admission), 15)
+
+    def test_recovery_terminates_only_captured_target_before_resume_intent(self):
+        child, _ = self.recovery_fixture()
+        self.assertEqual(0, self.recover())
+        self.assertEqual(-9, child.wait(timeout=3))
+        self.assertTrue((self.path / 'spawn.4').is_file())
+        self.assertEqual(0, self.recover())
+
+    def test_resume_intent_and_old_boot_never_authorize_target_termination(self):
+        child, value = self.recovery_fixture()
+        self.assertEqual(0, self.recover('00000000-0000-0000-0000-000000000000'))
+        self.assertIsNone(child.poll())
+        self.assertEqual(0, self.lib.aurora_spawn_store(self.fd, 3, ctypes.byref(value)))
+        self.assertEqual(0, self.recover())
+        self.assertIsNone(child.poll())
+        self.assertFalse((self.path / 'spawn.4').exists())
 
 
 if __name__ == '__main__':

@@ -13,3 +13,5 @@
 源码、许可、离线重链接范围见 FRIDA_SOURCE_MATERIALS.md。当前源码材料是固定输入超集，不能声称所有条目都是实际运行依赖。
 
 spawn 增量：先用自有测试包验证载入脚本后 resume、语法错误/暂停阶段取消、spawn调用后捕获前崩溃、capture后worker死亡、resume意图与成功之间崩溃、精确目标身份替换、boot变化。只回收本任务已捕获且无resume意图的精确进程；未知捕获/未知resume不能因worker已退出而清账。主机用例不替代Android包启动与ART早期注入资格。
+
+自有Android目标已新增 `:frida-fixture:assembleDebug`，包名 io.github.asagnc.aurora.fridafixture，testOnly；仅最终验收时显式安装。`FridaSpawnDeviceTest` 同时要求 auroraRootTest、auroraFridaTest、auroraSpawnTest=true。它不调用模型，验证 MainActivity.marker 的早期真实Java hook；结束只 force-stop 该固定测试包，最后由集中验收流程卸载辅助包，不卸载Aurora。尚未执行设备用例。

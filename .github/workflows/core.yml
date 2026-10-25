@@ -91,7 +91,7 @@ jobs:
           python3 scripts/prepare-frida-node.py
           npm run build --prefix tools/frida-bridge
       - name: Build Android application and run lint
-        run: ./gradlew :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :app:lintDebug --console=plain
+        run: ./gradlew :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :app:lintDebug :frida-fixture:assembleDebug --console=plain
       - name: Verify packaged Linux ELF dependencies and corresponding source
         run: |
           python3 scripts/verify-linux-native.py app/build/outputs/apk/debug/app-debug.apk
@@ -104,6 +104,7 @@ jobs:
           path: |
             app/build/outputs/apk/debug/*.apk
             app/build/outputs/apk/release/*.apk
+            frida-fixture/build/outputs/apk/debug/*.apk
             app/build/outputs/linux-sources/*.zip
             app/build/outputs/frida-qualification/report.json
             app/build/outputs/frida-qualification/readelf.txt

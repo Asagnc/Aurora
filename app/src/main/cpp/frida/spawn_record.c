@@ -9,9 +9,14 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/syscall.h>
+#include <time.h>
 #include <unistd.h>
 
 static void filename(char name[32], unsigned phase) { snprintf(name, 32, "spawn.%u", phase); }
+static int64_t now_ms(void) {
+    struct timespec value;
+    return clock_gettime(CLOCK_MONOTONIC, &value) ? -1 : (int64_t)value.tv_sec * 1000 + value.tv_nsec / 1000000;
+}
 static void encode(unsigned char bytes[64], unsigned phase, const struct aurora_spawn_record *record) {
     memset(bytes, 0, 64); memcpy(bytes, "ASP2", 4); bytes[4] = (unsigned char)phase;
     memcpy(bytes + 8, record->ticket, 32);
@@ -68,7 +73,14 @@ int aurora_spawn_terminate(const struct aurora_spawn_record *record, int timeout
     else if (!frida_process_start((pid_t)record->pid, &ticks)) {
         if (ticks != record->ticks) result = 0; /* Exact original exited; never signal replacement. */
         else if (!syscall(SYS_pidfd_send_signal, fd, SIGKILL, NULL, 0) || errno == ESRCH) {
-            int ready; do { ready = poll(&event, 1, timeout_ms); } while (ready < 0 && errno == EINTR);
+            int64_t now = now_ms(), deadline = now + timeout_ms;
+            int ready = -1;
+            if (now >= 0 && timeout_ms >= 0) for (;;) {
+                now = now_ms();
+                if (now < 0) break;
+                ready = poll(&event, 1, now >= deadline ? 0 : (int)(deadline - now));
+                if (ready >= 0 || errno != EINTR) break;
+            }
             if (ready == 1 && event.revents & (POLLIN | POLLHUP)) result = 0;
         }
     }

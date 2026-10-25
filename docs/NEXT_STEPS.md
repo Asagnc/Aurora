@@ -1,5 +1,11 @@
 # 当前接续清单（2026-10-25，0.1.40）
 
+## 2026-10-25 spawn 首轮完整CI与最终设备夹具
+
+fc6b4c8完整CI40157675374三job成功，28项真实Frida（新增2项自有原生spawn）、原生监督与Android/载荷审计通过；独立源码CI40157695350也成功，24份自有源码/65份上游材料离线重链接通过。Windows完整材料包已实际生成并核实。后续补同boot暂停目标恢复、resume意图/旧boot不终止的2项主机用例与pidfd回收绝对截止，等待新CI。
+
+新增单独testOnly自有Frida夹具APK及FridaSpawnDeviceTest，明确3个测试参数才允许运行。检验早期Java方法hook、真实工具/账本/产物链；清理只针对固定自有包，不以force-stop冒充未知spawn的退出证明。Debug/Release/testAPK/lint/夹具APK本地通过；手机仍未操作。手机APK构建链已形成具体比较APK_BUILD_PROPOSAL.md，等待用户确认新增工具链路线；正式签名密钥安排也待确认。
+
 ## 2026-10-25 spawn 与完整材料包继续实现
 
 用户确认推荐恢复方案后，已增 protocol2 包名 spawn、Root 私有64字节阶段记录、捕获前未知/恢复执行意图未知保留、同 boot pidfd 精确回收尚无 resume 意图的本任务目标。旧 protocol1 attach 票据省略新默认字段，保留原摘要；schema仍8。新增5项核心回归通过，核心268项256通过/12跳过；Debug/Release/testAPK/lint通过。新增2项真实Frida spawn与3项原生记录测试待Linux CI，Android包启动尚未执行。

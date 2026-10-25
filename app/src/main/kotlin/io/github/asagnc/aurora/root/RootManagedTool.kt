@@ -7,7 +7,8 @@ import kotlinx.serialization.json.*
 internal class RootManagedTool(private val manager: RootManagedRunManager, private val owner: String) : ToolExecutor {
     override val definitions = listOf(ToolDefinition("root_managed_tasks",
         "Inspect or recover up to four of this conversation's pending Root injection intents. action=status/recover. " +
-            "Recovery never replays scripts or terminates the attached target; only exact cleanup, retirement, " +
+            "Recovery never replays scripts or terminates a pre-existing attached target. It may reclaim only this task's " +
+            "captured spawn before any resume intent, using its exact same-boot identity. Only exact cleanup, retirement, " +
             "or confirmed original-target exit releases an intent. Root must already be connected. " +
             "Retained intents block conversation deletion. Use frida status/probe for qualification scoped to the current Root service.",
         objectOf("type" to string("object"), "properties" to objectOf("action" to objectOf(
