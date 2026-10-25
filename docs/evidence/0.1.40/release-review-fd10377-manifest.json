@@ -1,0 +1,47 @@
+{
+  "format": 1,
+  "androidRuntime": "NOT VERIFIED BY PACKAGING",
+  "releaseReady": false,
+  "signature": {
+    "verified": false,
+    "reason": "unsigned-review-only"
+  },
+  "workerSha256": "396b31f9205598b66409584f7f843ee17633a3f9cf6c7dccfce081b828673dbb",
+  "bridge": {
+    "version": "frida-java-bridge-7.0.13",
+    "sha256": "9fde013172495e7bd083e93090e14f503cae98151f4a974e3e63555900be47d3",
+    "bytes": 235970
+  },
+  "applicationId": "io.github.asagnc.aurora",
+  "versionCode": 41,
+  "versionName": "0.1.40",
+  "gitCommit": "fd10377b0f9884f4c15e75906b38d79a70320c2b",
+  "workTreeDirty": false,
+  "files": [
+    {
+      "name": "Aurora.apk",
+      "bytes": 44861876,
+      "sha256": "4959d6d5c1c29853c2688ee67775bb2b52bd14665309592e694a23b12460af54"
+    },
+    {
+      "name": "frida-relink.json",
+      "bytes": 338,
+      "sha256": "aa62a706accc84463e3989c8ae134d80aef62f2b1b5145ce98f87e5183a1c6aa"
+    },
+    {
+      "name": "frida-source-materials.zip",
+      "bytes": 349809636,
+      "sha256": "fbb79455b4557b25b69801416e16d925473eaa88108e2d16c7c80bad43cb43e5"
+    },
+    {
+      "name": "native-corresponding-source.zip",
+      "bytes": 5522944,
+      "sha256": "587cda3638239be2eb35c536536009e8c81fcd0746d637ca6d19aa8cf7a3b229"
+    },
+    {
+      "name": "native-rebuild.json",
+      "bytes": 304,
+      "sha256": "8117555446bb245da4c7e87408f6ca8cef5e042240979a549083e3d0e842df11"
+    }
+  ]
+}

@@ -18,7 +18,7 @@
 | Frida Root Binder/活动账本/Agent | schema8不可变票据、封印memfd/FD交付、独立guard/cgroup/journal、严格退出证明、恢复/删除屏障已接；Agent status/recover/probe/attach/spawn已接。 | Root/ART、真实包spawn、服务死亡/取消等矩阵未执行。 |
 | Frida spawn持久恢复 | 已批准protocol2两阶段目标记录；捕获前unknown不猜测/重放；仅精确同boot且无resume意图目标可回收。真实Frida28项、spawn记录5项在CI40158211528通过。 | 自有testOnly fixture APK和设备用例已编译，未安装/执行。 |
 | Frida发布材料 | ARM64 worker/固定Java桥/许可进入APK；固定源码材料、离线重链接及guard源码重建已接。 | 最终Root运行和正式签名未验收。 |
-| 发布审查打包 | package-release.py核对APK身份/SDK/非debuggable、16KiB zipalign、载荷/源码/重建对应、签名模式与checksums；release-review-145a1df实际成功。 | 当前仍unsigned-review，releaseReady=false。 |
+| 发布审查打包 | package-release.py核对APK身份/SDK/非debuggable、16KiB zipalign、载荷/源码/重建对应、签名模式与checksums；release-review-fd10377已刷新成功，APK44,861,876字节，工作树clean；所有checksums、离线重链接/重建已复核。 | 当前仍unsigned-review，releaseReady=false。 |
 | 浏览器传输/恢复 | 每调用独立WebMessagePort、Agent二进制上传/页面流式下载、原生chooser/精确URI快照、背压/归属/取消/账本恢复均已接。 | 实际WebView/SAF/导航/renderer矩阵待集中回归。 |
 | 静态逆向 | 固定JADX/Apktool/JRE、共享版本安装管理、租约/只读挂载、当前Root身份/环境代/bundle资格及Agent分析已接。 | JRE27/真实CLI、自有APK和故障矩阵尚未手机执行。 |
 | Root抓包 | 固定libpcap独立worker、有界预算/截止/取消、Root发布PCAP、Agent离线tcpdump已接；无VPN。 | 7项设备用例及性能尚未执行。 |
@@ -46,11 +46,11 @@
 
 - 官方归档98,927,179字节与3个成员已固定摘要，仅选择mitmdump；只读审计121条目、14个ARM64 ELF、1176个冻结Python模块。冻结模块索引禁止代码对象，不导入执行冻结代码。
 - 真实ARM64 HTTP/HTTPS请求响应修改、严格信任/未信任CA拒绝、WebSocket修改、完成流离线回读在CI40180289970成功；新增索引审计CI40180852638也成功。
-- 已取上游精确commit/UV锁和43份源码包69,723,152字节，12个内嵌原生组件逐字节匹配固定ARM64 wheel，许可材料已提取；新增ARM64运行身份/源码材料CI40206942052通过；496个Cargo固定crate共91,852,188字节已校验采集，补充项目许可后CI40210692480已通过（没有缺失的独立许可项）；Python3.14.0已逐字节匹配官方20251010 ARM64归档，15份源码和21份所需许可本地采集通过；libgcc已逐字节匹配Debian12.2.0-14+deb12u1并取得对应源码、Debian修改和运行库例外。14个内嵌原生ELF均已有精确二进制对应；静态OpenSSL来源闭包仍需补全，Python/GCC源码采集与只读边界已在CI40224295518整体通过。手机chroot运行闭包、共享安装/持久租约/Agent规则与产物入口仍待接；不显示proxyReady。
+- 已取上游精确commit/UV锁和43份源码包69,723,152字节，12个内嵌原生组件逐字节匹配固定ARM64 wheel，许可材料已提取；新增ARM64运行身份/源码材料CI40206942052通过；496个Cargo固定crate共91,852,188字节已校验采集，补充项目许可后CI40210692480已通过（没有缺失的独立许可项）；Python3.14.0已逐字节匹配官方20251010 ARM64归档，15份源码和21份所需许可本地采集通过；libgcc已逐字节匹配Debian12.2.0-14+deb12u1并取得对应源码、Debian修改和运行库例外。14个内嵌原生ELF均已有精确二进制对应；静态OpenSSL已补两份官方源码：cryptography实际观测3.5.5，aioquic精确wheel上游固定配方和vendor头均指向3.3.0；对应源码/许可本地采集与3组只读/篡改边界通过，不冒充全部静态目标可复现重建，Python/GCC源码采集与只读边界已在CI40224295518整体通过。手机chroot运行闭包、共享安装/持久租约/Agent规则与产物入口仍待接；不显示proxyReady。
 - 首版明确regular loopback代理，不自动改全局路由或安装系统CA；只导出公有CA，私钥留所有者私有。规则固定结构化数据，不把任意Python脚本当产品规则接口。
 - 单次HTTP构造/重放 `http_request` 已接Agent/账本/会话产物，显式路由、TLS验证、禁止自动重试、取消/超时/解压预算与11项主机回归通过；2项Android已编译未执行，见HTTP_REPLAY_IMPLEMENTATION.md。原始帧packet_inject_root已接Root Binder/受管worker/账本，双ABI构建与4项核心证明回归通过，7项私有veth/短写实验已通过CI40185946093；新增classic PCAP精确片段回放，核心参数/选择/多帧证明与完整本地构建通过，扩展13项Linux实验及整体CI40202879875已通过，见PACKET_INJECTION_IMPLEMENTATION.md。
 - UID精确socket快照和复用现有受管引擎的长时分段轮转均获用户确认，见NETWORK_UID_ROTATION_PROPOSAL；socket_owner_root已接Agent/账本和有界原生查询，本地291核心及完整构建通过，Linux内核7项已通过CI40204214212专属job，整体CI另跟踪，Android2项仅编译。轮转继续按验证后开放推进，不把快照当历史逐包归属。
-- 轮转配置/封口记录已实现独立有界契约，AURC封印memfd解码、固定小端黄金向量、Root身份/票据/顺序/物理inode/总预算验证、原始内核计数未知处理和流式SHA256；300项核心288通过/12跳过。原生配置/摘要双ABI对象编译通过，CI40224294297的capture-primitives已实际执行8组Linux测试通过（完整构建另跟踪）；新增单句柄分段写入/封口存储层：整包预算、Root私有目录、不覆盖/不跟随链接、关闭写句柄、fsync、物理inode/SHA256和原子封口记录；双ABI对象编译通过，CI40224855665实际通过8组封口/短写/fsync/冲突边界和5组封印FD/连续loopback/取消/拒绝损坏配置。新增单句柄实时worker、独立AEX2退出报告，主机资格通过。capture protocol3票据及guard类型/BOOTTIME/持久kind/恢复已通过CI40225641400，含24组真实cgroup guard回归；首次40225277685因launcher仍限Frida而拒绝capture，已修正并保留失败证据。306核心294通过/12跳过。原始封印配置持久封口、Root段读取/PCAP格式计数校验和幂等发布实现已加入；双ABI实际打包、摘要/16KiB/ELF依赖审计、Debug/Release/AndroidTest/lint本地通过。配置留存CI40226368338已通过，完整代码CI40226367156也通过。Root Binder capture调度/当前服务代loopback自检、schema9同表迁移、Agent packet_capture_rotate_root status/probe/start、活动账本/产物归属/删除屏障已接；仅实际服务自检通过后允许start。308核心296通过/12跳过；SQLite迁移保留/外键/回滚3组通过；完整Debug/Release/AndroidTest/lint本地通过。副本持久后回收Root载荷，缺失原载荷时凭Root封口记录严格复核副本；发布失败保留同一活动意图，显式会话删除仍须先确认退出再丢弃载荷，未知阻断删除。新增Android迁移/账本/Root loopback用例仅编译，原生完整专项40227803549通过。Agent/Binder和产物清单新增Root封口的结束原因/原始内核累计计数，缺失/不一致保持未知；新增分支CI待跟踪。详见CAPTURE_ROTATION_IMPLEMENTATION.md。
+- 轮转配置/封口记录已实现独立有界契约，AURC封印memfd解码、固定小端黄金向量、Root身份/票据/顺序/物理inode/总预算验证、原始内核计数未知处理和流式SHA256；300项核心288通过/12跳过。原生配置/摘要双ABI对象编译通过，CI40224294297的capture-primitives已实际执行8组Linux测试通过（完整构建另跟踪）；新增单句柄分段写入/封口存储层：整包预算、Root私有目录、不覆盖/不跟随链接、关闭写句柄、fsync、物理inode/SHA256和原子封口记录；双ABI对象编译通过，CI40224855665实际通过8组封口/短写/fsync/冲突边界和5组封印FD/连续loopback/取消/拒绝损坏配置。新增单句柄实时worker、独立AEX2退出报告，主机资格通过。capture protocol3票据及guard类型/BOOTTIME/持久kind/恢复已通过CI40225641400，含24组真实cgroup guard回归；首次40225277685因launcher仍限Frida而拒绝capture，已修正并保留失败证据。306核心294通过/12跳过。原始封印配置持久封口、Root段读取/PCAP格式计数校验和幂等发布实现已加入；双ABI实际打包、摘要/16KiB/ELF依赖审计、Debug/Release/AndroidTest/lint本地通过。配置留存CI40226368338已通过，完整代码CI40226367156也通过。Root Binder capture调度/当前服务代loopback自检、schema9同表迁移、Agent packet_capture_rotate_root status/probe/start、活动账本/产物归属/删除屏障已接；仅实际服务自检通过后允许start。308核心296通过/12跳过；SQLite迁移保留/外键/回滚3组通过；完整Debug/Release/AndroidTest/lint本地通过。副本持久后回收Root载荷，缺失原载荷时凭Root封口记录严格复核副本；发布失败保留同一活动意图，显式会话删除仍须先确认退出再丢弃载荷，未知阻断删除。新增Android迁移/账本/Root loopback用例仅编译，原生完整专项40227803549通过。Agent/Binder和产物清单新增Root封口的结束原因/原始内核累计计数，缺失/不一致保持未知；新增统计分支专项40228422825与完整CI40228422302均已通过。详见CAPTURE_ROTATION_IMPLEMENTATION.md。
 
 ## 其余尚未完成
 
@@ -62,4 +62,4 @@
 
 Root/ART/自有spawn、静态逆向/JVM、APK构建、网络代理、抓包、浏览器WebView/SAF、管理器撤权、未知恢复、取消/删除/服务死亡、熄屏/后台/Thanox与长时压力；镜像真实联网/提供器/崩溃边界均需实际设备证据。正式签名在手机密钥可用时进行，验证覆盖安装与数据保留。当前不因看到此清单就请求连接手机。
 
-最新完整代码CI成功基线：27f2da9的40226367156；后续main实验脚本变更跟踪最新core.yml，取消不记通过。历史精确结果和失败日志保留在PROGRESS/IMPLEMENTATION和evidence，不在本文件重复展开。
+最新完整代码CI成功基线：fd10377的40228422302；后续main实验脚本变更跟踪最新core.yml，取消不记通过。历史精确结果和失败日志保留在PROGRESS/IMPLEMENTATION和evidence，不在本文件重复展开。

@@ -1,0 +1,51 @@
+{
+  "recipes": [
+    {
+      "file": "aioquic-workflow.yml",
+      "repository": "aiortc/aioquic",
+      "gitBlobSha1": "7d406b751ac42eaae668dba1797d6b6283e5ccf9",
+      "bytes": 5300,
+      "sha256": "f693d909ff3d48b4326ef8805abf3701dfce5473ef88e4c74dc0e1555a7576a1"
+    },
+    {
+      "file": "aioquic-vendor.json",
+      "repository": "aiortc/aioquic",
+      "gitBlobSha1": "f44ed367e3d3a7c7e314c4f52f8e844ef4a607e9",
+      "bytes": 114,
+      "sha256": "6ed1873918b4922eb5095ffe0d8ffd330f9844db73acb9e110dc3ee5b2b6151e"
+    },
+    {
+      "file": "aioquic-openssl-build.py",
+      "repository": "aiortc/aioquic-openssl",
+      "gitBlobSha1": "0682c230e5c4e4ef13600bfadae9211e737df60f",
+      "bytes": 2406,
+      "sha256": "b3cfa9470357b26366c454d99c4ad2cf3359aa1f2c87a4a8354dfbb936771b6f"
+    }
+  ],
+  "aioquicCommit": "9bc1e43d13be3f06339841aca7c8560825053371",
+  "vendorCommit": "49269a5266f01986b039ebf57c04a26e51310c0b",
+  "sources": [
+    {
+      "archive": "openssl-3.3.0.tar.gz",
+      "url": "https://github.com/openssl/openssl/releases/download/openssl-3.3.0/openssl-3.3.0.tar.gz",
+      "bytes": 18038030,
+      "sha256": "53e66b043322a606abf0087e7699a0e033a37fa13feb9742df35c3a33b18fb02",
+      "version": "3.3.0",
+      "scope": "Fixed aioquic 1.2.0 wheel upstream build recipe; inference, not a full reproducible static-link proof"
+    },
+    {
+      "archive": "openssl-3.5.5.tar.gz",
+      "url": "https://github.com/openssl/openssl/releases/download/openssl-3.5.5/openssl-3.5.5.tar.gz",
+      "bytes": 53104821,
+      "sha256": "b28c91532a8b65a1f983b4c28b7488174e4a01008e29ce8e69bd789f28bc2a89",
+      "version": "3.5.5",
+      "scope": "Actual cryptography runtime OpenSSL identity"
+    }
+  ],
+  "vendor": {
+    "archive": "openssl-manylinux_aarch64.tar.gz",
+    "url": "https://github.com/aiortc/aioquic-openssl/releases/download/3.3.0-1/openssl-manylinux_aarch64.tar.gz",
+    "bytes": 4226456,
+    "sha256": "e364e4de4bc1b4cf8950224e99c8e346005644fb1b35ba189a52b721c365e743"
+  }
+}

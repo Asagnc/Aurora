@@ -1,0 +1,123 @@
+{
+  "inputs": {
+    "recipes": [
+      {
+        "file": "aioquic-workflow.yml",
+        "repository": "aiortc/aioquic",
+        "gitBlobSha1": "7d406b751ac42eaae668dba1797d6b6283e5ccf9",
+        "bytes": 5300,
+        "sha256": "f693d909ff3d48b4326ef8805abf3701dfce5473ef88e4c74dc0e1555a7576a1"
+      },
+      {
+        "file": "aioquic-vendor.json",
+        "repository": "aiortc/aioquic",
+        "gitBlobSha1": "f44ed367e3d3a7c7e314c4f52f8e844ef4a607e9",
+        "bytes": 114,
+        "sha256": "6ed1873918b4922eb5095ffe0d8ffd330f9844db73acb9e110dc3ee5b2b6151e"
+      },
+      {
+        "file": "aioquic-openssl-build.py",
+        "repository": "aiortc/aioquic-openssl",
+        "gitBlobSha1": "0682c230e5c4e4ef13600bfadae9211e737df60f",
+        "bytes": 2406,
+        "sha256": "b3cfa9470357b26366c454d99c4ad2cf3359aa1f2c87a4a8354dfbb936771b6f"
+      }
+    ],
+    "aioquicCommit": "9bc1e43d13be3f06339841aca7c8560825053371",
+    "vendorCommit": "49269a5266f01986b039ebf57c04a26e51310c0b",
+    "sources": [
+      {
+        "archive": "openssl-3.3.0.tar.gz",
+        "url": "https://github.com/openssl/openssl/releases/download/openssl-3.3.0/openssl-3.3.0.tar.gz",
+        "bytes": 18038030,
+        "sha256": "53e66b043322a606abf0087e7699a0e033a37fa13feb9742df35c3a33b18fb02",
+        "version": "3.3.0",
+        "scope": "Fixed aioquic 1.2.0 wheel upstream build recipe; inference, not a full reproducible static-link proof"
+      },
+      {
+        "archive": "openssl-3.5.5.tar.gz",
+        "url": "https://github.com/openssl/openssl/releases/download/openssl-3.5.5/openssl-3.5.5.tar.gz",
+        "bytes": 53104821,
+        "sha256": "b28c91532a8b65a1f983b4c28b7488174e4a01008e29ce8e69bd789f28bc2a89",
+        "version": "3.5.5",
+        "scope": "Actual cryptography runtime OpenSSL identity"
+      }
+    ],
+    "vendor": {
+      "archive": "openssl-manylinux_aarch64.tar.gz",
+      "url": "https://github.com/aiortc/aioquic-openssl/releases/download/3.3.0-1/openssl-manylinux_aarch64.tar.gz",
+      "bytes": 4226456,
+      "sha256": "e364e4de4bc1b4cf8950224e99c8e346005644fb1b35ba189a52b721c365e743"
+    }
+  },
+  "sources": [
+    {
+      "pin": {
+        "archive": "openssl-3.3.0.tar.gz",
+        "url": "https://github.com/openssl/openssl/releases/download/openssl-3.3.0/openssl-3.3.0.tar.gz",
+        "bytes": 18038030,
+        "sha256": "53e66b043322a606abf0087e7699a0e033a37fa13feb9742df35c3a33b18fb02",
+        "version": "3.3.0",
+        "scope": "Fixed aioquic 1.2.0 wheel upstream build recipe; inference, not a full reproducible static-link proof"
+      },
+      "notices": [
+        {
+          "entry": "openssl-3.3.0/LICENSE.txt",
+          "bytes": 10175,
+          "sha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a",
+          "stored": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a.txt"
+        },
+        {
+          "entry": "openssl-3.3.0/external/perl/Text-Template-1.56/LICENSE",
+          "bytes": 18412,
+          "sha256": "9837f05336ef3cbacb6a96e1672a0426d81ad01191f214b8d48e22ca62338181",
+          "stored": "9837f05336ef3cbacb6a96e1672a0426d81ad01191f214b8d48e22ca62338181.txt"
+        },
+        {
+          "entry": "openssl-3.3.0/util/perl/OpenSSL/copyright.pm",
+          "bytes": 1145,
+          "sha256": "04213b69dbebc8ba0dd8a6216af1d9422f9b63619c1cf2f1d8aa107b83bbb608",
+          "stored": "04213b69dbebc8ba0dd8a6216af1d9422f9b63619c1cf2f1d8aa107b83bbb608.txt"
+        }
+      ]
+    },
+    {
+      "pin": {
+        "archive": "openssl-3.5.5.tar.gz",
+        "url": "https://github.com/openssl/openssl/releases/download/openssl-3.5.5/openssl-3.5.5.tar.gz",
+        "bytes": 53104821,
+        "sha256": "b28c91532a8b65a1f983b4c28b7488174e4a01008e29ce8e69bd789f28bc2a89",
+        "version": "3.5.5",
+        "scope": "Actual cryptography runtime OpenSSL identity"
+      },
+      "notices": [
+        {
+          "entry": "openssl-3.5.5/LICENSE.txt",
+          "bytes": 10175,
+          "sha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a",
+          "stored": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a.txt"
+        },
+        {
+          "entry": "openssl-3.5.5/external/perl/Text-Template-1.56/LICENSE",
+          "bytes": 18412,
+          "sha256": "9837f05336ef3cbacb6a96e1672a0426d81ad01191f214b8d48e22ca62338181",
+          "stored": "9837f05336ef3cbacb6a96e1672a0426d81ad01191f214b8d48e22ca62338181.txt"
+        },
+        {
+          "entry": "openssl-3.5.5/util/perl/OpenSSL/copyright.pm",
+          "bytes": 1145,
+          "sha256": "04213b69dbebc8ba0dd8a6216af1d9422f9b63619c1cf2f1d8aa107b83bbb608",
+          "stored": "04213b69dbebc8ba0dd8a6216af1d9422f9b63619c1cf2f1d8aa107b83bbb608.txt"
+        }
+      ]
+    }
+  ],
+  "vendorIdentity": {
+    "version": "3.3.0",
+    "headerSha256": "ff28a352c4a8c53b1a1d9fa6ede180296975f7e8a7e365e20a83d50d2ba32270",
+    "scope": "Pinned upstream vendor headers; does not prove every statically linked object was rebuilt"
+  },
+  "observedCryptographyOpenSsl": "OpenSSL 3.5.5 27 Jan 2026",
+  "licenseClosureVerified": false,
+  "scope": "Fixed source and notice material coverage. Aioquic static version follows its exact wheel build recipe; full static-link reproducibility not established."
+}

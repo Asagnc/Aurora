@@ -891,3 +891,9 @@ CI40224855665通过8组真实libpcap封口/短写/fsync/冲突和5组封印FD/�
 同一活动表迁移schema9，旧票据/工具归属逐字保留；实际SQLite DDL保留/外键/回滚3组通过。capture Binder/当前Root服务代固定loopback自检、Agent status/probe/start、准备产物/账本/有界唤醒租约已接。真实自检须封口/发布/退出全部通过才开放start，不能从主机资格自动置ready。
 
 发布后回收Root载荷，重启依Root封口记录严格复核会话副本；失败保留同一活动意图供显式恢复。显式会话删除可在真实退出后丢弃本任务载荷，未知继续阻断。307核心295通过/12跳过、完整218任务Debug/Release/AndroidTest/lint本地通过，新增设备用例仅编译。27f2da9完整CI40226367156与配置留存专项40226368338成功，后续整合CI待跟踪。
+
+## 2026-10-26 完整CI与发布审查包刷新
+
+fd10377完整CI40228422302和轮转最终统计专项40228422825均通过。release-review-fd10377已生成，APK44,861,876字节，workTreeDirty=false；全部checksums独立复核，Frida离线重链接和guard源码重建通过。仍unsigned-review/releaseReady=false，未操作设备/密钥。
+
+代理静态OpenSSL材料补齐：实际cryptography3.5.5；aioquic1.2.0精确固定上游wheel配方→vendor3.3.0-1→源码3.3.0，vendor头实际相符。两份官方源码、许可和3组只读/篡改/重复或链接头拒绝测试本地通过；静态代码全面可复现重建未建立，不扩大材料证明。新增源码审计CI待跟踪，产品共享安装/规则/Agent仍继续。

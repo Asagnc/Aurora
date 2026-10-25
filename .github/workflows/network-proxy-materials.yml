@@ -16,6 +16,7 @@ jobs:
           python3 scripts/verify-proxy-rust-materials.py
           python3 scripts/verify-proxy-python-materials.py
           python3 scripts/verify-proxy-gcc-materials.py
+          python3 scripts/verify-proxy-crypto-materials.py
       - name: Collect fixed source and candidate native wheel correspondence without executing downloads
         run: |
           python3 scripts/prepare-network-proxy.py --directory app/build/outputs/network-proxy-qualification
@@ -23,6 +24,7 @@ jobs:
           python3 scripts/prepare-proxy-rust-materials.py --directory app/build/outputs/proxy-rust-materials --materials app/build/outputs/network-proxy-materials
           python3 scripts/prepare-proxy-python-materials.py --directory app/build/outputs/proxy-python-materials --inputs app/build/outputs/proxy-python-inputs --audit app/build/outputs/network-proxy-qualification/archive-audit.json --identity docs/evidence/0.1.40/mitmdump-observed-runtime-identity.json
           python3 scripts/prepare-proxy-gcc-materials.py --directory app/build/outputs/proxy-gcc-materials --inputs app/build/outputs/proxy-gcc-inputs --audit app/build/outputs/network-proxy-qualification/archive-audit.json
+          python3 scripts/prepare-proxy-crypto-materials.py --directory app/build/outputs/proxy-crypto-materials --inputs app/build/outputs/proxy-crypto-inputs --identity docs/evidence/0.1.40/mitmdump-observed-runtime-identity.json
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
@@ -36,5 +38,7 @@ jobs:
             app/build/outputs/proxy-python-materials/notices/*
             app/build/outputs/proxy-gcc-materials/*.json
             app/build/outputs/proxy-gcc-materials/notices/*
+            app/build/outputs/proxy-crypto-materials/*.json
+            app/build/outputs/proxy-crypto-materials/notices/*
           if-no-files-found: warn
           retention-days: 14
