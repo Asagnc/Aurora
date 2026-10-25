@@ -1,3 +1,9 @@
+## 2026-10-25 ARM64 JVM/Gradle资格入口
+
+已固定Temurin25.0.5+8 AArch64 JDK与Gradle9.8.2的官方发布SHA256/字节数，新增仅真实Linux ARM64可执行的资格脚本；Windows仅获取固定输入，不伪装执行。原有Root chroot/租约方案不变；工具仍未安装到手机。3项归档边界测试本地通过。独立手动workflow使用公共仓库标准ubuntu-24.04-arm，运行离线自有Java工程的编译与实际执行，结果另记；此步骤通过也不代表aapt2/JNI/完整APK已资格。
+
+c20e885完整CI40158211528三job成功，包含28真实Frida、自有fixture构建与新增5项spawn记录/精确恢复主机测试。后续模型目录变更本地构建已通过，远端跟踪最新提交。
+
 ## 2026-10-25 构建链路线确认与公开模型核对
 
 用户已确认APK_BUILD_PROPOSAL的Root chroot/共享ARM64 JDK25＋完整Gradle/AGP路线，先来源与主机资格、通过后再安装。签名密钥在手机公共下载目录，留最终集中验收处理，当前不访问手机。模型目录已按10家官方公开文档复核至10-25，新增Kimi K3.1 Pro/高速版、MiniMax M3.1 Flash与严格effort编码，核心269项257通过/12跳过。Debug/Release/testAPK/lint/自有fixture本地通过；无付费请求。见PROVIDER_REVIEW_20261025.md。
