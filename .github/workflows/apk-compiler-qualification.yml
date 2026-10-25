@@ -23,6 +23,7 @@ jobs:
             app/build/outputs/apk-compiler-qualification/*.json
             app/build/outputs/apk-compiler-qualification/*.txt
             app/build/outputs/apk-compiler-qualification/bin/*
+            app/build/outputs/apk-compiler-qualification/toolchain/**
             app/build/outputs/apk-compiler-qualification/sources/*.tar.gz
           if-no-files-found: warn
           retention-days: 14

@@ -61,6 +61,18 @@
       "archiveBytes": 626995,
       "contentSha256": "74aa23da2b16a03486b28881c3a58e693a0be1d8a300f5f9a2e83faef21c53fa",
       "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    },
+    {
+      "id": "ndk30-host-libunwind",
+      "repository": "https://android.googlesource.com/toolchain/llvm-project",
+      "commit": "2d287f51eff2a5fbf84458a33f7fb2493cf67965",
+      "subdirectory": "libunwind",
+      "destination": "libunwind",
+      "role": "approved-native-host-compiler-source-candidate",
+      "archiveSha256": "5e064ac8219abce999114a05cef697ad70c478b009e30f98ccbe555172a1fe26",
+      "archiveBytes": 168152,
+      "contentSha256": "838a9bd4031da5219813af6dc75a3b4071809860010c712d63040e75f1b382a7",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
     }
   ]
 }

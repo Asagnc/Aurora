@@ -1,3 +1,9 @@
+## 2026-10-25 LLVM真实编译缺同基线libunwind头修复
+
+CI40178609738实际编译约66分钟，在3068/3153项Mach-O/ARM64.cpp因缺mach-o/compact_unwind_encoding.h失败；不是成功、不是超时或内存失败。补同一已批准2d287f51…基线的libunwind源码，新增第6份归档168,152字节/固定内容身份，不删除Mach-O能力或改用其他编译器。构建前检查所需头，保留失败日志。
+
+候选打包补真实clang资源头、clang++/ld.lld固定入口及完整toolchain目录；在重定位后的包中真实编译并执行AArch64 intrinsic C与C++ vector夹具，通过后才原子移动候选目录并出具清单。仍不是Android补丁等价、JNI或手机安装资格。独立长时workflow新结果另查。
+
 ## 2026-10-25 真实ARM64 AGP Java/Compose APK成功
 
 CI40181701787整体成功：真实JDK25/Gradle9.8.2/AGP9.4.1/Kotlin2.4.21、固定API37/SDK36 Java材料与自建ARM64 aapt2，实际执行43/48个任务，分别生成2,286,626和18,025,198字节unsigned自有APK，验证DEX包含自有Java/Compose类。39个SDK原ELF均先替换拒绝入口，只有3个已验证ARM64资源工具恢复可执行；未执行x86替代。保留前两轮失败与最终成功报告。仍没有JNI、手机运行/安装或完整工具发布资格。
