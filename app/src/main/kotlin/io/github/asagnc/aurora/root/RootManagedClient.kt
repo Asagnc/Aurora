@@ -20,19 +20,28 @@ internal class RootManagedClient(private val remote: IRootControl, context: Cont
         WireJson.decodeFromString<FridaManagedPackage>(encoded).also { it.validate() }
     }
 
-    suspend fun recover(ticket: RootManagedRunTicket): RootManagedResult = invoke(ticket, null)
+    suspend fun recover(ticket: RootManagedRunTicket, discardCapture: Boolean = false): RootManagedResult = invoke(ticket, null, discardCapture)
+
+    suspend fun capturePackage(identity: LinuxRootIdentity): RootCapturePackage = withContext(Dispatchers.IO) {
+        val snapshot = remote.snapshot()
+        require(snapshot.getInt("uid", -1) == 0 && snapshot.getInt("pid", -1) == identity.pid && snapshot.getInt("managedRunProtocol") == 1)
+        val encoded = requireNotNull(snapshot.getString("capturePackage")) { "Packaged rotation worker unavailable in this Root service" }
+        require(encoded.length <= 1024)
+        WireJson.decodeFromString<RootCapturePackage>(encoded).also { it.validate() }
+    }
 
     /** Original snapshots stay with the caller; only per-call duplicate handles cross Binder. */
     suspend fun start(ticket: RootManagedRunTicket, snapshots: List<ParcelFileDescriptor>): RootManagedResult = invoke(ticket, snapshots)
 
-    private suspend fun invoke(ticket: RootManagedRunTicket, snapshots: List<ParcelFileDescriptor>?): RootManagedResult = withContext(Dispatchers.IO) {
+    private suspend fun invoke(ticket: RootManagedRunTicket, snapshots: List<ParcelFileDescriptor>?, discardCapture: Boolean = false): RootManagedResult = withContext(Dispatchers.IO) {
         ticket.validate()
         val request = Bundle().apply { putString("ticket", WireJson.encodeToString(ticket).also { require(it.length <= 8192) }) }
+        if (discardCapture) { require(snapshots == null && ticket.kind == "capture"); request.putBoolean("discardCapture", true) }
         val result = CompletableDeferred<String>()
         val binder = remote.asBinder()
         val death = IBinder.DeathRecipient { result.completeExceptionally(IllegalStateException("Root service exited")) }
         val budget = if (snapshots == null) 55_000L else ticket.timeoutMs + 40_000
-        val lease = awake.acquire(budget + 5_000)
+        val lease = if (ticket.kind == "capture") awake.acquireCapture(budget + 5_000) else awake.acquire(budget + 5_000)
         try {
             binder.linkToDeath(death, 0)
             val callback = object : IRootResult.Stub() {
@@ -56,4 +65,4 @@ internal class RootManagedClient(private val remote: IRootControl, context: Cont
     }
 }
 
-internal data class FridaManagedConnection(val identity: LinuxRootIdentity, val client: RootManagedClient)
+internal data class RootManagedConnection(val identity: LinuxRootIdentity, val client: RootManagedClient)

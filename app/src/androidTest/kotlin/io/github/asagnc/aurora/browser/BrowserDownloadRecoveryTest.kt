@@ -69,7 +69,7 @@ class BrowserDownloadRecoveryTest {
                 db.version=6
             }
             io.github.asagnc.aurora.data.AuroraDatabase(context,name).use { helper ->
-                val db=helper.readableDatabase;assertEquals(8,db.version)
+                val db=helper.readableDatabase;assertEquals(9,db.version)
                 db.rawQuery("SELECT title FROM conversations WHERE id=?",arrayOf(owner)).use{assertTrue(it.moveToFirst());assertEquals("preserved",it.getString(0))}
                 for(filter in listOf(null,owner)){
                     val (sql,args)=io.github.asagnc.aurora.data.browserDownloadRecoveryQuery(filter,64)

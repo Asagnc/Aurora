@@ -13,6 +13,51 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class RootManagedRunRegistryTest {
+    @Test fun capturePublicationFailureKeepsTheSameRecoverableIntentAfterResourceExit() = runBlocking { fixture { _, store, old ->
+        val ticket = old.copy(kind = "capture", action = "capture", protocol = 3, target = null, observeMs = 1000,
+            script = RootScriptSnapshot("capture-rotation-v1", "b".repeat(64), 227))
+        val registry = RootManagedRunRegistry(store); registry.begin(ticket)
+        val proof = RootManagedExitProof(ticket.runId, ticket.identity, ticket.digest(), false, false, false, true, true, 3)
+        val result = RootManagedResult(ticket.runId, ticket.digest(), cleanup = proof, exitCode = 0, workerStatus = 0,
+            artifactError = "capture_publication_unavailable")
+        registry.finish(ticket, result)
+        assertEquals(listOf(ticket), registry.pending(ticket.owner))
+        registry.finish(ticket, result.copy(artifactError = null, captureArtifact = "runs/${ticket.runId}/segments/capture-manifest.json"))
+        assertEquals(0L, registry.count(ticket.owner))
+    } }
+
+    @Test fun versionEightMigrationPreservesExactPendingFridaAndAddsCaptureWithoutAnotherTable() = runBlocking { fixture { db, store, ticket ->
+        RootManagedRunRegistry(store).begin(ticket)
+        val encoded = store.read { source -> source.rawQuery("SELECT ticket FROM root_managed_runs WHERE id=?", arrayOf(ticket.runId)).use {
+            assertTrue(it.moveToFirst()); it.getString(0)
+        } }
+        db.writableDatabase.apply {
+            beginTransaction()
+            try {
+                execSQL("ALTER TABLE root_managed_runs RENAME TO fixture_v9")
+                execSQL("DROP INDEX root_managed_owner")
+                execSQL("""CREATE TABLE root_managed_runs(id TEXT PRIMARY KEY, owner TEXT NOT NULL REFERENCES conversations(id),
+                    kind TEXT NOT NULL CHECK(kind='frida'), ticket TEXT NOT NULL, tool_run_id TEXT)""")
+                execSQL("INSERT INTO root_managed_runs SELECT * FROM fixture_v9")
+                execSQL("DROP TABLE fixture_v9")
+                execSQL("CREATE INDEX root_managed_owner ON root_managed_runs(owner,id)")
+                version = 8; setTransactionSuccessful()
+            } finally { endTransaction() }
+        }
+        db.close()
+        AuroraDatabase(context, db.databaseName).use { upgraded ->
+            assertEquals(9, upgraded.readableDatabase.version)
+            val migrated = ConversationStore(upgraded); val registry = RootManagedRunRegistry(migrated)
+            assertEquals(listOf(ticket), registry.pending(ticket.owner))
+            assertEquals(encoded, migrated.read { source -> source.rawQuery("SELECT ticket FROM root_managed_runs WHERE id=?", arrayOf(ticket.runId)).use {
+                assertTrue(it.moveToFirst()); it.getString(0)
+            } })
+            val capture = ticket.copy(runId = UUID.randomUUID().toString(), kind = "capture", action = "capture", protocol = 3,
+                target = null, observeMs = 1000, script = RootScriptSnapshot("capture-rotation-v1", "c".repeat(64), 227))
+            registry.begin(capture); assertEquals(2L, registry.count(ticket.owner))
+        }
+    } }
+
     @Test fun pendingRecoveryPagesRemainOwnerScopedAndBounded() = runBlocking { fixture { _, store, ticket ->
         val runs = RootManagedRunRegistry(store)
         val tickets = (1..7).map { ticket.copy(runId = "00000000-0000-0000-0000-%012d".format(it)) }
@@ -193,7 +238,7 @@ class RootManagedRunRegistryTest {
                 }
                 AuroraDatabase(context, name).use { upgraded ->
                     val store = ConversationStore(upgraded); val runs = RootManagedRunRegistry(store)
-                    assertEquals(8, upgraded.readableDatabase.version)
+                    assertEquals(9, upgraded.readableDatabase.version)
                     assertEquals("keep", store.messages(owner).single().message.text)
                     val ticket = ticket(owner); runs.begin(ticket)
                     assertEquals(listOf(ticket), runs.pending(owner))

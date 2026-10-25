@@ -18,6 +18,26 @@ class RootCaptureRotationTest {
         config.binding.identity, 10000, "0.1.40", "a".repeat(64), null, config.snapshot(), observeMs = config.options.seconds * 1000,
         protocol = 3, kind = "capture", action = "capture")
 
+    @Test fun onlyTheExactLoopbackSelfProbeCanClaimQualification() {
+        val config = RootCaptureConfiguration(binding(), RootCaptureProbe.options)
+        val ticket = ticket(config).copy(action = "capture_probe")
+        assertTrue(RootCaptureProbe.matches(ticket, config))
+        assertFalse(RootCaptureProbe.matches(ticket.copy(action = "capture"), config))
+        for (options in listOf(config.options.copy(device = "any"), config.options.copy(filter = "udp"), config.options.copy(seconds = 2))) {
+            val changed = config.copy(options = options)
+            assertFalse(RootCaptureProbe.matches(ticket(changed).copy(action = "capture_probe"), changed))
+        }
+        val proof = RootManagedExitProof(ticket.runId, ticket.identity, ticket.digest(), false, false, false, true, true, 3)
+        val result = RootManagedResult(ticket.runId, ticket.digest(), cleanup = proof, exitCode = 0, workerStatus = 0, probeObserved = true,
+            captureArtifact = "runs/${ticket.runId}/segments/capture-manifest.json")
+        result.validate(ticket)
+        assertFailsWith<IllegalArgumentException> { result.copy(captureArtifact = null).validate(ticket) }
+        assertFailsWith<IllegalArgumentException> { result.copy(captureArtifact = "runs/another/segments/capture-manifest.json").validate(ticket) }
+        result.copy(probeObserved = null, captureArtifact = null, artifactError = "capture_publication_unavailable").validate(ticket)
+        result.copy(probeObserved = null, captureArtifact = null, captureDiscarded = true).validate(ticket)
+        assertFailsWith<IllegalArgumentException> { result.copy(captureDiscarded = true).validate(ticket) }
+    }
+
     @Test fun captureTicketBindsConfigurationAndKeepsTheFridaBudgetSeparate() {
         val config = RootCaptureConfiguration(binding(), options().copy(seconds = 1800)); val ticket = ticket(config)
         config.validateTicket(ticket); assertEquals(1_820_000, ticket.timeoutMs)

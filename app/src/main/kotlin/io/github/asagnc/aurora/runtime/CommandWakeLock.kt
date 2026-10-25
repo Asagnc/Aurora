@@ -9,12 +9,17 @@ internal class CommandWakeLock(context: Context, private val backend: String) {
     private val application = context.applicationContext ?: context
     private val power by lazy { application.getSystemService(PowerManager::class.java) }
 
-    fun acquire(budgetMs: Long): Lease {
+    fun acquire(budgetMs: Long): Lease = acquireBounded(budgetMs, 315_000)
+
+    /** Only the typed managed capture path uses its approved 30-minute operation plus cleanup reserve. */
+    fun acquireCapture(budgetMs: Long): Lease = acquireBounded(budgetMs, 1_865_000)
+
+    private fun acquireBounded(budgetMs: Long, maximumMs: Long): Lease {
         // The application-side Root client holds the lease, attributed to the application UID.
         if (Process.myUid() == 0) return Lease(null)
         val lock = power.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Aurora:$backend")
         lock.setReferenceCounted(false)
-        lock.acquire(budgetMs.coerceIn(1_000, 315_000))
+        lock.acquire(budgetMs.coerceIn(1_000, maximumMs))
         return Lease(lock)
     }
 

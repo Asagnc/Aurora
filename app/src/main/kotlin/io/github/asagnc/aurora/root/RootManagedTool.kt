@@ -6,10 +6,11 @@ import kotlinx.serialization.json.*
 /** Recovery remains available separately from the not-yet-qualified Frida injection backend. */
 internal class RootManagedTool(private val manager: RootManagedRunManager, private val owner: String) : ToolExecutor {
     override val definitions = listOf(ToolDefinition("root_managed_tasks",
-        "Inspect or recover up to four of this conversation's pending Root injection intents. action=status/recover. " +
+        "Inspect or recover up to four of this conversation's pending Root managed intents. action=status/recover. " +
             "Recovery never replays scripts or terminates a pre-existing attached target. It may reclaim only this task's " +
             "captured spawn before any resume intent, using its exact same-boot identity. Only exact cleanup, retirement, " +
-            "or confirmed original-target exit releases an intent. Root must already be connected. " +
+            "or confirmed original-target exit releases a Frida intent. Capture recovery verifies the original closed segment prefix " +
+            "and retries publication without starting another capture; failed publication retains its intent even after resource exit. Root must already be connected. " +
             "Retained intents block conversation deletion. Use frida status/probe for qualification scoped to the current Root service.",
         objectOf("type" to string("object"), "properties" to objectOf("action" to objectOf(
             "type" to string("string"), "enum" to JsonArray(listOf("status", "recover").map(::string)))),

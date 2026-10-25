@@ -107,7 +107,7 @@ class LinuxRunRegistryTest {
                 assertEquals("preserved", next.messages(owner).single().message.text)
                 assertTrue(LinuxRunRegistry(next).pending().isEmpty())
                 assertEquals(1L, next.read { db -> android.database.DatabaseUtils.longForQuery(db, "SELECT COUNT(*) FROM linux_leases WHERE token=?", arrayOf(lease)) })
-                assertEquals(8, upgraded.readableDatabase.version)
+                assertEquals(9, upgraded.readableDatabase.version)
             } finally { upgraded.close() }
         } finally { database.close(); context.deleteDatabase(name) }
     }

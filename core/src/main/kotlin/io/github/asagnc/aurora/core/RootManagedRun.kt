@@ -30,7 +30,7 @@ import kotlinx.serialization.encodeToString
     fun validate() {
         require(kind == "frida" || kind == "capture")
         if (kind == "capture") {
-            require(protocol == 3 && action == "capture" && target == null && spawnPackage == null && bridge == null)
+            require(protocol == 3 && action in setOf("capture", "capture_probe") && target == null && spawnPackage == null && bridge == null)
             require(script.version == "capture-rotation-v1" && script.bytes in 213..4372)
             require(observeMs in 1000..1_800_000 && observeMs % 1000 == 0L)
         } else {

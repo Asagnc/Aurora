@@ -26,7 +26,8 @@ internal class RootScriptChannel private constructor(
     private var closed = false
     private var claimed = false
     private var deadline = 0L
-    val arguments: List<String> get() = listOf("attach-channel", name, nonce, WireJson.encodeToString(ticket))
+    val arguments: List<String> get() = if (ticket.kind == "capture") listOf("capture-channel", name, nonce,
+        ticket.identity.pid.toString(), ticket.identity.startTicks.toString()) else listOf("attach-channel", name, nonce, WireJson.encodeToString(ticket))
 
     /** Explicit peer identity for transport qualification; managed launches use the directory overload. */
     suspend fun handoff(worker: RootTargetIdentity) {

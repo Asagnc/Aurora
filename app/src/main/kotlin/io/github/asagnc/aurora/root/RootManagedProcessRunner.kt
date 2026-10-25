@@ -22,12 +22,16 @@ internal class RootManagedProcessRunner(private val identity: () -> LinuxRootIde
         require(ticket.identity == identity() && ticket.identity.pid == Process.myPid()) { "Root service epoch changed" }
         require(worker.sha256 == ticket.workerSha256) { "Worker version differs from immutable ticket" }
         val arguments = channel.arguments
-        require(arguments == listOf("attach-channel", channel.name, channel.nonce, WireJson.encodeToString(ticket))) {
+        val expected = if (ticket.kind == "capture") listOf("capture-channel", channel.name, channel.nonce,
+            ticket.identity.pid.toString(), ticket.identity.startTicks.toString()) else
+            listOf("attach-channel", channel.name, channel.nonce, WireJson.encodeToString(ticket))
+        require(arguments == expected) {
             "Script channel belongs to another ticket"
         }
         guard.usePath { helper -> worker.usePath { executable ->
-            launch(state, listOf(helper, "run") + key(ticket, state) + listOf("--observe-ms", ticket.observeMs.toString(),
-                "--cooperative-cancel", "--", executable) + arguments, ticket.timeoutMs + 5_000, "worker-events.log")
+            launch(state, listOf(helper, "run") + key(ticket, state) + listOf("--observe-ms", ticket.observeMs.toString()) +
+                (if (ticket.kind == "capture") listOf("--kind", "capture") else emptyList()) +
+                listOf("--cooperative-cancel", "--", executable) + arguments, ticket.timeoutMs + 5_000, "worker-events.log")
         } }
     }
 

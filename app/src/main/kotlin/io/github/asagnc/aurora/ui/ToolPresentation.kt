@@ -19,6 +19,7 @@ internal fun presentTool(event: ToolRun): ToolPresentation {
         "command_execute_root" -> "执行 Root 命令"
         "command_execute_linux" -> "执行 Linux 命令"
         "packet_capture_root" -> "采集网络数据包"
+        "packet_capture_rotate_root" -> "连续分段抓包"
         "packet_inject_root" -> "发送原始数据帧"
         "socket_owner_root" -> "查询 socket UID 快照"
         "packet_replay_root" -> "重放 PCAP 片段"

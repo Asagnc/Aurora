@@ -22,11 +22,19 @@ internal class RootManagedDispatch(private val context: Context, private val ide
         return bundle.metadata(current and 1 != 0, current and 2 != 0)
     }
 
+    suspend fun captureMetadata(): RootCapturePackage = bundle.captureMetadata(qualification.get() and 4 != 0)
+
     suspend fun start(ticket: RootManagedRunTicket, snapshots: List<ParcelFileDescriptor>): String {
         ticket.validate()
-        require(ticket.kind == "frida") { "Capture publication qualification is not complete" }
         require(ticket.identity == identity() && ticket.appUid == context.applicationInfo.uid)
         require(ticket.appBuild == context.packageManager.getPackageInfo(context.packageName, 0).longVersionCode.toString())
+        if (ticket.kind == "capture") {
+            val config = RootCaptureMemory.read(ticket, snapshots)
+            val probe = RootCaptureProbe.matches(ticket, config)
+            require(ticket.action != "capture_probe" || probe)
+            require(probe || qualification.get() and 4 != 0) { "Run the explicit loopback capture probe in this Root service first" }
+            return execute(ticket, snapshots, probe)
+        }
         if (ticket.bridge != null) require(ticket.bridge == bundle.bridgeSnapshot()) { "Java bridge differs from the installed immutable bundle" }
         val probe = FridaManagedProbe.matches(ticket, identity(), bundle.bridgeSnapshot())
         require(probe || (qualification.get() and (if (ticket.bridge == null) 1 else 2)) != 0) {
@@ -36,7 +44,7 @@ internal class RootManagedDispatch(private val context: Context, private val ide
     }
 
     private suspend fun execute(ticket: RootManagedRunTicket, snapshots: List<ParcelFileDescriptor>, probe: Boolean): String =
-        bundle.guard().use { guard -> bundle.worker().use { worker ->
+        bundle.guard().use { guard -> (if (ticket.kind == "capture") bundle.captureWorker() else bundle.worker()).use { worker ->
             require(worker.sha256 == ticket.workerSha256)
             val state = withContext(Dispatchers.IO) { files.state(ticket) }
             files.open(state).use { directory ->
@@ -54,6 +62,11 @@ internal class RootManagedDispatch(private val context: Context, private val ide
         val result = recovery.recover(launch.ticket)
         if (!probe) return result
         val decoded = WireJson.decodeFromString<RootManagedResult>(result)
+        if (launch.ticket.kind == "capture") {
+            val observed = decoded.successful && decoded.captureArtifact != null
+            if (observed) qualification.updateAndGet { it or 4 }
+            return WireJson.encodeToString(RootManagedResult.serializer(), decoded.copy(probeObserved = observed))
+        }
         val observed = decoded.successful && runCatching {
             RootFridaProbeEvidence.observed(launch.directory, launch.ticket)
         }.getOrDefault(false)

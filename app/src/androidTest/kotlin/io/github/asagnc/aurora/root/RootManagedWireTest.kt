@@ -48,6 +48,19 @@ class RootManagedWireTest {
         }
     }
 
+    @Test fun discardIsExplicitAndAvailableOnlyForCaptureRecovery() {
+        val capture = ticket.copy(kind = "capture", action = "capture", protocol = 3, target = null, observeMs = 1000,
+            script = RootScriptSnapshot("capture-rotation-v1", "b".repeat(64), 227))
+        val request = Bundle().apply { putString("ticket", WireJson.encodeToString(capture)); putBoolean("discardCapture", true) }
+        assertEquals(capture, RootManagedWire.ticket(capture.runId, request, Process.myUid()))
+        request.putBoolean("discardCapture", false)
+        try { RootManagedWire.ticket(capture.runId, request, Process.myUid()); fail("Implicit discard marker accepted") }
+        catch (_: IllegalArgumentException) { }
+        request.putBoolean("discardCapture", true); request.putString("ticket", WireJson.encodeToString(ticket))
+        try { RootManagedWire.ticket(ticket.runId, request, Process.myUid()); fail("Frida discard accepted") }
+        catch (_: IllegalArgumentException) { }
+    }
+
     @Test fun rejectedDeadCallbackReleasesSnapshotsBeforeExecution() = runBlocking {
         val released = AtomicInteger()
         val token = object : Binder() {

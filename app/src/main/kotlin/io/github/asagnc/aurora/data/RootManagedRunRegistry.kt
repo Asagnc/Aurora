@@ -36,6 +36,7 @@ internal class RootManagedRunRegistry(private val conversations: ConversationSto
     suspend fun finish(ticket: RootManagedRunTicket, proof: RootManagedTargetExitProof) = finishConfirmed(ticket, proof.matches(ticket))
     suspend fun finish(ticket: RootManagedRunTicket, result: RootManagedResult) {
         result.validate(ticket)
+        if (ticket.kind == "capture" && result.artifactError != null) return // Keep this same indexed intent for explicit artifact recovery.
         finishConfirmed(ticket, result.confirmed)
     }
 
@@ -52,8 +53,17 @@ internal class RootManagedRunRegistry(private val conversations: ConversationSto
         fun create(db: SQLiteDatabase) {
             db.execSQL("""CREATE TABLE IF NOT EXISTS root_managed_runs(
                 id TEXT PRIMARY KEY, owner TEXT NOT NULL REFERENCES conversations(id),
-                kind TEXT NOT NULL CHECK(kind='frida'), ticket TEXT NOT NULL, tool_run_id TEXT)""")
+                kind TEXT NOT NULL CHECK(kind IN ('frida','capture')), ticket TEXT NOT NULL, tool_run_id TEXT)""")
             db.execSQL("CREATE INDEX IF NOT EXISTS root_managed_owner ON root_managed_runs(owner,id)")
+        }
+
+        /** SQLiteOpenHelper wraps upgrades in one transaction; copy bytes verbatim, including unknown old outcomes. */
+        fun migrateCapture(db: SQLiteDatabase) {
+            db.execSQL("ALTER TABLE root_managed_runs RENAME TO root_managed_runs_v8")
+            db.execSQL("DROP INDEX root_managed_owner")
+            create(db)
+            db.execSQL("INSERT INTO root_managed_runs(id,owner,kind,ticket,tool_run_id) SELECT id,owner,kind,ticket,tool_run_id FROM root_managed_runs_v8")
+            db.execSQL("DROP TABLE root_managed_runs_v8")
         }
     }
 }

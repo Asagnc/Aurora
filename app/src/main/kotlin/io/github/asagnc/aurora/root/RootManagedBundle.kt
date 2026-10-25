@@ -5,6 +5,7 @@ import android.os.Build
 import io.github.asagnc.aurora.core.RootScriptSnapshot
 import io.github.asagnc.aurora.core.WireJson
 import io.github.asagnc.aurora.core.FridaManagedPackage
+import io.github.asagnc.aurora.core.RootCapturePackage
 import java.nio.file.Path
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -21,6 +22,11 @@ internal class RootManagedBundle(private val context: Context) {
     }
 
     suspend fun captureWorker(): RootManagedExecutable = executable("capture", "libaurora_packet_rotate.so")
+
+    suspend fun captureMetadata(passed: Boolean): RootCapturePackage = withContext(Dispatchers.IO) {
+        RootCapturePackage(context.packageManager.getPackageInfo(context.packageName, 0).longVersionCode.toString(),
+            digest("capture"), passed).also { it.validate() }
+    }
 
     suspend fun bridgeSnapshot(): RootScriptSnapshot = withContext(Dispatchers.IO) {
         context.assets.open("managed/java-bridge.json").use {

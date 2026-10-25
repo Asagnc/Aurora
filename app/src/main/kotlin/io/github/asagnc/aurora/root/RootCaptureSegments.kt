@@ -11,13 +11,17 @@ import java.io.InputStream
 
 /** Revalidates an ordered registered prefix after native recovery. Never infers a seal from orphan/partial bytes. */
 internal object RootCaptureSegments {
-    fun configuration(directory: ParcelFileDescriptor, ticket: RootManagedRunTicket): RootCaptureConfiguration {
+    fun configuration(directory: ParcelFileDescriptor, ticket: RootManagedRunTicket): RootCaptureConfiguration? {
         check(Process.myUid() == 0)
-        val raw = requireNotNull(metadata(directory, "capture.config", 4372))
+        val raw = metadata(directory, "capture.config", 4372) ?: return null
         return RootCaptureConfiguration.decode(raw).also { it.validateTicket(ticket) }
     }
 
-    fun read(directory: ParcelFileDescriptor, ticket: RootManagedRunTicket, config: RootCaptureConfiguration): RootCaptureManifest {
+    fun hasSealedPrefix(directory: ParcelFileDescriptor): Boolean = (0 until 64).any {
+        metadata(directory, "capture-%03d.seal".format(java.util.Locale.ROOT, it)) != null
+    }
+
+    fun read(directory: ParcelFileDescriptor, ticket: RootManagedRunTicket, config: RootCaptureConfiguration): RootCaptureManifest? {
         config.validateTicket(ticket)
         check(Process.myUid() == 0)
         val state = RootManagedRecords.finished(directory, ticket)
@@ -36,10 +40,9 @@ internal object RootCaptureSegments {
                 record.validate(config.binding, ticket.digest(), config.options)
                 require(record.segment.ordinal == ordinal)
                 val prefix = manifest ?: RootCaptureManifest(config.binding, ticket.digest(), record.startedBootMs)
-                verify(owned, record.segment, config.options)
                 manifest = prefix.appendRecord(record, config.options)
             }
-            return requireNotNull(manifest) { "No complete registered capture segment" }
+            return manifest
         }
     }
 

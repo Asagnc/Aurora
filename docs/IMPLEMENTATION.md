@@ -861,3 +861,9 @@ The approved capsule B is implemented with thinking bulb, concrete model, inline
 CI40224855665通过8组真实libpcap封口/短写/fsync/冲突和5组封印FD/连续loopback/取消/损坏配置拒绝。capture guard首次40225277685因launcher仍只允许attach-channel而拒绝capture，未误报成功；修复后40225641400完整通过，含旧Frida观察/记录/启动及24组真实cgroup guard恢复。新capture AEX2报告无伪造Frida清理位，30分钟仅capture可用；旧Frida250秒/普通命令300秒保持。
 
 306核心294通过/12跳过。新增Root封口段读取、流式PCAP格式/计数/摘要验证、独立副本发布及原始封印配置留存；实际双ABI轮转载荷已入Debug/Release并通过16KiB/依赖/摘要审计，216项构建任务、AndroidTest和lint本地成功。配置留存分支CI与Root手机发布故障矩阵待验收；Binder/活动表迁移/Agent未接，不显示captureReady。详见CAPTURE_ROTATION_IMPLEMENTATION.md。
+
+## 2026-10-26 轮转Binder/Agent与活动收尾整合
+
+同一活动表迁移schema9，旧票据/工具归属逐字保留；实际SQLite DDL保留/外键/回滚3组通过。capture Binder/当前Root服务代固定loopback自检、Agent status/probe/start、准备产物/账本/有界唤醒租约已接。真实自检须封口/发布/退出全部通过才开放start，不能从主机资格自动置ready。
+
+发布后回收Root载荷，重启依Root封口记录严格复核会话副本；失败保留同一活动意图供显式恢复。显式会话删除可在真实退出后丢弃本任务载荷，未知继续阻断。307核心295通过/12跳过、完整218任务Debug/Release/AndroidTest/lint本地通过，新增设备用例仅编译。27f2da9完整CI40226367156与配置留存专项40226368338成功，后续整合CI待跟踪。

@@ -8,10 +8,11 @@ import io.github.asagnc.aurora.core.*
 
 internal object RootManagedWire {
     fun ticket(id: String, request: Bundle, uid: Int): RootManagedRunTicket {
-        require(request.keySet() == setOf("ticket"))
+        require(request.keySet() == setOf("ticket") || request.keySet() == setOf("ticket", "discardCapture"))
         val encoded = requireNotNull(request.getString("ticket")).also { require(it.length <= 8192) }
         return WireJson.decodeFromString<RootManagedRunTicket>(encoded).also {
             it.validate(); require(it.runId == id && it.appUid == uid)
+            if (request.containsKey("discardCapture")) require(it.kind == "capture" && request.getBoolean("discardCapture"))
         }
     }
 

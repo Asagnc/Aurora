@@ -52,7 +52,7 @@ internal class RootManagedRunManager(private val app: AuroraApplication) {
         Files.createDirectory(runs.resolve(ticket.runId))
     }
 
-    suspend fun recover(owner: String): Int = recovery.withLock {
+    suspend fun recover(owner: String, discardCapture: Boolean = false): Int = recovery.withLock {
         val pending = records.pending(owner, limit = 4, after = cursors[owner].orEmpty())
             .ifEmpty { records.pending(owner, limit = 4) }
         if (pending.isEmpty()) return@withLock 0
@@ -60,7 +60,7 @@ internal class RootManagedRunManager(private val app: AuroraApplication) {
         app.spaces.sharedResources()
         for (ticket in pending) {
             try {
-                val result = client.recover(ticket)
+                val result = client.recover(ticket, discardCapture && ticket.kind == "capture")
                 if (result.confirmed) records.finish(ticket, result)
             } catch (cancel: CancellationException) { throw cancel }
             catch (_: Exception) { /* Keep the immutable intent for an explicit later recovery. */ }

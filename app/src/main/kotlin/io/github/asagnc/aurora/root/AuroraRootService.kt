@@ -99,13 +99,14 @@ class AuroraRootService : RootService() {
             verifyCaller()
             val ticket = RootManagedWire.ticket(id, request, applicationInfo.uid)
             runBlocking(kotlinx.coroutines.Dispatchers.IO) { commands.cancelAndWait(id) }
-            commands.start(id, callback) { managed.recover(ticket) }
+            commands.start(id, callback) { managed.recover(ticket, request.getBoolean("discardCapture")) }
         }
         override fun startManagedRun(id: String, request: Bundle, script: android.os.ParcelFileDescriptor,
             bridge: android.os.ParcelFileDescriptor?, callback: IRootResult) {
             var owned = emptyList<android.os.ParcelFileDescriptor>()
             try {
                 verifyCaller()
+                require(request.keySet() == setOf("ticket"))
                 val ticket = RootManagedWire.ticket(id, request, applicationInfo.uid)
                 owned = RootManagedWire.snapshots(ticket, script, bridge)
                 val captured = owned
@@ -159,6 +160,12 @@ class AuroraRootService : RootService() {
                 putInt("managedRecoveryProtocol", 1)
                 // Transport support is separate from worker/ART qualification; no ready claim.
                 putInt("managedRunProtocol", 1)
+                runCatching {
+                    putString("capturePackage", runBlocking(kotlinx.coroutines.Dispatchers.IO) {
+                        io.github.asagnc.aurora.core.WireJson.encodeToString(
+                            io.github.asagnc.aurora.core.RootCapturePackage.serializer(), managedDispatch.captureMetadata())
+                    })
+                }
                 runCatching {
                     putString("fridaPackage", runBlocking(kotlinx.coroutines.Dispatchers.IO) {
                         io.github.asagnc.aurora.core.WireJson.encodeToString(
