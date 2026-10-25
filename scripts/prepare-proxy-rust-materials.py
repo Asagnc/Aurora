@@ -109,6 +109,42 @@ def verify_locks(plan, materials):
         raise ValueError('Crate plan differs from actual source Cargo locks')
 
 
+def additional_notices(crate, store, archives, records):
+    found = []
+    for record in records:
+        if record['package'] != crate['name'] or record['version'] != crate['version']:
+            continue
+        if record['file'] != record['sha256'] + '.txt' or not re.fullmatch(r'[a-f0-9]{64}', record['sha256']):
+            raise ValueError('Unsafe supplementary notice reference')
+        data = (ROOT / 'tools/network-proxy/licenses/rust' / record['file']).read_bytes()
+        if len(data) > 1024 * 1024 or hashlib.sha256(data).hexdigest() != record['sha256']:
+            raise ValueError('Supplementary notice bytes differ')
+        origin = record['origin']
+        if origin['type'] == 'git':
+            if hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest() != origin['blobSha1']:
+                raise ValueError('Supplementary upstream Git blob differs')
+        elif origin['type'] == 'same-project-crate':
+            archive = archives[(origin['package'], origin['version'])]
+            with archive.open('rb') as stream:
+                if hashlib.file_digest(stream, 'sha256').hexdigest() != origin['sourceSha256']:
+                    raise ValueError('Project license source differs')
+            with tarfile.open(archive) as source:
+                member = source.getmember(origin['path'])
+                if not member.isfile() or member.size > 1024 * 1024 or source.extractfile(member).read() != data:
+                    raise ValueError('Project notice does not match source crate')
+        else:
+            raise ValueError('Unknown supplementary notice source')
+        target = store / record['file']
+        if target.is_symlink() or target.exists() and target.read_bytes() != data:
+            raise ValueError('Existing supplementary notice differs')
+        if not target.exists():
+            with target.open('xb') as output:
+                output.write(data)
+        found.append({'entry': origin['path'], 'bytes': len(data), 'sha256': record['sha256'], 'stored': target.name,
+            'origin': origin, 'method': 'upstream_project_notice_supplement'})
+    return found
+
+
 def prepare(directory, materials):
     plan = json.loads((ROOT / 'tools/network-proxy/rust-materials.json').read_text())
     verify_locks(plan, materials)
@@ -122,8 +158,10 @@ def prepare(directory, materials):
     spec = importlib.util.spec_from_file_location('source_notices', ROOT / 'scripts/prepare-network-proxy-materials.py')
     source = importlib.util.module_from_spec(spec); spec.loader.exec_module(source)
     store = directory / 'notices'; store.mkdir(exist_ok=True); results = []
+    supplements = json.loads((ROOT / 'tools/network-proxy/rust-extra-notices.json').read_text())['notices']
+    archives = {(item['name'], item['version']): path for item, path in zip(plan['crates'], paths)}
     for crate, path in zip(plan['crates'], paths):
-        notices = source.notices(path, store)
+        notices = source.notices(path, store) + additional_notices(crate, store, archives, supplements)
         with tarfile.open(path) as archive:
             member = archive.getmember(f'{crate["name"]}-{crate["version"]}/Cargo.toml')
             if not member.isfile() or member.size > 1024 * 1024:

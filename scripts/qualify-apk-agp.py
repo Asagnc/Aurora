@@ -110,7 +110,7 @@ def build(gradle, environment, work, directory, stage):
         classes = verify_owned_dex(archive, compose)
     result = {'stage': name, 'apkBytes': apk.stat().st_size, 'apkSha256': hashlib.sha256(apk.read_bytes()).hexdigest(), 'ownedClassDefinitions': classes}
     if native:
-        result['jni'] = native.inspect(apk)
+        result['jni'] = native.inspect(apk, compose)
     return result
 
 

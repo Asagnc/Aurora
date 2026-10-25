@@ -22,3 +22,4 @@ tools/frida-licenses/LGPL-2.0-only.txt -text
 app/src/main/assets/licenses/frida/NOTICE.txt -text
 tools/network-proxy/upstream-uv.lock -text
 tools/network-proxy/mitmproxy-LICENSE -text
+tools/network-proxy/licenses/** -text

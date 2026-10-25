@@ -3,7 +3,7 @@ import hashlib
 import json
 import subprocess
 import zipfile
-from apk_ndk_targets import acquire, module
+from apk_ndk_targets import ROOT, acquire, module
 from apk_native_host import prepare_host, prepare_ndk
 
 
@@ -14,6 +14,8 @@ class NativeAgpFixture:
         self.cmake, host = prepare_host(directory, work)
         self.ndk, self.toolchain, files = prepare_ndk(archive, pin, candidate, work)
         self.work = work; self.environment = environment; self.zipalign = zipalign
+        self.framework = json.loads((ROOT / 'tools/apk-build/compose-native.json').read_text())
+        module('compose_native_fetch', 'qualify-apk-jvm.py').acquire(self.framework, directory)
         (directory / 'native-host.json').write_text(json.dumps(host, indent=2) + '\n')
         (directory / 'ndk-selected.json').write_text(json.dumps(files, indent=2) + '\n')
         for key in ['LD_PRELOAD', 'LD_LIBRARY_PATH', 'CPATH', 'C_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH', 'LIBRARY_PATH',
@@ -42,9 +44,21 @@ android {
         source.write_text(source.read_text().replace('public class Owned {',
             'public class Owned { static { System.loadLibrary("owned"); } public static native String nativeMarker();'))
 
-    def inspect(self, apk):
+    def framework_native(self, archive, abi, machine):
+        reference = self.framework['members'][abi]
+        data = archive.read('lib/' + abi + '/libandroidx.graphics.path.so')
+        if len(data) != reference['bytes'] or hashlib.sha256(data).hexdigest() != reference['sha256']:
+            raise ValueError('Compose native payload differs from fixed Google Maven AAR')
+        needed = module('compose_elf', 'verify-linux-native.py').inspect(data, machine, False)
+        if not needed <= {'libc.so', 'libm.so', 'libdl.so'}:
+            raise ValueError('Unexpected Compose native dependency')
+        return {'coordinate': self.framework['coordinate'], 'sha256': reference['sha256'], 'needed': sorted(needed)}
+
+    def inspect(self, apk, compose):
         audit = module('agp_jni_elf', 'verify-linux-native.py'); results = []
         expected = {f'lib/{abi}/{name}' for abi in ['arm64-v8a', 'x86_64'] for name in ['libowned.so', 'libc++_shared.so']}
+        if compose:
+            expected.update('lib/' + abi + '/libandroidx.graphics.path.so' for abi in ['arm64-v8a', 'x86_64'])
         with zipfile.ZipFile(apk) as archive:
             if {name for name in archive.namelist() if name.startswith('lib/')} != expected:
                 raise ValueError('Actual APK JNI layout differs')
@@ -63,7 +77,8 @@ android {
                 symbols = subprocess.check_output([str(self.toolchain / 'bin/llvm-readobj'), '--dyn-symbols', str(selected)], env=self.environment, text=True, timeout=15)
                 if 'Java_io_github_asagnc_aurora_buildfixture_Owned_nativeMarker' not in symbols:
                     raise ValueError('Packaged JNI export missing')
-                results.append({'abi': abi, 'ownedSha256': hashlib.sha256(owned).hexdigest(), 'runtimeSha256': hashlib.sha256(runtime).hexdigest(), 'needed': sorted(needed)})
+                results.append({'abi': abi, 'ownedSha256': hashlib.sha256(owned).hexdigest(), 'runtimeSha256': hashlib.sha256(runtime).hexdigest(),
+                    'needed': sorted(needed), 'frameworkNative': self.framework_native(archive, abi, machine) if compose else None})
         subprocess.run([str(self.zipalign), '-c', '-P', '16', '-v', '4', str(apk)], env=self.environment, check=True, timeout=30,
             stdout=subprocess.DEVNULL)
         return results

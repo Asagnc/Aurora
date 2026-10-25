@@ -83,11 +83,14 @@ def notices(archive, directory):
             digest = hashlib.sha256(data).hexdigest()
             suffix = '.lock' if PurePosixPath(item.name).name == 'Cargo.lock' else '.txt'
             target = directory / (digest + suffix)
+            if target.is_symlink():
+                raise ValueError('Notice content address is a link')
             if target.exists():
                 if target.read_bytes() != data:
                     raise ValueError('Notice content address differs')
             else:
-                target.write_bytes(data)
+                with target.open('xb') as output:
+                    output.write(data)
             found.append({'entry': item.name, 'bytes': len(data), 'sha256': digest, 'stored': target.name})
     return found
 

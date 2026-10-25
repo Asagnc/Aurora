@@ -1,0 +1,21 @@
+{
+  "id": "compose-graphics-path",
+  "version": "1.0.1",
+  "coordinate": "androidx.graphics:graphics-path:1.0.1",
+  "archive": "graphics-path-1.0.1.aar",
+  "url": "https://dl.google.com/dl/android/maven2/androidx/graphics/graphics-path/1.0.1/graphics-path-1.0.1.aar",
+  "bytes": 39380,
+  "sha256": "8ca4032b6d79b351f0b59ad4b580eddbb9423e1652f7c958830687f1eee2ec03",
+  "members": {
+    "arm64-v8a": {
+      "path": "jni/arm64-v8a/libandroidx.graphics.path.so",
+      "bytes": 10096,
+      "sha256": "41e9a793c43a0f4fddb19e33f346bace464f30f888ba7b9eaf96294ea115bfb6"
+    },
+    "x86_64": {
+      "path": "jni/x86_64/libandroidx.graphics.path.so",
+      "bytes": 10760,
+      "sha256": "4e56c996f13670e70082658de7880c4020eabf4f25e43387f88ed78a713fc9f0"
+    }
+  }
+}
