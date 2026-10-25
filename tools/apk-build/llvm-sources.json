@@ -1,0 +1,66 @@
+{
+  "scope": "NDK30 documented upstream LLVM base for ARM64 host compiler candidate; Android patch application and SDK equivalence not yet established",
+  "sourceClosureVerified": false,
+  "repositories": [
+    {
+      "id": "ndk30-host-llvm",
+      "repository": "https://android.googlesource.com/toolchain/llvm-project",
+      "commit": "2d287f51eff2a5fbf84458a33f7fb2493cf67965",
+      "subdirectory": "llvm",
+      "destination": "llvm",
+      "role": "approved-native-host-compiler-source-candidate",
+      "archiveSha256": "72bd8243f460659fbf790788051570eb3cb95364f4a6ebef633603d0501122da",
+      "archiveBytes": 123038059,
+      "contentSha256": "13803fedbc578582b70a94dd00e81caa2e59a15e1d07fd9acc955ebd8860b02c",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    },
+    {
+      "id": "ndk30-host-clang",
+      "repository": "https://android.googlesource.com/toolchain/llvm-project",
+      "commit": "2d287f51eff2a5fbf84458a33f7fb2493cf67965",
+      "subdirectory": "clang",
+      "destination": "clang",
+      "role": "approved-native-host-compiler-source-candidate",
+      "archiveSha256": "0f2542c3930bcc7e1fad1a0d98e138828ce403a98a1f0ab60c5d6b91614a759d",
+      "archiveBytes": 38962777,
+      "contentSha256": "8af90e8dcb45c6593bbf3f247544bbe80939e21a1a392164d8de7c5020200d7b",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    },
+    {
+      "id": "ndk30-host-lld",
+      "repository": "https://android.googlesource.com/toolchain/llvm-project",
+      "commit": "2d287f51eff2a5fbf84458a33f7fb2493cf67965",
+      "subdirectory": "lld",
+      "destination": "lld",
+      "role": "approved-native-host-compiler-source-candidate",
+      "archiveSha256": "4bd730bf9a985689b471ae10f1fc36533effae46b70102eefd89ebcdfb0ce8a5",
+      "archiveBytes": 2697876,
+      "contentSha256": "b8ee3b681859ba027de8154915e043ec578d0533a8ef9336a6c8d82aac770397",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    },
+    {
+      "id": "ndk30-host-cmake",
+      "repository": "https://android.googlesource.com/toolchain/llvm-project",
+      "commit": "2d287f51eff2a5fbf84458a33f7fb2493cf67965",
+      "subdirectory": "cmake",
+      "destination": "cmake",
+      "role": "approved-native-host-compiler-source-candidate",
+      "archiveSha256": "7b55dcc16167c09da24fb1615c9fbf137728b781c727e6c38ab9197f068ace82",
+      "archiveBytes": 9915,
+      "contentSha256": "fee0a4de8e2c99e766d119fffe2741f4671c275bacfb5c2949da16144ba3461c",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    },
+    {
+      "id": "ndk30-host-third-party",
+      "repository": "https://android.googlesource.com/toolchain/llvm-project",
+      "commit": "2d287f51eff2a5fbf84458a33f7fb2493cf67965",
+      "subdirectory": "third-party",
+      "destination": "third-party",
+      "role": "approved-native-host-compiler-source-candidate",
+      "archiveSha256": "adb1343c06111914e1f8e31b98d5dc1dc3a31484263b539ddc80cb39ddcf84c2",
+      "archiveBytes": 626995,
+      "contentSha256": "74aa23da2b16a03486b28881c3a58e693a0be1d8a300f5f9a2e83faef21c53fa",
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
+    }
+  ]
+}

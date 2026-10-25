@@ -1,3 +1,9 @@
+## 2026-10-25 资源Binder头闭包与原生编译器候选
+
+资源CI40178107011已编到CursorWindow.cpp，缺binder/Parcel.h失败。已将原先只取native/include的范围扩为同一固定commit的完整frameworks/native归档，避免compatibility链接指向未取得的libs/binder；仍15份归档，总59,443,068字节，新内容身份已固定，失败证据保留。
+
+NDK30实际已安装clang --version为Android r574158c/clang21；源码说明指向LLVM基线2d287f51…及Android补丁。已取得该基线llvm/clang/lld/cmake/third-party五份归档，共165,335,622字节、展开1,422,579,593字节，并固定内容身份。新增真实ARM64 host编译器实验，随后运行自有Linux C编译/执行；这是NDK30上游基线候选，不声称已应用全部Android补丁或与官方SDK等价，也不声称已具Android JNI能力。独立长时workflow仅手动触发；当前仍不安装手机工具。
+
 ## 2026-10-25 资源兼容目录别名继续修复
 
 CI40177784058的JVM job成功，资源编译已越过TypeHelpers，但RefBase.cpp通过旧core/include/utils目录别名引用CallStack.h失败。已补归档内已解析目录的受限别名，实际目标必须在同一提取根内且已存在；文件链接仍复制成普通文件，外部链接不跟随。回归覆盖内部目录及头文件访问，本地4项检查通过。旧失败证据保留，新实验另查。完整发布审查包已在release-review-145a1df实际通过APK身份/16KiB zipalign/载荷与两份离线重建，仍未签名、未设备验收。

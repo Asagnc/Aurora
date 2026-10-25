@@ -95,15 +95,14 @@
       "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
     },
     {
-      "id": "aapt-native-include",
+      "id": "aapt-native",
       "repository": "https://android.googlesource.com/platform/frameworks/native",
       "commit": "fcbde2bcff56ca1d7bec9cabf8bdca5e288bf103",
       "role": "resource-tool-source",
-      "destination": "vendor/native/include",
-      "subdirectory": "include",
-      "archiveSha256": "c70e768ee137174119d52252f4d1cb4983ee1246953f6d8022782ffe57eacfc7",
-      "archiveBytes": 213454,
-      "contentSha256": "d1f6db74ded878ab7504eb9e9354ff26ac59f8a76b618039aa90d9b13b451fca",
+      "destination": "vendor/native",
+      "archiveSha256": "c4d7ec9653681c8abafcc0e572e0c5e358653bba92ec1c415637e8969755d1c6",
+      "archiveBytes": 12022587,
+      "contentSha256": "914b0d8208fb10a7888acbc7f9f2bd0ab39c251ec9dec2f754487ed48e8f4a85",
       "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
     },
     {

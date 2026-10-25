@@ -1,0 +1,28 @@
+name: APK native ARM64 compiler qualification
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compiler:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 200
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install owned native host build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends cmake ninja-build g++ binutils
+      - name: Build fixed LLVM source candidate and run an owned native C fixture
+        run: python3 scripts/qualify-apk-compiler.py --directory app/build/outputs/apk-compiler-qualification
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: apk-arm64-compiler-qualification
+          path: |
+            app/build/outputs/apk-compiler-qualification/*.json
+            app/build/outputs/apk-compiler-qualification/*.txt
+            app/build/outputs/apk-compiler-qualification/bin/*
+            app/build/outputs/apk-compiler-qualification/sources/*.tar.gz
+          if-no-files-found: warn
+          retention-days: 14
