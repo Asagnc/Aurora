@@ -58,6 +58,10 @@
 
 ## 当前证据
 
+- 00c5782完整CI40094912932三个job成功，Binder/活动账本/Agent恢复代码与原生回归通过。随后增加每次最多4项恢复及64个owner有界游标轮转，避免未知项长期挡住后续票据；新增1项Android分页仅编译，本地Debug/Release/testAPK/lint通过。
+
+- 发布源码材料已实际取得65份固定归档（288,562,897字节）及157份许可/版权文本记录；真实描述表审计28嵌入资源，识别NDK29 agent与NDK30外层的不同来源、Java桥的3项发射shim。349,673,283字节材料ZIP实际离线重链接得到相同worker SHA。见FRIDA_SOURCE_MATERIALS.md；完整SDK重建、APK notice/worker/桥携带与Agent注入仍不是已完成项。
+
 - 本轮已接Root受管Binder派发/恢复、PFD所有权、精确结果清账、Agent status/recover与删除前恢复。三项新Core回归通过，255项243通过/12跳过（含2未提供样本）；Debug/Release/testAPK/lint及双ABI guard可信摘要/ELF审计通过。新增6项Android用例仅编译。worker/桥尚未打包，注入仍不可用，不显示ready。见ROOT_MANAGED_BINDER.md；接续发布材料闭包、真正Agent注入入口和最终手机资格。
 
 - 发布构建已增加最终LLD map并实际交叉链接：ARM64 worker89,143,968字节、1,894个保留归档成员（含调试段来源，非精确运行时依赖闭包），SHA256 a1486cd58c2d25ca2caa014075fb5eb9ac85623c5a135f03ba87c4b28ab49fb1。CI将保存map/成员清单，继续逐项固定源码/notice和嵌入资源核实；尚未完整发布打包。

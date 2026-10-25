@@ -16,8 +16,11 @@ internal class RootManagedRunRegistry(private val conversations: ConversationSto
             "kind" to ticket.kind, "ticket" to WireJson.encodeToString(ticket), "tool_run_id" to toolRunId))
         Unit
     }
-    suspend fun pending(owner: String): List<RootManagedRunTicket> = conversations.read { db ->
-        db.rawQuery("SELECT id,owner,kind,ticket FROM root_managed_runs WHERE owner=? ORDER BY id", arrayOf(owner)).use { cursor ->
+    suspend fun pending(owner: String, limit: Int = 64, after: String = ""): List<RootManagedRunTicket> = conversations.read { db ->
+        require(limit in 1..64)
+        require(after.isEmpty() || java.util.UUID.fromString(after).toString() == after)
+        db.rawQuery("SELECT id,owner,kind,ticket FROM root_managed_runs WHERE owner=? AND id>? ORDER BY id LIMIT ?",
+            arrayOf(owner, after, limit.toString())).use { cursor ->
             buildList { while (cursor.moveToNext()) {
                 val ticket = WireJson.decodeFromString<RootManagedRunTicket>(cursor.getString(3)).also { it.validate() }
                 require(ticket.runId == cursor.getString(0) && ticket.owner == cursor.getString(1) && ticket.kind == cursor.getString(2))

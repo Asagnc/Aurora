@@ -16,6 +16,8 @@ RootManagedResult是受信Root Binder的小结果，分别携带正常清理、�
 
 RootManagedRunManager先登记活动意图再派发，调用失败/取消尝试精确恢复；未知状态保留。恢复只遍历当前会话的活动索引，不扫历史，不自动Root重连。Agent开始及用户删除前接入恢复；删除仍由原事务屏障拒绝未确认项。
 
+随后有界恢复改为每次最多4项，64个owner的内存游标轮转，按(owner,id)索引取下一页并在末页回绕。游标不充当退出事实或持久状态；进程重启后仍从真实活动表恢复。新增Android分页/归属/限制断言仅编译。
+
 Agent工具root_managed_tasks提供status/recover，报告pending与injectionReady=false；这不是Frida attach/spawn分析工具。Root不可用、记录损坏、进程退出未确认或原目标仍活且无卸载证明均保留活动项。没有调用真实模型。
 
 ## 实际APK输入

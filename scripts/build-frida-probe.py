@@ -20,6 +20,13 @@ SIZE = 60903232
 URL = "https://github.com/frida/frida/releases/download/17.24.3/" + NAME
 
 
+def source_manifest():
+    paths = sorted((ROOT / 'app/src/main/cpp/frida').glob('*.[ch]'))
+    paths += [ROOT / 'scripts' / name for name in
+              ['build-frida-probe.py', 'audit-frida-resources.py', 'verify-static-reverse-sources.py']]
+    return {str(path.relative_to(ROOT)).replace('\\', '/'): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
+
+
 def source_helpers():
     spec = importlib.util.spec_from_file_location("pinned_sources", ROOT / "scripts/verify-static-reverse-sources.py")
     module = importlib.util.module_from_spec(spec)
@@ -96,9 +103,8 @@ def build(args, archive, output):
                   "strippedBytes": stripped.stat().st_size, "deflatedWorkerZipBytes": packed.stat().st_size,
                   "workerSha256": worker_digest,
                   "needed": needed, "androidRuntime": "NOT TESTED", "packagedInApk": False,
-                  "alignmentScope": "Outer worker only; not injected agents or loader/SELinux qualification"}
-        stripped.replace(output / "aurora-frida-probe")
-        (output / "readelf.txt").write_text(elf, encoding="utf-8")
+                  "alignmentScope": "Outer worker only; not injected agents or loader/SELinux qualification",
+                  "sources": source_manifest()}
         # This is the final link's retained section provenance, not the entire devkit inventory.
         map_text = link_map.read_text(encoding="utf-8")
         members = sorted(set(re.findall(r"libfrida-core\.a\(([^)]+)\):", map_text)))
@@ -107,6 +113,14 @@ def build(args, archive, output):
         (output / "linked-members.json").write_text(json.dumps(members, indent=2) + "\n", encoding="utf-8")
         report["retainedArchiveMembers"] = len(members)
         report["linkMapSha256"] = hashlib.sha256(link_map.read_bytes()).hexdigest()
+        resource_spec = importlib.util.spec_from_file_location("frida_resources", ROOT / "scripts/audit-frida-resources.py")
+        resource_audit = importlib.util.module_from_spec(resource_spec)
+        resource_spec.loader.exec_module(resource_audit)
+        resources = resource_audit.audit(stripped, link_map)
+        report["resourceDescriptors"] = len(resources["resources"])
+        (output / "resources.json").write_text(json.dumps(resources, indent=2) + "\n", encoding="utf-8")
+        stripped.replace(output / "aurora-frida-probe")
+        (output / "readelf.txt").write_text(elf, encoding="utf-8")
         link_map.replace(output / "worker.map")
         (output / "report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
         print(json.dumps(report, indent=2))

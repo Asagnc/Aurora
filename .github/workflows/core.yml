@@ -23,6 +23,8 @@ jobs:
           python3 scripts/verify-android-files-api.py
           python3 scripts/verify-static-reverse-fetch.py
           python3 scripts/verify-frida-probe-build.py
+          python3 scripts/verify-frida-resources.py
+          python3 scripts/verify-frida-sources.py
           python3 scripts/verify-frida-input.py
           python3 scripts/verify-frida-fd-channel.py
           sudo -n python3 scripts/verify-frida-managed-control.py
@@ -96,6 +98,7 @@ jobs:
             app/build/outputs/frida-qualification/readelf.txt
             app/build/outputs/frida-qualification/linked-members.json
             app/build/outputs/frida-qualification/worker.map
+            app/build/outputs/frida-qualification/resources.json
             app/build/outputs/managed-qualification/report.json
             app/build/outputs/managed-qualification/readelf.txt
             app/build/outputs/managed-qualification/source-rebuild.json

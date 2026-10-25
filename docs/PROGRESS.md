@@ -1,3 +1,7 @@
+## 2026-10-25 有界恢复与Frida源码材料离线重链接
+
+00c5782完整CI40094912932三job全部成功。恢复后续改为4项有界页和64 owner内存游标轮转；本地构建/lint通过，分页Android用例仅编译。源材料实际取得65份固定归档，含V8真实gitlinks、NDK29/30基础源码/补丁和桥的三项发射polyfill；材料ZIP实际离线重链接出相同worker SHA。28嵌入资源从真实描述表审计，4资源+4源码+2归档故障用例通过。见FRIDA_SOURCE_MATERIALS.md；APK携带、完整Agent注入与最终设备资格仍待继续。
+
 ## 2026-10-24 受管Binder、活动账本与Agent恢复
 
 已接派发/恢复Binder、PFD所有权、进程屏障后的三类精确证明清账、Agent status/recover和删除前恢复。guard可信摘要来自最终APK载荷，双ABI摘要/ELF审计通过。核心255项243通过/12跳过，Debug/Release/testAPK/lint成功；新增6项Android用例仅编译。Frida worker/桥仍未打包，不显示注入ready，见ROOT_MANAGED_BINDER.md与local-managed-binder-passed.txt。

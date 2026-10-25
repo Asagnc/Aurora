@@ -1,0 +1,376 @@
+{
+  "workerSha256": "a1486cd58c2d25ca2caa014075fb5eb9ac85623c5a135f03ba87c4b28ab49fb1",
+  "resources": [
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._frida-data-icons.c.o",
+      "name": "barebone.png",
+      "bytes": 1930,
+      "uncompressedBytes": 1930,
+      "sha256": "0bb85d87f61b4e480288684f57c3cf241d1339fa7d7a1d84337be927f4d68695"
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._frida-data-icons.c.o",
+      "name": "local.png",
+      "bytes": 1482,
+      "uncompressedBytes": 1482,
+      "sha256": "33d61a01ae14234a4eafe0895867d85d124e3ee2a1a00730e2086eb397e7c997"
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._frida-data-icons.c.o",
+      "name": "simmy.png",
+      "bytes": 1693,
+      "uncompressedBytes": 1693,
+      "sha256": "e97b036cb7cc981069e0009f07da33b939dd585dcf4012ad618f36952df20bf8"
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._frida-data-icons.c.o",
+      "name": "fruity-network.png",
+      "bytes": 3297,
+      "uncompressedBytes": 3297,
+      "sha256": "8284c230d527b599290db54879db94560ba7fbb82aacfb1da843a3af5d523a65"
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._frida-data-icons.c.o",
+      "name": "droidy.png",
+      "bytes": 2114,
+      "uncompressedBytes": 2114,
+      "sha256": "e2e54fbc894b6367d3d31be016baafa77d1123e7d7dd75fbca55c32a417c0125"
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._frida-data-icons.c.o",
+      "name": "socket.png",
+      "bytes": 10107,
+      "uncompressedBytes": 10107,
+      "sha256": "6ee0db2faedfd1edc8b112df613631a08364009fa95e812e1043e212a4ca94e3"
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._frida-data-icons.c.o",
+      "name": "portal.png",
+      "bytes": 3463,
+      "uncompressedBytes": 3463,
+      "sha256": "c16953a7c8b3b9b3e48a4c398d707c49e97f1d7ac57281cb5e6e0a2b45891b15"
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._frida-data-android.c.o",
+      "name": "helper.dex",
+      "bytes": 28248,
+      "uncompressedBytes": 28248,
+      "sha256": "89cbae45ffd26a7fc25c3d601618c433e53be4417e768d6023e0d1a2aa682c0d"
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._frida-data-android.c.o",
+      "name": "zymbiote-x86.elf",
+      "bytes": 6008,
+      "uncompressedBytes": 6008,
+      "sha256": "ce09e4cc1cdcfd2c715274c2d00bf46ca69ce3eb24a778d235af16290aed675f",
+      "elf": {
+        "bits": 32,
+        "machine": 3,
+        "type": 3,
+        "loadAlignments": [
+          4096,
+          4096,
+          4096
+        ],
+        "load16KiB": false,
+        "writableExecutable": true,
+        "needed": [],
+        "androidToolchainNotes": []
+      }
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._frida-data-android.c.o",
+      "name": "zymbiote-x86_64.elf",
+      "bytes": 6296,
+      "uncompressedBytes": 6296,
+      "sha256": "3b09b588de9b2aad297fa5af74e682e407cdfe845c9809df030541302c931670",
+      "elf": {
+        "bits": 64,
+        "machine": 62,
+        "type": 3,
+        "loadAlignments": [
+          4096,
+          4096,
+          4096
+        ],
+        "load16KiB": false,
+        "writableExecutable": true,
+        "needed": [],
+        "androidToolchainNotes": []
+      }
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._frida-data-android.c.o",
+      "name": "zymbiote-arm.elf",
+      "bytes": 6176,
+      "uncompressedBytes": 6176,
+      "sha256": "045334af3d59ef4138fd4491b57bfcb567a04952e00b619b4c6cbf65a6b44b2a",
+      "elf": {
+        "bits": 32,
+        "machine": 40,
+        "type": 3,
+        "loadAlignments": [
+          4096,
+          4096,
+          4096
+        ],
+        "load16KiB": false,
+        "writableExecutable": true,
+        "needed": [],
+        "androidToolchainNotes": []
+      }
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._frida-data-android.c.o",
+      "name": "zymbiote-arm64.elf",
+      "bytes": 10688,
+      "uncompressedBytes": 10688,
+      "sha256": "40fd37cb54c8749fe92761b530638700c1678907a5e95c008f9913bfbc8ef2f1",
+      "elf": {
+        "bits": 64,
+        "machine": 183,
+        "type": 3,
+        "loadAlignments": [
+          4096,
+          4096,
+          4096,
+          4096
+        ],
+        "load16KiB": false,
+        "writableExecutable": true,
+        "needed": [],
+        "androidToolchainNotes": []
+      }
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._frida-data-agent.c.o",
+      "name": "frida-agent-64.so",
+      "bytes": 39081712,
+      "uncompressedBytes": 39081712,
+      "sha256": "f929ad9e67bfd981d769b1b758026669c876ed7b76ce17cd9b5001a3afe76b1e",
+      "elf": {
+        "bits": 64,
+        "machine": 183,
+        "type": 3,
+        "loadAlignments": [
+          16384,
+          16384,
+          16384
+        ],
+        "load16KiB": true,
+        "writableExecutable": false,
+        "needed": [
+          "libc.so",
+          "libdl.so",
+          "liblog.so",
+          "libm.so"
+        ],
+        "androidToolchainNotes": [
+          {
+            "api": 21,
+            "ndk": "r29",
+            "build": "14206865"
+          }
+        ]
+      }
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._frida-data-agent.c.o",
+      "name": "frida-agent-32.so",
+      "bytes": 23449840,
+      "uncompressedBytes": 23449840,
+      "sha256": "d3be2c2dccf0af47c5a6a067f0f87b87fb50386192fd0372363c74c1c53433d4",
+      "elf": {
+        "bits": 32,
+        "machine": 40,
+        "type": 3,
+        "loadAlignments": [
+          4096,
+          4096,
+          4096
+        ],
+        "load16KiB": false,
+        "writableExecutable": false,
+        "needed": [
+          "libc.so",
+          "libdl.so",
+          "liblog.so",
+          "libm.so"
+        ],
+        "androidToolchainNotes": [
+          {
+            "api": 21,
+            "ndk": "r29",
+            "build": "14206865"
+          }
+        ]
+      }
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._frida-data-agent.c.o",
+      "name": "frida-agent-arm64.so",
+      "bytes": 0,
+      "uncompressedBytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._frida-data-agent.c.o",
+      "name": "frida-agent-arm.so",
+      "bytes": 0,
+      "uncompressedBytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._frida-data-helper-process.c.o",
+      "name": "frida-helper-64",
+      "bytes": 0,
+      "uncompressedBytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._frida-data-helper-process.c.o",
+      "name": "frida-helper-32",
+      "bytes": 5261572,
+      "uncompressedBytes": 5261572,
+      "sha256": "11f48dae52241c9b04463d959318d313d3458fc1d82144d8a68854695e5e60ec",
+      "elf": {
+        "bits": 32,
+        "machine": 40,
+        "type": 3,
+        "loadAlignments": [
+          4096,
+          4096,
+          4096
+        ],
+        "load16KiB": false,
+        "writableExecutable": false,
+        "needed": [
+          "libc.so",
+          "libdl.so",
+          "libm.so"
+        ],
+        "androidToolchainNotes": [
+          {
+            "api": 21,
+            "ndk": "r29",
+            "build": "14206865"
+          }
+        ]
+      }
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._barebone_frida-data-barebone.c.o",
+      "name": "script-runtime.js",
+      "bytes": 10616,
+      "uncompressedBytes": 10616,
+      "sha256": "6e49434f05af7fd36d2af52a321f78ef2963a124c1768810951d206314d76071"
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._barebone_frida-data-barebone.c.o",
+      "name": "memory-scanner-arm64.elf",
+      "bytes": 1928,
+      "uncompressedBytes": 1928,
+      "sha256": "fc03897a034dce15c4b12db81e563d367c348a2b1bbd58737d1461c66db4dd35",
+      "elf": {
+        "bits": 64,
+        "machine": 183,
+        "type": 2,
+        "loadAlignments": [
+          4
+        ],
+        "load16KiB": false,
+        "writableExecutable": false,
+        "needed": [],
+        "androidToolchainNotes": []
+      }
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._barebone_frida-data-barebone.c.o",
+      "name": "android-emulator-windows.js",
+      "bytes": 8791,
+      "uncompressedBytes": 8791,
+      "sha256": "e3eacec7ceaf8f856c7a51f5fcccf3358b2084be4ee7c63147c81d3a46e2ba3e"
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._barebone_frida-data-barebone.c.o",
+      "name": "android-emulator-macos.js",
+      "bytes": 9693,
+      "uncompressedBytes": 9693,
+      "sha256": "600f0a68c4a7cab7cac3c487339b810fcb9ee23b842db8061e335f3278b76553"
+    },
+    {
+      "object": "libfrida-core.a.p/meson-generated_.._barebone_frida-data-barebone.c.o",
+      "name": "android-emulator-linux.js",
+      "bytes": 260,
+      "uncompressedBytes": 260,
+      "sha256": "a7782d8dcdfefb3d2085ef7daccc62ce0c1e008f357ceb10859cc96d3518062a"
+    },
+    {
+      "object": "libfrida-helper-backend.a.p/meson-generated_.._frida-data-helper-backend.c.o",
+      "name": "bootstrapper.bin",
+      "bytes": 7452,
+      "uncompressedBytes": 7452,
+      "sha256": "df1d11180fccf747c1184305211a3ec04d36237b0bd076254a3b51554dec5d6d"
+    },
+    {
+      "object": "libfrida-helper-backend.a.p/meson-generated_.._frida-data-helper-backend.c.o",
+      "name": "loader.bin",
+      "bytes": 1492,
+      "uncompressedBytes": 1492,
+      "sha256": "6de23d5e43bd7a519964a9b2116d4ea76c8eecdb30402823722b9698196f8aec"
+    },
+    {
+      "object": "libfrida-helper-backend.a.p/meson-generated_.._frida-data-helper-backend.c.o",
+      "name": "activity-sampler.elf",
+      "bytes": 8640,
+      "uncompressedBytes": 8640,
+      "sha256": "ec329e6b4803ff4e28427079677643ee53abf781976e9960ef8cc248e16c0b89",
+      "elf": {
+        "bits": 64,
+        "machine": 247,
+        "type": 1,
+        "loadAlignments": [],
+        "load16KiB": false,
+        "writableExecutable": false,
+        "needed": [],
+        "androidToolchainNotes": []
+      }
+    },
+    {
+      "object": "libfrida-helper-backend.a.p/meson-generated_.._frida-data-helper-backend.c.o",
+      "name": "spawn-gater.elf",
+      "bytes": 7152,
+      "uncompressedBytes": 7152,
+      "sha256": "33f8ae11f0719f2771b5554d02ef98ef8131d19355a60950344c4bc140329ec6",
+      "elf": {
+        "bits": 64,
+        "machine": 247,
+        "type": 1,
+        "loadAlignments": [],
+        "load16KiB": false,
+        "writableExecutable": false,
+        "needed": [],
+        "androidToolchainNotes": []
+      }
+    },
+    {
+      "object": "libfrida-helper-backend.a.p/meson-generated_.._frida-data-helper-backend.c.o",
+      "name": "syscall-tracer.elf",
+      "bytes": 106848,
+      "uncompressedBytes": 106848,
+      "sha256": "71889f0c53d8600971e71c6fd20d3259a727da3b6cfc3229429570d7483a92e2",
+      "elf": {
+        "bits": 64,
+        "machine": 247,
+        "type": 1,
+        "loadAlignments": [],
+        "load16KiB": false,
+        "writableExecutable": false,
+        "needed": [],
+        "androidToolchainNotes": []
+      }
+    }
+  ],
+  "scope": "Exact linked root_blobs descriptors; internal loaders and nested compressed content are not system-loader qualification",
+  "androidRuntime": "NOT TESTED"
+}

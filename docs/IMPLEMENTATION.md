@@ -1,3 +1,9 @@
+## 2026-10-25 有界恢复与Frida源码材料
+
+Root活动索引分页(limit<=64)，管理器每次恢复4项并以有界内存游标公平轮转，不从游标推断清理。新增Android分页用例仅编译，Debug/Release/testAPK/lint通过。
+
+最终LLD map、28个精确root_blobs资源与Android工具链note已接构建审计；新增4资源/4源码/原2归档故障用例通过。65份源码材料已实际取得并固定SHA/Git或npm integrity；ZIP重链接得到相同89,143,968字节worker。记录在FRIDA_SOURCE_MATERIALS.md、tools/frida-sources/catalog.json与证据JSON。独立源码workflow后续执行，完整SDK重建和Android运行不在该证明范围。
+
 ## 2026-10-24 受管Binder、活动账本与Agent恢复
 
 新增RootManagedDispatch/Recovery/Client/RunManager连接现有执行器、封印FD与schema8。RootManagedResult拒绝错票据/多重证明/任意错误原文；仅传输成功不清账，已确认清理与执行成功分开。Agent提供当前会话status/recover，开始任务和删除前尝试恢复，未知状态仍受数据库屏障保护。

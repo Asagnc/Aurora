@@ -1,0 +1,1522 @@
+{
+  "scope": "Pinned source-material superset for Frida17.24.3, bridge7.0.13, emitted compiler shims and identified NDK29/30 runtimes. Optional test integrations omitted; not an upstream SDK rebuild claim.",
+  "sourceClosureVerified": false,
+  "repositories": [
+    {
+      "id": "brotli",
+      "repository": "https://github.com/frida/brotli",
+      "commit": "dd581fd4fea06096e3949ad6cb16775538d0ef47",
+      "role": "runtime-source-superset",
+      "tree": "dd581fd4fea06096e3949ad6cb16775538d0ef47",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "LICENSE",
+          "gitBlobSha1": "33b7cdd2dbaeddce1e35aa1a13f63d71154dc42f",
+          "bytes": 1084
+        }
+      ],
+      "archiveSha256": "b2e613b582a3299921d7179f55c4a1ec03100ea7abf75060e98037181e6e8a4a",
+      "archiveBytes": 682224
+    },
+    {
+      "id": "capstone",
+      "repository": "https://github.com/frida/capstone",
+      "commit": "f919a03a5417e1c7ea3af7035225073437030ef2",
+      "role": "runtime-source-superset",
+      "tree": "f919a03a5417e1c7ea3af7035225073437030ef2",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "LICENSE.TXT",
+          "gitBlobSha1": "0dabdc749eee9faeaa358ecd831064463cd756bc",
+          "bytes": 1687
+        },
+        {
+          "path": "LICENSE_LLVM.TXT",
+          "gitBlobSha1": "66d6647ffd70292fb8e74d17dd97d5605c5f9757",
+          "bytes": 3331
+        },
+        {
+          "path": "bindings/python/LICENSE.TXT",
+          "gitBlobSha1": "0dabdc749eee9faeaa358ecd831064463cd756bc",
+          "bytes": 1687
+        },
+        {
+          "path": "suite/regress/LICENSE",
+          "gitBlobSha1": "dd85900f2013e0252253b3b3c4618be353be23bc",
+          "bytes": 1688
+        }
+      ],
+      "archiveSha256": "eea8f5a8bcc19737aff017091085c1a3222bc455669d5925a977c74646663cc9",
+      "archiveBytes": 7673903
+    },
+    {
+      "id": "elfutils",
+      "repository": "https://github.com/frida/elfutils",
+      "commit": "7436d958b04c34b3ee3baee240a54284ee099630",
+      "role": "runtime-source-superset",
+      "tree": "7436d958b04c34b3ee3baee240a54284ee099630",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "94a9ed024d3859793618152ea559a168bbcbb5e2",
+          "bytes": 35147
+        },
+        {
+          "path": "COPYING-GPLV2",
+          "gitBlobSha1": "d159169d1050894d3ea3b98e1c965c4058208fe1",
+          "bytes": 18092
+        },
+        {
+          "path": "COPYING-LGPLV3",
+          "gitBlobSha1": "65c5ca88a67c30becee01c5a8816d964b03862f9",
+          "bytes": 7651
+        },
+        {
+          "path": "doc/COPYING-GFDL",
+          "gitBlobSha1": "98310abe803be6ca8cc3f3d538cfcf66cb3bb06e",
+          "bytes": 23176
+        }
+      ],
+      "archiveSha256": "c68694018cdb941215b43bfaacfba8b1d6d5f9f47b46bb02aa112a540ca55ee0",
+      "archiveBytes": 11946599
+    },
+    {
+      "id": "frida-core",
+      "repository": "https://github.com/frida/frida-core",
+      "commit": "57161b0ddd2311adf18e84f4680f9cb935ce8376",
+      "role": "runtime-source-superset",
+      "tree": "57161b0ddd2311adf18e84f4680f9cb935ce8376",
+      "gitlinks": [
+        {
+          "path": "releng",
+          "commit": "8429c0c9caf8b071955f64869a1b0ede58ad9f34",
+          "repository": "https://github.com/frida/releng.git"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "b01d49c670e55dbff638eb294ac1a52416fb32e8",
+          "bytes": 2416
+        }
+      ],
+      "archiveSha256": "806e2fc0b7d3e088cfd0dbd9628cd6d1c00defe5dfb328318505d32e1e9c9a10",
+      "archiveBytes": 4512597
+    },
+    {
+      "id": "frida-gum",
+      "repository": "https://github.com/frida/frida-gum",
+      "commit": "3f82ef6a5b2413867835a45fe341913455473303",
+      "role": "runtime-source-superset",
+      "tree": "3f82ef6a5b2413867835a45fe341913455473303",
+      "gitlinks": [
+        {
+          "path": "releng",
+          "commit": "8429c0c9caf8b071955f64869a1b0ede58ad9f34",
+          "repository": "https://github.com/frida/releng.git"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "810ab7017801b3269dcee7931513e3e5e1910062",
+          "bytes": 5696
+        }
+      ],
+      "archiveSha256": "54f6852343f3ffc6fb60a4b923d1fb7daff76af801f919fdcbb511b2150dd6f2",
+      "archiveBytes": 14443449
+    },
+    {
+      "id": "glib",
+      "repository": "https://github.com/frida/glib",
+      "commit": "ae4ec44f4484bf22ff387e712c5e9902af07c0c7",
+      "role": "runtime-source-superset",
+      "tree": "ae4ec44f4484bf22ff387e712c5e9902af07c0c7",
+      "gitlinks": [
+        {
+          "path": "subprojects/gvdb",
+          "commit": "2b42fc75f09dbe1cd1057580b5782b08f2dcb400",
+          "repository": "../../GNOME/gvdb.git"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "e818e737a7833b56367e795cef6ee0d992c6e667",
+          "bytes": 30
+        },
+        {
+          "path": "LICENSES/LicenseRef-old-glib-tests.txt",
+          "gitBlobSha1": "d78b44306d8d5966923f643f1d576be233b00661",
+          "bytes": 841
+        },
+        {
+          "path": "docs/reference/COPYING",
+          "gitBlobSha1": "df952d3cab8f0465a5ebe29fee5a7ff0ea16c59c",
+          "bytes": 1698
+        },
+        {
+          "path": "gmodule/COPYING",
+          "gitBlobSha1": "ddf687147fc15a5d362353275aefaf3406af8630",
+          "bytes": 33
+        },
+        {
+          "path": "proxy-libintl-static/COPYING.LIB.txt",
+          "gitBlobSha1": "bf50f20de6ef55b52fe7832d3a4ed05f0c69d452",
+          "bytes": 25292
+        }
+      ],
+      "archiveSha256": "b5fdada990a434346054bcbfef69e70e4275913ca8537055f125e135b9dd288a",
+      "archiveBytes": 10324177
+    },
+    {
+      "id": "glib--subprojects--gvdb",
+      "repository": "https://github.com/GNOME/gvdb",
+      "commit": "2b42fc75f09dbe1cd1057580b5782b08f2dcb400",
+      "role": "nested-source",
+      "parent": "glib",
+      "path": "subprojects/gvdb",
+      "archiveSha256": "069a00aa1fc893f18423602f4e095583be5a220429f6e8a58d70511490b4b019",
+      "archiveBytes": 24716
+    },
+    {
+      "id": "glib-networking",
+      "repository": "https://github.com/frida/glib-networking",
+      "commit": "c8d811a906659f59eabc9f4dc3ad2ba22772bf0f",
+      "role": "runtime-source-superset",
+      "tree": "c8d811a906659f59eabc9f4dc3ad2ba22772bf0f",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "4362b49151d7b34ef83b3067a8f9c9f877d72a0e",
+          "bytes": 26530
+        },
+        {
+          "path": "LICENSE_EXCEPTION",
+          "gitBlobSha1": "6a4ea06c44cc407833f4bed75d606a7f8c244f6d",
+          "bytes": 706
+        }
+      ],
+      "archiveSha256": "3b0a06ade0686671ca00a291a02f6bfb48f411ce11a036a05afb2bac77e754a7",
+      "archiveBytes": 443450
+    },
+    {
+      "id": "json-glib",
+      "repository": "https://github.com/frida/json-glib",
+      "commit": "0242c39f1f60f844c9df41e83434251b06609e82",
+      "role": "runtime-source-superset",
+      "tree": "0242c39f1f60f844c9df41e83434251b06609e82",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "e818e737a7833b56367e795cef6ee0d992c6e667",
+          "bytes": 30
+        }
+      ],
+      "archiveSha256": "16a8e0f76878b11dd5293b3e95cc5ce1009e78c20f81363ed50f9938276aff93",
+      "archiveBytes": 241418
+    },
+    {
+      "id": "libbpf",
+      "repository": "https://github.com/frida/libbpf",
+      "commit": "9c4e176810717e27b6990a8722b252fc1967667f",
+      "role": "runtime-source-superset",
+      "tree": "9c4e176810717e27b6990a8722b252fc1967667f",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "LICENSE",
+          "gitBlobSha1": "c300739e7d2b75c446b73705e99d010f0adb3c26",
+          "bytes": 30
+        },
+        {
+          "path": "LICENSE.BSD-2-Clause",
+          "gitBlobSha1": "bce40aa98c5e77b47803d4676bbe7c1d4250cb6b",
+          "bytes": 1649
+        },
+        {
+          "path": "LICENSE.LGPL-2.1-only",
+          "gitBlobSha1": "4d1d06a0e8ffe748621e71b17e97d477bbf160ce",
+          "bytes": 27493
+        }
+      ],
+      "archiveSha256": "0594d2806fbc4b1aecd6c1d589d1dded66c6957ee1b4b1cce306724326c304ef",
+      "archiveBytes": 1105703
+    },
+    {
+      "id": "libdwarf",
+      "repository": "https://github.com/frida/libdwarf",
+      "commit": "9ac8cc22cab54d72cb355a44e85db716a7006f47",
+      "role": "runtime-source-superset",
+      "tree": "9ac8cc22cab54d72cb355a44e85db716a7006f47",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "664ae63b5f8a09d56f57ebbeae7eb59b20db52ae",
+          "bytes": 919
+        },
+        {
+          "path": "src/bin/dwarfdump/COPYING",
+          "gitBlobSha1": "52d7f0eccdd6b09bb89e3feb84831857fec13c4e",
+          "bytes": 1074
+        },
+        {
+          "path": "src/bin/dwarfgen/COPYING",
+          "gitBlobSha1": "e0eec0d4361de04406fb70cc7d4c7e0f23a430dd",
+          "bytes": 1808
+        },
+        {
+          "path": "src/lib/libdwarf/COPYING",
+          "gitBlobSha1": "81f978f6f0c7c3c682d2d616f84a66e85e348884",
+          "bytes": 1159
+        },
+        {
+          "path": "src/lib/libdwarfp/COPYING",
+          "gitBlobSha1": "81f978f6f0c7c3c682d2d616f84a66e85e348884",
+          "bytes": 1159
+        }
+      ],
+      "archiveSha256": "f5497492bac0eba7737ccb4234ba27d925d1e85ad118134f950a2f3ba186350a",
+      "archiveBytes": 4431308
+    },
+    {
+      "id": "libffi",
+      "repository": "https://github.com/frida/libffi",
+      "commit": "3779ad36850879768c9aac5e424e7ecf55972859",
+      "role": "runtime-source-superset",
+      "tree": "3779ad36850879768c9aac5e424e7ecf55972859",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "LICENSE",
+          "gitBlobSha1": "90a8b230284e5cfbf02cbed3431116922bd84663",
+          "bytes": 1132
+        },
+        {
+          "path": "LICENSE-BUILDTOOLS",
+          "gitBlobSha1": "d1d626e00859030061ed7b071e84f8f893d84d93",
+          "bytes": 18698
+        }
+      ],
+      "archiveSha256": "a4772ab9d7cce4cd64b3a8f000357623059da12e5122db3091e7c1f57fee5ff1",
+      "archiveBytes": 683842
+    },
+    {
+      "id": "libgee",
+      "repository": "https://github.com/frida/libgee",
+      "commit": "69621d2c665b75c1e064abdecd540ef1749615ee",
+      "role": "runtime-source-superset",
+      "tree": "69621d2c665b75c1e064abdecd540ef1749615ee",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "5ab7695ab8cabe0c5c8a814bb0ab1e8066578fbb",
+          "bytes": 26436
+        }
+      ],
+      "archiveSha256": "1b0361629c582dce689bbe868ad07d54694cabcd5afcf44f46f775a4553a0064",
+      "archiveBytes": 151557
+    },
+    {
+      "id": "libiconv",
+      "repository": "https://github.com/frida/libiconv",
+      "commit": "2d7dbd28979f0f1ec200d0f23c0c0e403015b160",
+      "role": "runtime-source-superset",
+      "tree": "2d7dbd28979f0f1ec200d0f23c0c0e403015b160",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "94a9ed024d3859793618152ea559a168bbcbb5e2",
+          "bytes": 35147
+        },
+        {
+          "path": "COPYING.LIB",
+          "gitBlobSha1": "f6683e74e0f0130f246dbf7054f4cacc88ca84b0",
+          "bytes": 26419
+        },
+        {
+          "path": "libcharset/COPYING.LIB",
+          "gitBlobSha1": "f6683e74e0f0130f246dbf7054f4cacc88ca84b0",
+          "bytes": 26419
+        }
+      ],
+      "archiveSha256": "34f985202726574eba75230b8c492a284d8f1a68e9aad6b98fde58d2234597e6",
+      "archiveBytes": 4743459
+    },
+    {
+      "id": "libnice",
+      "repository": "https://github.com/frida/libnice",
+      "commit": "91e2d02edb2999786d7ac854f99bdfd7832df64f",
+      "role": "runtime-source-superset",
+      "tree": "91e2d02edb2999786d7ac854f99bdfd7832df64f",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "cc3fc529cd1550f94b72969e6196437ef762b6be",
+          "bytes": 292
+        },
+        {
+          "path": "COPYING.LGPL",
+          "gitBlobSha1": "2d2d780e6014b850ca3b8437452e24eba5f96508",
+          "bytes": 26527
+        },
+        {
+          "path": "COPYING.MPL",
+          "gitBlobSha1": "a889bced81d7b1c4f9f44806f26a72a9d99b73c3",
+          "bytes": 25657
+        }
+      ],
+      "archiveSha256": "f2d779d1ecc0aab773f32eede420c024c9a95b707fbccd09da38c7bd6eb9e60e",
+      "archiveBytes": 475055
+    },
+    {
+      "id": "libpsl",
+      "repository": "https://github.com/frida/libpsl",
+      "commit": "5d3e465d00655a23bed31a716c5db318b3a58521",
+      "role": "runtime-source-superset",
+      "tree": "5d3e465d00655a23bed31a716c5db318b3a58521",
+      "gitlinks": [
+        {
+          "path": "list",
+          "commit": "e1b8015c3b2f0f4f8c18659c2480fc1a22c07b20",
+          "repository": "https://github.com/publicsuffix/list"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "7a694c9699a986b9adf1f6cb8a18a6e923e47ed9",
+          "bytes": 7
+        },
+        {
+          "path": "LICENSE",
+          "gitBlobSha1": "6207b50428429fc4f101e280cb63d9e1c2b17b67",
+          "bytes": 1126
+        },
+        {
+          "path": "src/LICENSE.chromium",
+          "gitBlobSha1": "e29f4ffbe499f0af97f146a333eaa159ddffbb66",
+          "bytes": 1664
+        }
+      ],
+      "archiveSha256": "6f84d5b713b1b806ef0eaa978148424d5022dc1777968c3a49813e83d8a7e62d",
+      "archiveBytes": 7001773
+    },
+    {
+      "id": "libpsl--list",
+      "repository": "https://github.com/publicsuffix/list",
+      "commit": "e1b8015c3b2f0f4f8c18659c2480fc1a22c07b20",
+      "role": "nested-source",
+      "parent": "libpsl",
+      "path": "list",
+      "archiveSha256": "8e8e3324565a15dc1705cffae420d4aeb6f0af9afcaae490691138b1d748905d",
+      "archiveBytes": 306146
+    },
+    {
+      "id": "libsoup",
+      "repository": "https://github.com/frida/libsoup",
+      "commit": "2537f36926436ef7ac7e2430c25755216ed54ca5",
+      "role": "runtime-source-superset",
+      "tree": "2537f36926436ef7ac7e2430c25755216ed54ca5",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "5bc8fb2c8f757e34a0d8f4644f589d57609e213f",
+          "bytes": 25383
+        }
+      ],
+      "archiveSha256": "5354de2f9ffbe416295b95879bcf7c0efd2f6cb266ad87f445a4b36c18bd6cc0",
+      "archiveBytes": 1983397
+    },
+    {
+      "id": "libunwind",
+      "repository": "https://github.com/frida/libunwind",
+      "commit": "733d7d1c73f3512d2a50add2337157fa385a7e6e",
+      "role": "runtime-source-superset",
+      "tree": "733d7d1c73f3512d2a50add2337157fa385a7e6e",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "41e7d8a6fdb5363fc818c47827adfcb1099893ef",
+          "bytes": 1063
+        },
+        {
+          "path": "LICENSE",
+          "gitBlobSha1": "c9b44cb8aaebb163e8524d67558696aa965ad0ec",
+          "bytes": 1023
+        }
+      ],
+      "archiveSha256": "4074729200cb80646f83996fc81f831a25d12023fddddad1a6f9258e07a3e875",
+      "archiveBytes": 1301646
+    },
+    {
+      "id": "libxml2",
+      "repository": "https://github.com/frida/libxml2",
+      "commit": "cc05411555804869bcd28613a37992021b1ca974",
+      "role": "runtime-source-superset",
+      "tree": "cc05411555804869bcd28613a37992021b1ca974",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "Copyright",
+          "gitBlobSha1": "8c0b7c15dd9b66501511f5971ec9cae971997a0d",
+          "bytes": 1314
+        },
+        {
+          "path": "result/html-tokenizer/NOTICE",
+          "gitBlobSha1": "02aad496cf507f9bb1efcfbf69dd56b4ca7abbc4",
+          "bytes": 1270
+        },
+        {
+          "path": "test/html-tokenizer/NOTICE",
+          "gitBlobSha1": "02aad496cf507f9bb1efcfbf69dd56b4ca7abbc4",
+          "bytes": 1270
+        }
+      ],
+      "archiveSha256": "c665d2df47a5204dafcce5c9a7c834a0f07442107a6979f71c5705d876c66df3",
+      "archiveBytes": 2970132
+    },
+    {
+      "id": "lwip",
+      "repository": "https://github.com/frida/lwip",
+      "commit": "7695262c0fdda77a2351def053fa69419364609f",
+      "role": "runtime-source-superset",
+      "tree": "7695262c0fdda77a2351def053fa69419364609f",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "90465f592ceafc10f2e8d3374cf52d55a39d6cde",
+          "bytes": 1425
+        },
+        {
+          "path": "contrib/apps/LwipMibCompiler/SharpSnmpLib/license.txt",
+          "gitBlobSha1": "27946de210082fa0e30252ecf926cdf28db0d344",
+          "bytes": 24383
+        }
+      ],
+      "archiveSha256": "b682af7d6a93078a21ae46f366a764aa9a8e522ea1870bc08e35715796bf4ab3",
+      "archiveBytes": 1609738
+    },
+    {
+      "id": "lzfse",
+      "repository": "https://github.com/frida/lzfse",
+      "commit": "5cfb7c86919d3c2c636d0d7552b51855a611ba1c",
+      "role": "runtime-source-superset",
+      "tree": "5cfb7c86919d3c2c636d0d7552b51855a611ba1c",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "LICENSE",
+          "gitBlobSha1": "c81aa178b42d5533bac516af7fc4d1d505da48d3",
+          "bytes": 1514
+        }
+      ],
+      "archiveSha256": "5574b75c0e567582f5d138bfc13865a408516f1b932a4c241c2878c89cb7c006",
+      "archiveBytes": 51096
+    },
+    {
+      "id": "minizip-ng",
+      "repository": "https://github.com/frida/minizip-ng",
+      "commit": "6475b3c6f810f00d62bb5ed7ef90d4a985447909",
+      "role": "runtime-source-superset",
+      "tree": "6475b3c6f810f00d62bb5ed7ef90d4a985447909",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "LICENSE",
+          "gitBlobSha1": "3b6c4e142ebbd9ff28a627c38e509db0852dedff",
+          "bytes": 877
+        },
+        {
+          "path": "test/fuzz/unzip_fuzzer_seed_corpus/license_zstd.zip",
+          "gitBlobSha1": "c7a6009d310fd001635bf44c7cbde5eddf1ed650",
+          "bytes": 734
+        }
+      ],
+      "archiveSha256": "f4816121b7d61ab417ccf09eb835b007fca48171ec90d2661352bd030c666976",
+      "archiveBytes": 625937
+    },
+    {
+      "id": "nghttp2",
+      "repository": "https://github.com/frida/nghttp2",
+      "commit": "3e516202a0df939d6ab6bab47780fa35c5c4662b",
+      "role": "runtime-source-superset",
+      "tree": "3e516202a0df939d6ab6bab47780fa35c5c4662b",
+      "gitlinks": [
+        {
+          "path": "tests/munit",
+          "commit": "cb04288a5225645be005a521c537b83c51934ef6",
+          "repository": "https://github.com/ngtcp2/munit"
+        },
+        {
+          "path": "third-party/mruby",
+          "commit": "831da26b9021de0369d17b71b5667e2941a1a32d",
+          "repository": "https://github.com/mruby/mruby"
+        },
+        {
+          "path": "third-party/neverbleed",
+          "commit": "c9515906909cbc33251d3fc2a140d43feae89680",
+          "repository": "https://github.com/tatsuhiro-t/neverbleed.git"
+        },
+        {
+          "path": "third-party/urlparse",
+          "commit": "59b068a7618a256c6823b0b9801b61d1d04677a3",
+          "repository": "https://github.com/ngtcp2/urlparse"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "80201792ec7234674ea584ef1303d5f428558ae9",
+          "bytes": 1156
+        },
+        {
+          "path": "LICENSE",
+          "gitBlobSha1": "45d9408ffa59a8062af88b440c7e1d54b9ac3a9f",
+          "bytes": 12
+        },
+        {
+          "path": "doc/_exts/rubydomain/LICENSE.rubydomain",
+          "gitBlobSha1": "a560d7597d33842d3c3e7a19557d43c26576c13a",
+          "bytes": 1418
+        },
+        {
+          "path": "third-party/llhttp/LICENSE",
+          "gitBlobSha1": "23682c03875844d5becc72ab477a3f9056b6d888",
+          "bytes": 1069
+        }
+      ],
+      "archiveSha256": "d4b67963cdcdcff894e7d6b33c88dccdb97ef2ecb6e0ad16761677b32e11f1d4",
+      "archiveBytes": 1061328
+    },
+    {
+      "id": "ngtcp2",
+      "repository": "https://github.com/frida/ngtcp2",
+      "commit": "0009518d5ac5e4ce80343fb5f3c719991ffd47af",
+      "role": "runtime-source-superset",
+      "tree": "0009518d5ac5e4ce80343fb5f3c719991ffd47af",
+      "gitlinks": [
+        {
+          "path": "tests/munit",
+          "commit": "cb04288a5225645be005a521c537b83c51934ef6",
+          "repository": "https://github.com/ngtcp2/munit"
+        },
+        {
+          "path": "third-party/urlparse",
+          "commit": "c8168839c89fc5c5917c375e1bd6ffeddf3f7f88",
+          "repository": "https://github.com/ngtcp2/urlparse"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "9b367cdce71384f245dfdf9cd6a8b6af80e0b065",
+          "bytes": 1080
+        },
+        {
+          "path": "third-party/http-parser/LICENSE-MIT",
+          "gitBlobSha1": "58010b388945f9af90a54e7c0f5177de893a4ad7",
+          "bytes": 1251
+        }
+      ],
+      "archiveSha256": "fff370e02dda8ddf1e6cf774d0168958829d2251078a944533cec81aa266995c",
+      "archiveBytes": 705800
+    },
+    {
+      "id": "ninja",
+      "repository": "https://github.com/frida/ninja",
+      "commit": "113664f80d1a16c30284da8ff0106a121134670f",
+      "role": "build-tool",
+      "tree": "113664f80d1a16c30284da8ff0106a121134670f",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "131cb1da46d238a296d448fd79acf37160817cf6",
+          "bytes": 11358
+        }
+      ],
+      "archiveSha256": "f1697c5dc4b0d156f3063ae9fc005bbc92fde7ef4cb8c18926377c948f82498a",
+      "archiveBytes": 293765
+    },
+    {
+      "id": "openssl",
+      "repository": "https://github.com/frida/openssl",
+      "commit": "a94348d1cd4fb009e7c590fe4e193c2ea89f5ab8",
+      "role": "runtime-source-superset",
+      "tree": "a94348d1cd4fb009e7c590fe4e193c2ea89f5ab8",
+      "gitlinks": [
+        {
+          "path": "cloudflare-quiche",
+          "commit": "7ab6a55cfe471267d61e4d28ba43d41defcd87e0",
+          "repository": "https://github.com/cloudflare/quiche"
+        },
+        {
+          "path": "fuzz/corpora",
+          "commit": "ce771805c094d098c25a218bc8e9f7344eccbc5a",
+          "repository": "https://github.com/openssl/fuzz-corpora"
+        },
+        {
+          "path": "gost-engine",
+          "commit": "74b1f4fddbc2d6de969815b1992ddc1ae7c643fe",
+          "repository": "https://github.com/gost-engine/engine"
+        },
+        {
+          "path": "krb5",
+          "commit": "784c38f50e70a739400cdd3f2620bac2e2788e6c",
+          "repository": "https://github.com/krb5/krb5"
+        },
+        {
+          "path": "oqs-provider",
+          "commit": "7bc597c04b534ddea9b6654481deb31ded8e1bbc",
+          "repository": "https://github.com/open-quantum-safe/oqs-provider.git"
+        },
+        {
+          "path": "pkcs11-provider",
+          "commit": "64fc325ac0f91d03d76b3546df2998d3a38c525b",
+          "repository": "https://github.com/latchset/pkcs11-provider.git"
+        },
+        {
+          "path": "pyca-cryptography",
+          "commit": "7e33b0e7739d633c77b8c478620167f693ed13f4",
+          "repository": "https://github.com/pyca/cryptography.git"
+        },
+        {
+          "path": "python-ecdsa",
+          "commit": "4096fa01715929e08b97e73f3173aee9d57f2a3f",
+          "repository": "https://github.com/tlsfuzzer/python-ecdsa"
+        },
+        {
+          "path": "tlsfuzzer",
+          "commit": "61f45d9701294fd87ef92d2a7e3dfb076653a562",
+          "repository": "https://github.com/tlsfuzzer/tlsfuzzer"
+        },
+        {
+          "path": "tlslite-ng",
+          "commit": "77ef321dde1a9e6bcf94d73c80f8789a770d8031",
+          "repository": "https://github.com/tlsfuzzer/tlslite-ng"
+        },
+        {
+          "path": "wycheproof",
+          "commit": "2196000605e45d91097147c9c71f26b72af58003",
+          "repository": "https://github.com/google/wycheproof"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "LICENSE.build",
+          "gitBlobSha1": "b59833dedbe2e4a84304431f4acca5dc4599cec7",
+          "bytes": 1070
+        },
+        {
+          "path": "LICENSE.txt",
+          "gitBlobSha1": "49cc83d2ee29d13453188217f0e4edd70c7f842f",
+          "bytes": 10175
+        },
+        {
+          "path": "external/perl/Text-Template-1.56/LICENSE",
+          "gitBlobSha1": "718b860a237914110a45501904390302a10e75c8",
+          "bytes": 18412
+        },
+        {
+          "path": "util/perl/OpenSSL/copyright.pm",
+          "gitBlobSha1": "87567c088945e7271bc30c2f174a4926a95aaf88",
+          "bytes": 1145
+        }
+      ],
+      "archiveSha256": "d7afb0aafd09e3d0c1b919bc97c8a71e9f17b7a81c19732c4e29b390888412bd",
+      "archiveBytes": 70174619
+    },
+    {
+      "id": "pcre2",
+      "repository": "https://github.com/frida/pcre2",
+      "commit": "683059230e4894342bb19f2776f0e50c757fde17",
+      "role": "runtime-source-superset",
+      "tree": "683059230e4894342bb19f2776f0e50c757fde17",
+      "gitlinks": [
+        {
+          "path": "deps/sljit",
+          "commit": "39c508d1b8fbae332d60c7450db20236913089da",
+          "repository": "https://github.com/zherczeg/sljit.git"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "c233950f6f1766b1b1023373dcbee51dbc9a8669",
+          "bytes": 97
+        },
+        {
+          "path": "LICENCE.md",
+          "gitBlobSha1": "f6fba35db25ba5a4326fa2f4a86a536a24392b30",
+          "bytes": 4011
+        },
+        {
+          "path": "LICENSE.build",
+          "gitBlobSha1": "b59833dedbe2e4a84304431f4acca5dc4599cec7",
+          "bytes": 1070
+        },
+        {
+          "path": "cmake/COPYING-CMAKE-SCRIPTS",
+          "gitBlobSha1": "53b6b71eb4d0c3e3a52834dc160ca012988a21de",
+          "bytes": 1326
+        }
+      ],
+      "archiveSha256": "b05a99698f2dab5c8535b6722d5418c8ff82077d02412047032a31224d376218",
+      "archiveBytes": 4221022
+    },
+    {
+      "id": "pcre2--deps--sljit",
+      "repository": "https://github.com/zherczeg/sljit",
+      "commit": "39c508d1b8fbae332d60c7450db20236913089da",
+      "role": "nested-source",
+      "parent": "pcre2",
+      "path": "deps/sljit",
+      "archiveSha256": "f5fd7b9d548d049dad9ec664ec520b4bbaebf5bcb1bdcb53f3f2821c190e4452",
+      "archiveBytes": 1467828
+    },
+    {
+      "id": "pkg-config",
+      "repository": "https://github.com/frida/pkg-config",
+      "commit": "4696795673d1d3dec46b663df48f8cbf66461d14",
+      "role": "build-tool",
+      "tree": "4696795673d1d3dec46b663df48f8cbf66461d14",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "d159169d1050894d3ea3b98e1c965c4058208fe1",
+          "bytes": 18092
+        },
+        {
+          "path": "glib/COPYING",
+          "gitBlobSha1": "bf50f20de6ef55b52fe7832d3a4ed05f0c69d452",
+          "bytes": 25292
+        }
+      ],
+      "archiveSha256": "a7199634c06369e811c0b7fbc1cf0ef7d52e36724359f4ea538eaac0d66b3713",
+      "archiveBytes": 1201087
+    },
+    {
+      "id": "quickjs",
+      "repository": "https://github.com/frida/quickjs",
+      "commit": "cd41bdbf0c6c14a22f4a514bfe8efd6cbca50af3",
+      "role": "runtime-source-superset",
+      "tree": "cd41bdbf0c6c14a22f4a514bfe8efd6cbca50af3",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "LICENSE",
+          "gitBlobSha1": "2cf449dd3eea4291da7470bd322211b61981ccd8",
+          "bytes": 1130
+        }
+      ],
+      "archiveSha256": "4e18a55d9e992099355c6ec255c6e8f6ca3a3c8837d9d8cfd772c0341697e67c",
+      "archiveBytes": 644803
+    },
+    {
+      "id": "releng",
+      "repository": "https://github.com/frida/releng",
+      "commit": "8429c0c9caf8b071955f64869a1b0ede58ad9f34",
+      "role": "build-tool",
+      "tree": "8429c0c9caf8b071955f64869a1b0ede58ad9f34",
+      "gitlinks": [
+        {
+          "path": "meson",
+          "commit": "145667c57ed2649ddcc6fbb11b6008e0d451df1d",
+          "repository": "https://github.com/frida/meson.git"
+        },
+        {
+          "path": "tomlkit",
+          "commit": "911cccd630965ff423316e25b4685ecf7df0ec0a",
+          "repository": "https://github.com/python-poetry/tomlkit.git"
+        }
+      ],
+      "noticeCandidates": [],
+      "archiveSha256": "994c1e14e75ba9933f96abd2b2fa45d737b601c39d813294485a1875e7b52929",
+      "archiveBytes": 58662
+    },
+    {
+      "id": "releng--meson",
+      "repository": "https://github.com/frida/meson",
+      "commit": "145667c57ed2649ddcc6fbb11b6008e0d451df1d",
+      "role": "nested-source",
+      "parent": "releng",
+      "path": "meson",
+      "archiveSha256": "ea5b1e009a402d58d15ffed3a402260a68138a60fae81c3369265194cf530630",
+      "archiveBytes": 5155362
+    },
+    {
+      "id": "releng--tomlkit",
+      "repository": "https://github.com/python-poetry/tomlkit",
+      "commit": "911cccd630965ff423316e25b4685ecf7df0ec0a",
+      "role": "nested-source",
+      "parent": "releng",
+      "path": "tomlkit",
+      "archiveSha256": "2f9e579cb4f88c4425554e74451e0cedefe39b3f8e9fc04407f196c62a8eff74",
+      "archiveBytes": 177082
+    },
+    {
+      "id": "selinux",
+      "repository": "https://github.com/frida/selinux",
+      "commit": "507985d931eb1f0227218d5d845634e602426c20",
+      "role": "runtime-source-superset",
+      "tree": "507985d931eb1f0227218d5d845634e602426c20",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "LICENSE",
+          "gitBlobSha1": "91a16c91205d2a0ba0acdf879eab4f5538f91861",
+          "bytes": 289
+        },
+        {
+          "path": "checkpolicy/LICENSE",
+          "gitBlobSha1": "5b6e7c66c276e7610d4a73c70ec1a1f7c1003259",
+          "bytes": 18009
+        },
+        {
+          "path": "dbus/LICENSE",
+          "gitBlobSha1": "5b6e7c66c276e7610d4a73c70ec1a1f7c1003259",
+          "bytes": 18009
+        },
+        {
+          "path": "gui/LICENSE",
+          "gitBlobSha1": "5b6e7c66c276e7610d4a73c70ec1a1f7c1003259",
+          "bytes": 18009
+        },
+        {
+          "path": "libselinux/LICENSE",
+          "gitBlobSha1": "d386268911921b3f9467d22c73fe1cb07fcb6ace",
+          "bytes": 1034
+        },
+        {
+          "path": "libsemanage/LICENSE",
+          "gitBlobSha1": "148d531ce4cb50c801bec118bb37cbbe1608c3a4",
+          "bytes": 26421
+        },
+        {
+          "path": "libsepol/LICENSE",
+          "gitBlobSha1": "8add30ad590a65db7e5914f5417eac39a64402a3",
+          "bytes": 26432
+        },
+        {
+          "path": "mcstrans/LICENSE",
+          "gitBlobSha1": "d60c31a97a544b53039088d14fe9114583c0efc3",
+          "bytes": 17992
+        },
+        {
+          "path": "policycoreutils/LICENSE",
+          "gitBlobSha1": "5b6e7c66c276e7610d4a73c70ec1a1f7c1003259",
+          "bytes": 18009
+        },
+        {
+          "path": "python/LICENSE",
+          "gitBlobSha1": "5b6e7c66c276e7610d4a73c70ec1a1f7c1003259",
+          "bytes": 18009
+        },
+        {
+          "path": "python/sepolgen/LICENSE",
+          "gitBlobSha1": "5b6e7c66c276e7610d4a73c70ec1a1f7c1003259",
+          "bytes": 18009
+        },
+        {
+          "path": "restorecond/LICENSE",
+          "gitBlobSha1": "5b6e7c66c276e7610d4a73c70ec1a1f7c1003259",
+          "bytes": 18009
+        },
+        {
+          "path": "sandbox/LICENSE",
+          "gitBlobSha1": "5b6e7c66c276e7610d4a73c70ec1a1f7c1003259",
+          "bytes": 18009
+        },
+        {
+          "path": "secilc/LICENSE",
+          "gitBlobSha1": "a42772760aaa4f14d4bf4d4836c62c4339506f43",
+          "bytes": 1738
+        },
+        {
+          "path": "semodule-utils/LICENSE",
+          "gitBlobSha1": "5b6e7c66c276e7610d4a73c70ec1a1f7c1003259",
+          "bytes": 18009
+        }
+      ],
+      "archiveSha256": "97cc89bd26d623232233b1ad86fc9322fc00e663f1e80b577ee0cbdd32321090",
+      "archiveBytes": 6125398
+    },
+    {
+      "id": "sqlite",
+      "repository": "https://github.com/frida/sqlite",
+      "commit": "2cfd2ffbef3fc25a11542f876a0ff8ecb2d50914",
+      "role": "runtime-source-superset",
+      "tree": "2cfd2ffbef3fc25a11542f876a0ff8ecb2d50914",
+      "gitlinks": [],
+      "noticeCandidates": [],
+      "archiveSha256": "1ed692bf147cd7c629119f54bf3f7a5087d61bdf208271e9184c5938f06ab7e7",
+      "archiveBytes": 2945984
+    },
+    {
+      "id": "tinycc",
+      "repository": "https://github.com/frida/tinycc",
+      "commit": "c0b84021e3e5c8359a469b1af2bf4abd83a7a26a",
+      "role": "runtime-source-superset",
+      "tree": "c0b84021e3e5c8359a469b1af2bf4abd83a7a26a",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "223ede7de3ec74eb86253f9ce9ed7ba3c5aa9130",
+          "bytes": 26428
+        },
+        {
+          "path": "tests/tests2/LICENSE",
+          "gitBlobSha1": "b08a652f6c02397b5e63fbbb50039404da38c612",
+          "bytes": 1837
+        }
+      ],
+      "archiveSha256": "5eff08ab44254dcaa07b924cc844f219cec1a8be16b95a7aaf3418fac190ff67",
+      "archiveBytes": 1051908
+    },
+    {
+      "id": "usrsctp",
+      "repository": "https://github.com/frida/usrsctp",
+      "commit": "bfd359be44adc76c55efacce9a2f71ff0a7f8cd4",
+      "role": "runtime-source-superset",
+      "tree": "bfd359be44adc76c55efacce9a2f71ff0a7f8cd4",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "LICENSE.md",
+          "gitBlobSha1": "a2d1f989cffa9e6e672c0a38ecf89c762c475322",
+          "bytes": 1500
+        }
+      ],
+      "archiveSha256": "24ce47a55f325783b191d46396ff3cf786372bee3ab1742c49cc603161c08dd8",
+      "archiveBytes": 774242
+    },
+    {
+      "id": "v8",
+      "repository": "https://github.com/frida/v8",
+      "commit": "f6d7f6610f2f21e2817ed180b72ea750a3f63ce8",
+      "role": "runtime-source-superset",
+      "tree": "f6d7f6610f2f21e2817ed180b72ea750a3f63ce8",
+      "gitlinks": [
+        {
+          "path": "third_party/abseil-cpp/src",
+          "commit": "9f6e15d59ef994a25481ba8a428588f698cb96d8",
+          "repository": "https://github.com/abseil/abseil-cpp.git"
+        },
+        {
+          "path": "third_party/dragonbox/src",
+          "commit": "beeeef91cf6fef89a4d4ba5e95d47ca64ccb3a44",
+          "repository": "https://github.com/jk-jeon/dragonbox.git"
+        },
+        {
+          "path": "third_party/fast_float/src",
+          "commit": "f3f02c8ad0afd8181166dabce6a9e69f8aec24de",
+          "repository": "https://github.com/fastfloat/fast_float.git"
+        },
+        {
+          "path": "third_party/fp16/src",
+          "commit": "782eea126dc5c755827be751a099eb01826175cf",
+          "repository": "https://github.com/Maratyszcza/FP16.git"
+        },
+        {
+          "path": "third_party/highway/src",
+          "commit": "2607d3b5b0113992fe84d3848859eae13b3b52c1",
+          "repository": "https://github.com/google/highway.git"
+        },
+        {
+          "path": "third_party/jinja2",
+          "commit": "c3027d884967773057bf74b957e3fea87e5df4d7",
+          "repository": "https://chromium.googlesource.com/chromium/src/third_party/jinja2.git"
+        },
+        {
+          "path": "third_party/llvm-libc/src",
+          "commit": "d653cddea7c7b01a931fe3f22e34275c0057afe7",
+          "repository": "https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libc.git"
+        },
+        {
+          "path": "third_party/markupsafe",
+          "commit": "4256084ae14175d38a3ff7d739dca83ae49ccec6",
+          "repository": "https://chromium.googlesource.com/chromium/src/third_party/markupsafe.git"
+        },
+        {
+          "path": "third_party/simdutf/src",
+          "commit": "f7356eed293f8208c40b3c1b344a50bd70971983",
+          "repository": "https://chromium.googlesource.com/chromium/src/third_party/simdutf"
+        },
+        {
+          "path": "third_party/zlib",
+          "commit": "456ae730017b9b4bd3371927abc82627fd51feef",
+          "repository": "https://chromium.googlesource.com/chromium/src/third_party/zlib.git"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "LICENSE",
+          "gitBlobSha1": "9898b2d4833bfe87c05ba9106f082ed600bb2aab",
+          "bytes": 3093
+        },
+        {
+          "path": "LICENSE.fdlibm",
+          "gitBlobSha1": "b54cb52278e1847b4f9faa1db09d6b526cd3ddc6",
+          "bytes": 250
+        },
+        {
+          "path": "LICENSE.strongtalk",
+          "gitBlobSha1": "9bd62e4f231a357d47073bdece85373325dd732f",
+          "bytes": 1482
+        },
+        {
+          "path": "LICENSE.v8",
+          "gitBlobSha1": "933718a9ef9dae4cb4afa56e490211760d8a949f",
+          "bytes": 1527
+        },
+        {
+          "path": "src/compiler/turboshaft/copying-phase.cc",
+          "gitBlobSha1": "f2aae67065892e2f5a03b84b542fab13999ba432",
+          "bytes": 650
+        },
+        {
+          "path": "src/compiler/turboshaft/copying-phase.h",
+          "gitBlobSha1": "3f9687bc6f288c988fb7b7fd45d249c1d4cb0f54",
+          "bytes": 47555
+        },
+        {
+          "path": "test/js-perf-test/SixSpeed/LICENSE.sixspeed",
+          "gitBlobSha1": "2cc181ce74399ee88e1fb7025c9525df49228273",
+          "bytes": 1147
+        },
+        {
+          "path": "test/mjsunit/third_party/object-keys/LICENSE",
+          "gitBlobSha1": "67002b440003bd71f1d0674724aff39ed901106b",
+          "bytes": 1492
+        },
+        {
+          "path": "test/mjsunit/third_party/regexp-pcre/LICENSE",
+          "gitBlobSha1": "4baa7d83a131b9502bb31bd5489b70abef5d3e32",
+          "bytes": 2491
+        },
+        {
+          "path": "test/wasm-js/third_party/LICENSE.testharness",
+          "gitBlobSha1": "ad4858c8745cfa1b330a52d27c621a09aa3112e0",
+          "bytes": 1502
+        },
+        {
+          "path": "third_party/colorama/LICENSE",
+          "gitBlobSha1": "5f567799f395f33acd05abbc5d409dd126ce0dc8",
+          "bytes": 1492
+        },
+        {
+          "path": "third_party/disarm/LICENSE",
+          "gitBlobSha1": "ae40aec38f55c119c2b1edcc4d8845a162614a87",
+          "bytes": 1500
+        },
+        {
+          "path": "third_party/fadec/LICENSE",
+          "gitBlobSha1": "0f97558169968d0dd21ff6d901f4775ecd398f4a",
+          "bytes": 1500
+        },
+        {
+          "path": "third_party/fp16/LICENSE",
+          "gitBlobSha1": "9a13c7985502d2f154ef156b822ee2fd92960e36",
+          "bytes": 1158
+        },
+        {
+          "path": "third_party/highway/LICENSE",
+          "gitBlobSha1": "f49a4e16e68b128803cc2dcea614603632b04eac",
+          "bytes": 11356
+        },
+        {
+          "path": "third_party/inspector_protocol/LICENSE",
+          "gitBlobSha1": "1e5610962e92ddd84eaddb72486defbb82732f0d",
+          "bytes": 1537
+        },
+        {
+          "path": "third_party/jsoncpp/LICENSE",
+          "gitBlobSha1": "ca2bfe1a03ee5e391f51b1bc4de47114421eec98",
+          "bytes": 2665
+        },
+        {
+          "path": "third_party/rapidhash-v8/LICENSE",
+          "gitBlobSha1": "e70352870fba33e50902c8765cf71e3397b6667c",
+          "bytes": 1705
+        },
+        {
+          "path": "third_party/re2/LICENSE",
+          "gitBlobSha1": "09e5ec1c74c187adc8fde6c74308c3492ef31f77",
+          "bytes": 1558
+        },
+        {
+          "path": "third_party/siphash/LICENSE",
+          "gitBlobSha1": "670154e3538863b2d9891fd5483160fbdfc89164",
+          "bytes": 6555
+        },
+        {
+          "path": "third_party/utf8-decoder/LICENSE",
+          "gitBlobSha1": "b59bef2fb6a81448fccc34f3d45c9405b70bd0dd",
+          "bytes": 1087
+        },
+        {
+          "path": "third_party/v8/builtins/LICENSE",
+          "gitBlobSha1": "1afbedba92b33c6b418c343f7b4c6948318eb197",
+          "bytes": 12763
+        },
+        {
+          "path": "third_party/v8/codegen/LICENSE",
+          "gitBlobSha1": "eabec6c86a3c7117090954b3756012b37b7c3786",
+          "bytes": 1157
+        },
+        {
+          "path": "third_party/valgrind/LICENSE",
+          "gitBlobSha1": "0be0037ca2e9a4e5e46c48703b0c05a39a11c985",
+          "bytes": 2439
+        },
+        {
+          "path": "third_party/vtune/LICENSE",
+          "gitBlobSha1": "50002e2937126da35754fc64b69213b1ea44b2a0",
+          "bytes": 1925
+        },
+        {
+          "path": "third_party/wasm-api/LICENSE",
+          "gitBlobSha1": "8f71f43fee3f78649d238238cbde51e6d7055c82",
+          "bytes": 11358
+        }
+      ],
+      "archiveSha256": "b5599f804abb663588c7746416f1419a75cbae68a5f2c3cf23fa3fbbb14243b6",
+      "archiveBytes": 31412794
+    },
+    {
+      "id": "v8--third_party--abseil-cpp--src",
+      "repository": "https://github.com/abseil/abseil-cpp",
+      "commit": "9f6e15d59ef994a25481ba8a428588f698cb96d8",
+      "role": "nested-source",
+      "parent": "v8",
+      "path": "third_party/abseil-cpp/src",
+      "archiveSha256": "42fc3088723c372874af14cd16865ee8aad94d54bf77672ae21aac9a1ec463da",
+      "archiveBytes": 2442916
+    },
+    {
+      "id": "v8--third_party--dragonbox--src",
+      "repository": "https://github.com/jk-jeon/dragonbox",
+      "commit": "beeeef91cf6fef89a4d4ba5e95d47ca64ccb3a44",
+      "role": "nested-source",
+      "parent": "v8",
+      "path": "third_party/dragonbox/src",
+      "archiveSha256": "2646de322a13cdabeeff52863665a492adbd68242c66b5279a5cfefbaa301e39",
+      "archiveBytes": 4227394
+    },
+    {
+      "id": "v8--third_party--fast_float--src",
+      "repository": "https://github.com/fastfloat/fast_float",
+      "commit": "f3f02c8ad0afd8181166dabce6a9e69f8aec24de",
+      "role": "nested-source",
+      "parent": "v8",
+      "path": "third_party/fast_float/src",
+      "archiveSha256": "459efe3b4dd8846f7412cb356dba7f8e65f0aa8632a8c062e3eb937a06342028",
+      "archiveBytes": 153735
+    },
+    {
+      "id": "v8--third_party--fp16--src",
+      "repository": "https://github.com/Maratyszcza/FP16",
+      "commit": "782eea126dc5c755827be751a099eb01826175cf",
+      "role": "nested-source",
+      "parent": "v8",
+      "path": "third_party/fp16/src",
+      "archiveSha256": "6ca2e8bdb337c80984a3fa2d4900e6957bba4f2a1c15e7a40cc74dce38040741",
+      "archiveBytes": 64731
+    },
+    {
+      "id": "v8--third_party--highway--src",
+      "repository": "https://github.com/google/highway",
+      "commit": "2607d3b5b0113992fe84d3848859eae13b3b52c1",
+      "role": "nested-source",
+      "parent": "v8",
+      "path": "third_party/highway/src",
+      "archiveSha256": "741d705781e0b3e406beda8f1f994fbae01321237ce8023a1ad90fbaf7940c25",
+      "archiveBytes": 3692133
+    },
+    {
+      "id": "v8--third_party--jinja2",
+      "repository": "https://chromium.googlesource.com/chromium/src/third_party/jinja2",
+      "commit": "c3027d884967773057bf74b957e3fea87e5df4d7",
+      "role": "nested-source",
+      "parent": "v8",
+      "path": "third_party/jinja2",
+      "archiveSha256": "24bb0ea9562dc9923307b809b74697268edcaf479132d16b854277b898c6e5c6",
+      "archiveBytes": 124217
+    },
+    {
+      "id": "v8--third_party--llvm-libc--src",
+      "repository": "https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libc",
+      "commit": "d653cddea7c7b01a931fe3f22e34275c0057afe7",
+      "role": "nested-source",
+      "parent": "v8",
+      "path": "third_party/llvm-libc/src",
+      "archiveSha256": "ec0c79eb7b63413fe83263771846985610d6565f2f5b3682748f75393de1a8c4",
+      "archiveBytes": 44146999
+    },
+    {
+      "id": "v8--third_party--markupsafe",
+      "repository": "https://chromium.googlesource.com/chromium/src/third_party/markupsafe",
+      "commit": "4256084ae14175d38a3ff7d739dca83ae49ccec6",
+      "role": "nested-source",
+      "parent": "v8",
+      "path": "third_party/markupsafe",
+      "archiveSha256": "7a17cb404134fb2222a54b9ba0b938e8dea76cd855d8ae2ac963db048b71ca28",
+      "archiveBytes": 10306
+    },
+    {
+      "id": "v8--third_party--simdutf--src",
+      "repository": "https://chromium.googlesource.com/chromium/src/third_party/simdutf",
+      "commit": "f7356eed293f8208c40b3c1b344a50bd70971983",
+      "role": "nested-source",
+      "parent": "v8",
+      "path": "third_party/simdutf/src",
+      "archiveSha256": "1a458fa3513acfc4b0052d2c7831eb9544cf0ad183a26866ae47825ef15b026c",
+      "archiveBytes": 425712
+    },
+    {
+      "id": "v8--third_party--zlib",
+      "repository": "https://chromium.googlesource.com/chromium/src/third_party/zlib",
+      "commit": "456ae730017b9b4bd3371927abc82627fd51feef",
+      "role": "nested-source",
+      "parent": "v8",
+      "path": "third_party/zlib",
+      "archiveSha256": "79602e5b2abfec16348cb7aa313c4b06230ef06628f5f36d20c93bba158688b0",
+      "archiveBytes": 1394135
+    },
+    {
+      "id": "vala",
+      "repository": "https://github.com/frida/vala",
+      "commit": "2d33b4b49d7986fb14eef8078823caf1711ceea6",
+      "role": "build-tool",
+      "tree": "2d33b4b49d7986fb14eef8078823caf1711ceea6",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "5ab7695ab8cabe0c5c8a814bb0ab1e8066578fbb",
+          "bytes": 26436
+        }
+      ],
+      "archiveSha256": "58133af78b46530b087ede2d84f0ba32de9ace8be02618c17248a64103f0b89f",
+      "archiveBytes": 3628057
+    },
+    {
+      "id": "xz",
+      "repository": "https://github.com/frida/xz",
+      "commit": "68289232393af1ff1756bcf05164cedfd792df59",
+      "role": "runtime-source-superset",
+      "tree": "68289232393af1ff1756bcf05164cedfd792df59",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "ef3371389d7d45db6593a146fd9e027347f3122c",
+          "bytes": 3119
+        },
+        {
+          "path": "COPYING.0BSD",
+          "gitBlobSha1": "4322122aecf1aecff317bd50334ba206dcb9ac41",
+          "bytes": 607
+        },
+        {
+          "path": "COPYING.GPLv2",
+          "gitBlobSha1": "9efa6fbc962836e243e20f7f23db062e2c077d28",
+          "bytes": 17984
+        },
+        {
+          "path": "COPYING.GPLv3",
+          "gitBlobSha1": "f288702d2fa16d3cdf0035b15a9fcbc552cd88e7",
+          "bytes": 35149
+        },
+        {
+          "path": "COPYING.LGPLv2.1",
+          "gitBlobSha1": "f6683e74e0f0130f246dbf7054f4cacc88ca84b0",
+          "bytes": 26419
+        },
+        {
+          "path": "LICENSE.build",
+          "gitBlobSha1": "b59833dedbe2e4a84304431f4acca5dc4599cec7",
+          "bytes": 1070
+        },
+        {
+          "path": "build-aux/license-check.sh",
+          "gitBlobSha1": "e994233ec7e45195ffeaa0bb323c32ef9252ecf1",
+          "bytes": 5127
+        }
+      ],
+      "archiveSha256": "ff7d8a24fbeb57499461852234591f656dd72434e42561b4a3b11ce35c394d35",
+      "archiveBytes": 1688004
+    },
+    {
+      "id": "zlib",
+      "repository": "https://github.com/frida/zlib",
+      "commit": "b910f805561e24a7a25521de438c82942cd7885b",
+      "role": "runtime-source-superset",
+      "tree": "b910f805561e24a7a25521de438c82942cd7885b",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "LICENSE",
+          "gitBlobSha1": "b7a69d058e616651eae27b3f90c0b7fd36c099b2",
+          "bytes": 1002
+        },
+        {
+          "path": "LICENSE.build",
+          "gitBlobSha1": "ec288041f3886489d72cc366030fa71906d4ba3a",
+          "bytes": 1070
+        },
+        {
+          "path": "contrib/dotzlib/LICENSE_1_0.txt",
+          "gitBlobSha1": "30aac2cf4793f3aad92ef0a3c88731198c39566e",
+          "bytes": 1359
+        },
+        {
+          "path": "contrib/minizip/LICENSE.Info-Zip",
+          "gitBlobSha1": "6849de476690c40440888a9c7d4aa41523986860",
+          "bytes": 3509
+        }
+      ],
+      "archiveSha256": "c4d9efcb6558dd33a348413e3160f8170a712243b77a60147aa258f475ec21f7",
+      "archiveBytes": 1572185
+    },
+    {
+      "id": "ndk29-compiler-rt",
+      "repository": "https://android.googlesource.com/toolchain/llvm-project",
+      "commit": "386af4a5c64ab75eaee2448dc38f2e34a40bfed0",
+      "subdirectory": "compiler-rt",
+      "role": "toolchain-runtime-source",
+      "archiveSha256": "75cc02209672febaf95a01a52f0375ea33c894ab314cc1b46621f80ed2000087",
+      "archiveBytes": 4506635
+    },
+    {
+      "id": "ndk29-libcxx",
+      "repository": "https://android.googlesource.com/toolchain/llvm-project",
+      "commit": "386af4a5c64ab75eaee2448dc38f2e34a40bfed0",
+      "subdirectory": "libcxx",
+      "role": "toolchain-runtime-source",
+      "archiveSha256": "af1d64fcecdd05d1ed36edb15dddbfc8bb7416d9d4d80f6247905c4e6cbecfa9",
+      "archiveBytes": 8797832
+    },
+    {
+      "id": "ndk29-libcxxabi",
+      "repository": "https://android.googlesource.com/toolchain/llvm-project",
+      "commit": "386af4a5c64ab75eaee2448dc38f2e34a40bfed0",
+      "subdirectory": "libcxxabi",
+      "role": "toolchain-runtime-source",
+      "archiveSha256": "c2dd28d287ff17c9bd29b14613b062e53ab4d20ceb2aea2392ea4c2bdc0099d4",
+      "archiveBytes": 806290
+    },
+    {
+      "id": "ndk29-libunwind",
+      "repository": "https://android.googlesource.com/toolchain/llvm-project",
+      "commit": "386af4a5c64ab75eaee2448dc38f2e34a40bfed0",
+      "subdirectory": "libunwind",
+      "role": "toolchain-runtime-source",
+      "archiveSha256": "026dba2861bf8c7fa33e83027eabbb643c9e6c7eae1e57f901f88c9639eff01d",
+      "archiveBytes": 167796
+    },
+    {
+      "id": "ndk29-patches",
+      "repository": "https://android.googlesource.com/toolchain/llvm_android",
+      "commit": "1dab3288f660d43a6cb2479107e2b54b3ab0a2a1",
+      "subdirectory": "patches",
+      "role": "toolchain-patches",
+      "archiveSha256": "32d042b9c32423c07e676b8c6f5a3bab5774a8e6e77f80938d085ef4778cf776",
+      "archiveBytes": 183215
+    },
+    {
+      "id": "ndk30-compiler-rt",
+      "repository": "https://android.googlesource.com/toolchain/llvm-project",
+      "commit": "2d287f51eff2a5fbf84458a33f7fb2493cf67965",
+      "subdirectory": "compiler-rt",
+      "role": "toolchain-runtime-source",
+      "archiveSha256": "75c88cacd1e46108a8e77c05de9ab8968e1a88e28fc1e2cac44fc753d4346061",
+      "archiveBytes": 4542280
+    },
+    {
+      "id": "ndk30-libunwind",
+      "repository": "https://android.googlesource.com/toolchain/llvm-project",
+      "commit": "2d287f51eff2a5fbf84458a33f7fb2493cf67965",
+      "subdirectory": "libunwind",
+      "role": "toolchain-runtime-source",
+      "archiveSha256": "a6e0064ca55f107e545dbe135f60b3f7b59b9eed1ccd5c4b30335f51ccfa1a3c",
+      "archiveBytes": 168169
+    },
+    {
+      "id": "ndk30-patches",
+      "repository": "https://android.googlesource.com/toolchain/llvm_android",
+      "commit": "9e20ac0b949feedcfe3da791189310f6ebcbc7a8",
+      "subdirectory": "patches",
+      "role": "toolchain-patches",
+      "archiveSha256": "3505f6284c7c4cb83d04fa3c18d720fe3b36ac719abc9f8cdacb64efe5bd2163",
+      "archiveBytes": 314491
+    },
+    {
+      "id": "frida-base64-js",
+      "kind": "npm",
+      "version": "2.0.3",
+      "url": "https://registry.npmjs.org/@frida/base64-js/-/base64-js-2.0.3.tgz",
+      "integrity": "sha512-2w0F+1TynOTCZ/v7du9LdHPWwq0lJhazjo2fF9upMyQmA1zHetT14fLuQ1v/6T0qPgyeEGkiSrybstU8EsgeUA==",
+      "declaredLicense": "MIT",
+      "role": "emitted-bridge-shim-source",
+      "archiveSha256": "a6df62a8b3f75a4269095678c6343cd8ab01bdb4c340fa44cf1d403451e5f724",
+      "archiveBytes": 2680
+    },
+    {
+      "id": "frida-buffer",
+      "kind": "npm",
+      "version": "7.1.0",
+      "url": "https://registry.npmjs.org/@frida/buffer/-/buffer-7.1.0.tgz",
+      "integrity": "sha512-nT2UtZchD46tbPsSyLy9BhtbeN5VNq+NkYVifEztEdf+ys1ifUvswYVO+i0xH/nnAPpJX/ZJepRlY9AIun5hnQ==",
+      "declaredLicense": "MIT",
+      "role": "emitted-bridge-shim-source",
+      "archiveSha256": "011a22c19ea3f004923883beeb10f0c0b6f10b45c2e78e5d651e5f668e459a1c",
+      "archiveBytes": 16087
+    },
+    {
+      "id": "frida-ieee754",
+      "kind": "npm",
+      "version": "2.0.2",
+      "url": "https://registry.npmjs.org/@frida/ieee754/-/ieee754-2.0.2.tgz",
+      "integrity": "sha512-wlcUebnne4ENN7GDr5pTH598ZDLMVOsh0FjenxeVOe6u7ewZkz9gGRnLnZKJAm9kl5G6XhdxhI0cSXVQK/rQUw==",
+      "declaredLicense": "BSD-3-Clause",
+      "role": "emitted-bridge-shim-source",
+      "archiveSha256": "690c2fb186206abd4917e7c8c6139091b8cc469cc717e3495f47fa7f55e109c4",
+      "archiveBytes": 2385
+    },
+    {
+      "id": "frida-java-bridge-git",
+      "repository": "https://github.com/frida/frida-java-bridge",
+      "commit": "6ab2a63e4b02ab881f11ea06632cebea4b1b435e",
+      "role": "java-bridge-repository",
+      "archiveSha256": "2da4ba68e8bc378220ac0a4e29b0b663f74d85d7e3170b8d4f8b9f00e1df48d4",
+      "archiveBytes": 190164
+    },
+    {
+      "id": "frida-java-bridge-npm",
+      "kind": "npm",
+      "version": "7.0.13",
+      "url": "https://registry.npmjs.org/frida-java-bridge/-/frida-java-bridge-7.0.13.tgz",
+      "integrity": "sha512-YSyKjxbxKnSi3KSUy9vciOvTOuq0RRh9dkxzkQVEdfIIZlw20zE8D3Cq9eL2FDqUVj4YKas6Wf09kCjL5zbffg==",
+      "declaredLicense": "LGPL-2.0 WITH WxWindows-exception-3.1",
+      "role": "java-bridge-source",
+      "archiveSha256": "0ae4e5393b5bf237ba7cfe23666248a7e6884cc9321ac0a77f073bcb30d951c0",
+      "archiveBytes": 89343
+    }
+  ]
+}

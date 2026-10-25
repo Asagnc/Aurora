@@ -13,6 +13,17 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class RootManagedRunRegistryTest {
+    @Test fun pendingRecoveryPagesRemainOwnerScopedAndBounded() = runBlocking { fixture { _, store, ticket ->
+        val runs = RootManagedRunRegistry(store)
+        val tickets = (1..7).map { ticket.copy(runId = "00000000-0000-0000-0000-%012d".format(it)) }
+        tickets.forEach { runs.begin(it) }
+        runs.begin(ticket.copy(owner = store.create("other")))
+        assertEquals(tickets.take(4), runs.pending(ticket.owner, 4))
+        assertEquals(tickets.drop(4), runs.pending(ticket.owner, 4, tickets[3].runId))
+        assertEquals(7L, runs.count(ticket.owner))
+        try { runs.pending(ticket.owner, 65); fail("Unbounded page accepted") }
+        catch (_: IllegalArgumentException) { }
+    } }
     @Test fun binderTransportWithoutProofRetainsIntentAndExactCleanupReleasesIt() = runBlocking { fixture { _, store, ticket ->
         val runs = RootManagedRunRegistry(store)
         runs.begin(ticket)

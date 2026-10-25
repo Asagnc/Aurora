@@ -15,6 +15,7 @@ import kotlinx.coroutines.sync.withLock
 internal class RootManagedRunManager(private val app: AuroraApplication) {
     private val records = RootManagedRunRegistry(app.conversations)
     private val recovery = Mutex()
+    private val cursors = linkedMapOf<String, String>()
 
     /** Caller must supply a ticket from the same qualified endpoint/version and retain its snapshots. */
     suspend fun execute(ticket: RootManagedRunTicket, snapshots: List<ParcelFileDescriptor>,
@@ -38,19 +39,22 @@ internal class RootManagedRunManager(private val app: AuroraApplication) {
     }
 
     suspend fun recover(owner: String): Int = recovery.withLock {
-        val pending = records.pending(owner)
+        val pending = records.pending(owner, limit = 4, after = cursors[owner].orEmpty())
+            .ifEmpty { records.pending(owner, limit = 4) }
         if (pending.isEmpty()) return@withLock 0
-        val client = app.root.managedClient ?: return@withLock pending.size
+        val client = app.root.managedClient ?: return@withLock records.count(owner).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
         app.spaces.sharedResources()
-        var retained = 0
         for (ticket in pending) {
             try {
                 val result = client.recover(ticket)
-                if (result.confirmed) records.finish(ticket, result) else retained++
+                if (result.confirmed) records.finish(ticket, result)
             } catch (cancel: CancellationException) { throw cancel }
-            catch (_: Exception) { retained++ }
+            catch (_: Exception) { /* Keep the immutable intent for an explicit later recovery. */ }
+            cursors.remove(owner)
+            cursors[owner] = ticket.runId
+            if (cursors.size > 64) cursors.remove(cursors.keys.first())
         }
-        retained
+        records.count(owner).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
     }
 
     suspend fun pendingCount(owner: String): Long = records.count(owner)

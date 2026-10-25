@@ -1,0 +1,37 @@
+name: Frida source materials and offline relink
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sources:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Verify source and ELF rejection paths
+        run: |
+          python3 scripts/verify-frida-sources.py
+          python3 scripts/verify-frida-resources.py
+          python3 scripts/verify-frida-probe-build.py
+      - name: Install matching Android SDK toolchain
+        run: bash scripts/setup-android-sdk.sh
+      - name: Acquire exact source materials without executing them
+        run: python3 scripts/prepare-frida-sources.py --catalog tools/frida-sources/catalog.json --directory app/build/outputs/frida-source-materials
+      - name: Build the pinned worker and audit embedded resources
+        run: python3 scripts/build-frida-probe.py --directory app/build/outputs/frida-qualification --ndk "$ANDROID_HOME/ndk/30.0.16248370" --download
+      - name: Package sources and verify offline worker relink
+        run: |
+          python3 scripts/package-frida-materials.py --materials app/build/outputs/frida-source-materials --devkit app/build/outputs/frida-qualification/frida-core-devkit-17.24.3-android-arm64.tar.xz --reference app/build/outputs/frida-qualification/report.json --output app/build/outputs/frida-qualification/aurora-frida-source-materials.zip
+          python3 scripts/verify-frida-source-roundtrip.py app/build/outputs/frida-qualification/aurora-frida-source-materials.zip --reference app/build/outputs/frida-qualification/report.json --ndk "$ANDROID_HOME/ndk/30.0.16248370" --report app/build/outputs/frida-qualification/offline-relink.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: aurora-frida-source-materials
+          path: |
+            app/build/outputs/frida-source-materials/materials.json
+            app/build/outputs/frida-qualification/aurora-frida-source-materials.zip
+            app/build/outputs/frida-qualification/report.json
+            app/build/outputs/frida-qualification/resources.json
+            app/build/outputs/frida-qualification/offline-relink.json
+          if-no-files-found: error
+          retention-days: 14
