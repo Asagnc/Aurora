@@ -1,0 +1,155 @@
+{
+  "crateCount": 496,
+  "sourceBytes": 91852188,
+  "withoutCapturedNotices": [],
+  "licenseClosureVerified": false,
+  "scope": "Cargo-lock source superset, not a measured linked-crate graph",
+  "supplementalNotices": [
+    {
+      "package": "ndk-context",
+      "version": "0.1.1",
+      "notices": [
+        {
+          "entry": "LICENSE-APACHE",
+          "bytes": 11357,
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+          "stored": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4.txt",
+          "origin": {
+            "type": "git",
+            "repository": "https://github.com/rust-windowing/android-ndk-rs",
+            "commit": "10f2ba388fca20f7349996ebae26ccda7a6fda5c",
+            "path": "LICENSE-APACHE",
+            "blobSha1": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64"
+          },
+          "method": "upstream_project_notice_supplement"
+        },
+        {
+          "entry": "LICENSE-MIT",
+          "bytes": 1036,
+          "sha256": "508a77d2e7b51d98adeed32648ad124b7b30241a8e70b2e72c99f92d8e5874d1",
+          "stored": "508a77d2e7b51d98adeed32648ad124b7b30241a8e70b2e72c99f92d8e5874d1.txt",
+          "origin": {
+            "type": "git",
+            "repository": "https://github.com/rust-windowing/android-ndk-rs",
+            "commit": "10f2ba388fca20f7349996ebae26ccda7a6fda5c",
+            "path": "LICENSE-MIT",
+            "blobSha1": "9cf106272ac3b56b0c4c80218e8fc10a664ca5f4"
+          },
+          "method": "upstream_project_notice_supplement"
+        }
+      ]
+    },
+    {
+      "package": "tree-sitter-xml",
+      "version": "0.7.0",
+      "notices": [
+        {
+          "entry": "LICENSE",
+          "bytes": 1058,
+          "sha256": "3297073719030b7261afd78b7267931ccc03a27f7a65ca6fc644316180f71bf6",
+          "stored": "3297073719030b7261afd78b7267931ccc03a27f7a65ca6fc644316180f71bf6.txt",
+          "origin": {
+            "type": "git",
+            "repository": "https://github.com/tree-sitter-grammars/tree-sitter-xml",
+            "commit": "4b64dd3a03ec002258d6268d712fd93716d6ab57",
+            "path": "LICENSE",
+            "blobSha1": "7094a20529cd00436ad0cab177e635308982b1ef"
+          },
+          "method": "upstream_project_notice_supplement"
+        }
+      ]
+    },
+    {
+      "package": "winapi-i686-pc-windows-gnu",
+      "version": "0.4.0",
+      "notices": [
+        {
+          "entry": "winapi-0.3.9/LICENSE-APACHE",
+          "bytes": 11357,
+          "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+          "stored": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1.txt",
+          "origin": {
+            "type": "same-project-crate",
+            "package": "winapi",
+            "version": "0.3.9",
+            "sourceSha256": "5c839a674fcd7a98952e593242ea400abe93992746761e38641405d28b00f419",
+            "path": "winapi-0.3.9/LICENSE-APACHE",
+            "scope": "Upstream project notices for target stub crates sharing the same declared MIT/Apache license"
+          },
+          "method": "upstream_project_notice_supplement"
+        },
+        {
+          "entry": "winapi-0.3.9/LICENSE-MIT",
+          "bytes": 1073,
+          "sha256": "ce7bc3499fee93d5022ef430d5e4201e79a6d9154f3974e42f41349f0569e09b",
+          "stored": "ce7bc3499fee93d5022ef430d5e4201e79a6d9154f3974e42f41349f0569e09b.txt",
+          "origin": {
+            "type": "same-project-crate",
+            "package": "winapi",
+            "version": "0.3.9",
+            "sourceSha256": "5c839a674fcd7a98952e593242ea400abe93992746761e38641405d28b00f419",
+            "path": "winapi-0.3.9/LICENSE-MIT",
+            "scope": "Upstream project notices for target stub crates sharing the same declared MIT/Apache license"
+          },
+          "method": "upstream_project_notice_supplement"
+        }
+      ]
+    },
+    {
+      "package": "winapi-x86_64-pc-windows-gnu",
+      "version": "0.4.0",
+      "notices": [
+        {
+          "entry": "winapi-0.3.9/LICENSE-APACHE",
+          "bytes": 11357,
+          "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+          "stored": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1.txt",
+          "origin": {
+            "type": "same-project-crate",
+            "package": "winapi",
+            "version": "0.3.9",
+            "sourceSha256": "5c839a674fcd7a98952e593242ea400abe93992746761e38641405d28b00f419",
+            "path": "winapi-0.3.9/LICENSE-APACHE",
+            "scope": "Upstream project notices for target stub crates sharing the same declared MIT/Apache license"
+          },
+          "method": "upstream_project_notice_supplement"
+        },
+        {
+          "entry": "winapi-0.3.9/LICENSE-MIT",
+          "bytes": 1073,
+          "sha256": "ce7bc3499fee93d5022ef430d5e4201e79a6d9154f3974e42f41349f0569e09b",
+          "stored": "ce7bc3499fee93d5022ef430d5e4201e79a6d9154f3974e42f41349f0569e09b.txt",
+          "origin": {
+            "type": "same-project-crate",
+            "package": "winapi",
+            "version": "0.3.9",
+            "sourceSha256": "5c839a674fcd7a98952e593242ea400abe93992746761e38641405d28b00f419",
+            "path": "winapi-0.3.9/LICENSE-MIT",
+            "scope": "Upstream project notices for target stub crates sharing the same declared MIT/Apache license"
+          },
+          "method": "upstream_project_notice_supplement"
+        }
+      ]
+    },
+    {
+      "package": "windivert",
+      "version": "0.6.0",
+      "notices": [
+        {
+          "entry": "LICENSE",
+          "bytes": 7651,
+          "sha256": "a5681bf9b05db14d86776930017c647ad9e6e56ff6bbcfdf21e5848288dfaf1b",
+          "stored": "a5681bf9b05db14d86776930017c647ad9e6e56ff6bbcfdf21e5848288dfaf1b.txt",
+          "origin": {
+            "type": "git",
+            "repository": "https://github.com/Rubensei/windivert-rust",
+            "commit": "eb8e6823fd2e740cdcf60b6376b74d0996c74cd4",
+            "path": "LICENSE",
+            "blobSha1": "153d416dc8d2d60076698ec3cbfce34d91436a03"
+          },
+          "method": "upstream_project_notice_supplement"
+        }
+      ]
+    }
+  ]
+}

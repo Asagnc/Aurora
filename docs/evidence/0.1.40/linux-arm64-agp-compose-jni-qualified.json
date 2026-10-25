@@ -1,0 +1,142 @@
+{
+  "linuxArm64AgpJavaComposeQualified": true,
+  "agp": "9.4.1",
+  "kotlin": "2.4.21",
+  "artifacts": [
+    {
+      "stage": "java-jni",
+      "apkBytes": 5170510,
+      "apkSha256": "3f6dc463c0f249efa8dda194aa34e42474f232fc9f2c4c1f4080a0c2967be0b6",
+      "ownedClassDefinitions": {
+        "Lio/github/asagnc/aurora/buildfixture/Owned;": "classes.dex"
+      },
+      "jni": [
+        {
+          "abi": "arm64-v8a",
+          "ownedSha256": "0f3492eb0d6fa3d089773e5e5edb354c4dfd7a7da83c05472c610a4f8f2c9c1c",
+          "runtimeSha256": "b5d97c38a728afe28d341cda3369f512d35eaf9c680c1b0563cd6a63e395230f",
+          "needed": [
+            "libc++_shared.so",
+            "libc.so",
+            "libdl.so",
+            "libm.so"
+          ],
+          "frameworkNative": null
+        },
+        {
+          "abi": "x86_64",
+          "ownedSha256": "80ae32dc5d4ff784675d222cffd567052717d9bee115a3d5cee243311d20bdde",
+          "runtimeSha256": "39faf2d59346e65a18980f207794fab2f1faff8a8de3f087b8319a181fa16fbd",
+          "needed": [
+            "libc++_shared.so",
+            "libc.so",
+            "libdl.so",
+            "libm.so"
+          ],
+          "frameworkNative": null
+        }
+      ]
+    },
+    {
+      "stage": "compose-jni",
+      "apkBytes": 20876274,
+      "apkSha256": "d3f14c8b83e21d7264748d1ad76c9b8de00e136e4dc27e994f25511edff35608",
+      "ownedClassDefinitions": {
+        "Lio/github/asagnc/aurora/buildfixture/OwnedScreenKt;": "classes.dex",
+        "Lio/github/asagnc/aurora/buildfixture/Owned;": "classes2.dex"
+      },
+      "jni": [
+        {
+          "abi": "arm64-v8a",
+          "ownedSha256": "0f3492eb0d6fa3d089773e5e5edb354c4dfd7a7da83c05472c610a4f8f2c9c1c",
+          "runtimeSha256": "b5d97c38a728afe28d341cda3369f512d35eaf9c680c1b0563cd6a63e395230f",
+          "needed": [
+            "libc++_shared.so",
+            "libc.so",
+            "libdl.so",
+            "libm.so"
+          ],
+          "frameworkNative": {
+            "coordinate": "androidx.graphics:graphics-path:1.0.1",
+            "sha256": "41e9a793c43a0f4fddb19e33f346bace464f30f888ba7b9eaf96294ea115bfb6",
+            "needed": [
+              "libc.so",
+              "libdl.so",
+              "libm.so"
+            ]
+          }
+        },
+        {
+          "abi": "x86_64",
+          "ownedSha256": "80ae32dc5d4ff784675d222cffd567052717d9bee115a3d5cee243311d20bdde",
+          "runtimeSha256": "39faf2d59346e65a18980f207794fab2f1faff8a8de3f087b8319a181fa16fbd",
+          "needed": [
+            "libc++_shared.so",
+            "libc.so",
+            "libdl.so",
+            "libm.so"
+          ],
+          "frameworkNative": {
+            "coordinate": "androidx.graphics:graphics-path:1.0.1",
+            "sha256": "4e56c996f13670e70082658de7880c4020eabf4f25e43387f88ed78a713fc9f0",
+            "needed": [
+              "libc.so",
+              "libdl.so",
+              "libm.so"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "foreignElfReplacedByRejection": [
+    "aapt",
+    "aapt2",
+    "aidl",
+    "bcc_compat",
+    "dexdump",
+    "llvm-rs-cc",
+    "split-select",
+    "zipalign",
+    "lib64/libLLVM_android.so",
+    "lib64/libbcc.so",
+    "lib64/libbcinfo.so",
+    "lib64/libc++.so",
+    "lib64/libc++.so.1",
+    "lib64/libclang_android.so",
+    "lld-bin/lld",
+    "renderscript/lib/blas/arm64-v8a/libblasV8.so",
+    "renderscript/lib/blas/armeabi-v7a/libblasV8.so",
+    "renderscript/lib/blas/x86/libblasV8.so",
+    "renderscript/lib/blas/x86_64/libblasV8.so",
+    "renderscript/lib/intermediates/arm64-v8a/libc.so",
+    "renderscript/lib/intermediates/arm64-v8a/libm.so",
+    "renderscript/lib/intermediates/armeabi-v7a/libc.so",
+    "renderscript/lib/intermediates/armeabi-v7a/libm.so",
+    "renderscript/lib/intermediates/x86/libc.so",
+    "renderscript/lib/intermediates/x86/libm.so",
+    "renderscript/lib/intermediates/x86_64/libc.so",
+    "renderscript/lib/intermediates/x86_64/libm.so",
+    "renderscript/lib/packaged/arm64-v8a/libRSSupport.so",
+    "renderscript/lib/packaged/arm64-v8a/librsjni.so",
+    "renderscript/lib/packaged/arm64-v8a/librsjni_androidx.so",
+    "renderscript/lib/packaged/armeabi-v7a/libRSSupport.so",
+    "renderscript/lib/packaged/armeabi-v7a/librsjni.so",
+    "renderscript/lib/packaged/armeabi-v7a/librsjni_androidx.so",
+    "renderscript/lib/packaged/x86/libRSSupport.so",
+    "renderscript/lib/packaged/x86/librsjni.so",
+    "renderscript/lib/packaged/x86/librsjni_androidx.so",
+    "renderscript/lib/packaged/x86_64/libRSSupport.so",
+    "renderscript/lib/packaged/x86_64/librsjni.so",
+    "renderscript/lib/packaged/x86_64/librsjni_androidx.so"
+  ],
+  "sdkMetadataSha256": {
+    "build-tools-package.xml": "4bda9eb99979d0d0af13821b250479a94fa021cf4cfdf284a207068e36dddadc",
+    "platform-package.xml": "9efedaa8306dc2b690b3ed328b417f19dde7537000701fc761241c6b6ed94c32"
+  },
+  "androidRuntime": "NOT TESTED",
+  "androidJniQualified": false,
+  "fullAgpJniBuildQualified": true,
+  "ndkEquivalenceVerified": false,
+  "phoneInstallReady": false
+}

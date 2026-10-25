@@ -1,0 +1,61 @@
+{
+  "inputs": {
+    "version": "12.2.0-14+deb12u1",
+    "sourceDescriptor": "https://deb.debian.org/debian/pool/main/g/gcc-12/gcc-12_12.2.0-14+deb12u1.dsc",
+    "elfSha256": "046856f95f4636f1fc7c3a12bf4f3cd5634c2fc5145c3fdf7395d4f349fa69c7",
+    "inputs": {
+      "runtime": {
+        "url": "https://deb.debian.org/debian/pool/main/g/gcc-12/libgcc-s1_12.2.0-14+deb12u1_arm64.deb",
+        "archive": "libgcc-s1_12.2.0-14+deb12u1_arm64.deb",
+        "bytes": 34816,
+        "sha256": "576926b283613db80168ddf76380a3bd877602778cf0d226caa7bfbfa71eacf3"
+      },
+      "base": {
+        "archive": "gcc-12-base_12.2.0-14+deb12u1_arm64.deb",
+        "url": "https://deb.debian.org/debian/pool/main/g/gcc-12/gcc-12-base_12.2.0-14+deb12u1_arm64.deb",
+        "bytes": 37624,
+        "sha256": "674cf6cba6d432bd200c45fe866c1652c7a53523cc2e7a613e05bc4abf7b5440"
+      },
+      "original": {
+        "archive": "gcc-12_12.2.0.orig.tar.gz",
+        "url": "https://deb.debian.org/debian/pool/main/g/gcc-12/gcc-12_12.2.0.orig.tar.gz",
+        "bytes": 87090343,
+        "sha256": "b8298be16aeeb96a889c6afed0a8e2241b47452e89cc81fe65ea849d5c740fcb"
+      },
+      "debian": {
+        "archive": "gcc-12_12.2.0-14+deb12u1.debian.tar.xz",
+        "url": "https://deb.debian.org/debian/pool/main/g/gcc-12/gcc-12_12.2.0-14+deb12u1.debian.tar.xz",
+        "bytes": 1675204,
+        "sha256": "59f7f7763a0c355e3f27ff9e7ac80d06382b29939361a87e7b139226bfe7402e"
+      }
+    }
+  },
+  "nativeByteCorrespondence": {
+    "name": "libgcc_s.so.1",
+    "bytes": 133448,
+    "sha256": "046856f95f4636f1fc7c3a12bf4f3cd5634c2fc5145c3fdf7395d4f349fa69c7"
+  },
+  "notices": [
+    {
+      "entry": "debian/copyright",
+      "bytes": 68194,
+      "sha256": "da8191658b3452ce9caf31638ba61dab31a38c619fa39df119812e050f592fd3",
+      "stored": "da8191658b3452ce9caf31638ba61dab31a38c619fa39df119812e050f592fd3.txt"
+    },
+    {
+      "entry": "COPYING3",
+      "bytes": 35147,
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+      "stored": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903.txt"
+    },
+    {
+      "entry": "COPYING.RUNTIME",
+      "bytes": 3324,
+      "sha256": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+      "stored": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74.txt"
+    }
+  ],
+  "binarySourceCopyrightCorrespondence": true,
+  "licenseClosureVerified": false,
+  "scope": "Exact Debian runtime bytes, original source, Debian modifications and runtime exception; overall proxy closure is separate"
+}

@@ -849,3 +849,9 @@ Supersedes pending hardware statements above: on Android16 ARM64 realme GT6SE, 3
 The approved capsule B is implemented with thinking bulb, concrete model, inline context ring, external statistics and bounded in-place details. Execution history defaults collapsed, active titles align with actual tools and completion count is explicitly recent history. Existing themes preserved. Actual device/keyboard/narrow long-name views are separate from clearly labelled debug examples. Details and raw test reports: COMPOSER_B_2026-10-18.md and docs/evidence/0.1.8. Core45, emulator33+1 and debug/release/lint pass; no paid-provider or comparative performance evidence.
 
 2026-10-20最终验证：core45、模拟器普通39、独立浏览器恢复1、Agent进程恢复prepare1/verify1通过；debug/AndroidTest/R8 release构建通过，lint0错误、1项既有MiMo矢量警告。序列化1.12.0升级后已复跑。证据：docs/evidence/0.1.9；新版真机后台/Root联合验收未做。
+
+## 2026-10-26 接续：构建资格、源码对应与轮转契约
+
+完整ARM64 AGP Java/Compose/JNI资格40210689697通过，原生LLVM strip/ranlib资格40206934943通过；496份Rust源码补充许可资格40210692480通过。Python15份源码/所需21份许可、本体与官方20251010运行库逐字节对应；libgcc与Debian12精确包/源码/运行库例外本地校验通过。全部14项内嵌ELF已有精确二进制对应，静态OpenSSL闭包和产品安装接入仍未完成。
+
+新增轮转配置/封口记录契约与独立原生配置/SHA256基础件；300核心288通过/12跳过，原生双ABI对象编译通过，Linux真实执行测试已加入CI待跟踪。实时worker/guard恢复/Root发布/Agent尚未接入，无新增手机操作或可用性宣称。详见NEXT_STEPS与evidence/0.1.40对应记录。
