@@ -60,7 +60,7 @@ def binder(binary, android, work, directory):
     source.write_text('package io.github.asagnc.aurora.resourcefixture; interface IOwned { int ping(int value); }')
     output = work / 'aidl-java'; output.mkdir()
     run([binary / 'aidl', '--lang=java', '-p' + str(android / 'framework.aidl'),
-         '-o' + str(output), source], directory, 'aidl.txt')
+         '-I' + str(work / 'aidl'), '-o' + str(output), source], directory, 'aidl.txt')
     generated = output / 'io/github/asagnc/aurora/resourcefixture/IOwned.java'
     text = generated.read_text()
     if 'android.os.Binder' not in text or 'ping(int value)' not in text:

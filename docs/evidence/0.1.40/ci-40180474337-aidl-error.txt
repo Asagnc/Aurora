@@ -1,0 +1,2 @@
+ERROR: /home/runner/work/Aurora/Aurora/app/build/outputs/apk-resource-qualification/.owned-api37-3zzjsybk/aidl/io/github/asagnc/aurora/resourcefixture/IOwned.aidl:1.49-59: directory /home/runner/work/Aurora/Aurora/app/build/outputs/apk-resource-qualification/.owned-api37-3zzjsybk/aidl/ is not found in any of the import paths:
+ - 
