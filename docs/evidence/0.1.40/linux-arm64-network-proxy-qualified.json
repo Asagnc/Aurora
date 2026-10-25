@@ -1,0 +1,11 @@
+{
+  "linuxArm64RuntimeQualified": true,
+  "httpModification": true,
+  "tlsStrictTrust": true,
+  "untrustedCaRejected": true,
+  "websocketModification": true,
+  "flowOfflineRead": true,
+  "archiveSha256": "f8756fa831c4abe431dd922ae7291b158b465285562b35d12e5669cbfc29d1f3",
+  "androidRuntime": "NOT TESTED",
+  "licenseClosureVerified": false
+}

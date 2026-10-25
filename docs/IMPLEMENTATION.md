@@ -1,3 +1,9 @@
+## 2026-10-25 网络ARM64实际资格通过与API37资源工程验证
+
+CI40180289970已在真实ubuntu-26.04-arm通过官方mitmdump12.3.0启动、自有HTTP/HTTPS双向修改、严格信任/未信任CA拒绝、WebSocket修改和完成流文件离线回读；证据已保存。仍未完成许可/手机依赖闭包或产品Agent接入，不显示proxyReady。
+
+下一步资源实验新增官方API37.0 revision2固定输入（67,281,901字节、SHA256840b23e8…），实际编译/链接自有资源APK、生成R.java与Binder接口、16KiB zipalign检查，并要求坏XML编译失败。只读使用平台JAR/AIDL，不执行官方x86工具，不安装手机。结果另记；不是完整AGP/Compose/JNI资格。
+
 ## 2026-10-25 ARM64资源实际构建通过与网络资格入口
 
 真实ARM64 CI40178993015的资源/JVM两job成功，aapt2/aidl/zipalign已从固定源码编译并执行版本检查；报告已保存。还未完成API37/AGP/Compose/JNI工程资格或手机运行闭包。成功产物现保留bin与固定源码归档供下一阶段使用。c9878b9完整CI40178992261成功；独立LLVM编译实验仍在运行。

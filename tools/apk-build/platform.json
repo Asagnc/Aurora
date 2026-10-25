@@ -1,0 +1,10 @@
+{
+  "archive": "platform-37.0_r02.zip",
+  "url": "https://dl.google.com/android/repository/platform-37.0_r02.zip",
+  "bytes": 67281901,
+  "sha256": "840b23e827f96e64aea4c89a1194aac3dc5f6bad37edb231c5c795d890330e8d",
+  "repositorySha1": "ed8ebf7f8822a4de5686d427f237d2fa30ff7410",
+  "revision": 2,
+  "api": "37.0",
+  "scope": "Official architecture-neutral SDK input for owned application qualification; not redistributed by Aurora"
+}

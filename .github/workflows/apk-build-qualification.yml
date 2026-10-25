@@ -16,6 +16,8 @@ jobs:
           dpkg-query -W cmake ninja-build g++ bison flex libexpat1-dev libfmt-dev libgtest-dev libprotobuf-dev protobuf-compiler libpng-dev zlib1g-dev
       - name: Build fixed source resource tools natively on ARM64
         run: python3 scripts/qualify-apk-resources.py --directory app/build/outputs/apk-resource-qualification
+      - name: Compile link align API37 owned resources and generate Binder Java
+        run: python3 scripts/qualify-apk-resource-fixture.py --directory app/build/outputs/apk-resource-qualification
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
