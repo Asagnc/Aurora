@@ -28,7 +28,7 @@ def stop(child, log):
         forced = True; child.kill(); output, _ = child.communicate(timeout=5)
     with log.open('ab') as stream:
         stream.write(output[:65536])
-    if forced or len(output) > 65536:
+    if forced or len(output) > 65536 or child.returncode != 0:
         raise ValueError('Proxy did not stop cooperatively within bounded output')
 
 
