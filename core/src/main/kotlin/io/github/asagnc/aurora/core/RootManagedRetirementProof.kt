@@ -2,8 +2,8 @@ package io.github.asagnc.aurora.core
 
 import kotlinx.serialization.Serializable
 
-/** Durable retirement before GO; any created worker and task domain are already reclaimed.
- * This is not an injection cleanup report and never asserts workerExited. */
+/** Durable retirement without injection: before GO or with an exact final no-attach worker report.
+ * Any created worker/domain is reclaimed; this does not claim an explicit unload/detach. */
 @Serializable
 class RootManagedRetirementProof private constructor(
     val runId: String, val identity: LinuxRootIdentity, val ticketSha256: String,
@@ -14,6 +14,8 @@ class RootManagedRetirementProof private constructor(
 
     companion object {
         internal fun fromNeverDispatched(ticket: RootManagedRunTicket) =
+            RootManagedRetirementProof(ticket.runId, ticket.identity, ticket.digest())
+        internal fun fromNoInjection(ticket: RootManagedRunTicket) =
             RootManagedRetirementProof(ticket.runId, ticket.identity, ticket.digest())
     }
 }

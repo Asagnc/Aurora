@@ -12,6 +12,14 @@ import kotlinx.serialization.encodeToString
 internal class RootManagedClient(private val remote: IRootControl, context: Context) {
     private val awake = CommandWakeLock(context, "ManagedRecovery")
 
+    suspend fun packageInfo(identity: LinuxRootIdentity): FridaManagedPackage = withContext(Dispatchers.IO) {
+        val snapshot = remote.snapshot()
+        require(snapshot.getInt("uid", -1) == 0 && snapshot.getInt("pid", -1) == identity.pid && snapshot.getInt("managedRunProtocol") == 1)
+        val encoded = requireNotNull(snapshot.getString("fridaPackage")) { "ARM64 Frida package unavailable; reconnect the current Root service" }
+        require(encoded.length <= 8192)
+        WireJson.decodeFromString<FridaManagedPackage>(encoded).also { it.validate() }
+    }
+
     suspend fun recover(ticket: RootManagedRunTicket): RootManagedResult = invoke(ticket, null)
 
     /** Original snapshots stay with the caller; only per-call duplicate handles cross Binder. */
@@ -47,3 +55,5 @@ internal class RootManagedClient(private val remote: IRootControl, context: Cont
         }
     }
 }
+
+internal data class FridaManagedConnection(val identity: LinuxRootIdentity, val client: RootManagedClient)

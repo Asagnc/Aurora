@@ -27,9 +27,16 @@ class RootManagedNativeState private constructor(
             (workerFlags == null || workerFlags and ATTEMPTED == 0))
             RootManagedRetirementProof.fromNeverDispatched(ticket) else null
 
+    /** GO may have run, but a strict final worker record can still prove no attach was attempted. */
+    fun noInjectionProof(): RootManagedRetirementProof? =
+        if (phase and 4 != 0 && worker != null && workerState == CLEAR && domainState == CLEAR &&
+            workerFlags == (FINAL or CLEAN) && workerStatus != null && workerStatus != 0)
+            RootManagedRetirementProof.fromNoInjection(ticket) else null
+
     /** Only a trusted Root observer may supply a boot change, exact replacement identity or confirmed ESRCH (null). */
     fun targetExitProof(bootId: String, observed: RootTargetIdentity?): RootManagedTargetExitProof? {
-        if (workerState != CLEAR || domainState != CLEAR) return null
+        // A confirmed new boot independently ends all old-boot processes and cgroups.
+        if (bootId == ticket.identity.bootId && (workerState != CLEAR || domainState != CLEAR)) return null
         val proof = RootManagedTargetExitProof.confirmed(ticket, bootId, observed)
         return proof.takeIf { it.matches(ticket) }
     }
@@ -37,7 +44,7 @@ class RootManagedNativeState private constructor(
     /** Resource reclamation and script cleanup remain independent facts, including on cancellation. */
     fun normalCleanupProof(): RootManagedExitProof? {
         val flags = workerFlags ?: return null
-        if (worker == null || workerState != CLEAR || domainState != CLEAR || flags and CLEAN != CLEAN) return null
+        if (worker == null || workerState != CLEAR || domainState != CLEAR || flags and CLEAN != CLEAN || flags and ATTEMPTED == 0) return null
         return RootManagedExitProof(ticket.runId, ticket.identity, ticket.digest(),
             scriptUnloaded = true, sessionDetached = true, managerClosed = true,
             workerExited = true, domainRemoved = true)

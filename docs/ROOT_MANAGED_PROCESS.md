@@ -1,6 +1,8 @@
+> 2026-10-25 更新：worker/桥/notice 已打包，Agent status/probe/attach 与会话日志已实现；旧文中的待接入描述为历史状态。资格要求固定自测的真实调用事件及独立退出证明，最终 Android Root/ART 未执行。当前验收见 FRIDA_AGENT_ACCEPTANCE.md。
+
 # Root受管执行器（2026-10-24）
 
-这是已批准受管任务方案内的执行/FD接入，不新增依赖、常驻进程或持久化格式。Binder派发/恢复与账本收尾已接，见ROOT_MANAGED_BINDER.md；Agent已有status/recover，尚无注入工具、打包Frida Core worker或Android运行资格。
+这是已批准受管任务方案内的执行/FD接入，不新增依赖、常驻进程或持久化格式。Binder派发/恢复与账本收尾已接，见ROOT_MANAGED_BINDER.md；ARM64 worker/固定Java桥已打包，Agent已有status/recover，注入动作与Android运行资格仍待完成。
 
 ## 可执行文件固定
 

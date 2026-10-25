@@ -11,6 +11,8 @@ data class RootManagedResult(
     val targetExit: RootManagedTargetExitProof? = null,
     val exitCode: Int? = null, val workerStatus: Int? = null,
     val error: String? = null, val protocol: Int = 1,
+    val artifact: String? = null, val artifactError: String? = null,
+    val probeObserved: Boolean? = null,
 ) {
     fun validate(ticket: RootManagedRunTicket) {
         ticket.validate()
@@ -22,6 +24,11 @@ data class RootManagedResult(
         require(exitCode == null || exitCode in 0..255)
         require(workerStatus == null || workerStatus in 0..255)
         require(error == null || error in setOf("managed_outcome_uncertain", "managed_execution_failed"))
+        require(artifact == null || artifact == "runs/${ticket.runId}/frida.log")
+        require(artifactError == null || artifactError == "frida_log_unavailable")
+        require(probeObserved == null || (ticket.script == FridaManagedProbe.snapshot(ticket.bridge != null) &&
+            ticket.target == RootTargetIdentity(ticket.identity.pid, ticket.identity.startTicks) && ticket.observeMs == 10_000L))
+        require(probeObserved != true || successful)
     }
 
     val confirmed: Boolean get() = cleanup != null || retirement != null || targetExit != null

@@ -1,6 +1,6 @@
 # Frida发布输入核对（2026-10-24）
 
-本页是发布材料盘点，不是已完成许可证闭包、源码交付或Android运行资格。没有增加运行时依赖，Frida worker仍未放入APK。新增材料仅约33KiB、位于tools/frida-licenses，不下载/展开整套SDK副本或安装到手机。
+本页保留2026-10-24最初发布材料盘点。后续已取得65份源码材料并接入worker/桥/notice APK携带，当前状态见FRIDA_SOURCE_MATERIALS.md；不应把本页当成仍只取得约33KiB文本。Android/ART运行资格和正式发布仍待完成，没有安装到手机。
 
 ## 固定来源
 

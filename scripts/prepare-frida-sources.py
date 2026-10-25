@@ -20,6 +20,7 @@ import urllib.request
 import urllib.error
 
 LIMIT = 256 * 1024 * 1024
+CONTENT_FORMAT = 'path-git-mode-blob-sha1-content-sha256-v1'
 
 
 def location(entry):
@@ -58,11 +59,13 @@ def inspect(path, entry, prefixed):
         if integrity != base64.b64decode(entry['integrity'][7:], validate=True):
             raise ValueError('npm source integrity mismatch')
     expected = entry.get('archiveSha256')
-    if expected is not None and digest != expected:
+    if expected is not None and 'contentSha256' not in entry and digest != expected:
         raise ValueError('Source archive digest differs from pinned material')
     notices = []
     names = set()
     members = {}
+    generated = urllib.parse.urlparse(entry.get('repository', '')).hostname in {'android.googlesource.com', 'chromium.googlesource.com'}
+    content_rows = []
     total = 0
     candidates = {item['path']: item for item in entry.get('noticeCandidates', [])}
     with tarfile.open(path, 'r:gz') as archive:
@@ -84,7 +87,19 @@ def inspect(path, entry, prefixed):
             if not member.isfile():
                 if not (member.isdir() or member.issym() or member.islnk()):
                     raise ValueError('Unexpected special source member')
+                if generated and not member.isdir():
+                    if not member.issym():
+                        raise ValueError('Generated source contains a non-Git hardlink')
+                    content_rows.append(content_row(name, '120000', member.linkname.encode()))
                 continue
+            if generated:
+                blob = hashlib.sha1(b'blob ' + str(member.size).encode() + b'\0')
+                payload = hashlib.sha256()
+                with archive.extractfile(member) as incoming:
+                    while block := incoming.read(65536):
+                        blob.update(block)
+                        payload.update(block)
+                content_rows.append((name, '100755' if member.mode & 0o111 else '100644', blob.hexdigest(), payload.hexdigest()))
             candidate = candidates.get(name)
             if candidate is None and not pure.name.lower().startswith(('copying', 'license', 'licence', 'notice', 'copyright')):
                 continue
@@ -99,8 +114,24 @@ def inspect(path, entry, prefixed):
                             'sha256': hashlib.sha256(content).hexdigest()})
         notices.extend(linked_notices(archive, members, candidates))
     missing = sorted(set(candidates) - {notice['path'] for notice in notices})
-    return {**entry, 'archive': path.name, 'archiveSha256': digest, 'archiveBytes': path.stat().st_size,
+    content = {}
+    if generated:
+        rows = ''.join('\0'.join(row) + '\n' for row in sorted(content_rows)).encode()
+        content['contentSha256'] = hashlib.sha256(rows).hexdigest()
+        content['contentFormat'] = CONTENT_FORMAT
+        if entry.get('contentSha256') is not None and (entry.get('contentFormat') != CONTENT_FORMAT or content['contentSha256'] != entry['contentSha256']):
+            raise ValueError('Source Git blob content differs from pinned material')
+    return {**entry, **content, 'archive': path.name, 'archiveSha256': digest, 'archiveBytes': path.stat().st_size,
             'entries': len(names), 'expandedBytes': total, 'notices': notices, 'missingNoticeCandidates': missing}
+
+
+def content_row(name, mode, content):
+    blob = hashlib.sha1(b'blob ' + str(len(content)).encode() + b'\0' + content).hexdigest()
+    return name, mode, blob, hashlib.sha256(content).hexdigest()
+
+
+def material_identity(entry):
+    return (entry['contentFormat'], entry['contentSha256']) if 'contentSha256' in entry else ('archive', entry['archiveSha256'])
 
 
 def linked_notices(archive, members, candidates):
@@ -136,7 +167,7 @@ def acquire(entry, directory):
         raise ValueError('Unsafe source version')
     target = directory / (name + '-' + pin + '.tar.gz')
     if target.exists():
-        if 'archiveSha256' not in entry:
+        if 'archiveSha256' not in entry and 'contentSha256' not in entry:
             raise ValueError('Cached source needs a pinned archive digest from the prior materials report')
         if target.is_symlink() or not target.is_file() or not 0 < target.stat().st_size <= LIMIT:
             raise ValueError('Unsafe cached source archive')

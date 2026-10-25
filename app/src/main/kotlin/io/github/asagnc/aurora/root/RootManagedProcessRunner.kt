@@ -27,7 +27,7 @@ internal class RootManagedProcessRunner(private val identity: () -> LinuxRootIde
         }
         guard.usePath { helper -> worker.usePath { executable ->
             launch(state, listOf(helper, "run") + key(ticket, state) + listOf("--observe-ms", ticket.observeMs.toString(),
-                "--cooperative-cancel", "--", executable) + arguments, ticket.timeoutMs + 5_000)
+                "--cooperative-cancel", "--", executable) + arguments, ticket.timeoutMs + 5_000, "worker-events.log")
         } }
     }
 
@@ -41,7 +41,8 @@ internal class RootManagedProcessRunner(private val identity: () -> LinuxRootIde
     private fun key(ticket: RootManagedRunTicket, state: Path) = listOf(
         "--state-dir", state.toString(), "--run-id", ticket.runId, "--ticket-sha", ticket.digest())
 
-    private fun launch(state: Path, arguments: List<String>, budgetMs: Long): RootManagedProcessExit {
+    private fun launch(state: Path, arguments: List<String>, budgetMs: Long,
+        logName: String = "coordinator-${UUID.randomUUID()}.log"): RootManagedProcessExit {
         check(Process.myUid() == 0) { "Managed native tasks require Root" }
         require(state.isAbsolute && state.normalize() == state)
         if (Thread.currentThread().isInterrupted) throw InterruptedException()
@@ -52,7 +53,7 @@ internal class RootManagedProcessRunner(private val identity: () -> LinuxRootIde
             // The log descriptor is anchored before launch; Java's redirected streams cannot cut
             // the worker's output pipe during Process.destroy's cooperative TERM operation.
             ParcelFileDescriptor.dup(directory).use { pinned ->
-                val log = Os.open("/proc/self/fd/${pinned.fd}/coordinator-${UUID.randomUUID()}.log",
+                val log = Os.open("/proc/self/fd/${pinned.fd}/$logName",
                     O_WRONLY or O_CREAT or O_EXCL or O_NOFOLLOW or O_CLOEXEC, 384)
                 try { return execute(state, arguments, log, budgetMs) } finally { Os.close(log) }
             }

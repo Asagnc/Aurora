@@ -1,4 +1,4 @@
-# 当前接续清单（2026-10-24，0.1.40）
+# 当前接续清单（2026-10-25，0.1.40）
 
 本文件是当前摘要；PROGRESS/IMPLEMENTATION中按时间倒序的早期记录可能包含已完成的旧待办，不应将它们重新当作当前缺失功能。细节以对应实现/证据文档为准。
 
@@ -56,7 +56,17 @@
 
 - 独立coordinator/guard开发CLI及recover已接现有组件；专用subreaper+pidfd回收自己的后代，严格区分worker报告、真实进程退出和域回收。14项Root模拟worker生命周期用例待CI；ARM64完整链接通过。尚未APK打包/连接Root Binder或Agent；继续真实Frida端到端资格和产品接口。
 
+## 当前接续（优先于下列历史快照）
+
+ARM64 worker、固定 Java 桥及许可文本已打包；Agent `frida` 提供 status/probe/attach，固定当前 Root 身份、目标 PID/start、脚本 SHA 和桥版本。原生与 Java 资格仅在当前 Root 服务内存中有效，须固定自测成功、独立清理证明与 Root 私有日志实际调用证据同时成立。workerSucceeded 不代表异步用户脚本完成。退出屏障后发布有界会话日志，日志发布失败不丢失清账证明。
+
+修复 GO 后未尝试 attach 的独立退役证明，以及已验证新 boot 对旧资源的退出证明；同 boot 未知状态继续阻断。Debug/Release/testAPK/lint 本地通过，核心测试 263 项，0 失败、0 错误、12 跳过。新增 Android 集成用例仅编译，无手机或付费模型调用。源码容器身份修复及 65 输入离线重链接另见 FRIDA_SOURCE_MATERIALS.md；最终 Root/ART、服务死亡/取消矩阵与正式签名仍待集中验收。见 FRIDA_AGENT_ACCEPTANCE.md。
+
 ## 当前证据
+
+- 1f601fa完整CI40150310737三job成功；另一个独立源码workflow40150310929因Gitiles容器字节不稳定而失败，不能混记。已改为固定13项Gitiles的文件路径/Git模式/blob内容身份，未放松源码校验；新回归通过，重新运行CI另查。
+
+- worker/固定Java桥/132份去重许可文本现已进入实际APK，Gradle沿用相同资格构建器，strip后worker仍为a1486cd…，Release unsigned44,448,774字节，Debug85,268,848字节。APK ELF/资产摘要/notice审计与Debug/Release/testAPK/lint本地通过；新增1项ARM64版本/桥快照Android用例仅编译。Root Binder桥选择只接受安装包固定描述；Agent attach、最终Root/ART/日志产物接入及正式签名仍待完成，不显示注入ready。见FRIDA_SOURCE_MATERIALS.md。
 
 - 00c5782完整CI40094912932三个job成功，Binder/活动账本/Agent恢复代码与原生回归通过。随后增加每次最多4项恢复及64个owner有界游标轮转，避免未知项长期挡住后续票据；新增1项Android分页仅编译，本地Debug/Release/testAPK/lint通过。
 

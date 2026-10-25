@@ -1255,8 +1255,10 @@
       "role": "nested-source",
       "parent": "v8",
       "path": "third_party/jinja2",
-      "archiveSha256": "24bb0ea9562dc9923307b809b74697268edcaf479132d16b854277b898c6e5c6",
-      "archiveBytes": 124217
+      "contentSha256": "d0195b02e54122f36117e1ade139196029527a5c164b491639f7c6ddfc65910d",
+      "observedArchiveSha256": "24bb0ea9562dc9923307b809b74697268edcaf479132d16b854277b898c6e5c6",
+      "observedArchiveBytes": 124217,
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
     },
     {
       "id": "v8--third_party--llvm-libc--src",
@@ -1265,8 +1267,10 @@
       "role": "nested-source",
       "parent": "v8",
       "path": "third_party/llvm-libc/src",
-      "archiveSha256": "ec0c79eb7b63413fe83263771846985610d6565f2f5b3682748f75393de1a8c4",
-      "archiveBytes": 44146999
+      "contentSha256": "c0f221641bf67d66bea75475b7dfd0891862153d86f173127279560856d072cb",
+      "observedArchiveSha256": "ec0c79eb7b63413fe83263771846985610d6565f2f5b3682748f75393de1a8c4",
+      "observedArchiveBytes": 44146999,
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
     },
     {
       "id": "v8--third_party--markupsafe",
@@ -1275,8 +1279,10 @@
       "role": "nested-source",
       "parent": "v8",
       "path": "third_party/markupsafe",
-      "archiveSha256": "7a17cb404134fb2222a54b9ba0b938e8dea76cd855d8ae2ac963db048b71ca28",
-      "archiveBytes": 10306
+      "contentSha256": "5919d00df46a0d60c04823c3741df199387839ea66d79df84f814ca4bef048f8",
+      "observedArchiveSha256": "7a17cb404134fb2222a54b9ba0b938e8dea76cd855d8ae2ac963db048b71ca28",
+      "observedArchiveBytes": 10306,
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
     },
     {
       "id": "v8--third_party--simdutf--src",
@@ -1285,8 +1291,10 @@
       "role": "nested-source",
       "parent": "v8",
       "path": "third_party/simdutf/src",
-      "archiveSha256": "1a458fa3513acfc4b0052d2c7831eb9544cf0ad183a26866ae47825ef15b026c",
-      "archiveBytes": 425712
+      "contentSha256": "d911a601bfb5406e247aa631aa424a5b682292460ab1a4a9f03a2734982806a2",
+      "observedArchiveSha256": "1a458fa3513acfc4b0052d2c7831eb9544cf0ad183a26866ae47825ef15b026c",
+      "observedArchiveBytes": 425712,
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
     },
     {
       "id": "v8--third_party--zlib",
@@ -1295,8 +1303,10 @@
       "role": "nested-source",
       "parent": "v8",
       "path": "third_party/zlib",
-      "archiveSha256": "79602e5b2abfec16348cb7aa313c4b06230ef06628f5f36d20c93bba158688b0",
-      "archiveBytes": 1394135
+      "contentSha256": "6ca6f7fa4b99c09cb11c9910274e68cb58b68bc0b4e24f8801600bf134357065",
+      "observedArchiveSha256": "79602e5b2abfec16348cb7aa313c4b06230ef06628f5f36d20c93bba158688b0",
+      "observedArchiveBytes": 1394135,
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
     },
     {
       "id": "vala",
@@ -1400,8 +1410,10 @@
       "commit": "386af4a5c64ab75eaee2448dc38f2e34a40bfed0",
       "subdirectory": "compiler-rt",
       "role": "toolchain-runtime-source",
-      "archiveSha256": "75cc02209672febaf95a01a52f0375ea33c894ab314cc1b46621f80ed2000087",
-      "archiveBytes": 4506635
+      "contentSha256": "9a889709d3ed991591b055e9fb70f1ae69b95a0dc074e36870dc17b461328d16",
+      "observedArchiveSha256": "75cc02209672febaf95a01a52f0375ea33c894ab314cc1b46621f80ed2000087",
+      "observedArchiveBytes": 4506635,
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
     },
     {
       "id": "ndk29-libcxx",
@@ -1409,8 +1421,10 @@
       "commit": "386af4a5c64ab75eaee2448dc38f2e34a40bfed0",
       "subdirectory": "libcxx",
       "role": "toolchain-runtime-source",
-      "archiveSha256": "af1d64fcecdd05d1ed36edb15dddbfc8bb7416d9d4d80f6247905c4e6cbecfa9",
-      "archiveBytes": 8797832
+      "contentSha256": "6c3a8d162f8b56a628e6213036aa8ff7b87c320cc56c9d72389fcc862c4ed040",
+      "observedArchiveSha256": "af1d64fcecdd05d1ed36edb15dddbfc8bb7416d9d4d80f6247905c4e6cbecfa9",
+      "observedArchiveBytes": 8797832,
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
     },
     {
       "id": "ndk29-libcxxabi",
@@ -1418,8 +1432,10 @@
       "commit": "386af4a5c64ab75eaee2448dc38f2e34a40bfed0",
       "subdirectory": "libcxxabi",
       "role": "toolchain-runtime-source",
-      "archiveSha256": "c2dd28d287ff17c9bd29b14613b062e53ab4d20ceb2aea2392ea4c2bdc0099d4",
-      "archiveBytes": 806290
+      "contentSha256": "0c3f8243f3497668bb1ae4b9b7c06fc5252ada45c31ae450026524801073ea1f",
+      "observedArchiveSha256": "c2dd28d287ff17c9bd29b14613b062e53ab4d20ceb2aea2392ea4c2bdc0099d4",
+      "observedArchiveBytes": 806290,
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
     },
     {
       "id": "ndk29-libunwind",
@@ -1427,8 +1443,10 @@
       "commit": "386af4a5c64ab75eaee2448dc38f2e34a40bfed0",
       "subdirectory": "libunwind",
       "role": "toolchain-runtime-source",
-      "archiveSha256": "026dba2861bf8c7fa33e83027eabbb643c9e6c7eae1e57f901f88c9639eff01d",
-      "archiveBytes": 167796
+      "contentSha256": "c10679e25a4cb915ab5e003de6e746b8237b302df05993da6f7ca709429db57b",
+      "observedArchiveSha256": "026dba2861bf8c7fa33e83027eabbb643c9e6c7eae1e57f901f88c9639eff01d",
+      "observedArchiveBytes": 167796,
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
     },
     {
       "id": "ndk29-patches",
@@ -1436,8 +1454,10 @@
       "commit": "1dab3288f660d43a6cb2479107e2b54b3ab0a2a1",
       "subdirectory": "patches",
       "role": "toolchain-patches",
-      "archiveSha256": "32d042b9c32423c07e676b8c6f5a3bab5774a8e6e77f80938d085ef4778cf776",
-      "archiveBytes": 183215
+      "contentSha256": "254b7a64e9246ddd5d233815fc3db04572db38551ffb01f4fe54f336aea3f298",
+      "observedArchiveSha256": "32d042b9c32423c07e676b8c6f5a3bab5774a8e6e77f80938d085ef4778cf776",
+      "observedArchiveBytes": 183215,
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
     },
     {
       "id": "ndk30-compiler-rt",
@@ -1445,8 +1465,10 @@
       "commit": "2d287f51eff2a5fbf84458a33f7fb2493cf67965",
       "subdirectory": "compiler-rt",
       "role": "toolchain-runtime-source",
-      "archiveSha256": "75c88cacd1e46108a8e77c05de9ab8968e1a88e28fc1e2cac44fc753d4346061",
-      "archiveBytes": 4542280
+      "contentSha256": "ea332c3dea5cb949dbcf4d82311a2e6f07e713452ff11d8f87782e5c80fcc208",
+      "observedArchiveSha256": "75c88cacd1e46108a8e77c05de9ab8968e1a88e28fc1e2cac44fc753d4346061",
+      "observedArchiveBytes": 4542280,
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
     },
     {
       "id": "ndk30-libunwind",
@@ -1454,8 +1476,10 @@
       "commit": "2d287f51eff2a5fbf84458a33f7fb2493cf67965",
       "subdirectory": "libunwind",
       "role": "toolchain-runtime-source",
-      "archiveSha256": "a6e0064ca55f107e545dbe135f60b3f7b59b9eed1ccd5c4b30335f51ccfa1a3c",
-      "archiveBytes": 168169
+      "contentSha256": "838a9bd4031da5219813af6dc75a3b4071809860010c712d63040e75f1b382a7",
+      "observedArchiveSha256": "a6e0064ca55f107e545dbe135f60b3f7b59b9eed1ccd5c4b30335f51ccfa1a3c",
+      "observedArchiveBytes": 168169,
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
     },
     {
       "id": "ndk30-patches",
@@ -1463,8 +1487,10 @@
       "commit": "9e20ac0b949feedcfe3da791189310f6ebcbc7a8",
       "subdirectory": "patches",
       "role": "toolchain-patches",
-      "archiveSha256": "3505f6284c7c4cb83d04fa3c18d720fe3b36ac719abc9f8cdacb64efe5bd2163",
-      "archiveBytes": 314491
+      "contentSha256": "d3611fd9c25694155a5af6babbb222486b2fb3d17cee4dc0352038cb227489d3",
+      "observedArchiveSha256": "3505f6284c7c4cb83d04fa3c18d720fe3b36ac719abc9f8cdacb64efe5bd2163",
+      "observedArchiveBytes": 314491,
+      "contentFormat": "path-git-mode-blob-sha1-content-sha256-v1"
     },
     {
       "id": "frida-base64-js",

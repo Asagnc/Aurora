@@ -1,3 +1,9 @@
+> 2026-10-25 更新：worker/桥/notice 已打包，Agent status/probe/attach 与会话日志已实现；旧文中的待接入描述为历史状态。资格要求固定自测的真实调用事件及独立退出证明，最终 Android Root/ART 未执行。当前验收见 FRIDA_AGENT_ACCEPTANCE.md。
+
+## 2026-10-25 当前接续状态
+
+Root组合/FD/独立guard、Binder派发恢复、活动账本精确清账和Agent status/recover均已接。65份固定源码材料、实际嵌入资源审计及离线worker重链接已完成主机验证；ARM64 worker、固定Java桥与notice现已进入APK。Agent attach/spawn、日志产物接入、正式签名和Android/ART集中手机资格仍待完成。详见ROOT_MANAGED_BINDER.md、FRIDA_SOURCE_MATERIALS.md与NEXT_STEPS.md。下方按日期保留阶段历史，不应重新把已确认组合当待选型。
+
 ## 2026-10-24 Root组合已确认，收紧原型预算
 
 Root持久化/FD组合已获确认，schema8账本、票据精确证明、会话删除屏障及封印memfd基础已实现，见ROOT_MANAGED_TASKS_IMPLEMENTATION.md；Binder/AF_UNIX握手、Root执行/恢复和Agent仍待接。

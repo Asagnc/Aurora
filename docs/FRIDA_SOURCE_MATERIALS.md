@@ -1,3 +1,5 @@
+> 2026-10-25 更新：worker/桥/notice 已打包，Agent status/probe/attach 与会话日志已实现；旧文中的待接入描述为历史状态。资格要求固定自测的真实调用事件及独立退出证明，最终 Android Root/ART 未执行。当前验收见 FRIDA_AGENT_ACCEPTANCE.md。
+
 # Frida发布源码材料（2026-10-25）
 
 已实际取得65份固定源码归档，合计288,562,897字节，记录157份许可/版权文本（包含构建期和可选源码的材料，不是157项Android运行依赖）。含Core/Gum/releng与实际V8子模块、Java桥npm/仓库、发射到桥中的三项polyfill、NDK29/30运行库基础源码和Android补丁。
@@ -23,5 +25,15 @@ Windows/现有NDK30实际从ZIP临时目录离线重链接通过，得到89,143,
 这是Aurora worker的可复现重链接证据，未从源码重建官方完整SDK，也不是Android执行证据。独立workflow frida-materials.yml将复核Linux获取/重链接与上传材料，执行结果另记。
 
 当前仍待：最终APK携带的notice/源码对应入口、worker/桥打包及Agent注入动作、真实Root/ART与服务死亡/取消集中手机验收。现有Agent仅提供受管意图status/recover，不因源码材料完成就显示注入ready。
+
+## 后续接入APK与Gitiles容器修复
+
+独立源码CI40150310929因13份Gitiles归档的原始容器摘要变化而失败，未记通过。重新取得Markupsafe归档从10,306变为10,300字节，但文件路径/Git模式/Git blob集合的内容摘要完全相同。现已将这13项固定为该内容身份，保留原始容器SHA为观察值；GitHub/npm仍固定原始归档摘要。新增容器时间戳变化可接受、正文变化必须拒绝的回归，源码故障用例累计5项。没有忽略摘要错误或把新的任意源当成旧源。
+
+worker现由Gradle复用独立资格构建器生成，再复制固定SHA的同一89,143,968字节ARM64产物。APK strip后的摘要必须仍一致，Root从APK资产取得worker摘要。Java桥同时携带固定构建输入/包锁摘要和235,970字节产物，Root拒绝其他bridge描述。x86_64没有注入worker替代品。
+
+APK已携带65份源码材料关联的132份去重许可文本（1,051,122字节）及160条notice/companion来源记录。材料ZIP另补桥源入口/包锁/构建说明和标准许可文本；仍不把SDK完整重建或Android执行写成通过。
+
+本地Debug APK85,268,848字节、Release unsigned APK44,448,774字节。Release内worker ZIP压缩条目36,054,208字节、桥64,748字节、notice275,069字节；这是实际APK条目和总文件大小，不是安装/RSS或设备性能测量。见local-frida-apk-payloads.json。Debug/Release/testAPK/lint通过，新增ARM64版本/桥快照用例仅编译。Agent注入动作、最终Root/ART和正式发布签名仍待完成；APK携带不改变injectionReady=false。
 
 依据：[固定releng依赖](https://github.com/frida/releng/blob/8429c0c9caf8b071955f64869a1b0ede58ad9f34/deps.toml)、[固定V8子模块声明](https://github.com/frida/v8/blob/f6d7f6610f2f21e2817ed180b72ea750a3f63ce8/.gitmodules)、[NDK r29官方变更记录](https://github.com/android/ndk/wiki/Changelog-r29)、[固定Android编译器来源](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/568b941cf0c249b9c2a1f853e94a29f0e6291c59/clang-r563880c/clang_source_info.md)。

@@ -1,0 +1,1125 @@
+{
+  "noticeSha256": "7337769b1ed56d85d32e02e133cd1742fa5efe7c94c65e0d4af741b82eae0594",
+  "uniqueTexts": 132,
+  "sourceArchives": 65,
+  "records": [
+    {
+      "source": "brotli",
+      "path": "LICENSE",
+      "bytes": 1084,
+      "gitBlobSha1": "33b7cdd2dbaeddce1e35aa1a13f63d71154dc42f",
+      "sha256": "3d180008e36922a4e8daec11c34c7af264fed5962d07924aea928c38e8663c94"
+    },
+    {
+      "source": "capstone",
+      "path": "LICENSE.TXT",
+      "bytes": 1687,
+      "gitBlobSha1": "0dabdc749eee9faeaa358ecd831064463cd756bc",
+      "sha256": "65e9ed46a59976eda8f5bd1ea79a680dea38dd299c760bc9a8d87a764ef5029b"
+    },
+    {
+      "source": "capstone",
+      "path": "LICENSE_LLVM.TXT",
+      "bytes": 3331,
+      "gitBlobSha1": "66d6647ffd70292fb8e74d17dd97d5605c5f9757",
+      "sha256": "dfdca2d7fdbabfd937f9dc41b7f61647b0e6cb1f9ee767ecb4520f979ebe91da"
+    },
+    {
+      "source": "capstone",
+      "path": "bindings/python/LICENSE.TXT",
+      "bytes": 1687,
+      "gitBlobSha1": "0dabdc749eee9faeaa358ecd831064463cd756bc",
+      "sha256": "65e9ed46a59976eda8f5bd1ea79a680dea38dd299c760bc9a8d87a764ef5029b"
+    },
+    {
+      "source": "capstone",
+      "path": "suite/regress/LICENSE",
+      "bytes": 1688,
+      "gitBlobSha1": "dd85900f2013e0252253b3b3c4618be353be23bc",
+      "sha256": "2b16ef2d08597fccc3ffa8a8872e387e4b08e333e11b29c0bbb24f9d2167ac41"
+    },
+    {
+      "source": "elfutils",
+      "path": "COPYING",
+      "bytes": 35147,
+      "gitBlobSha1": "94a9ed024d3859793618152ea559a168bbcbb5e2",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "source": "elfutils",
+      "path": "COPYING-GPLV2",
+      "bytes": 18092,
+      "gitBlobSha1": "d159169d1050894d3ea3b98e1c965c4058208fe1",
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+    },
+    {
+      "source": "elfutils",
+      "path": "COPYING-LGPLV3",
+      "bytes": 7651,
+      "gitBlobSha1": "65c5ca88a67c30becee01c5a8816d964b03862f9",
+      "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+    },
+    {
+      "source": "elfutils",
+      "path": "doc/COPYING-GFDL",
+      "bytes": 23176,
+      "gitBlobSha1": "98310abe803be6ca8cc3f3d538cfcf66cb3bb06e",
+      "sha256": "62b0aef0fcad4d041e9de52278b2dcbbf999fe0650fa162f37a25cfd969cf4dd"
+    },
+    {
+      "source": "frida-core",
+      "path": "COPYING",
+      "bytes": 2416,
+      "gitBlobSha1": "b01d49c670e55dbff638eb294ac1a52416fb32e8",
+      "sha256": "5ea1544b51a28bc823b03159190d4108f9fb4f4ef912389f5137c6d295e175b2"
+    },
+    {
+      "source": "frida-gum",
+      "path": "COPYING",
+      "bytes": 5696,
+      "gitBlobSha1": "810ab7017801b3269dcee7931513e3e5e1910062",
+      "sha256": "00764fcc23f0f2ac6d2619a1f9192e55176ecaaa525e76a47aaabc5d87fb087f"
+    },
+    {
+      "source": "glib",
+      "path": "LICENSES/LicenseRef-old-glib-tests.txt",
+      "bytes": 841,
+      "gitBlobSha1": "d78b44306d8d5966923f643f1d576be233b00661",
+      "sha256": "fb261b2d5dbe76c4850f90da763210bc385e52428df6bbfd7b06295ac8a32914"
+    },
+    {
+      "source": "glib",
+      "path": "docs/reference/COPYING",
+      "bytes": 1698,
+      "gitBlobSha1": "df952d3cab8f0465a5ebe29fee5a7ff0ea16c59c",
+      "sha256": "b1ec1d0e5947f81e815d8771f7d4d90671a94bb10a42dc687fb566de461a57aa"
+    },
+    {
+      "source": "glib",
+      "path": "proxy-libintl-static/COPYING.LIB.txt",
+      "bytes": 25292,
+      "gitBlobSha1": "bf50f20de6ef55b52fe7832d3a4ed05f0c69d452",
+      "sha256": "d245807f90032872d1438d741ed21e2490e1175dc8aa3afa5ddb6c8e529b58e5"
+    },
+    {
+      "source": "glib",
+      "path": "COPYING",
+      "resolvedPath": "LICENSES/LGPL-2.1-or-later.txt",
+      "bytes": 25967,
+      "gitBlobSha1": "e818e737a7833b56367e795cef6ee0d992c6e667",
+      "sha256": "fa6f36630bb1e0c571d34b2bbdf188d08495c9dbf58f28cac112f303fc1f58fb"
+    },
+    {
+      "source": "glib",
+      "path": "gmodule/COPYING",
+      "resolvedPath": "LICENSES/LGPL-2.1-or-later.txt",
+      "bytes": 25967,
+      "gitBlobSha1": "ddf687147fc15a5d362353275aefaf3406af8630",
+      "sha256": "fa6f36630bb1e0c571d34b2bbdf188d08495c9dbf58f28cac112f303fc1f58fb"
+    },
+    {
+      "source": "glib--subprojects--gvdb",
+      "path": "COPYING",
+      "bytes": 26445,
+      "gitBlobSha1": "d129f4880fa149d64b99cbd80e9076944a7e23f0",
+      "sha256": "bdbcdaa7858872393e9d6b216bbdc8a23e99d98dd6cdb7cda19458025b9e19fc"
+    },
+    {
+      "source": "glib-networking",
+      "path": "COPYING",
+      "bytes": 26530,
+      "gitBlobSha1": "4362b49151d7b34ef83b3067a8f9c9f877d72a0e",
+      "sha256": "dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551"
+    },
+    {
+      "source": "glib-networking",
+      "path": "LICENSE_EXCEPTION",
+      "bytes": 706,
+      "gitBlobSha1": "6a4ea06c44cc407833f4bed75d606a7f8c244f6d",
+      "sha256": "85685a53e87aa7d3a70016856b646ad1b09c8e636295241f9f7c2d55cd7f05ce"
+    },
+    {
+      "source": "json-glib",
+      "path": "COPYING",
+      "resolvedPath": "LICENSES/LGPL-2.1-or-later.txt",
+      "bytes": 25967,
+      "gitBlobSha1": "e818e737a7833b56367e795cef6ee0d992c6e667",
+      "sha256": "fa6f36630bb1e0c571d34b2bbdf188d08495c9dbf58f28cac112f303fc1f58fb"
+    },
+    {
+      "source": "libbpf",
+      "path": "LICENSE",
+      "bytes": 30,
+      "gitBlobSha1": "c300739e7d2b75c446b73705e99d010f0adb3c26",
+      "sha256": "270472dd1702129178b8442e21804128d29d4cb7cfa3b8fea3ef4156b1a47c9d"
+    },
+    {
+      "source": "libbpf",
+      "path": "LICENSE.BSD-2-Clause",
+      "bytes": 1649,
+      "gitBlobSha1": "bce40aa98c5e77b47803d4676bbe7c1d4250cb6b",
+      "sha256": "e1638b9a0c68ca90fad3df1d6b4e430804d2fbdc15e58d02cffddfae38953bbf"
+    },
+    {
+      "source": "libbpf",
+      "path": "LICENSE.LGPL-2.1-only",
+      "bytes": 27493,
+      "gitBlobSha1": "4d1d06a0e8ffe748621e71b17e97d477bbf160ce",
+      "sha256": "fe482a156acd576ecc147de2b0bee8e97b7adb461afb11efaf4022b9e8e9a229"
+    },
+    {
+      "source": "libdwarf",
+      "path": "COPYING",
+      "bytes": 919,
+      "gitBlobSha1": "664ae63b5f8a09d56f57ebbeae7eb59b20db52ae",
+      "sha256": "ec11b68103f6c30e627f937e1c4ea2fc7bac8a812d6966ae9c64d0671bd3cf25"
+    },
+    {
+      "source": "libdwarf",
+      "path": "src/bin/dwarfdump/COPYING",
+      "bytes": 1074,
+      "gitBlobSha1": "52d7f0eccdd6b09bb89e3feb84831857fec13c4e",
+      "sha256": "c5823f82588f8f97f14a21f4543fcbe11f1956c2a9ee62cda938913cc786da6f"
+    },
+    {
+      "source": "libdwarf",
+      "path": "src/bin/dwarfgen/COPYING",
+      "bytes": 1808,
+      "gitBlobSha1": "e0eec0d4361de04406fb70cc7d4c7e0f23a430dd",
+      "sha256": "23e18e840a99a4711fa51860c1523f7bed3f716d6ace9a9c0b3961bf3dafe5a5"
+    },
+    {
+      "source": "libdwarf",
+      "path": "src/lib/libdwarf/COPYING",
+      "bytes": 1159,
+      "gitBlobSha1": "81f978f6f0c7c3c682d2d616f84a66e85e348884",
+      "sha256": "fab92642daf08150eddef71ae987792e4700c25a8d0f6e629a4c458d855cae3c"
+    },
+    {
+      "source": "libdwarf",
+      "path": "src/lib/libdwarfp/COPYING",
+      "bytes": 1159,
+      "gitBlobSha1": "81f978f6f0c7c3c682d2d616f84a66e85e348884",
+      "sha256": "fab92642daf08150eddef71ae987792e4700c25a8d0f6e629a4c458d855cae3c"
+    },
+    {
+      "source": "libffi",
+      "path": "LICENSE",
+      "bytes": 1132,
+      "gitBlobSha1": "90a8b230284e5cfbf02cbed3431116922bd84663",
+      "sha256": "17b64dc60f3b6897a60f971e288b973f655c2edcdf08b25f3c3dd5549857881c"
+    },
+    {
+      "source": "libffi",
+      "path": "LICENSE-BUILDTOOLS",
+      "bytes": 18698,
+      "gitBlobSha1": "d1d626e00859030061ed7b071e84f8f893d84d93",
+      "sha256": "e67978cd18816c0cb7d29aaaacde7b7447402c2fb321a051698890a8eaedda94"
+    },
+    {
+      "source": "libgee",
+      "path": "COPYING",
+      "bytes": 26436,
+      "gitBlobSha1": "5ab7695ab8cabe0c5c8a814bb0ab1e8066578fbb",
+      "sha256": "5df07007198989c622f5d41de8d703e7bef3d0e79d62e24332ee739a452af62a"
+    },
+    {
+      "source": "libiconv",
+      "path": "COPYING",
+      "bytes": 35147,
+      "gitBlobSha1": "94a9ed024d3859793618152ea559a168bbcbb5e2",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "source": "libiconv",
+      "path": "COPYING.LIB",
+      "bytes": 26419,
+      "gitBlobSha1": "f6683e74e0f0130f246dbf7054f4cacc88ca84b0",
+      "sha256": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95"
+    },
+    {
+      "source": "libiconv",
+      "path": "libcharset/COPYING.LIB",
+      "bytes": 26419,
+      "gitBlobSha1": "f6683e74e0f0130f246dbf7054f4cacc88ca84b0",
+      "sha256": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95"
+    },
+    {
+      "source": "libnice",
+      "path": "COPYING",
+      "bytes": 292,
+      "gitBlobSha1": "cc3fc529cd1550f94b72969e6196437ef762b6be",
+      "sha256": "e5504e5ffe894870ea1a652df957a120ead9c3f9a5e9d314ca41ba06f2d72024"
+    },
+    {
+      "source": "libnice",
+      "path": "COPYING.LGPL",
+      "bytes": 26527,
+      "gitBlobSha1": "2d2d780e6014b850ca3b8437452e24eba5f96508",
+      "sha256": "a9bdde5616ecdd1e980b44f360600ee8783b1f99b8cc83a2beb163a0a390e861"
+    },
+    {
+      "source": "libnice",
+      "path": "COPYING.MPL",
+      "bytes": 25657,
+      "gitBlobSha1": "a889bced81d7b1c4f9f44806f26a72a9d99b73c3",
+      "sha256": "3b3c75ae6c663c4f93987647eb5463d33dc1602a1aded3ac479773f2c3928e3a"
+    },
+    {
+      "source": "libpsl",
+      "path": "LICENSE",
+      "bytes": 1126,
+      "gitBlobSha1": "6207b50428429fc4f101e280cb63d9e1c2b17b67",
+      "sha256": "e7c9f0d8498d28a360a7e8293ea70fd7bd952955b636938322c13d60a03b5a45"
+    },
+    {
+      "source": "libpsl",
+      "path": "src/LICENSE.chromium",
+      "bytes": 1664,
+      "gitBlobSha1": "e29f4ffbe499f0af97f146a333eaa159ddffbb66",
+      "sha256": "1d7f52747a9169751cdf2641a8299c0098e9ecdf9429296ffd55bdb14c9ed5b3"
+    },
+    {
+      "source": "libpsl",
+      "path": "COPYING",
+      "resolvedPath": "LICENSE",
+      "bytes": 1126,
+      "gitBlobSha1": "7a694c9699a986b9adf1f6cb8a18a6e923e47ed9",
+      "sha256": "e7c9f0d8498d28a360a7e8293ea70fd7bd952955b636938322c13d60a03b5a45"
+    },
+    {
+      "source": "libpsl--list",
+      "path": "LICENSE",
+      "bytes": 16727,
+      "gitBlobSha1": "ee6256cdb62a765749a71aae3abea32884301cd1",
+      "sha256": "66a3107d5ad6a058aab753eaac2047ccb2ed0e39465dd0fe5844da3e300d5172"
+    },
+    {
+      "source": "libsoup",
+      "path": "COPYING",
+      "bytes": 25383,
+      "gitBlobSha1": "5bc8fb2c8f757e34a0d8f4644f589d57609e213f",
+      "sha256": "b7993225104d90ddd8024fd838faf300bea5e83d91203eab98e29512acebd69c"
+    },
+    {
+      "source": "libunwind",
+      "path": "COPYING",
+      "bytes": 1063,
+      "gitBlobSha1": "41e7d8a6fdb5363fc818c47827adfcb1099893ef",
+      "sha256": "6a0dbbdaec2b3136b7bf045586f4212bdf74e7af688bf9dfe9154607cf5ec156"
+    },
+    {
+      "source": "libunwind",
+      "path": "LICENSE",
+      "bytes": 1023,
+      "gitBlobSha1": "c9b44cb8aaebb163e8524d67558696aa965ad0ec",
+      "sha256": "cb5aedb296c5246d1f22e9099f925a65146f9f0d6b4eebba97fd27a6cdbbab2d"
+    },
+    {
+      "source": "libxml2",
+      "path": "Copyright",
+      "bytes": 1314,
+      "gitBlobSha1": "8c0b7c15dd9b66501511f5971ec9cae971997a0d",
+      "sha256": "5d4873884a890122a4b9b20ad56ac6f7da1d796a5bfcf04a427970ac96217626"
+    },
+    {
+      "source": "libxml2",
+      "path": "result/html-tokenizer/NOTICE",
+      "bytes": 1270,
+      "gitBlobSha1": "02aad496cf507f9bb1efcfbf69dd56b4ca7abbc4",
+      "sha256": "d6a2cb265a0a249a234b89eeffa7f316ebe5bff546672a0a2b1a861dd2238460"
+    },
+    {
+      "source": "libxml2",
+      "path": "test/html-tokenizer/NOTICE",
+      "bytes": 1270,
+      "gitBlobSha1": "02aad496cf507f9bb1efcfbf69dd56b4ca7abbc4",
+      "sha256": "d6a2cb265a0a249a234b89eeffa7f316ebe5bff546672a0a2b1a861dd2238460"
+    },
+    {
+      "source": "lwip",
+      "path": "COPYING",
+      "bytes": 1425,
+      "gitBlobSha1": "90465f592ceafc10f2e8d3374cf52d55a39d6cde",
+      "sha256": "ef4aac92e05e87cd1cdc140870ed52206ba03d4a7fe46c1e11d7ffa6c87d252b"
+    },
+    {
+      "source": "lwip",
+      "path": "contrib/apps/LwipMibCompiler/SharpSnmpLib/license.txt",
+      "bytes": 24383,
+      "gitBlobSha1": "27946de210082fa0e30252ecf926cdf28db0d344",
+      "sha256": "ef1f7505cfdff240e72602bc50ef1cdba37c681c84611cdf30e4371320c70942"
+    },
+    {
+      "source": "lzfse",
+      "path": "LICENSE",
+      "bytes": 1514,
+      "gitBlobSha1": "c81aa178b42d5533bac516af7fc4d1d505da48d3",
+      "sha256": "2a20082c2219edbbdb2e862a0566ba4f762a564ade7c04b09250ae4464bc4b32"
+    },
+    {
+      "source": "minizip-ng",
+      "path": "LICENSE",
+      "bytes": 877,
+      "gitBlobSha1": "3b6c4e142ebbd9ff28a627c38e509db0852dedff",
+      "sha256": "675181c03fc1302a1c8554c00f7be9bb420c5dbc9dcc2013433cec144413de03"
+    },
+    {
+      "source": "minizip-ng",
+      "path": "test/fuzz/unzip_fuzzer_seed_corpus/license_zstd.zip",
+      "bytes": 734,
+      "gitBlobSha1": "c7a6009d310fd001635bf44c7cbde5eddf1ed650",
+      "sha256": "b55bbd300e031bb60717c6481d7c2fa1bd45f334be5b94345997832942f3d7c1"
+    },
+    {
+      "source": "nghttp2",
+      "path": "COPYING",
+      "bytes": 1156,
+      "gitBlobSha1": "80201792ec7234674ea584ef1303d5f428558ae9",
+      "sha256": "6b94f3abc1aabd0c72a7c7d92a77f79dda7c8a0cb3df839a97890b4116a2de2a"
+    },
+    {
+      "source": "nghttp2",
+      "path": "LICENSE",
+      "bytes": 12,
+      "gitBlobSha1": "45d9408ffa59a8062af88b440c7e1d54b9ac3a9f",
+      "sha256": "f0518afc0a555337bac2f0fb37d33cdee6111983da69aaa504a1876beeddfde0"
+    },
+    {
+      "source": "nghttp2",
+      "path": "doc/_exts/rubydomain/LICENSE.rubydomain",
+      "bytes": 1418,
+      "gitBlobSha1": "a560d7597d33842d3c3e7a19557d43c26576c13a",
+      "sha256": "2dee6027d254030e382dd8e9f0f1b4ac2c186bd409c85ca2bef80d38b4da283c"
+    },
+    {
+      "source": "nghttp2",
+      "path": "third-party/llhttp/LICENSE",
+      "bytes": 1069,
+      "gitBlobSha1": "23682c03875844d5becc72ab477a3f9056b6d888",
+      "sha256": "628168d68bb5a8a17e0bbefb3bd74e326e1edc20583d76f52f457c82c921867d"
+    },
+    {
+      "source": "ngtcp2",
+      "path": "COPYING",
+      "bytes": 1080,
+      "gitBlobSha1": "9b367cdce71384f245dfdf9cd6a8b6af80e0b065",
+      "sha256": "542dd526d2ea23565f0571cc68df6f05ed11248a90ff0f32de19d8ba589db513"
+    },
+    {
+      "source": "ngtcp2",
+      "path": "third-party/http-parser/LICENSE-MIT",
+      "bytes": 1251,
+      "gitBlobSha1": "58010b388945f9af90a54e7c0f5177de893a4ad7",
+      "sha256": "2996a1c43ee757f9c997a829d82bdd584052323e73cf02ff8126c6fbd95c2d87"
+    },
+    {
+      "source": "ninja",
+      "path": "COPYING",
+      "bytes": 11358,
+      "gitBlobSha1": "131cb1da46d238a296d448fd79acf37160817cf6",
+      "sha256": "eb7e9ab9690124c5c9f42bdc81383d886a3dede26345b6ed15bbad7caf81f7ea"
+    },
+    {
+      "source": "openssl",
+      "path": "LICENSE.build",
+      "bytes": 1070,
+      "gitBlobSha1": "b59833dedbe2e4a84304431f4acca5dc4599cec7",
+      "sha256": "7939f4c45423cec4a18236ad0a88570e33508dd7462e07b1038001f90ece65fb"
+    },
+    {
+      "source": "openssl",
+      "path": "LICENSE.txt",
+      "bytes": 10175,
+      "gitBlobSha1": "49cc83d2ee29d13453188217f0e4edd70c7f842f",
+      "sha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a"
+    },
+    {
+      "source": "openssl",
+      "path": "external/perl/Text-Template-1.56/LICENSE",
+      "bytes": 18412,
+      "gitBlobSha1": "718b860a237914110a45501904390302a10e75c8",
+      "sha256": "9837f05336ef3cbacb6a96e1672a0426d81ad01191f214b8d48e22ca62338181"
+    },
+    {
+      "source": "openssl",
+      "path": "util/perl/OpenSSL/copyright.pm",
+      "bytes": 1145,
+      "gitBlobSha1": "87567c088945e7271bc30c2f174a4926a95aaf88",
+      "sha256": "04213b69dbebc8ba0dd8a6216af1d9422f9b63619c1cf2f1d8aa107b83bbb608"
+    },
+    {
+      "source": "pcre2",
+      "path": "COPYING",
+      "bytes": 97,
+      "gitBlobSha1": "c233950f6f1766b1b1023373dcbee51dbc9a8669",
+      "sha256": "99272c55f3dcfa07a8a7e15a5c1a33096e4727de74241d65fa049fccfdd59507"
+    },
+    {
+      "source": "pcre2",
+      "path": "LICENCE.md",
+      "bytes": 4011,
+      "gitBlobSha1": "f6fba35db25ba5a4326fa2f4a86a536a24392b30",
+      "sha256": "197d8a73ffee0d6b09adba2f9c677b5f5aede24edf89258a68e48248d010d811"
+    },
+    {
+      "source": "pcre2",
+      "path": "LICENSE.build",
+      "bytes": 1070,
+      "gitBlobSha1": "b59833dedbe2e4a84304431f4acca5dc4599cec7",
+      "sha256": "7939f4c45423cec4a18236ad0a88570e33508dd7462e07b1038001f90ece65fb"
+    },
+    {
+      "source": "pcre2",
+      "path": "cmake/COPYING-CMAKE-SCRIPTS",
+      "bytes": 1326,
+      "gitBlobSha1": "53b6b71eb4d0c3e3a52834dc160ca012988a21de",
+      "sha256": "c666ec2313dba24523ccad88f4c04ea4b24fad6545263a35b1d4ab2b08efe50a"
+    },
+    {
+      "source": "pcre2--deps--sljit",
+      "path": "LICENSE",
+      "bytes": 1444,
+      "gitBlobSha1": "0aaecaaa28677aa1d3d69025ffab957131eca25d",
+      "sha256": "5f216505c0f6ea3273caec89e766eef93cdeb7bbb0c429f9360116d7c938feeb"
+    },
+    {
+      "source": "pkg-config",
+      "path": "COPYING",
+      "bytes": 18092,
+      "gitBlobSha1": "d159169d1050894d3ea3b98e1c965c4058208fe1",
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+    },
+    {
+      "source": "pkg-config",
+      "path": "glib/COPYING",
+      "bytes": 25292,
+      "gitBlobSha1": "bf50f20de6ef55b52fe7832d3a4ed05f0c69d452",
+      "sha256": "d245807f90032872d1438d741ed21e2490e1175dc8aa3afa5ddb6c8e529b58e5"
+    },
+    {
+      "source": "quickjs",
+      "path": "LICENSE",
+      "bytes": 1130,
+      "gitBlobSha1": "2cf449dd3eea4291da7470bd322211b61981ccd8",
+      "sha256": "598fd7fc928e4350abce36e337ba5a1346923c5c692f5be92c3d8e29ddd7c18d"
+    },
+    {
+      "source": "releng--meson",
+      "path": "COPYING",
+      "bytes": 11358,
+      "gitBlobSha1": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "source": "releng--meson",
+      "path": "docs/theme/extra/templates/license.html",
+      "bytes": 168,
+      "gitBlobSha1": "55187829577b46146066ab5ca85d1346baf2d9cd",
+      "sha256": "15fcbcade0003df4b37350f12bea7dfeb25d4d2ac9e99d12d893773c4d5359fd"
+    },
+    {
+      "source": "releng--meson",
+      "path": "packaging/License.rtf",
+      "bytes": 11098,
+      "gitBlobSha1": "b3945baa73e7aea49c4a3c66384e97a9aa75b252",
+      "sha256": "e3e8d7b15b2021c994047314ad0ac5e367561f64771a60a85a9c0952d8cd4c3a"
+    },
+    {
+      "source": "releng--meson",
+      "path": "packaging/macpages/English.lproj/license.html",
+      "bytes": 10921,
+      "gitBlobSha1": "235e5829aeee63f3a270c7af858a8069a0a1caed",
+      "sha256": "bca11d525505d21cdfb021e634b0f1d48ece827f9bedcf8cd41356c48a09be24"
+    },
+    {
+      "source": "releng--tomlkit",
+      "path": "LICENSE",
+      "bytes": 1062,
+      "gitBlobSha1": "44cf2b30e6888272f6b278672d0077cd5948b1e7",
+      "sha256": "f2f9b460ba719da6626add264d3782f275a4ff7aab677beda08b330911e23adb"
+    },
+    {
+      "source": "releng--tomlkit",
+      "path": "tests/toml-spec-tests/LICENSE",
+      "bytes": 742,
+      "gitBlobSha1": "929586d769440abcc2c4a4921f38f45afe31cade",
+      "sha256": "69752953eeed33bbd30534d9327b97ed9eef85534b700bcb56f73f148b926fad"
+    },
+    {
+      "source": "selinux",
+      "path": "LICENSE",
+      "bytes": 289,
+      "gitBlobSha1": "91a16c91205d2a0ba0acdf879eab4f5538f91861",
+      "sha256": "44bdcd6907872cfa80e0fbcc9851d6bec707c91beb1de0b7347f131f5542f300"
+    },
+    {
+      "source": "selinux",
+      "path": "checkpolicy/LICENSE",
+      "bytes": 18009,
+      "gitBlobSha1": "5b6e7c66c276e7610d4a73c70ec1a1f7c1003259",
+      "sha256": "204d8eff92f95aac4df6c8122bc1505f468f3a901e5a4cc08940e0ede1938994"
+    },
+    {
+      "source": "selinux",
+      "path": "dbus/LICENSE",
+      "bytes": 18009,
+      "gitBlobSha1": "5b6e7c66c276e7610d4a73c70ec1a1f7c1003259",
+      "sha256": "204d8eff92f95aac4df6c8122bc1505f468f3a901e5a4cc08940e0ede1938994"
+    },
+    {
+      "source": "selinux",
+      "path": "gui/LICENSE",
+      "bytes": 18009,
+      "gitBlobSha1": "5b6e7c66c276e7610d4a73c70ec1a1f7c1003259",
+      "sha256": "204d8eff92f95aac4df6c8122bc1505f468f3a901e5a4cc08940e0ede1938994"
+    },
+    {
+      "source": "selinux",
+      "path": "libselinux/LICENSE",
+      "bytes": 1034,
+      "gitBlobSha1": "d386268911921b3f9467d22c73fe1cb07fcb6ace",
+      "sha256": "86657b4c0fe868d7cbd977cb04c63b6c667e08fa51595a7bc846ad4bed8fc364"
+    },
+    {
+      "source": "selinux",
+      "path": "libsemanage/LICENSE",
+      "bytes": 26421,
+      "gitBlobSha1": "148d531ce4cb50c801bec118bb37cbbe1608c3a4",
+      "sha256": "e1c0890440efe31b6cd2ee2abf895eb917c787799f079133f5809414d90d5d60"
+    },
+    {
+      "source": "selinux",
+      "path": "libsepol/LICENSE",
+      "bytes": 26432,
+      "gitBlobSha1": "8add30ad590a65db7e5914f5417eac39a64402a3",
+      "sha256": "6095e9ffa777dd22839f7801aa845b31c9ed07f3d6bf8a26dc5d2dec8ccc0ef3"
+    },
+    {
+      "source": "selinux",
+      "path": "mcstrans/LICENSE",
+      "bytes": 17992,
+      "gitBlobSha1": "d60c31a97a544b53039088d14fe9114583c0efc3",
+      "sha256": "32b1062f7da84967e7019d01ab805935caa7ab7321a7ced0e30ebe75e5df1670"
+    },
+    {
+      "source": "selinux",
+      "path": "policycoreutils/LICENSE",
+      "bytes": 18009,
+      "gitBlobSha1": "5b6e7c66c276e7610d4a73c70ec1a1f7c1003259",
+      "sha256": "204d8eff92f95aac4df6c8122bc1505f468f3a901e5a4cc08940e0ede1938994"
+    },
+    {
+      "source": "selinux",
+      "path": "python/LICENSE",
+      "bytes": 18009,
+      "gitBlobSha1": "5b6e7c66c276e7610d4a73c70ec1a1f7c1003259",
+      "sha256": "204d8eff92f95aac4df6c8122bc1505f468f3a901e5a4cc08940e0ede1938994"
+    },
+    {
+      "source": "selinux",
+      "path": "python/sepolgen/LICENSE",
+      "bytes": 18009,
+      "gitBlobSha1": "5b6e7c66c276e7610d4a73c70ec1a1f7c1003259",
+      "sha256": "204d8eff92f95aac4df6c8122bc1505f468f3a901e5a4cc08940e0ede1938994"
+    },
+    {
+      "source": "selinux",
+      "path": "restorecond/LICENSE",
+      "bytes": 18009,
+      "gitBlobSha1": "5b6e7c66c276e7610d4a73c70ec1a1f7c1003259",
+      "sha256": "204d8eff92f95aac4df6c8122bc1505f468f3a901e5a4cc08940e0ede1938994"
+    },
+    {
+      "source": "selinux",
+      "path": "sandbox/LICENSE",
+      "bytes": 18009,
+      "gitBlobSha1": "5b6e7c66c276e7610d4a73c70ec1a1f7c1003259",
+      "sha256": "204d8eff92f95aac4df6c8122bc1505f468f3a901e5a4cc08940e0ede1938994"
+    },
+    {
+      "source": "selinux",
+      "path": "secilc/LICENSE",
+      "bytes": 1738,
+      "gitBlobSha1": "a42772760aaa4f14d4bf4d4836c62c4339506f43",
+      "sha256": "35ed6be85f9297b649835058413706ef415d4dd38e2a743026a951b9c284bed4"
+    },
+    {
+      "source": "selinux",
+      "path": "semodule-utils/LICENSE",
+      "bytes": 18009,
+      "gitBlobSha1": "5b6e7c66c276e7610d4a73c70ec1a1f7c1003259",
+      "sha256": "204d8eff92f95aac4df6c8122bc1505f468f3a901e5a4cc08940e0ede1938994"
+    },
+    {
+      "source": "tinycc",
+      "path": "COPYING",
+      "bytes": 26428,
+      "gitBlobSha1": "223ede7de3ec74eb86253f9ce9ed7ba3c5aa9130",
+      "sha256": "512d2d21b6b3384ba64781abb0208a1b87740bc31e2df48e2b206ddb7e4d5779"
+    },
+    {
+      "source": "tinycc",
+      "path": "tests/tests2/LICENSE",
+      "bytes": 1837,
+      "gitBlobSha1": "b08a652f6c02397b5e63fbbb50039404da38c612",
+      "sha256": "9aedc94c459a3774eacbb88452c7f7816010a06d8bef776c93d2e4fac91fd3ca"
+    },
+    {
+      "source": "usrsctp",
+      "path": "LICENSE.md",
+      "bytes": 1500,
+      "gitBlobSha1": "a2d1f989cffa9e6e672c0a38ecf89c762c475322",
+      "sha256": "fa53711b25af4b9a9b8dadfea3cb38166ec4b96760c8d62b284055554537d9ef"
+    },
+    {
+      "source": "v8",
+      "path": "LICENSE",
+      "bytes": 3093,
+      "gitBlobSha1": "9898b2d4833bfe87c05ba9106f082ed600bb2aab",
+      "sha256": "6ab33af8774a0f396ee3aeeb761e3229057682d6f9fa7f572e390c2cb3a6e509"
+    },
+    {
+      "source": "v8",
+      "path": "LICENSE.fdlibm",
+      "bytes": 250,
+      "gitBlobSha1": "b54cb52278e1847b4f9faa1db09d6b526cd3ddc6",
+      "sha256": "e7115e18444dae09d17f361ddc365fb1d342640fe500796209c63f7c80dfae10"
+    },
+    {
+      "source": "v8",
+      "path": "LICENSE.strongtalk",
+      "bytes": 1482,
+      "gitBlobSha1": "9bd62e4f231a357d47073bdece85373325dd732f",
+      "sha256": "6a585a9f466654abc8fc0829d56b1bc987e3a073d31faa03bba37d33640a23cd"
+    },
+    {
+      "source": "v8",
+      "path": "LICENSE.v8",
+      "bytes": 1527,
+      "gitBlobSha1": "933718a9ef9dae4cb4afa56e490211760d8a949f",
+      "sha256": "4af93c12062c58058378de2397dc1c92bbff9ddfb1d583a01c84127557ce97ca"
+    },
+    {
+      "source": "v8",
+      "path": "src/compiler/turboshaft/copying-phase.cc",
+      "bytes": 650,
+      "gitBlobSha1": "f2aae67065892e2f5a03b84b542fab13999ba432",
+      "sha256": "8050804c21e9547da764741ae0aa9b8a3fb8df1f7a24c8ba5f94e7fa7e3564d9"
+    },
+    {
+      "source": "v8",
+      "path": "src/compiler/turboshaft/copying-phase.h",
+      "bytes": 47555,
+      "gitBlobSha1": "3f9687bc6f288c988fb7b7fd45d249c1d4cb0f54",
+      "sha256": "c490132c100558fabfa06e785a0c87dad35bc864e7bee4c6e2e05af5d41879dc"
+    },
+    {
+      "source": "v8",
+      "path": "test/js-perf-test/SixSpeed/LICENSE.sixspeed",
+      "bytes": 1147,
+      "gitBlobSha1": "2cc181ce74399ee88e1fb7025c9525df49228273",
+      "sha256": "f915aef5cdb93903ae8850c4a1efb638ee1195b1380b6e446a583c1d0eef3ff7"
+    },
+    {
+      "source": "v8",
+      "path": "test/mjsunit/third_party/object-keys/LICENSE",
+      "bytes": 1492,
+      "gitBlobSha1": "67002b440003bd71f1d0674724aff39ed901106b",
+      "sha256": "b5e27ca8c92bf5748046345e3c5621a97542abd931ad5870b2057c4e20e2ece8"
+    },
+    {
+      "source": "v8",
+      "path": "test/mjsunit/third_party/regexp-pcre/LICENSE",
+      "bytes": 2491,
+      "gitBlobSha1": "4baa7d83a131b9502bb31bd5489b70abef5d3e32",
+      "sha256": "f55e9e4ba1ce2ae3b0f21577d9dfd3cea376123cb69e444b891f2f0fc1f9069a"
+    },
+    {
+      "source": "v8",
+      "path": "test/wasm-js/third_party/LICENSE.testharness",
+      "bytes": 1502,
+      "gitBlobSha1": "ad4858c8745cfa1b330a52d27c621a09aa3112e0",
+      "sha256": "5a7b465d39b5e018bc40cc34162176269f7c476989cb4dbcf0ec0b81701545a7"
+    },
+    {
+      "source": "v8",
+      "path": "third_party/colorama/LICENSE",
+      "bytes": 1492,
+      "gitBlobSha1": "5f567799f395f33acd05abbc5d409dd126ce0dc8",
+      "sha256": "15137d6c822e3ab097093a33c3a39a9df699f373f6438867ad534ff60762a947"
+    },
+    {
+      "source": "v8",
+      "path": "third_party/disarm/LICENSE",
+      "bytes": 1500,
+      "gitBlobSha1": "ae40aec38f55c119c2b1edcc4d8845a162614a87",
+      "sha256": "4f576036de0aef8e65f1909c2b08411902cd6de1f3b9d35e0cfe9c223aac2155"
+    },
+    {
+      "source": "v8",
+      "path": "third_party/fadec/LICENSE",
+      "bytes": 1500,
+      "gitBlobSha1": "0f97558169968d0dd21ff6d901f4775ecd398f4a",
+      "sha256": "859902e8fdb8978c08ddd9b3fd62f9b704f88fc8a696f7bfd451d54bfcd579dc"
+    },
+    {
+      "source": "v8",
+      "path": "third_party/fp16/LICENSE",
+      "bytes": 1158,
+      "gitBlobSha1": "9a13c7985502d2f154ef156b822ee2fd92960e36",
+      "sha256": "c91377adafa2f498211a4fe017788e20c38892124673860f068f2919c289193d"
+    },
+    {
+      "source": "v8",
+      "path": "third_party/highway/LICENSE",
+      "bytes": 11356,
+      "gitBlobSha1": "f49a4e16e68b128803cc2dcea614603632b04eac",
+      "sha256": "43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1"
+    },
+    {
+      "source": "v8",
+      "path": "third_party/inspector_protocol/LICENSE",
+      "bytes": 1537,
+      "gitBlobSha1": "1e5610962e92ddd84eaddb72486defbb82732f0d",
+      "sha256": "450ebb9e9e50c2809d9ca581931fc8946d8d5aa0c8c35aae9ac471342fe4a88e"
+    },
+    {
+      "source": "v8",
+      "path": "third_party/jsoncpp/LICENSE",
+      "bytes": 2665,
+      "gitBlobSha1": "ca2bfe1a03ee5e391f51b1bc4de47114421eec98",
+      "sha256": "76c45ece83a26117f86f4e349e7df118708e061e87225328fb478ce1e8b3eb86"
+    },
+    {
+      "source": "v8",
+      "path": "third_party/rapidhash-v8/LICENSE",
+      "bytes": 1705,
+      "gitBlobSha1": "e70352870fba33e50902c8765cf71e3397b6667c",
+      "sha256": "db672df7faf793fbe28b8074fdd10822363e1525816b45c9627754885de842b0"
+    },
+    {
+      "source": "v8",
+      "path": "third_party/re2/LICENSE",
+      "bytes": 1558,
+      "gitBlobSha1": "09e5ec1c74c187adc8fde6c74308c3492ef31f77",
+      "sha256": "6040cda75d90b1738292a631d89934c411ef7ffd543c4d6a1b7edfc8edf29449"
+    },
+    {
+      "source": "v8",
+      "path": "third_party/siphash/LICENSE",
+      "bytes": 6555,
+      "gitBlobSha1": "670154e3538863b2d9891fd5483160fbdfc89164",
+      "sha256": "36ffd9dc085d529a7e60e1276d73ae5a030b020313e6c5408593a6ae2af39673"
+    },
+    {
+      "source": "v8",
+      "path": "third_party/utf8-decoder/LICENSE",
+      "bytes": 1087,
+      "gitBlobSha1": "b59bef2fb6a81448fccc34f3d45c9405b70bd0dd",
+      "sha256": "3f712e5fbdfdbd5ee7d9b8c8152580220df55de47f4eba2f26c95c4de19ad096"
+    },
+    {
+      "source": "v8",
+      "path": "third_party/v8/builtins/LICENSE",
+      "bytes": 12763,
+      "gitBlobSha1": "1afbedba92b33c6b418c343f7b4c6948318eb197",
+      "sha256": "b9a6d9320b8f2693e8d41e496ce56caadacaddcca9be2a64a61749278f425cf2"
+    },
+    {
+      "source": "v8",
+      "path": "third_party/v8/codegen/LICENSE",
+      "bytes": 1157,
+      "gitBlobSha1": "eabec6c86a3c7117090954b3756012b37b7c3786",
+      "sha256": "17e4f539024be2749ee729d1e2f01d24cef12ece8c9bf18e91a4349be29c80bf"
+    },
+    {
+      "source": "v8",
+      "path": "third_party/valgrind/LICENSE",
+      "bytes": 2439,
+      "gitBlobSha1": "0be0037ca2e9a4e5e46c48703b0c05a39a11c985",
+      "sha256": "ebf25b8ce59c9e8883acd1ca75b6fc121937ca034f666c4077d2be739d2e1622"
+    },
+    {
+      "source": "v8",
+      "path": "third_party/vtune/LICENSE",
+      "bytes": 1925,
+      "gitBlobSha1": "50002e2937126da35754fc64b69213b1ea44b2a0",
+      "sha256": "02aea3ade0c02470335987f7d93ffaed877bcefc8414a416e2e548665bb0bfd0"
+    },
+    {
+      "source": "v8",
+      "path": "third_party/wasm-api/LICENSE",
+      "bytes": 11358,
+      "gitBlobSha1": "8f71f43fee3f78649d238238cbde51e6d7055c82",
+      "sha256": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08"
+    },
+    {
+      "source": "v8--third_party--abseil-cpp--src",
+      "path": "LICENSE",
+      "bytes": 11361,
+      "gitBlobSha1": "ccd61dcfe3dbcdf77a72794d7794b1e112a39e0b",
+      "sha256": "c79a7fea0e3cac04cd43f20e7b648e5a0ff8fa5344e644b0ee09ca1162b62747"
+    },
+    {
+      "source": "v8--third_party--dragonbox--src",
+      "path": "LICENSE-Apache2-LLVM",
+      "bytes": 12262,
+      "gitBlobSha1": "bd8b243dfa02d4e7080150180520f742d2861d15",
+      "sha256": "9e45e856bedccee9f67254082ca11851d954de2fed7448c4bed19ad9aab99a91"
+    },
+    {
+      "source": "v8--third_party--dragonbox--src",
+      "path": "LICENSE-Boost",
+      "bytes": 1338,
+      "gitBlobSha1": "36b7cd93cdfbac762f5be4c6ce276df2ea6305c2",
+      "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566"
+    },
+    {
+      "source": "v8--third_party--dragonbox--src",
+      "path": "subproject/3rdparty/shaded_plots/license.txt",
+      "bytes": 1484,
+      "gitBlobSha1": "d95fda92edf15902e65d23dc0e545eeb11dfa0a1",
+      "sha256": "4940bc5686a12692b9f95bb3af225592994fd1bc910e212f975cc73ab3799d2c"
+    },
+    {
+      "source": "v8--third_party--fast_float--src",
+      "path": "LICENSE-APACHE",
+      "bytes": 10767,
+      "gitBlobSha1": "26f4398f24999c3908a11653e3b5ba6f9d681123",
+      "sha256": "097a889aa954d04e088b790b10a4014d6189561d0a6013935a73ce3d4ddaaf06"
+    },
+    {
+      "source": "v8--third_party--fast_float--src",
+      "path": "LICENSE-BOOST",
+      "bytes": 1337,
+      "gitBlobSha1": "127a5bc39ba030c7cb99cc0aedc4f280ffe27310",
+      "sha256": "8d8291caf1cee26d23acf3eb67c9f9a2d58f1c681b16a4fbe8cbfb9e3c0b5a9b"
+    },
+    {
+      "source": "v8--third_party--fast_float--src",
+      "path": "LICENSE-MIT",
+      "bytes": 1079,
+      "gitBlobSha1": "2fb2a37ad7fda521092c8b7b16911176c3f8a81b",
+      "sha256": "e562f3f974ced7e69dd1db77b820b36bcf8f30377f1aa105723fba449c53c4e6"
+    },
+    {
+      "source": "v8--third_party--fp16--src",
+      "path": "LICENSE",
+      "bytes": 1157,
+      "gitBlobSha1": "eabec6c86a3c7117090954b3756012b37b7c3786",
+      "sha256": "17e4f539024be2749ee729d1e2f01d24cef12ece8c9bf18e91a4349be29c80bf"
+    },
+    {
+      "source": "v8--third_party--highway--src",
+      "path": "LICENSE",
+      "bytes": 20785,
+      "gitBlobSha1": "1af4f15ca709c0e74e610c09fe91022f354aea58",
+      "sha256": "e340270d4f64384569a91d546acb5b094d69ce47f0c015db77abb74dc6f815af"
+    },
+    {
+      "source": "v8--third_party--highway--src",
+      "path": "debian/copyright",
+      "bytes": 825,
+      "gitBlobSha1": "53ea57aa97da52a9ff7ac1b810208763861bd5d7",
+      "sha256": "6e4ecf1cae052b678ea3178dd4b3652d581ee66a82d58db8800dd7d80dd6de76"
+    },
+    {
+      "source": "v8--third_party--jinja2",
+      "path": "LICENSE.rst",
+      "bytes": 1475,
+      "gitBlobSha1": "c37cae49ec77ad6ebb25568c1605f1fee5313cfb",
+      "sha256": "3b49dcee4105eb37bac10faf1be260408fe85d252b8e9df2e0979fc1e094437b"
+    },
+    {
+      "source": "v8--third_party--llvm-libc--src",
+      "path": "LICENSE.TXT",
+      "bytes": 15140,
+      "gitBlobSha1": "24806ab4c9eb291db4d28e159901f7a0901b9fd1",
+      "sha256": "ebcd9bbf783a73d05c53ba4d586b8d5813dcdf3bbec50265860ccc885e606f47"
+    },
+    {
+      "source": "v8--third_party--markupsafe",
+      "path": "LICENSE",
+      "bytes": 1582,
+      "gitBlobSha1": "5d2693890dddc34129973f5613afd88767213b24",
+      "sha256": "0bbe88228fd63d20ec097f64e58d5a0a465123ae139140a18d406c60b48824b5"
+    },
+    {
+      "source": "v8--third_party--simdutf--src",
+      "path": "LICENSE",
+      "bytes": 1059,
+      "gitBlobSha1": "74c8302ba92830e170dfae35957468edd2e25271",
+      "sha256": "fc8dbc04e03ad4efc08a647ffe7f995b811a95bc04c0e85a56d5277c6593fa5f"
+    },
+    {
+      "source": "v8--third_party--zlib",
+      "path": "LICENSE",
+      "bytes": 1002,
+      "gitBlobSha1": "b7a69d058e616651eae27b3f90c0b7fd36c099b2",
+      "sha256": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2"
+    },
+    {
+      "source": "vala",
+      "path": "COPYING",
+      "bytes": 26436,
+      "gitBlobSha1": "5ab7695ab8cabe0c5c8a814bb0ab1e8066578fbb",
+      "sha256": "5df07007198989c622f5d41de8d703e7bef3d0e79d62e24332ee739a452af62a"
+    },
+    {
+      "source": "xz",
+      "path": "COPYING",
+      "bytes": 3119,
+      "gitBlobSha1": "ef3371389d7d45db6593a146fd9e027347f3122c",
+      "sha256": "616a3ad264ce29b8f1cb97e53037b139d406899ca8d1f799651e17bfa09830b8"
+    },
+    {
+      "source": "xz",
+      "path": "COPYING.0BSD",
+      "bytes": 607,
+      "gitBlobSha1": "4322122aecf1aecff317bd50334ba206dcb9ac41",
+      "sha256": "0b01625d853911cd0e2e088dcfb743261034a091bb379246cb25a14cc4c74bf1"
+    },
+    {
+      "source": "xz",
+      "path": "COPYING.GPLv2",
+      "bytes": 17984,
+      "gitBlobSha1": "9efa6fbc962836e243e20f7f23db062e2c077d28",
+      "sha256": "edaef632cbb643e4e7a221717a6c441a4c1a7c918e6e4d56debc3d8739b233f6"
+    },
+    {
+      "source": "xz",
+      "path": "COPYING.GPLv3",
+      "bytes": 35149,
+      "gitBlobSha1": "f288702d2fa16d3cdf0035b15a9fcbc552cd88e7",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    },
+    {
+      "source": "xz",
+      "path": "COPYING.LGPLv2.1",
+      "bytes": 26419,
+      "gitBlobSha1": "f6683e74e0f0130f246dbf7054f4cacc88ca84b0",
+      "sha256": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95"
+    },
+    {
+      "source": "xz",
+      "path": "LICENSE.build",
+      "bytes": 1070,
+      "gitBlobSha1": "b59833dedbe2e4a84304431f4acca5dc4599cec7",
+      "sha256": "7939f4c45423cec4a18236ad0a88570e33508dd7462e07b1038001f90ece65fb"
+    },
+    {
+      "source": "xz",
+      "path": "build-aux/license-check.sh",
+      "bytes": 5127,
+      "gitBlobSha1": "e994233ec7e45195ffeaa0bb323c32ef9252ecf1",
+      "sha256": "2b3fa1d23cb2ab084f3d919908159473cc0e1eed059d106e2a2857c0ec8af98a"
+    },
+    {
+      "source": "zlib",
+      "path": "LICENSE",
+      "bytes": 1002,
+      "gitBlobSha1": "b7a69d058e616651eae27b3f90c0b7fd36c099b2",
+      "sha256": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2"
+    },
+    {
+      "source": "zlib",
+      "path": "LICENSE.build",
+      "bytes": 1070,
+      "gitBlobSha1": "ec288041f3886489d72cc366030fa71906d4ba3a",
+      "sha256": "cb3101cb814ef48ae95cdbdb74ef44a335484f4e190837fc8df38e3c3c1f9361"
+    },
+    {
+      "source": "zlib",
+      "path": "contrib/dotzlib/LICENSE_1_0.txt",
+      "bytes": 1359,
+      "gitBlobSha1": "30aac2cf4793f3aad92ef0a3c88731198c39566e",
+      "sha256": "36266a8fd073568394cb81cdb2b124f7fdae2c64c1a7ed09db34b4d22efa2951"
+    },
+    {
+      "source": "zlib",
+      "path": "contrib/minizip/LICENSE.Info-Zip",
+      "bytes": 3509,
+      "gitBlobSha1": "6849de476690c40440888a9c7d4aa41523986860",
+      "sha256": "fc686023047ce5ce3a18a9b8a777156f0e475929d3de06bac279f3c025d2b2ca"
+    },
+    {
+      "source": "ndk29-compiler-rt",
+      "path": "LICENSE.TXT",
+      "bytes": 16708,
+      "gitBlobSha1": "5a79a1b9d5cb0af9a779751f07033e44ca3b14d8",
+      "sha256": "1a8f1058753f1ba890de984e48f0242a3a5c29a6a8f2ed9fd813f36985387e8d"
+    },
+    {
+      "source": "ndk29-libcxx",
+      "path": "LICENSE.TXT",
+      "bytes": 16703,
+      "gitBlobSha1": "e159d283443f92ac78b964d2bccebe8f95d5d445",
+      "sha256": "539dd7aed86e8a4f12cbdd0e6c50c189c7d74847e4fecc64ce2c6ee3a01da38b"
+    },
+    {
+      "source": "ndk29-libcxxabi",
+      "path": "LICENSE.TXT",
+      "bytes": 16706,
+      "gitBlobSha1": "b75c0441bcd5be32b5a07e2a1ffc7e67b6d99f16",
+      "sha256": "e2b35be49f7284a45b7baca8fc7b3ab7440e7902392b2528a457816b5bb2a15c"
+    },
+    {
+      "source": "ndk29-libunwind",
+      "path": "LICENSE.TXT",
+      "bytes": 16706,
+      "gitBlobSha1": "1e3120621caeb62648745a42f7a9a25d1e2731ab",
+      "sha256": "b5efebcaca80879234098e52d1725e6d9eb8fb96a19fce625d39184b705f7b6d"
+    },
+    {
+      "source": "ndk30-compiler-rt",
+      "path": "LICENSE.TXT",
+      "bytes": 16708,
+      "gitBlobSha1": "5a79a1b9d5cb0af9a779751f07033e44ca3b14d8",
+      "sha256": "1a8f1058753f1ba890de984e48f0242a3a5c29a6a8f2ed9fd813f36985387e8d"
+    },
+    {
+      "source": "ndk30-libunwind",
+      "path": "LICENSE.TXT",
+      "bytes": 16706,
+      "gitBlobSha1": "1e3120621caeb62648745a42f7a9a25d1e2731ab",
+      "sha256": "b5efebcaca80879234098e52d1725e6d9eb8fb96a19fce625d39184b705f7b6d"
+    },
+    {
+      "source": "frida-base64-js",
+      "path": "LICENSE",
+      "bytes": 1081,
+      "gitBlobSha1": "6d52b8acfbe771e96a1b862c620f00efd7d48d1e",
+      "sha256": "5b37224c080cdcc97c871ada971c224e9926370fe74f11b539aa1cf9f3b1aca1"
+    },
+    {
+      "source": "frida-buffer",
+      "path": "LICENSE",
+      "bytes": 1106,
+      "gitBlobSha1": "d6bf75dcf1f6f701d4a8fc502f01f93e9d1284f2",
+      "sha256": "06bafa45fdad2579ba0e43b0c9b2c6290287c99c4203c300254a462b38a307f6"
+    },
+    {
+      "source": "frida-ieee754",
+      "path": "LICENSE",
+      "bytes": 1465,
+      "gitBlobSha1": "5aac82c78c2d9982865f4432ab6a9b5d77aa9245",
+      "sha256": "18d45466ba3253deae04667e267a91ea8de8548f18c1125264d1c9db28194cc1"
+    },
+    {
+      "source": "companion-license",
+      "path": "frida-core-COPYING",
+      "sha256": "5ea1544b51a28bc823b03159190d4108f9fb4f4ef912389f5137c6d295e175b2"
+    },
+    {
+      "source": "companion-license",
+      "path": "frida-gum-COPYING",
+      "sha256": "00764fcc23f0f2ac6d2619a1f9192e55176ecaaa525e76a47aaabc5d87fb087f"
+    },
+    {
+      "source": "companion-license",
+      "path": "LGPL-2.0-only.txt",
+      "sha256": "86dc99d7e5060915ab1dfc1378b7dd351c62088bfa74067e8aa1868c6fdba7d8"
+    }
+  ]
+}

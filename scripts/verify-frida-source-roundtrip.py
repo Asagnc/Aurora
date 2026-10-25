@@ -50,10 +50,23 @@ def verify(args):
             with archive.open(devkit) as incoming, (output / builder.NAME).open('xb') as outgoing:
                 shutil.copyfileobj(incoming, outgoing, 65536)
             materials = json.loads(archive.read('source-materials.json'))
+            package_spec = importlib.util.spec_from_file_location('source_package', ROOT / 'scripts/package-frida-materials.py')
+            package = importlib.util.module_from_spec(package_spec)
+            package_spec.loader.exec_module(package)
+            extra = package.extra_sources()
+            if materials['extraSources'] != extra:
+                raise ValueError('Bridge build/source companion files differ from trusted inputs')
+            for name, digest in extra.items():
+                if hashlib.sha256(archive.read(name)).hexdigest() != digest:
+                    raise ValueError('Bridge build/source companion file changed')
             catalog = json.loads((ROOT / 'tools/frida-sources/catalog.json').read_text(encoding='utf-8'))
-            expected = {entry['id']: entry['archiveSha256'] for entry in catalog['repositories']}
-            if {entry['id']: entry['archiveSha256'] for entry in materials['repositories']} != expected:
+            source_spec = importlib.util.spec_from_file_location('source_materials', ROOT / 'scripts/prepare-frida-sources.py')
+            validator = importlib.util.module_from_spec(source_spec)
+            source_spec.loader.exec_module(validator)
+            expected = {entry['id']: validator.material_identity(entry) for entry in catalog['repositories']}
+            if {entry['id']: validator.material_identity(entry) for entry in materials['repositories']} != expected:
                 raise ValueError('Source materials differ from current trusted catalogue')
+            pins = {entry['id']: entry for entry in catalog['repositories']}
             for entry in materials['repositories']:
                 name = 'sources/' + entry['archive']
                 if Path(entry['archive']).name != entry['archive']:
@@ -62,6 +75,12 @@ def verify(args):
                     actual = hashlib.file_digest(incoming, 'sha256').hexdigest()
                 if actual != entry['archiveSha256']:
                     raise ValueError('Source archive digest mismatch')
+                if 'contentSha256' in pins[entry['id']]:
+                    packed = work / 'source-input.tar.gz'
+                    with archive.open(name) as incoming, packed.open('wb') as outgoing:
+                        shutil.copyfileobj(incoming, outgoing, 65536)
+                    validator.inspect(packed, pins[entry['id']], False)
+                    packed.unlink()
         subprocess.run([sys.executable, str(work / 'scripts/build-frida-probe.py'), '--directory', str(output),
                         '--ndk', str(args.ndk.resolve())], capture_output=True, check=True)
         actual = json.loads((output / 'report.json').read_text(encoding='utf-8'))

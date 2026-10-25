@@ -123,6 +123,7 @@ def build(args, archive, output):
         (output / "readelf.txt").write_text(elf, encoding="utf-8")
         link_map.replace(output / "worker.map")
         (output / "report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+        (output / "worker.sha256").write_text(worker_digest, encoding="ascii")
         print(json.dumps(report, indent=2))
 
 

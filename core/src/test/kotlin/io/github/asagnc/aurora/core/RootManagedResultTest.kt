@@ -34,5 +34,7 @@ class RootManagedResultTest {
         }
         assertFailsWith<IllegalArgumentException> { result.copy(error = "arbitrary target output").validate(ticket) }
         assertFailsWith<IllegalArgumentException> { result.copy(exitCode = -1).validate(ticket) }
+        assertFailsWith<IllegalArgumentException> { result.copy(artifact = "runs/foreign/frida.log").validate(ticket) }
+        assertFailsWith<IllegalArgumentException> { result.copy(artifactError = "arbitrary source text").validate(ticket) }
     }
 }

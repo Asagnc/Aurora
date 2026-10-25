@@ -1,3 +1,9 @@
+## 2026-10-25 Frida APK、Agent 与精确探测证据
+
+ARM64 worker、固定 Java 桥及许可文本已打包；Agent `frida` 提供 status/probe/attach，固定当前 Root 身份、目标 PID/start、脚本 SHA 和桥版本。原生与 Java 资格仅在当前 Root 服务内存中有效，须固定自测成功、独立清理证明与 Root 私有日志实际调用证据同时成立。workerSucceeded 不代表异步用户脚本完成。退出屏障后发布有界会话日志，日志发布失败不丢失清账证明。
+
+修复 GO 后未尝试 attach 的独立退役证明，以及已验证新 boot 对旧资源的退出证明；同 boot 未知状态继续阻断。Debug/Release/testAPK/lint 本地通过，核心测试 263 项，0 失败、0 错误、12 跳过。新增 Android 集成用例仅编译，无手机或付费模型调用。源码容器身份修复及 65 输入离线重链接另见 FRIDA_SOURCE_MATERIALS.md；最终 Root/ART、服务死亡/取消矩阵与正式签名仍待集中验收。见 FRIDA_AGENT_ACCEPTANCE.md。
+
 ## 2026-10-25 有界恢复与Frida源码材料
 
 Root活动索引分页(limit<=64)，管理器每次恢复4项并以有界内存游标公平轮转，不从游标推断清理。新增Android分页用例仅编译，Debug/Release/testAPK/lint通过。

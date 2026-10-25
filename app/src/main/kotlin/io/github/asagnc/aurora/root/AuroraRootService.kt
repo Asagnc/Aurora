@@ -151,6 +151,12 @@ class AuroraRootService : RootService() {
                 // Transport support is separate from worker/ART qualification; no ready claim.
                 putInt("managedRunProtocol", 1)
                 runCatching {
+                    putString("fridaPackage", runBlocking(kotlinx.coroutines.Dispatchers.IO) {
+                        io.github.asagnc.aurora.core.WireJson.encodeToString(
+                            io.github.asagnc.aurora.core.FridaManagedPackage.serializer(), managedDispatch.metadata())
+                    })
+                }
+                runCatching {
                     val encoded = io.github.asagnc.aurora.core.WireJson.encodeToString(
                         io.github.asagnc.aurora.core.LinuxRootIdentity.serializer(), linux.identity)
                     putString("linuxIdentity", encoded)

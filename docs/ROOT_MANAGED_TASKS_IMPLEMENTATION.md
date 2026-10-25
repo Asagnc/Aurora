@@ -1,6 +1,8 @@
+> 2026-10-25 更新：worker/桥/notice 已打包，Agent status/probe/attach 与会话日志已实现；旧文中的待接入描述为历史状态。资格要求固定自测的真实调用事件及独立退出证明，最终 Android Root/ART 未执行。当前验收见 FRIDA_AGENT_ACCEPTANCE.md。
+
 # Root受管任务接入进展（2026-10-24）
 
-用户已确认ROOT_MANAGED_TASKS_PROPOSAL.md推荐组合。本页区分基础实现和可执行产品入口；当前Frida仍未打包、未注册Agent工具，没有新增手机执行记录。
+用户已确认ROOT_MANAGED_TASKS_PROPOSAL.md推荐组合。本页包含基础阶段历史；当前Binder/账本与Agent status/recover已接，ARM64 worker/固定桥已进入APK，见ROOT_MANAGED_BINDER.md和FRIDA_SOURCE_MATERIALS.md。Agent attach和Android运行资格仍待完成，没有新增手机执行记录。
 
 ## 已实现的基础
 

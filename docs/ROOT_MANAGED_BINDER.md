@@ -1,12 +1,14 @@
+> 2026-10-25 更新：worker/桥/notice 已打包，Agent status/probe/attach 与会话日志已实现；旧文中的待接入描述为历史状态。资格要求固定自测的真实调用事件及独立退出证明，最终 Android Root/ART 未执行。当前验收见 FRIDA_AGENT_ACCEPTANCE.md。
+
 # Root受管Binder与活动账本（2026-10-24）
 
-沿用已批准的schema8、封印memfd、一次性AF_UNIX、独立guard与精确退出证明；没有新增底层依赖或持久化格式。已经连接派发/恢复代码与Agent恢复入口，但Frida worker/Java桥尚未打包，注入入口明确不可用，不是Android执行资格。
+沿用已批准的schema8、封印memfd、一次性AF_UNIX、独立guard与精确退出证明；没有新增底层依赖或持久化格式。派发/恢复与Agent恢复入口已接；2026-10-25 ARM64 worker/固定Java桥已进入APK，详情FRIDA_SOURCE_MATERIALS.md。Agent attach与Android执行资格仍待完成。
 
 ## 派发与所有权
 
 IRootControl新增startManagedRun/recoverManagedRun；先验证调用UID、规范runId、票据归属和8KiB元数据上限，拒绝多余路径字段。App和Root分别持有独立PFD副本，Binder收到的句柄在调用返回前关闭；异步副本随RootCommandSession最终完成关闭，覆盖回调Binder死亡、尚未开始的取消和拒绝入队。工作线程再次核实封印/字节摘要，再走已有READY/peer身份握手。
 
-RootManagedDispatch固定当前Root身份、App versionCode、编译可信worker摘要和安装inode，两个进程/FD分支通过结构化并发一起退出。失败或取消先等待原生进程屏障，再在NonCancellable范围执行仅该票据的恢复；没有重放脚本、终止原目标或套普通250ms命令回收。当前不存在worker摘要资产，启动在放行前拒绝；Java桥也未开放。
+RootManagedDispatch固定当前Root身份、App versionCode、编译可信worker摘要和安装inode，两个进程/FD分支通过结构化并发一起退出。失败或取消先等待原生进程屏障，再在NonCancellable范围执行仅该票据的恢复；没有重放脚本、终止原目标或套普通250ms命令回收。worker摘要现来自最终APK，选用Java桥时必须等于安装包固定的版本/大小/摘要描述，不接受另一桥版本。
 
 RootManagedFiles在共享资源下保留Root私有root-managed-runtime/runId，创建后fsync父目录，坏权限/链接拒绝。原生锁、票据SHA及退役记录仍负责迟到start互斥，不因App回调或内存任务表为空推断从未执行。
 
@@ -22,7 +24,7 @@ Agent工具root_managed_tasks提供status/recover，报告pending与injectionRea
 
 ## 实际APK输入
 
-Gradle在stripDebugSymbols后为双ABI生成guard SHA256资产，Root从安装APK资产取得期望摘要，不接受请求提供可执行路径/自算摘要。verify-linux-native.py同时检查实际APK ELF与资产摘要一致；Debug/Release均通过。固定inode仍保留到进程退出屏障。worker与bridge发布材料闭包尚未完成，不生成其可信发布资产。
+Gradle在stripDebugSymbols后为双ABI生成guard SHA256资产，Root从安装APK资产取得期望摘要，不接受请求提供可执行路径/自算摘要。verify-linux-native.py同时检查实际APK ELF与资产摘要一致；Debug/Release均通过。固定inode仍保留到进程退出屏障。ARM64 worker也携带最终摘要，strip后必须仍与离线可重链接的资格产物一致；桥资产验证固定构建输入、包锁及字节摘要。正式签名和设备资格仍未完成。
 
 ## 验证
 

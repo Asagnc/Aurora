@@ -1,0 +1,74 @@
+sources	Acquire exact source materials without executing them	﻿2026-10-25T01:22:05.7955169Z ##[group]Run python3 scripts/prepare-frida-sources.py --catalog tools/frida-sources/catalog.json --directory app/build/outputs/frida-source-materials
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:05.7957468Z ^[[36;1mpython3 scripts/prepare-frida-sources.py --catalog tools/frida-sources/catalog.json --directory app/build/outputs/frida-source-materials^[[0m
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:05.8053466Z shell: /usr/bin/bash -e {0}
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:05.8053925Z env:
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:05.8054334Z   ANDROID_HOME: /home/runner/work/_temp/aurora-sdk
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:05.8054961Z   ANDROID_SDK_ROOT: /home/runner/work/_temp/aurora-sdk
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:05.8055515Z ##[endgroup]
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:06.2478685Z brotli 682224 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:06.9177078Z frida-core 4512597 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:06.9688916Z elfutils 11946599 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:07.0844704Z glib--subprojects--gvdb 24716 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:07.3477237Z glib-networking 443450 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:07.5928938Z json-glib 241418 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:07.6459629Z capstone 7673903 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:07.7877858Z frida-gum 14443449 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:07.9190679Z libbpf 1105703 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:08.0410330Z libffi 683842 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:08.1017593Z libgee 151557 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:08.3334312Z libdwarf 4431308 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:08.3398764Z libnice 475055 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:08.4827789Z libpsl--list 306146 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:08.8753014Z libsoup 1983397 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:09.1208079Z glib 10324177 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:09.2924073Z libunwind 1301646 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:09.4783835Z libiconv 4743459 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:09.5205409Z libpsl 7001773 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:09.5826387Z lzfse 51096 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:09.7015678Z minizip-ng 625937 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:09.9850158Z lwip 1609738 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:10.0853062Z ngtcp2 705800 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:10.1404470Z nghttp2 1061328 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:10.1708154Z ninja 293765 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:10.1795102Z libxml2 2970132 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:10.4052827Z pcre2--deps--sljit 1467828 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:10.5331204Z pkg-config 1201087 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:10.6543776Z quickjs 644803 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:10.6569437Z releng 58662 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:10.8053095Z releng--tomlkit 177082 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:10.9126848Z pcre2 4221022 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:11.6057898Z releng--meson 5155362 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:11.6465659Z sqlite 2945984 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:11.8969279Z selinux 6125398 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:11.9488568Z tinycc 1051908 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:11.9611106Z usrsctp 774242 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:12.2307845Z v8--third_party--dragonbox--src 4227394 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:12.3561060Z v8--third_party--fast_float--src 153735 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:12.4489571Z v8--third_party--fp16--src 64731 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:12.6107620Z v8--third_party--highway--src 3692133 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:12.8449173Z v8--third_party--abseil-cpp--src 2442916 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:13.2195977Z v8--third_party--jinja2 FAILED Source archive digest differs from pinned material
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:13.4029947Z v8--third_party--markupsafe FAILED Source archive digest differs from pinned material
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:13.8574293Z v8--third_party--simdutf--src FAILED Source archive digest differs from pinned material
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:14.8228372Z v8--third_party--zlib FAILED Source archive digest differs from pinned material
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:15.9831608Z vala 3628057 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:16.3855642Z xz 1688004 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:16.6551153Z zlib 1572185 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:18.4477125Z v8--third_party--llvm-libc--src FAILED Source archive digest differs from pinned material
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:18.4994040Z v8 31412794 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:19.7053523Z ndk29-libcxxabi FAILED Source archive digest differs from pinned material
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:19.7591001Z openssl 70174619 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:20.0845535Z ndk29-patches FAILED Source archive digest differs from pinned material
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:21.0940875Z ndk29-libunwind FAILED Source archive digest differs from pinned material
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:22.0077827Z ndk29-compiler-rt FAILED Source archive digest differs from pinned material
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:22.3448514Z ndk30-patches FAILED Source archive digest differs from pinned material
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:22.5109753Z frida-base64-js 2680 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:22.6313228Z frida-buffer 16087 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:22.7795173Z frida-ieee754 2385 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:22.9009866Z frida-java-bridge-git 190164 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:22.9599875Z frida-java-bridge-npm 89343 bytes
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:22.9690745Z ndk30-libunwind FAILED Source archive digest differs from pinned material
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:23.4920812Z ndk30-compiler-rt FAILED Source archive digest differs from pinned material
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:25.3276042Z ndk29-libcxx FAILED Source archive digest differs from pinned material
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:25.3304048Z Source acquisition incomplete; see materials.json
+sources	Acquire exact source materials without executing them	2026-10-25T01:22:25.3463406Z ##[error]Process completed with exit code 1.

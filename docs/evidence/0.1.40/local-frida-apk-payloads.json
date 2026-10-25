@@ -1,0 +1,67 @@
+{
+  "androidRuntime": "NOT TESTED",
+  "apks": [
+    {
+      "apk": "app-debug.apk",
+      "bytes": 85751374,
+      "sha256": "124102c56c26d1743a97564991e5fc1d5ec22171cc736c74f5812f9b3fd638fb",
+      "payloads": [
+        {
+          "path": "lib/arm64-v8a/libaurora_frida.so",
+          "bytes": 89143968,
+          "compressedBytes": 38452308,
+          "sha256": "a1486cd58c2d25ca2caa014075fb5eb9ac85623c5a135f03ba87c4b28ab49fb1"
+        },
+        {
+          "path": "assets/frida/java-bridge.js",
+          "bytes": 235970,
+          "compressedBytes": 76452,
+          "sha256": "9fde013172495e7bd083e93090e14f503cae98151f4a974e3e63555900be47d3"
+        },
+        {
+          "path": "assets/licenses/frida/NOTICE.txt",
+          "bytes": 1051122,
+          "compressedBytes": 353795,
+          "sha256": "7337769b1ed56d85d32e02e133cd1742fa5efe7c94c65e0d4af741b82eae0594"
+        },
+        {
+          "path": "assets/licenses/frida/index.json",
+          "bytes": 40742,
+          "compressedBytes": 13139,
+          "sha256": "c5252469c2c2a9114369962ba32bb2bbf34a3dd6329a73fee5ff582a85dc447c"
+        }
+      ]
+    },
+    {
+      "apk": "app-release-unsigned.apk",
+      "bytes": 44475066,
+      "sha256": "97085070c66baa487592f4aad978ac9443fd817987c5e57b0cc1b1493ad226f3",
+      "payloads": [
+        {
+          "path": "lib/arm64-v8a/libaurora_frida.so",
+          "bytes": 89143968,
+          "compressedBytes": 36054208,
+          "sha256": "a1486cd58c2d25ca2caa014075fb5eb9ac85623c5a135f03ba87c4b28ab49fb1"
+        },
+        {
+          "path": "assets/frida/java-bridge.js",
+          "bytes": 235970,
+          "compressedBytes": 64748,
+          "sha256": "9fde013172495e7bd083e93090e14f503cae98151f4a974e3e63555900be47d3"
+        },
+        {
+          "path": "assets/licenses/frida/NOTICE.txt",
+          "bytes": 1051122,
+          "compressedBytes": 275069,
+          "sha256": "7337769b1ed56d85d32e02e133cd1742fa5efe7c94c65e0d4af741b82eae0594"
+        },
+        {
+          "path": "assets/licenses/frida/index.json",
+          "bytes": 40742,
+          "compressedBytes": 11876,
+          "sha256": "c5252469c2c2a9114369962ba32bb2bbf34a3dd6329a73fee5ff582a85dc447c"
+        }
+      ]
+    }
+  ]
+}

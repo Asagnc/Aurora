@@ -9,7 +9,7 @@ internal class RootManagedTool(private val manager: RootManagedRunManager, priva
         "Inspect or recover up to four of this conversation's pending Root injection intents. action=status/recover. " +
             "Recovery never replays scripts or terminates the attached target; only exact cleanup, retirement, " +
             "or confirmed original-target exit releases an intent. Root must already be connected. " +
-            "Retained intents block conversation deletion. Frida injection is not yet packaged or qualified.",
+            "Retained intents block conversation deletion. Use frida status/probe for qualification scoped to the current Root service.",
         objectOf("type" to string("object"), "properties" to objectOf("action" to objectOf(
             "type" to string("string"), "enum" to JsonArray(listOf("status", "recover").map(::string)))),
             "required" to JsonArray(listOf(string("action"))), "additionalProperties" to JsonPrimitive(false))))
@@ -19,7 +19,6 @@ internal class RootManagedTool(private val manager: RootManagedRunManager, priva
         val action = call.arguments.text("action")
         require(action in setOf("status", "recover"))
         if (action == "recover") manager.recover(owner)
-        return objectOf("pending" to JsonPrimitive(manager.pendingCount(owner)),
-            "injectionReady" to JsonPrimitive(false)).toString()
+        return objectOf("pending" to JsonPrimitive(manager.pendingCount(owner))).toString()
     }
 }

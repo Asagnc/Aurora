@@ -9,6 +9,27 @@ import kotlinx.serialization.json.jsonObject
 import kotlin.test.*
 
 class RootManagedNativeStateTest {
+    @Test fun exactBootChangeIndependentlyEndsUnknownOldBootResources() {
+        val state = RootManagedNativeState.decode(ticket, null, null, stopped(9, 0, 1))
+        assertNull(state.targetExitProof(ticket.identity.bootId, null))
+        val nextBoot = "00000000-0000-0000-0000-000000000099"
+        assertTrue(assertNotNull(state.targetExitProof(nextBoot, null)).matches(ticket))
+        assertNull(state.targetExitProof("not-a-boot", null))
+        assertNull(state.targetExitProof(nextBoot, RootTargetIdentity(ticket.target.pid, 1000)))
+        assertNull(state.normalCleanupProof())
+    }
+    @Test fun postGoPreflightFailureUsesNoInjectionProofAndNeverPretendsToDetach() {
+        val state = RootManagedNativeState.decode(ticket, ready(), report(57, 64), stopped())
+        assertNull(state.normalCleanupProof())
+        assertNull(state.neverDispatchedProof())
+        assertTrue(assertNotNull(state.noInjectionProof()).matches(ticket))
+        assertNull(RootManagedNativeState.decode(ticket, ready(), null, stopped()).noInjectionProof())
+        assertNull(RootManagedNativeState.decode(ticket, ready(), report(43, 1), stopped()).noInjectionProof())
+        assertNull(RootManagedNativeState.decode(ticket, ready(), report(), stopped()).noInjectionProof())
+        val beforeGo = RootManagedNativeState.decode(ticket, ready(), report(57, 125), stopped(11))
+        assertNull(beforeGo.normalCleanupProof())
+        assertNotNull(beforeGo.neverDispatchedProof())
+    }
     private val ticket = RootManagedRunTicket("00000000-0000-0000-0000-000000000001",
         "00000000-0000-0000-0000-000000000002", LinuxRootIdentity(10, 20,
             "00000000-0000-0000-0000-000000000003", "00000000-0000-0000-0000-000000000004"),

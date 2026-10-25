@@ -9,6 +9,11 @@ data class ToolRun(val id: String, val callId: String, val tool: String, val sta
     val artifactDirectory: String? = null, val presentation: String? = null)
 
 class ToolRunStore(private val conversations: ConversationStore) {
+    internal suspend fun activeId(owner: String, callId: String): String = conversations.read { db ->
+        db.rawQuery("SELECT id FROM tool_runs WHERE owner=? AND call_id=? AND state='started'", arrayOf(owner, callId)).use {
+            require(it.moveToFirst()) { "Tool call is not active for this conversation" }; it.getString(0)
+        }
+    }
     suspend fun count(owner: String): Long = conversations.read { db ->
         db.rawQuery("SELECT count(*) FROM tool_runs WHERE owner = ?", arrayOf(owner)).use { it.moveToFirst(); it.getLong(0) }
     }
@@ -35,7 +40,7 @@ class ToolRunStore(private val conversations: ConversationStore) {
         require(commandArtifactId(directory) != null)
         conversations.requireActive(db, owner)
         require(db.update("tool_runs", values("artifact_directory" to directory),
-            "owner = ? AND call_id = ? AND state = 'started' AND artifact_directory IS NULL AND tool IN ('command_execute','command_execute_root','command_execute_linux','linux_environment','packet_inspect','packet_capture_root','browser_download','shared_toolchain','reverse_analyze')",
+            "owner = ? AND call_id = ? AND state = 'started' AND artifact_directory IS NULL AND tool IN ('command_execute','command_execute_root','command_execute_linux','linux_environment','packet_inspect','packet_capture_root','browser_download','shared_toolchain','reverse_analyze','frida')",
             arrayOf(owner, callId)) == 1)
         db.rawQuery("SELECT id, call_id, tool, state, result, artifact_directory, presentation FROM tool_runs WHERE owner = ? AND call_id = ?", arrayOf(owner, callId))
             .use { require(it.moveToFirst()); it.toolRun() }

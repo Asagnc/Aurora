@@ -1,7 +1,11 @@
 # Fixed Frida source materials
 
-`catalog.json` pins 65 actual archives by SHA256 and Git commit or npm SHA512
-integrity. This is a source superset, including build tools and optional source
+`catalog.json` pins 65 source inputs by content identity and Git commit or npm
+SHA512 integrity. GitHub/npm archives retain raw SHA256 pins. Gitiles-generated
+archives use a sorted path/Git-mode/Git-blob-SHA1 content SHA256 because their
+gzip/tar container metadata changes between requests; the observed transport
+SHA256 is recorded separately. A changed file, mode, link target or file set
+still fails validation. This is a source superset, including build tools and optional source
 files. It is not a minimal runtime dependency list or proof that the upstream
 Frida SDK has been rebuilt from these sources.
 

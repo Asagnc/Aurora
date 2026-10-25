@@ -7,9 +7,22 @@ import struct
 import subprocess
 import unittest
 import uuid
+import re
+import textwrap
 
 
 class GuardCases:
+    def test_product_native_self_probe_really_hooks_its_own_cmodule(self):
+        path = Path(__file__).resolve().parents[1] / 'core/src/main/kotlin/io/github/asagnc/aurora/core/FridaManagedPackage.kt'
+        match = re.search(r'private val nativeSource = """\n(.*?)\n    """\.trimIndent\(\)', path.read_text(), re.S)
+        self.assertIsNotNone(match, 'Product native probe source was not found')
+        script = textwrap.dedent(match[1]).encode()
+        launched = self.guarded(script, duration=6000)
+        records, summary = self.guarded_finish(launched)
+        self.assertTrue(summary['success'], records)
+        self.assertEqual(0, launched.child.returncode)
+        self.assertTrue(any('native_hook_observed' in record.get('message', '') for record in records))
+
     def guarded(self, selected=b"send('guard-ready');", bridge=None, corrupt=None, duration=8000, cooperative=False):
         from frida_channel_fixture import LaunchOptions
         from frida_guard_fixture import launch_guard

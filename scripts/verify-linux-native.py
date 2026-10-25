@@ -2,6 +2,7 @@
 """Inspect actual APK ELF payloads; this is packaging evidence, not execution."""
 import argparse
 import hashlib
+import json
 from pathlib import Path
 import struct
 import zipfile
@@ -31,9 +32,9 @@ def inspect(data, machine, loader, executable=False):
     if executable:
         interpreters = [h for h in headers if h[0] == 3]
         if len(interpreters) != 1 or data[interpreters[0][2]:interpreters[0][2] + interpreters[0][5]] != b'/system/bin/linker64\0':
-            raise ValueError('Guard must be an Android executable with the system interpreter')
+            raise ValueError('Managed executable must use the Android system interpreter')
         if not any(h[0] == 0x6474e552 for h in headers):
-            raise ValueError('Guard lacks RELRO')
+            raise ValueError('Managed executable lacks RELRO')
     if loader:
         if any(h[0] in (2, 3) for h in headers):
             raise ValueError('Freestanding loader unexpectedly needs dynamic linking')
@@ -43,7 +44,7 @@ def inspect(data, machine, loader, executable=False):
             for i in range(dynamic[2], dynamic[2] + dynamic[5], 16)]
     if executable and not any(tag == 24 or (tag == 30 and value & 8) or (tag == 0x6ffffffb and value & 1)
                               for tag, value in tags):
-        raise ValueError('Guard lacks immediate symbol binding')
+        raise ValueError('Managed executable lacks immediate symbol binding')
     table_address = next(value for tag, value in tags if tag == 5)
     segment = next(h for h in loads if h[3] <= table_address < h[3] + h[5])
     table = segment[2] + table_address - segment[3]
@@ -58,20 +59,32 @@ def inspect(data, machine, loader, executable=False):
 def verify(apk):
     with zipfile.ZipFile(apk) as archive:
         for abi, machine in MACHINES.items():
-            for name in FILES:
+            for name in FILES + (['libaurora_frida.so'] if abi == 'arm64-v8a' else []):
                 data = archive.read(f'lib/{abi}/{name}')
-                needed = inspect(data, machine, name == 'libaurora_proot_loader.so', name == 'libaurora_managed_guard.so')
+                needed = inspect(data, machine, name == 'libaurora_proot_loader.so', name in {'libaurora_managed_guard.so', 'libaurora_frida.so'})
                 allowed = {'libc.so', 'libdl.so', 'libm.so', 'liblog.so', 'libandroid.so', 'libaurora_talloc.so'}
                 if name == 'libaurora_managed_guard.so':
                     allowed = {'libc.so', 'libdl.so'}
                     manifest = archive.read(f'assets/managed/{abi}.guard.sha256')
                     if manifest != hashlib.sha256(data).hexdigest().encode('ascii'):
                         raise ValueError('Guard digest differs from packaged trusted manifest')
+                if name == 'libaurora_frida.so':
+                    allowed = {'libc.so', 'libdl.so', 'liblog.so', 'libm.so'}
+                    if archive.read(f'assets/managed/{abi}.worker.sha256') != hashlib.sha256(data).hexdigest().encode('ascii'):
+                        raise ValueError('Frida payload differs from trusted manifest')
                 if not needed <= allowed:
                     raise ValueError(f'Unpackaged dependency: {needed - allowed}')
                 if name == 'libaurora_proot.so' and 'libaurora_talloc.so' not in needed:
                     raise ValueError('PRoot must dynamically link packaged talloc')
                 print(abi, name, len(data), hashlib.sha256(data).hexdigest())
+        bridge = archive.read('assets/frida/java-bridge.js')
+        metadata = json.loads(archive.read('assets/managed/java-bridge.json'))
+        if metadata['sha256'] != hashlib.sha256(bridge).hexdigest() or metadata['bytes'] != len(bridge):
+            raise ValueError('Java bridge differs from packaged descriptor')
+        notices = archive.read('assets/licenses/frida/NOTICE.txt')
+        index = json.loads(archive.read('assets/licenses/frida/index.json'))
+        if hashlib.sha256(notices).hexdigest() != index['noticeSha256'] or index['sourceArchives'] != 65:
+            raise ValueError('Frida source notice corpus changed')
 
 
 if __name__ == '__main__':

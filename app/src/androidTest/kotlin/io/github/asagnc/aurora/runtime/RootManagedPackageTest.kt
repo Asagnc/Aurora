@@ -19,6 +19,25 @@ class RootManagedPackageTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val binary get() = Path.of(context.applicationInfo.nativeLibraryDir, "libaurora_managed_guard.so").toString()
 
+    @Test fun packagedFridaAndBridgeMatchTheirImmutableInputs() = runBlocking { fixture { root ->
+        org.junit.Assume.assumeTrue(android.os.Build.SUPPORTED_ABIS.first() == "arm64-v8a")
+        val bundle = io.github.asagnc.aurora.root.RootManagedBundle(context)
+        bundle.worker().use { worker ->
+            worker.usePath { path ->
+                val reply = kotlinx.coroutines.runBlocking {
+                    NativeCommandRunner(context).execute(root, CommandRequest(listOf(path, "--version")))
+                }
+                assertEquals(reply.toString(), 0L, reply.number("exitCode"))
+                assertEquals("17.24.3", reply["stdout"]?.jsonObject?.text("text")?.trim())
+            }
+        }
+        val metadata = bundle.bridgeSnapshot()
+        assertEquals("frida-java-bridge-7.0.13", metadata.version)
+        io.github.asagnc.aurora.root.RootScriptMemory.capture(context.assets.open("frida/java-bridge.js"), metadata).use {
+            io.github.asagnc.aurora.root.RootScriptMemory.verify(it.fileDescriptor, metadata)
+        }
+    } }
+
     @Test fun packagedManifestPinsTheInstalledExecutable() = runBlocking {
         io.github.asagnc.aurora.root.RootManagedBundle(context).guard().use { guard ->
             assertEquals(64, guard.sha256.length)

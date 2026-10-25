@@ -14,6 +14,25 @@ SPEC.loader.exec_module(SOURCES)
 
 
 class SourceTest(unittest.TestCase):
+    def test_generated_container_metadata_can_change_but_git_content_cannot(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / 'generated.tar.gz'
+            entry = {'repository': 'https://chromium.googlesource.com/test', 'commit': 'a' * 40}
+            for timestamp, body in [(1, b'text'), (2, b'text'), (3, b'evil')]:
+                with tarfile.open(target, 'w:gz') as archive:
+                    member = tarfile.TarInfo('source.c'); member.size = 4; member.mtime = timestamp; member.mode = 0o644
+                    archive.addfile(member, io.BytesIO(body))
+                if timestamp == 1:
+                    first = SOURCES.inspect(target, entry, False)
+                    entry.update({key: first[key] for key in ['archiveSha256', 'contentSha256', 'contentFormat']})
+                elif timestamp == 2:
+                    second = SOURCES.inspect(target, entry, False)
+                    self.assertNotEqual(first['archiveSha256'], second['archiveSha256'])
+                    self.assertEqual(first['contentSha256'], second['contentSha256'])
+                else:
+                    with self.assertRaises(ValueError):
+                        SOURCES.inspect(target, entry, False)
+
     def test_notice_links_are_resolved_only_inside_the_archive(self):
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory) / 'linked.tar.gz'

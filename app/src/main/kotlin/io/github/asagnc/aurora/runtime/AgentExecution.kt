@@ -44,6 +44,7 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
                 StaticReverseTools.bundleId, timeout, runId), linux.generation())
         }, prepared)
         val tools = ToolRouter(listOfNotNull(files, reverse, io.github.asagnc.aurora.root.RootManagedTool(app.managedRuns, id),
+            io.github.asagnc.aurora.root.FridaTool(app, id, prepared),
             io.github.asagnc.aurora.reverse.SharedToolchainTool(app.sharedToolchain, id, prepared, linux), SkillToolExecutor(app.skills, id, skillSnapshot),
             io.github.asagnc.aurora.linux.LinuxEnvironmentTool(app.linux, id, prepared), BrowserToolExecutor(app.browser, id),
             io.github.asagnc.aurora.browser.BrowserTransferTool(app.browser, id, directory,

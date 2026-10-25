@@ -8,6 +8,10 @@ import android.os.ParcelFileDescriptor
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
+import java.nio.file.Files
+import java.nio.file.LinkOption
+import java.nio.file.FileAlreadyExistsException
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -21,9 +25,11 @@ internal class RootManagedRunManager(private val app: AuroraApplication) {
     suspend fun execute(ticket: RootManagedRunTicket, snapshots: List<ParcelFileDescriptor>,
         client: RootManagedClient, toolRunId: String? = null): RootManagedResult = recovery.withLock {
         app.spaces.sharedResources()
+        check(records.count(ticket.owner) == 0L) { "Recover this conversation's unconfirmed Root injection before another dispatch" }
         records.begin(ticket, toolRunId)
         var confirmed = false
         try {
+            prepareArtifact(ticket)
             val result = client.start(ticket, snapshots)
             if (result.confirmed) withContext(NonCancellable) { records.finish(ticket, result); confirmed = true }
             result
@@ -36,6 +42,14 @@ internal class RootManagedRunManager(private val app: AuroraApplication) {
                 }
             }
         }
+    }
+
+    private suspend fun prepareArtifact(ticket: RootManagedRunTicket) = withContext(Dispatchers.IO) {
+        val root = app.spaces.commandRoot(ticket.owner)
+        val runs = root.resolve("runs")
+        try { Files.createDirectory(runs) } catch (_: FileAlreadyExistsException) { }
+        require(Files.isDirectory(runs, LinkOption.NOFOLLOW_LINKS) && !Files.isSymbolicLink(runs))
+        Files.createDirectory(runs.resolve(ticket.runId))
     }
 
     suspend fun recover(owner: String): Int = recovery.withLock {

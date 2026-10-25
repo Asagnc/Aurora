@@ -33,6 +33,9 @@ class RootController(private val context: Context) {
     )
     @Volatile private var endpoint: Endpoint? = null
     internal val managedClient get() = endpoint?.takeIf { it.managedRecovery == 1 }?.let { RootManagedClient(it.remote, context) }
+    internal val fridaConnection get() = endpoint?.takeIf { it.managedRecovery == 1 }?.let { current ->
+        current.identity?.let { FridaManagedConnection(it, RootManagedClient(current.remote, context)) }
+    }
     internal val packetClient get() = endpoint?.takeIf { it.packet == 1 }?.let { RootPacketClient(it.remote, context) }
     internal val metadataClient get() = endpoint?.takeIf { it.metadata == 1 }?.let { RootMetadataClient(it.remote, context) }
     internal val linuxTerminalClient get() = endpoint?.takeIf { it.terminal == 1 && it.run == 3 }?.let { RootTerminalClient(it.remote) }
