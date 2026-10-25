@@ -1,6 +1,7 @@
 managed/guard_main.c
 managed/guard_runtime.c
 managed/guard_recover.c
+managed/spawn_recover.c
 managed/guard_result.c
 managed/reap.c
 managed/cancel.c
@@ -17,6 +18,7 @@ linux/scope_identity.c
 linux/scope_state.c
 linux/scope_process.c
 frida/input.c
+frida/spawn_record.c
 frida/managed_control.c
 frida/managed_protocol.c
 frida/managed_receive.c

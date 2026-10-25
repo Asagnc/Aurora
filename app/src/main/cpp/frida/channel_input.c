@@ -58,12 +58,16 @@ static int snapshot(JsonObject *parent, struct snapshot_spec *spec) {
 /* Root validates the full immutable ticket; native independently bounds all execution fields. */
 static int request(JsonObject *root, struct channel_request *out) {
     JsonObject *identity = object(root, "identity"), *target = object(root, "target");
-    if (!identity || !target || integer(root, "protocol", 1) != 1 || !matches(root, "kind", "frida") ||
-        !matches(root, "action", "attach")) return -1;
+    int spawn = integer(root, "protocol", 1) == 2 && text(root, "action") && !strcmp(text(root, "action"), "spawn");
+    if (!identity || !matches(root, "kind", "frida") || (!spawn &&
+        (!target || integer(root, "protocol", 1) != 1 || !matches(root, "action", "attach")))) return -1;
+    const char *program = text(root, "spawnPackage");
+    if (spawn && (target || !program || strlen(program) > 255 || !*program ||
+        strspn(program, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.") != strlen(program))) return -1;
     int64_t peer_pid = integer(identity, "pid", -1), peer_ticks = integer(identity, "startTicks", -1);
-    int64_t pid = integer(target, "pid", -1), ticks = integer(target, "startTicks", -1);
+    int64_t pid = spawn ? 0 : integer(target, "pid", -1), ticks = spawn ? 0 : integer(target, "startTicks", -1);
     int64_t duration = integer(root, "observeMs", 60000);
-    if (peer_pid < 1 || peer_pid > INT_MAX || peer_ticks < 1 || pid < 1 || pid > INT_MAX || ticks < 1 ||
+    if (peer_pid < 1 || peer_pid > INT_MAX || peer_ticks < 1 || (!spawn && (pid < 1 || pid > INT_MAX || ticks < 1)) ||
         duration < 1 || duration > 250000 || snapshot(object(root, "script"), &out->script)) return -1;
     out->offer.peer_pid = (pid_t) peer_pid; out->offer.peer_ticks = (uint64_t) peer_ticks;
     out->offer.peer_uid = 0; out->offer.count = 1;
@@ -73,6 +77,7 @@ static int request(JsonObject *root, struct channel_request *out) {
         out->offer.count = 2;
     }
     out->input.pid = (pid_t) pid; out->input.start_ticks = (uint64_t) ticks;
+    out->input.spawn_program = (char *)program;
     out->input.duration_ms = (unsigned) duration; return 0;
 }
 
@@ -120,6 +125,8 @@ static int capture(const char *name, struct channel_request *request, struct fri
     char *bridge = request->offer.count == 2 ? read_snapshot(descriptors[1], &request->bridge) : NULL;
     if (request->offer.count == 2 && !bridge) { free(user); goto done; }
     *input = request->input; input->script = bridge ? bridge : user; input->payload = bridge ? user : NULL;
+    input->spawn_program = request->input.spawn_program ? strdup(request->input.spawn_program) : NULL;
+    if (request->input.spawn_program && !input->spawn_program) { free(input->script); free(input->payload); goto done; }
     result = 0;
 done:
     if (channel.socket >= 0) close(channel.socket);

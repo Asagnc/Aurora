@@ -16,6 +16,7 @@ import time
 import unittest
 from frida_managed_cases import ManagedCases
 from frida_guard_cases import GuardCases
+from frida_spawn_cases import SpawnCases
 from managed_native_sources import guard_sources
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,7 +26,7 @@ SIZE = 78853964
 
 
 @unittest.skipUnless(sys.platform.startswith("linux") and os.geteuid() == 0, "Explicit Linux Root host fixture")
-class FridaSessionTests(GuardCases, ManagedCases, unittest.TestCase):
+class FridaSessionTests(SpawnCases, GuardCases, ManagedCases, unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.temporary = tempfile.TemporaryDirectory(prefix="aurora-frida-session-")
@@ -47,7 +48,7 @@ class FridaSessionTests(GuardCases, ManagedCases, unittest.TestCase):
         native = ROOT / "app/src/main/cpp/frida"
         cls.worker = cls.root / "worker"
         subprocess.run(["cc", "-Wall", "-Wextra", "-Werror", "-Os", "-ffunction-sections", "-fdata-sections",
-                        "-I" + str(cls.root), *[str(native / name) for name in ["worker.c", "input.c", "channel_input.c", "fd_channel.c", "fd_io.c", "managed_control.c", "managed_protocol.c", "managed_watch.c", "events.c", "session.c"]],
+                        "-I" + str(cls.root), *[str(native / name) for name in ["worker.c", "input.c", "channel_input.c", "fd_channel.c", "fd_io.c", "managed_control.c", "managed_protocol.c", "managed_watch.c", "events.c", "session.c", "spawn_record.c", "spawn_session.c"]],
                         "-o", str(cls.worker), "-L" + str(cls.root), "-lfrida-core", "-ldl", "-lrt", "-lm", "-lresolv",
                         "-pthread", "-Wl,--export-dynamic", "-Wl,--gc-sections", "-Wl,-z,noexecstack"], check=True)
         cls.worker_sha = hashlib.sha256(cls.worker.read_bytes()).hexdigest()

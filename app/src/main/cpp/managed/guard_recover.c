@@ -10,6 +10,7 @@
 #include <string.h>
 #include <sys/syscall.h>
 #include <unistd.h>
+int managed_spawn_recover(const struct managed_journal *, const struct managed_key *, const struct managed_admission *, unsigned);
 
 static int wait_pidfd(int descriptor, int64_t deadline) {
     for (;;) {
@@ -65,6 +66,7 @@ int managed_guard_recover(const struct managed_journal *journal, const struct ma
     int phase = managed_journal_status(journal, key, &admission);
     if (phase < 0 || recover_worker((unsigned)phase, &admission, deadline_ms)) return -1;
     if (scope_state_recover(journal->directory) || managed_scope_plan_recover(journal, key)) return -1;
+    if (managed_spawn_recover(journal, key, &admission, (unsigned)phase)) return -1;
     int ignored = -1;
     if (managed_reap_children(0, deadline_ms, &ignored)) return -1;
     struct managed_stopped existing;

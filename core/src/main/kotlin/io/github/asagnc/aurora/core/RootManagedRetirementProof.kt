@@ -14,8 +14,8 @@ class RootManagedRetirementProof private constructor(
 
     companion object {
         internal fun fromNeverDispatched(ticket: RootManagedRunTicket) =
-            RootManagedRetirementProof(ticket.runId, ticket.identity, ticket.digest())
+            RootManagedRetirementProof(ticket.runId, ticket.identity, ticket.digest(), ticket.protocol)
         internal fun fromNoInjection(ticket: RootManagedRunTicket) =
-            RootManagedRetirementProof(ticket.runId, ticket.identity, ticket.digest())
+            RootManagedRetirementProof(ticket.runId, ticket.identity, ticket.digest(), ticket.protocol)
     }
 }

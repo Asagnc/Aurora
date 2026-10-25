@@ -17,7 +17,7 @@ internal object RootManagedTargetCheck {
         val boot = text("/proc/sys/kernel/random/boot_id", 38).trim()
         require(UUID.fromString(boot).toString() == boot)
         if (boot != state.originalRoot.bootId) return state.targetExitProof(boot, null)
-        val target = state.target
+        val target = state.target ?: return null
         val ticks = try { linuxProcessStartTicks(text("/proc/${target.pid}/stat", 65_537)) }
         catch (missing: NoSuchFileException) {
             try { Os.kill(target.pid, 0) }

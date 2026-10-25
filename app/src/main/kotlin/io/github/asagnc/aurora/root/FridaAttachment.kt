@@ -22,8 +22,10 @@ internal class FridaAttachment(private val app: AuroraApplication, private val o
             RootScriptSnapshot("selected-script-v1", request.scriptSha256, bytes.size.toLong())
         val ticket = RootManagedRunTicket(UUID.randomUUID().toString(), owner, connection.identity, Process.myUid(),
             installed.appBuild, installed.workerSha256,
-            request?.target ?: RootTargetIdentity(connection.identity.pid, connection.identity.startTicks), script,
-            if (java) installed.bridge else null, request?.observeMs ?: 10_000)
+            if (request == null) RootTargetIdentity(connection.identity.pid, connection.identity.startTicks) else request.target, script,
+            if (java) installed.bridge else null, request?.observeMs ?: 10_000,
+            protocol = if (request?.spawnPackage != null) 2 else 1,
+            action = if (request?.spawnPackage != null) "spawn" else "attach", spawnPackage = request?.spawnPackage)
         ticket.validate()
         val descriptors = mutableListOf<ParcelFileDescriptor>()
         try {

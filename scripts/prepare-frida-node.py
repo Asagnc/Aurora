@@ -9,6 +9,7 @@ import platform
 import shutil
 import tarfile
 import tempfile
+import urllib.error
 
 ROOT = Path(__file__).resolve().parents[1]
 PINS = {
@@ -20,6 +21,19 @@ PINS = {
 def digest(path):
     with path.open("rb") as stream:
         return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def fetch_binding(helpers, archive, url, expected, size):
+    """Retry transport failures only; fetch owns and removes its partial on failure."""
+    for attempt in range(3):
+        try:
+            return helpers.fetch(archive, url, expected, size)
+        except urllib.error.HTTPError as failure:
+            if attempt == 2 or failure.code not in {408, 429, 500, 502, 503, 504}:
+                raise
+        except (urllib.error.URLError, TimeoutError, ConnectionError):
+            if attempt == 2:
+                raise
 
 
 def main():
@@ -39,7 +53,7 @@ def main():
     downloads.mkdir(parents=True, exist_ok=True)
     archive = downloads / name
     if not archive.exists():
-        helpers.fetch(archive, "https://github.com/frida/frida/releases/download/17.24.3/" + name, expected, size)
+        fetch_binding(helpers, archive, "https://github.com/frida/frida/releases/download/17.24.3/" + name, expected, size)
     helpers.verify(archive, expected, size)
     target = package / "build/frida_binding.node"
     target.parent.mkdir(exist_ok=True)

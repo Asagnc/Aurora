@@ -9,13 +9,29 @@ import kotlinx.serialization.json.jsonObject
 import kotlin.test.*
 
 class RootManagedNativeStateTest {
+    @Test fun workerCleanupCannotEraseAnUnsettledSpawnOrInventCapture() {
+        val spawnTicket = ticket.copy(protocol = 2, action = "spawn", target = null, spawnPackage = "io.aurora.fixture")
+        val target = RootTargetIdentity(90, 900)
+        fun state(spawn: RootSpawnState, flags: Int = 127, status: Int = 0) = RootManagedNativeState.decode(spawnTicket,
+            ready(spawnTicket), report(flags, status, spawnTicket), stopped(ticket = spawnTicket), spawn)
+        val unknown = RootSpawnState(true, null, false, false, false)
+        assertNull(state(unknown, 57, 64).noInjectionProof())
+        assertNull(state(unknown).normalCleanupProof())
+        assertNull(state(unknown.copy(target = target, resumeRequested = true)).normalCleanupProof())
+        val resumed = state(unknown.copy(target = target, resumeRequested = true, resumed = true))
+        val proof = assertNotNull(resumed.normalCleanupProof())
+        assertEquals(target, proof.spawnTarget)
+        assertTrue(spawnTicket.confirms(proof))
+        assertFalse(spawnTicket.confirms(proof.copy(spawnTarget = null)))
+        assertTrue(assertNotNull(state(unknown.copy(target = target, retired = true), 57, 64).noInjectionProof()).matches(spawnTicket))
+    }
     @Test fun exactBootChangeIndependentlyEndsUnknownOldBootResources() {
         val state = RootManagedNativeState.decode(ticket, null, null, stopped(9, 0, 1))
         assertNull(state.targetExitProof(ticket.identity.bootId, null))
         val nextBoot = "00000000-0000-0000-0000-000000000099"
         assertTrue(assertNotNull(state.targetExitProof(nextBoot, null)).matches(ticket))
         assertNull(state.targetExitProof("not-a-boot", null))
-        assertNull(state.targetExitProof(nextBoot, RootTargetIdentity(ticket.target.pid, 1000)))
+        assertNull(state.targetExitProof(nextBoot, RootTargetIdentity(requireNotNull(ticket.target).pid, 1000)))
         assertNull(state.normalCleanupProof())
     }
     @Test fun postGoPreflightFailureUsesNoInjectionProofAndNeverPretendsToDetach() {
@@ -35,17 +51,17 @@ class RootManagedNativeStateTest {
             "00000000-0000-0000-0000-000000000003", "00000000-0000-0000-0000-000000000004"),
         10000, "test", "a".repeat(64), RootTargetIdentity(90, 900), RootScriptSnapshot("test", "b".repeat(64), 1))
 
-    private fun ready() = ByteBuffer.allocate(164).order(ByteOrder.LITTLE_ENDIAN).apply {
+    private fun ready(ticket: RootManagedRunTicket = this.ticket) = ByteBuffer.allocate(164).order(ByteOrder.LITTLE_ENDIAN).apply {
         put("ARW1${ticket.runId}${ticket.digest()}".toByteArray(Charsets.US_ASCII))
         putInt(30); putLong(300); putInt(40); putLong(400); put(ticket.identity.bootId.toByteArray(Charsets.US_ASCII))
     }.array()
 
-    private fun report(flags: Int = 127, status: Int = 0) = ByteBuffer.allocate(52).order(ByteOrder.LITTLE_ENDIAN).apply {
+    private fun report(flags: Int = 127, status: Int = 0, ticket: RootManagedRunTicket = this.ticket) = ByteBuffer.allocate(52).order(ByteOrder.LITTLE_ENDIAN).apply {
         put("AEX1".toByteArray(Charsets.US_ASCII)); put(1); put(flags.toByte()); put(status.toByte()); put(0)
         put(ticket.digest().chunked(2).map { it.toInt(16).toByte() }.toByteArray()); putInt(40); putLong(400)
     }.array()
 
-    private fun stopped(phase: Int = 15, worker: Int = 1, domain: Int = 1) = ByteBuffer.allocate(123)
+    private fun stopped(phase: Int = 15, worker: Int = 1, domain: Int = 1, ticket: RootManagedRunTicket = this.ticket) = ByteBuffer.allocate(123)
         .order(ByteOrder.LITTLE_ENDIAN).apply {
             put("ARI1\n${ticket.runId}\n${ticket.digest()}\n".toByteArray(Charsets.US_ASCII))
             put(phase.toByte()); put(worker.toByte()); put(domain.toByte()); put(0)

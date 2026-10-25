@@ -95,6 +95,7 @@ static void execute_script(struct aurora_frida_session *run, FridaSession *sessi
     if (*error) { failure(run, "load_script", error); return; }
     run->loaded = TRUE;
     post_payload(run, *script);
+    if (!aurora_spawn_resume(run, error)) { failure(run, "resume", error); return; }
     aurora_frida_emit(run, aurora_frida_event("loaded"), FALSE);
     g_mutex_lock(&run->lock);
     while (!run->reason) g_cond_wait(&run->changed, &run->lock);
@@ -153,6 +154,7 @@ static gpointer execute(gpointer opaque) {
     FridaSession *session = NULL;
     FridaScript *script = NULL;
     if (!device) failure(run, "local_device", &error);
+    else if (!(run->device = device) || !aurora_spawn_prepare(run, &error)) failure(run, "spawn", &error);
     else if (!identity_matches(run)) failure(run, "target_identity", &error);
     else {
         run->attempted = TRUE;
@@ -165,6 +167,7 @@ static gpointer execute(gpointer opaque) {
         }
     }
     cleanup(run, script, session, manager);
+    aurora_spawn_cleanup(run);
     if (run->closed) {
         g_clear_pointer(&script, frida_unref); g_clear_pointer(&session, frida_unref);
         g_clear_pointer(&device, frida_unref); g_clear_pointer(&manager, frida_unref);
@@ -204,9 +207,10 @@ int aurora_frida_attach(const struct frida_attach_input *input, struct aurora_ma
         (input->payload && !g_utf8_validate(input->payload, -1, NULL))) return 65;
     int pipes[2];
     if (pipe2(pipes, O_CLOEXEC | O_NONBLOCK)) return 70;
-    int target = (int) syscall(__NR_pidfd_open, input->pid, 0);
-    if (target < 0) { close(pipes[0]); close(pipes[1]); return 69; }
-    struct aurora_frida_session run = {.input = input, .target_fd = target, .supervisor_fd = supervisor->fd};
+    int target = input->spawn_program ? -1 : (int) syscall(__NR_pidfd_open, input->pid, 0);
+    if (target < 0 && !input->spawn_program) { close(pipes[0]); close(pipes[1]); return 69; }
+    struct frida_attach_input selected = *input;
+    struct aurora_frida_session run = {.input = &selected, .target_fd = target, .supervisor_fd = supervisor->fd, .spawn_directory = -1};
     g_mutex_init(&run.lock); g_mutex_init(&run.output_lock); g_cond_init(&run.changed);
     // Frida owns the default context in FRIDA_RUNTIME_OTHER. Never run a second loop on it.
     GMainContext *control = g_main_context_new();
@@ -240,7 +244,7 @@ int aurora_frida_attach(const struct frida_attach_input *input, struct aurora_ma
     g_source_destroy(timer); g_source_unref(timer); g_source_destroy(signals); g_source_unref(signals);
     signal_fd = -1; sigaction(SIGTERM, &previous_term, NULL); sigaction(SIGINT, &previous_int, NULL);
     sigaction(SIGPIPE, &previous_pipe, NULL);
-    g_io_channel_unref(channel); close(pipes[0]); close(pipes[1]); close(target);
+    g_io_channel_unref(channel); close(pipes[0]); close(pipes[1]); if (run.target_fd >= 0) close(run.target_fd);
     g_clear_object(&run.operation); g_clear_object(&run.cleanup); g_main_loop_unref(run.loop);
     g_mutex_clear(&run.lock); g_mutex_clear(&run.output_lock); g_cond_clear(&run.changed);
     g_main_context_unref(control);

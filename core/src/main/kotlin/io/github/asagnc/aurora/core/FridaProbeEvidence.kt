@@ -19,7 +19,7 @@ object FridaProbeEvidence {
             when (payload.text("aurora")) {
                 "native_hook_observed", "java_call_observed" -> {
                     val pid = payload["pid"] as? JsonPrimitive ?: return false
-                    if (pid.isString || pid.intOrNull != ticket.target.pid) return false
+                    if (pid.isString || pid.intOrNull != ticket.identity.pid) return false
                     if (payload.text("aurora") == "native_hook_observed") native++ else art++
                     if (native > 1 || art > 1) return false
                 }

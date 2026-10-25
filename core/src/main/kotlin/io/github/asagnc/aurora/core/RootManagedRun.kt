@@ -1,8 +1,10 @@
+@file:OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
 package io.github.asagnc.aurora.core
 
 import java.security.MessageDigest
 import java.util.UUID
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.encodeToString
 
 @Serializable data class RootScriptSnapshot(val version: String, val sha256: String, val bytes: Long) {
@@ -20,14 +22,18 @@ import kotlinx.serialization.encodeToString
 @Serializable data class RootManagedRunTicket(
     val runId: String, val owner: String, val identity: LinuxRootIdentity,
     val appUid: Int, val appBuild: String, val workerSha256: String,
-    val target: RootTargetIdentity, val script: RootScriptSnapshot,
+    val target: RootTargetIdentity?, val script: RootScriptSnapshot,
     val bridge: RootScriptSnapshot? = null, val observeMs: Long = 60_000,
     val protocol: Int = 1, val kind: String = "frida", val action: String = "attach",
+    @EncodeDefault(EncodeDefault.Mode.NEVER) val spawnPackage: String? = null,
 ) {
     fun validate() {
-        require(protocol == 1 && kind == "frida" && action == "attach")
+        require(kind == "frida")
+        require(if (action == "attach") protocol == 1 && target != null && spawnPackage == null else
+            action == "spawn" && protocol == 2 && target == null && spawnPackage != null &&
+                spawnPackage.length <= 255 && spawnPackage.matches(Regex("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)+")))
         require(UUID.fromString(runId).toString() == runId && UUID.fromString(owner).toString() == owner)
-        identity.validate(); target.validate(); script.validate(); bridge?.validate()
+        identity.validate(); target?.validate(); script.validate(); bridge?.validate()
         require(appUid > 0 && appBuild.isNotBlank() && appBuild.length <= 128 && appBuild.none { it.isISOControl() })
         require(workerSha256.matches(Regex("[a-f0-9]{64}")))
         require(observeMs in 1..250_000)
@@ -41,7 +47,8 @@ import kotlinx.serialization.encodeToString
     fun confirms(proof: RootManagedExitProof): Boolean =
         proof.protocol == protocol && proof.runId == runId && proof.identity == identity &&
             proof.ticketSha256 == digest() && proof.scriptUnloaded && proof.sessionDetached &&
-            proof.managerClosed && proof.workerExited && proof.domainRemoved
+            proof.managerClosed && proof.workerExited && proof.domainRemoved &&
+            (action != "spawn" || proof.spawnTarget?.let { runCatching { it.validate() }.isSuccess } == true)
 }
 
 /** Worker death / empty cgroup alone cannot prove cleanup inside an existing target. */
@@ -49,4 +56,5 @@ import kotlinx.serialization.encodeToString
     val runId: String, val identity: LinuxRootIdentity, val ticketSha256: String,
     val scriptUnloaded: Boolean, val sessionDetached: Boolean, val managerClosed: Boolean,
     val workerExited: Boolean, val domainRemoved: Boolean, val protocol: Int = 1,
+    @EncodeDefault(EncodeDefault.Mode.NEVER) val spawnTarget: RootTargetIdentity? = null,
 )

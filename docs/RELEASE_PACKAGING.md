@@ -1,0 +1,16 @@
+# 可审查发布材料包
+
+`scripts/package-release.py` 使用已有 Python、NDK 与 Android SDK。不安装、不签名、不上传，不接触设备；输出目录必须不存在。实际输入先复制到本次私有临时目录，再验证该份字节，失败清理本次暂存，保留原输入和已有输出。目录复制期间不是原子可见；只有命令成功及 SHA256SUMS 完整验证后才交付。
+
+打包检查 APK 内的双 ABI 原生依赖/ELF、ARM64 Frida 摘要、固定桥与许可；Frida 材料必须匹配 APK worker 及当前可信构建参考；两份源码包分别在现有 NDK 上离线重链接/重建。材料包包括 APK、两份源码 ZIP、两份重建报告、manifest.json 与 SHA256SUMS。
+
+```text
+python scripts/package-linux-sources.py
+python scripts/package-release.py --unsigned-review --apk app/build/outputs/apk/release/app-release-unsigned.apk --frida-sources app/build/outputs/frida-source-materials-final.zip --native-sources app/build/outputs/linux-sources/aurora-linux-corresponding-source.zip --frida-reference app/build/frida-worker/report.json --guard-reference app/build/outputs/managed-qualification/report.json --ndk PATH_TO_EXISTING_NDK30 --output NEW_OUTPUT_DIRECTORY
+```
+
+未签名审查模式不能同时指定证书或宣称签名通过。正式签名后去掉 `--unsigned-review`，传入 `--apksigner` 与明确选定的 `--certificate-sha256`，验证 APK 签名且只接受该单一证书。私钥/密码不写入此工具、不生成替代正式密钥；保留现有安装数据需要先核实更新签名兼容，不能用卸载掩盖签名不符。
+
+材料打包不会授予设备验收资格，manifest 的 releaseReady 保持 false。最终设备和签名发布是后续独立步骤。源码 ZIP 包含完整官方 devkit 静态重链接输入，但没有从源码重建完整 Frida SDK 的证据；原生 guard 重建报告也不等于所有上游组件从源码重建。不得扩大这些证明范围。
+
+官方依据：[apksigner 签名与验证](https://developer.android.com/tools/apksigner)。zipalign 应在签名前执行，签名后修改 APK 会使签名失效；此工具完整复制输入 APK，不重压缩 APK 条目。

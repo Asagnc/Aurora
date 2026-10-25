@@ -9,6 +9,7 @@ struct frida_attach_input {
     unsigned duration_ms;
     char *script;
     char *payload;
+    char *spawn_program;
     unsigned char ticket[32];
 };
 int frida_input_read(int argc, char **argv, struct frida_attach_input *input);

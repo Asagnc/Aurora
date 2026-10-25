@@ -24,7 +24,9 @@ internal object RootManagedRecords {
             val state = RootManagedNativeState.decode(ticket,
                 read(owned, "managed.ready", 164, optional = true),
                 read(owned, "managed.worker", 52, optional = true),
-                requireNotNull(read(owned, "managed.stopped", 123)))
+                requireNotNull(read(owned, "managed.stopped", 123)),
+                if (ticket.action == "spawn") RootSpawnState.decode(ticket,
+                    (1..5).map { read(owned, "spawn.$it", 64, optional = true) }) else null)
             val key = key(ticket)
             for ((name, expected) in listOf("managed.intent" to (state.phase and 1 != 0),
                 "managed.released" to (state.phase and 4 != 0), "managed.retired" to true)) {

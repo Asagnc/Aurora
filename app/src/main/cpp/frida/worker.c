@@ -73,7 +73,7 @@ static int attach(int argc, char **argv) {
         input.duration_ms -= (unsigned) elapsed;
         status = aurora_frida_attach(&input, &control, &facts);
     }
-    free(input.script); free(input.payload);
+    free(input.script); free(input.payload); free(input.spawn_program);
     frida_deinit();
     status = finish_control(&control, &facts, status); alarm(0);
     return status;
@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
         puts(frida_version_string());
         return 0;
     }
-    if (argc >= 2 && (!strcmp(argv[1], "attach") || !strcmp(argv[1], "attach-channel"))) return attach(argc, argv);
+    if (argc >= 2 && (!strcmp(argv[1], "attach") || !strcmp(argv[1], "attach-channel") || !strcmp(argv[1], "spawn-file"))) return attach(argc, argv);
     if (argc != 2 || strcmp(argv[1], "probe") != 0) return 64;
     if (getuid() != 0) return 77;
     /* Probe only enumerates. Attach uses its separate bounded path above. */

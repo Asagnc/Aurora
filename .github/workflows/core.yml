@@ -25,6 +25,9 @@ jobs:
           python3 scripts/verify-frida-probe-build.py
           python3 scripts/verify-frida-resources.py
           python3 scripts/verify-frida-sources.py
+          python3 scripts/verify-frida-node-fetch.py
+          python3 scripts/verify-release-package.py
+          python3 scripts/verify-frida-spawn-record.py
           python3 scripts/verify-frida-input.py
           python3 scripts/verify-frida-fd-channel.py
           sudo -n python3 scripts/verify-frida-managed-control.py

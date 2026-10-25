@@ -1,3 +1,9 @@
+## 2026-10-25 spawn 与完整材料包继续实现
+
+用户确认推荐恢复方案后，已增 protocol2 包名 spawn、Root 私有64字节阶段记录、捕获前未知/恢复执行意图未知保留、同 boot pidfd 精确回收尚无 resume 意图的本任务目标。旧 protocol1 attach 票据省略新默认字段，保留原摘要；schema仍8。新增5项核心回归通过，核心268项256通过/12跳过；Debug/Release/testAPK/lint通过。新增2项真实Frida spawn与3项原生记录测试待Linux CI，Android包启动尚未执行。
+
+新增发布材料打包器，检查APK/worker/桥/源码对应及两份离线重建报告；未签名审查和固定证书验证分开，不能自动宣称设备已验收。此前ff3cece的CI40156042220因GitHub绑定下载网络超时失败，另两job通过；现补最多3次仅网络错误重试，摘要/文件/永久HTTP错误不重试，3项回归通过。见FRIDA_SPAWN_PROPOSAL.md、RELEASE_PACKAGING.md；新CI另记。
+
 ## 2026-10-25 当前完整验证结果
 
 实现提交3e3c227的完整CI40155403134三个job全部成功，含26项真实Frida、原生监督、核心与Android Debug/Release/testAPK/lint、APK资产/ELF和源码重建审计；独立源码CI40155411773也成功，65输入获取与离线重链接通过。此前18c1474的桥输入换行失败已修复，失败记录保留。当前本地核心263项251通过/12跳过。手机、付费模型、正式签名均未执行，下一步是集中设备资格与签名发布准备，参照FRIDA_AGENT_ACCEPTANCE.md。

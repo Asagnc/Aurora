@@ -8,6 +8,7 @@ class RootManagedNativeState private constructor(
     private val ticket: RootManagedRunTicket,
     val guard: RootTargetIdentity?, val worker: RootTargetIdentity?,
     stopped: Stopped, facts: Pair<Int, Int>?,
+    val spawn: RootSpawnState?,
 ) {
     val phase = stopped.phase
     val workerState = stopped.worker
@@ -18,7 +19,7 @@ class RootManagedNativeState private constructor(
     val workerFlags = facts?.first
     val workerStatus = facts?.second
     val originalRoot: LinuxRootIdentity get() = ticket.identity
-    val target: RootTargetIdentity get() = ticket.target
+    val target: RootTargetIdentity? get() = ticket.target ?: spawn?.target
 
     private data class Stopped(val phase: Int, val worker: Int, val domain: Int, val exitCode: Int, val reason: Int, val error: Int)
 
@@ -30,6 +31,7 @@ class RootManagedNativeState private constructor(
     /** GO may have run, but a strict final worker record can still prove no attach was attempted. */
     fun noInjectionProof(): RootManagedRetirementProof? =
         if (phase and 4 != 0 && worker != null && workerState == CLEAR && domainState == CLEAR &&
+            (spawn == null || !spawn.requested || spawn.retired) &&
             workerFlags == (FINAL or CLEAN) && workerStatus != null && workerStatus != 0)
             RootManagedRetirementProof.fromNoInjection(ticket) else null
 
@@ -37,17 +39,18 @@ class RootManagedNativeState private constructor(
     fun targetExitProof(bootId: String, observed: RootTargetIdentity?): RootManagedTargetExitProof? {
         // A confirmed new boot independently ends all old-boot processes and cgroups.
         if (bootId == ticket.identity.bootId && (workerState != CLEAR || domainState != CLEAR)) return null
-        val proof = RootManagedTargetExitProof.confirmed(ticket, bootId, observed)
+        val proof = RootManagedTargetExitProof.confirmed(ticket, bootId, observed, spawn?.target)
         return proof.takeIf { it.matches(ticket) }
     }
 
     /** Resource reclamation and script cleanup remain independent facts, including on cancellation. */
     fun normalCleanupProof(): RootManagedExitProof? {
         val flags = workerFlags ?: return null
+        if (spawn != null && !spawn.settled) return null
         if (worker == null || workerState != CLEAR || domainState != CLEAR || flags and CLEAN != CLEAN || flags and ATTEMPTED == 0) return null
         return RootManagedExitProof(ticket.runId, ticket.identity, ticket.digest(),
             scriptUnloaded = true, sessionDetached = true, managerClosed = true,
-            workerExited = true, domainRemoved = true)
+            workerExited = true, domainRemoved = true, protocol = ticket.protocol, spawnTarget = spawn?.target)
     }
 
     companion object {
@@ -58,13 +61,15 @@ class RootManagedNativeState private constructor(
         private const val CLEAN = 8 or 16 or 32
         private const val SUCCESS = 64
 
-        fun decode(ticket: RootManagedRunTicket, ready: ByteArray?, report: ByteArray?, stopped: ByteArray): RootManagedNativeState {
+        fun decode(ticket: RootManagedRunTicket, ready: ByteArray?, report: ByteArray?, stopped: ByteArray,
+            spawn: RootSpawnState? = null): RootManagedNativeState {
             ticket.validate()
+            require((ticket.action == "spawn") == (spawn != null))
             val digest = ticket.digest()
             val admission = ready?.let { RootManagedAdmission.decode(ticket, it) }
             val completion = stopped(ticket, digest, stopped, admission != null)
             val facts = report?.let { worker(digest, requireNotNull(admission).worker, it) }
-            return RootManagedNativeState(ticket, admission?.guard, admission?.worker, completion, facts)
+            return RootManagedNativeState(ticket, admission?.guard, admission?.worker, completion, facts, spawn)
         }
 
         private fun stopped(ticket: RootManagedRunTicket, digest: String, bytes: ByteArray, admitted: Boolean): Stopped {
