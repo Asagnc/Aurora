@@ -17,9 +17,31 @@ resources = importlib.util.module_from_spec(resource_spec)
 resource_spec.loader.exec_module(resources)
 agp_spec = importlib.util.spec_from_file_location('agp', Path(__file__).with_name('qualify-apk-agp.py'))
 agp = importlib.util.module_from_spec(agp_spec); agp_spec.loader.exec_module(agp)
+ndk_spec = importlib.util.spec_from_file_location('ndk_targets', Path(__file__).with_name('apk_ndk_targets.py'))
+ndk = importlib.util.module_from_spec(ndk_spec); ndk_spec.loader.exec_module(ndk)
 
 
 class JvmInputsTest(unittest.TestCase):
+    def test_ndk_extracts_only_target_data_and_never_foreign_host_executables(self):
+        pin = {'resourceVersion': '21', 'targetTriples': ['aarch64-linux-android', 'x86_64-linux-android'], 'androidApis': [36, 37]}
+        prefix = 'android-ndk-r30/toolchains/llvm/prebuilt/linux-x86_64/'
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary); archive = root / 'ndk.zip'; work = root / 'work'; work.mkdir()
+            with zipfile.ZipFile(archive, 'w') as output:
+                output.writestr(prefix + 'sysroot/usr/include/jni.h', b'owned-header')
+                output.writestr(prefix + 'sysroot/usr/lib/aarch64-linux-android/36/libc.so', b'owned-target')
+                output.writestr(prefix + 'sysroot/usr/lib/aarch64-linux-android/35/libc.so', b'old-api')
+                output.writestr(prefix + 'bin/clang', b'foreign-host')
+            files = ndk.extract(archive, work, pin)
+            self.assertEqual(2, len(files)); self.assertFalse((work / 'bin').exists())
+            self.assertFalse((work / 'sysroot/usr/lib/aarch64-linux-android/35').exists())
+            self.assertEqual(b'owned-header', (work / 'sysroot/usr/include/jni.h').read_bytes())
+            with zipfile.ZipFile(archive, 'w') as output:
+                output.writestr(prefix + 'sysroot/usr/include/../../escape', b'outside')
+            with self.assertRaises(ValueError):
+                ndk.extract(archive, work, pin)
+            self.assertFalse((root / 'escape').exists())
+
     def test_sdk_java_data_preserved_but_foreign_elf_cannot_launch(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary); archive = root / 'sdk.zip'; work = root / 'work'

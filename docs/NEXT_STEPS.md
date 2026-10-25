@@ -34,7 +34,7 @@
 - 真实ARM64 JVM/Gradle自有Java编译与执行已通过CI40177012737，并在后续运行重复通过。
 - 固定15份资源源码59,443,068字节，aapt2/aidl/zipalign在ubuntu-26.04-arm实际构建/版本检查通过CI40178993015、40180293564；后者保留bin和源码归档。
 - CI40180474337实际通过API37 compile/link/R.java/16KiB对齐和坏XML拒绝；AIDL夹具漏-I import根目录失败，已修复。修正后CI40180937353两job整体通过，包含完整AIDL生成。
-- LLVM/Clang/LLD原5份源码实验CI40178609738在3068/3153阶段因缺同基线libunwind的Mach-O头失败。现补第6份libunwind固定归档168,152字节和构建前检查，保留失败证据；同时保留clang资源头/完整目录、增加迁移后C/C++实际执行。新实验另查。尚未等同应用全部Android补丁的NDK，未完成Android JNI资格。
+- LLVM/Clang/LLD原5份源码实验CI40178609738在3068/3153阶段因缺同基线libunwind的Mach-O头失败。现补第6份libunwind固定归档168,152字节和构建前检查，保留失败证据；同时保留clang资源头/完整目录、增加迁移后C/C++实际执行。新实验40183812668成功，228,341,810字节/282项的完整候选与资源头已实际保留，迁移后C/C++夹具运行通过。尚未等同应用全部Android补丁的NDK，未完成Android JNI资格。
 - 完整AGP Java/Kotlin Compose实验入口已实现（apk-agp-qualification.yml、qualify-apk-agp.py）；已引用CI40180937353的精确成功资源workflow。官方SDK只复用Java/元数据，39个外来ELF替换为明确失败入口，仅已验证ARM64资源工具可执行。首轮CI40181353310因夹具遗漏显式Kotlin版本而使用AGP默认旧Kotlin，不支持JVM25；已按Aurora主工程锁定2.4.21后CI40181504510已越过该问题，但手工解包缺sdkmanager生成的package.xml导致API37.0未注册；已补现有官方SDK精确元数据后，CI40181701787真实ARM64 Java/Compose两种APK构建整体通过（43/48项任务实际执行），自有类已进入DEX；JNI和手机运行资格仍未完成。
 - 后续：追踪失败并修复；完成AGP/Compose/JNI与运行闭包，再接共享安装/版本资格和Agent构建入口；未完成资格不安装手机、不显示buildReady。
 

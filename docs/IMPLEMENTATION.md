@@ -1,3 +1,9 @@
+## 2026-10-25 完整ARM64编译器候选成功与Android JNI入口
+
+CI40183812668实际成功，6份固定源码构建、原生AArch64 intrinsic C与C++ vector在迁移后的候选中编译执行成功；工具、clang资源头及入口合计282文件228,341,810字节已保留。仍明确不是全部Android补丁等价或手机JNI执行证明。
+
+实际取得官方NDK30 Linux归档738,633,529字节、SHA256753611f4…，仅选择API36/37、aarch64/x86_64目标头/库/compiler-rt与notice，3316项168,450,097字节；不提取/执行官方x86 host程序。Windows对Linux头大小写同名不适合物化，已做只读库存审计，真正提取/编译限定Linux ARM64。新增JNI真实交叉编译/链接与16KiB/依赖/导出审计workflow，引用精确成功编译器run身份和逐文件摘要，结果另查；无QEMU/手机/付费调用。
+
 ## 2026-10-25 Root原始帧发送产品接入
 
 新增packet_inject_root，沿用已批准libpcap1.10.7与既有Root任务监督、Binder/账本/产物，不改系统路由。明确接口、14..16384字节帧、包数/字节/间隔/BOOTTIME截止，非阻塞发送，首次错误/短写不重试；只有全部接受且真实正常退出/完整报告/计数一致才完成，pcap接受不等于送达。双ABI Debug/Release/testAPK/lint和ELF16KiB审计本地通过，核心284项272通过/12跳过。

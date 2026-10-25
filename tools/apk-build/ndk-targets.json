@@ -1,0 +1,12 @@
+{
+  "archive": "android-ndk-r30-linux.zip",
+  "url": "https://dl.google.com/android/repository/android-ndk-r30-linux.zip",
+  "bytes": 738633529,
+  "sha256": "753611f410d002cfcd3f3dc2ef49aad532089d3180b436c060a90bf0fcb64df2",
+  "repositorySha1": "5107f898313790e449e87eee2183d9a20602dee9",
+  "version": "30.0.16248370",
+  "resourceVersion": "21",
+  "androidApis": [36, 37],
+  "targetTriples": ["aarch64-linux-android", "x86_64-linux-android"],
+  "scope": "Only fixed target headers, API36/37 libraries, compiler runtimes and notices. No official x86 host executable is extracted or run."
+}
