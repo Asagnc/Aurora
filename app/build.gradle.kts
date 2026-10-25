@@ -15,7 +15,7 @@ android {
     externalNativeBuild { cmake { path = file("src/main/cpp/CMakeLists.txt"); version = "4.1.2" } }
     defaultConfig {
         ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
-        externalNativeBuild { cmake { targets += listOf("aurora_runner", "aurora_pty", "aurora_proot", "aurora_linux_namespace", "aurora_linux_scope", "aurora_tcpdump", "aurora_packet_worker", "aurora_packet_inject", "aurora_socket_diag", "aurora_managed_guard") } }
+        externalNativeBuild { cmake { targets += listOf("aurora_runner", "aurora_pty", "aurora_proot", "aurora_linux_namespace", "aurora_linux_scope", "aurora_tcpdump", "aurora_packet_worker", "aurora_packet_inject", "aurora_socket_diag", "aurora_packet_rotate", "aurora_managed_guard") } }
         applicationId = "io.github.asagnc.aurora"
         minSdk = 36
         targetSdk = 37
@@ -98,7 +98,7 @@ abstract class StageNativeRunner : DefaultTask() {
         check(NativeDigests.sha256(fridaBinary.get().asFile) == fridaDigest.get().asFile.readText()) { "Frida qualification binary changed" }
         fileOperations.sync {
             from(binaries) {
-                include("*/aurora_runner", "*/aurora_pty", "*/aurora_proot", "*/aurora_proot_loader", "*/aurora_linux_namespace", "*/aurora_linux_scope", "*/aurora_tcpdump", "*/aurora_packet_worker", "*/aurora_packet_inject", "*/aurora_socket_diag", "*/aurora_managed_guard")
+                include("*/aurora_runner", "*/aurora_pty", "*/aurora_proot", "*/aurora_proot_loader", "*/aurora_linux_namespace", "*/aurora_linux_scope", "*/aurora_tcpdump", "*/aurora_packet_worker", "*/aurora_packet_inject", "*/aurora_socket_diag", "*/aurora_packet_rotate", "*/aurora_managed_guard")
                 eachFile { path = "${file.parentFile.name}/lib${file.name}.so" }
                 includeEmptyDirs = false
             }
@@ -173,6 +173,9 @@ abstract class StageManagedManifest : DefaultTask() {
                 while (true) { val size = input.read(buffer); if (size < 0) break; digest.update(buffer, 0, size) }
             }
             output.resolve("$abi.guard.sha256").writeText(digest.digest().joinToString("") { "%02x".format(it.toInt() and 255) })
+            val capture = binaries.get().asFile.resolve("$abi/libaurora_packet_rotate.so")
+            check(capture.isFile)
+            output.resolve("$abi.capture.sha256").writeText(NativeDigests.sha256(capture))
             if (abi == "arm64-v8a") {
                 val worker = binaries.get().asFile.resolve("$abi/libaurora_frida.so")
                 check(NativeDigests.sha256(worker) == workerDigest.get().asFile.readText()) { "APK stripping changed the qualified Frida binary" }

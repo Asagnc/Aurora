@@ -97,6 +97,11 @@ class RotationTest(unittest.TestCase):
         report = self.finish(process, control)
         self.assertEqual((process.returncode, report['reason'], report['bytes']), (0, 'duration', 24))
         self.assertEqual(len(list(self.root.glob('*.seal'))), 1)
+        config = self.root / 'capture.config'
+        self.assertEqual(config.stat().st_mode & 0o777, 0o400)
+        self.assertEqual(config.read_bytes()[:4], b'AURC')
+        self.assertEqual(struct.unpack_from('<I', config.read_bytes(), 48)[0], os.getpid())
+        self.assertFalse((self.root / 'capture.config.partial').exists())
 
     def test_sequence_across_whole_segments_without_reopening_interface(self):
         process, control = self.start(packets=4, segment=170, total=1024)

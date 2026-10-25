@@ -93,3 +93,14 @@ target_link_options(aurora_packet_inject PRIVATE -Wl,-z,relro,-z,now,-z,noexecst
 add_executable(aurora_socket_diag "${capture_module}/SocketDiag.c")
 target_compile_options(aurora_socket_diag PRIVATE -Wall -Wextra -Werror -fstack-protector-strong)
 target_link_options(aurora_socket_diag PRIVATE -Wl,-z,relro,-z,now,-z,noexecstack,-z,max-page-size=16384)
+add_executable(aurora_packet_rotate
+    "${capture_module}/RotateMain.c" "${capture_module}/RotateSource.c" "${capture_module}/RotateLoop.c"
+    "${capture_module}/RotateStore.c" "${capture_module}/RotateSeal.c" "${capture_module}/RotateChannel.c"
+    "${capture_module}/RotateConfig.c" "${capture_module}/Sha256.c"
+    "${capture_module}/../frida/input.c" "${capture_module}/../frida/managed_control.c"
+    "${capture_module}/../frida/fd_channel.c" "${capture_module}/../frida/fd_io.c")
+add_dependencies(aurora_packet_rotate aurora_pcap_build)
+target_include_directories(aurora_packet_rotate PRIVATE "${capture_prefix}/include")
+target_link_libraries(aurora_packet_rotate PRIVATE "${capture_prefix}/lib/libpcap.a")
+target_compile_options(aurora_packet_rotate PRIVATE -Wall -Wextra -Werror -fstack-protector-strong)
+target_link_options(aurora_packet_rotate PRIVATE -Wl,-z,relro,-z,now,-z,noexecstack,-z,max-page-size=16384)

@@ -11,6 +11,7 @@ struct aurora_capture_config {
 };
 int aurora_capture_config_decode(const unsigned char *data, size_t size, struct aurora_capture_config *config);
 int aurora_capture_config_fd(int fd, struct aurora_capture_config *config);
+int aurora_capture_config_store(int fd);
 int aurora_capture_receive(int argc, char **argv, struct aurora_managed_control *control, struct aurora_capture_config *config);
 int aurora_capture_report(struct aurora_managed_control *control, int complete, int status);
 #endif

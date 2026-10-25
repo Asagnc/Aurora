@@ -3,8 +3,10 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <linux/fs.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/syscall.h>
 #include <unistd.h>
 
 static uint64_t number(const unsigned char *data, unsigned count) {
@@ -77,4 +79,37 @@ int aurora_capture_config_fd(int fd, struct aurora_capture_config *config) {
     if (fstat(fd, &after) || before.st_size != after.st_size || before.st_ino != after.st_ino || before.st_dev != after.st_dev ||
         fcntl(fd, F_GET_SEALS) != seals) { errno = ESTALE; return -1; }
     return aurora_capture_config_decode(data, used, config);
+}
+
+int aurora_capture_config_store(int fd) {
+    struct aurora_capture_config config; struct stat info, directory;
+    if (geteuid() || aurora_capture_config_fd(fd, &config) || fstat(fd, &info)) return -1;
+    int root = open(".", O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
+    if (root < 0) return -1;
+    int output = -1, result = -1;
+    if (fstat(root, &directory) || !S_ISDIR(directory.st_mode) || directory.st_uid || (directory.st_mode & 0777) != 0700) goto finish;
+    output = openat(root, "capture.config.partial", O_WRONLY | O_CREAT | O_EXCL | O_NOFOLLOW | O_CLOEXEC, 0600);
+    if (output < 0) goto finish;
+    unsigned char data[4372]; size_t used = 0;
+    while (used < (size_t)info.st_size) {
+        ssize_t count = pread(fd, data + used, (size_t)info.st_size - used, (off_t)used);
+        if (count < 0 && errno == EINTR) continue;
+        if (count <= 0) goto finish;
+        used += (size_t)count;
+    }
+    used = 0;
+    while (used < (size_t)info.st_size) {
+        ssize_t count = write(output, data + used, (size_t)info.st_size - used);
+        if (count < 0 && errno == EINTR) continue;
+        if (count <= 0) goto finish;
+        used += (size_t)count;
+    }
+    if (fchmod(output, 0400) || fsync(output)) goto finish;
+    if (close(output)) { output = -1; goto finish; }
+    output = -1;
+    if (syscall(SYS_renameat2, root, "capture.config.partial", root, "capture.config", RENAME_NOREPLACE) || fsync(root)) goto finish;
+    result = 0;
+finish:
+    if (output >= 0) close(output);
+    close(root); return result;
 }

@@ -879,3 +879,9 @@ Root 监督产物按打开的目录/文件描述符恢复为 app 所有；不递
 完整ARM64 AGP Java/Compose/JNI资格40210689697通过，原生LLVM strip/ranlib资格40206934943通过；496份Rust源码补充许可资格40210692480通过。Python15份源码/所需21份许可、本体与官方20251010运行库逐字节对应；libgcc与Debian12精确包/源码/运行库例外本地校验通过。全部14项内嵌ELF已有精确二进制对应，静态OpenSSL闭包和产品安装接入仍未完成。
 
 新增轮转配置/封口记录契约与独立原生配置/SHA256基础件；300核心288通过/12跳过，原生双ABI对象编译通过，Linux真实执行测试已加入CI待跟踪。实时worker/guard恢复/Root发布/Agent尚未接入，无新增手机操作或可用性宣称。详见NEXT_STEPS与evidence/0.1.40对应记录。
+
+## 2026-10-26 轮转原生与guard资格
+
+CI40224855665通过8组真实libpcap封口/短写/fsync/冲突和5组封印FD/连续loopback/取消/损坏配置拒绝。capture guard首次40225277685因launcher仍只允许attach-channel而拒绝capture，未误报成功；修复后40225641400完整通过，含旧Frida观察/记录/启动及24组真实cgroup guard恢复。新capture AEX2报告无伪造Frida清理位，30分钟仅capture可用；旧Frida250秒/普通命令300秒保持。
+
+306核心294通过/12跳过。新增Root封口段读取、流式PCAP格式/计数/摘要验证、独立副本发布及原始封印配置留存；实际双ABI轮转载荷已入Debug/Release并通过16KiB/依赖/摘要审计，216项构建任务、AndroidTest和lint本地成功。配置留存分支CI与Root手机发布故障矩阵待验收；Binder/活动表迁移/Agent未接，不显示captureReady。详见CAPTURE_ROTATION_IMPLEMENTATION.md。

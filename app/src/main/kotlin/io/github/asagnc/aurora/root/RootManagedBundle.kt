@@ -20,6 +20,8 @@ internal class RootManagedBundle(private val context: Context) {
         return executable("worker", "libaurora_frida.so")
     }
 
+    suspend fun captureWorker(): RootManagedExecutable = executable("capture", "libaurora_packet_rotate.so")
+
     suspend fun bridgeSnapshot(): RootScriptSnapshot = withContext(Dispatchers.IO) {
         context.assets.open("managed/java-bridge.json").use {
             val bytes = it.readNBytes(1025); require(bytes.size in 1..1024)

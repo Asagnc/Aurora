@@ -52,7 +52,8 @@ int aurora_capture_receive(int argc, char **argv, struct aurora_managed_control 
     struct aurora_fd_channel channel = {.socket = -1, .cancel = control->fd, .peer = -1, .deadline_ms = aurora_fd_now() + 5000};
     int files[2] = {-1, -1}, result = -1;
     if (!connect_channel(argv[2], &channel) && !aurora_fd_receive(&channel, &offer, files) &&
-        !aurora_capture_config_fd(files[0], config) && config->root_pid == pid && config->root_ticks == ticks && !boot_matches(config->boot)) result = 0;
+        !aurora_capture_config_fd(files[0], config) && config->root_pid == pid && config->root_ticks == ticks &&
+        !boot_matches(config->boot) && !aurora_capture_config_store(files[0])) result = 0;
     if (channel.socket >= 0) close(channel.socket);
     for (unsigned i = 0; i < 2; i++) if (files[i] >= 0) close(files[i]);
     return result;

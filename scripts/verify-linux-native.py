@@ -8,7 +8,7 @@ import struct
 import zipfile
 
 MACHINES = {'arm64-v8a': 183, 'x86_64': 62}
-FILES = ['libaurora_proot.so', 'libaurora_proot_loader.so', 'libaurora_talloc.so', 'libaurora_linux_namespace.so', 'libaurora_linux_scope.so', 'libaurora_tcpdump.so', 'libaurora_packet_worker.so', 'libaurora_packet_inject.so', 'libaurora_socket_diag.so', 'libaurora_managed_guard.so']
+FILES = ['libaurora_proot.so', 'libaurora_proot_loader.so', 'libaurora_talloc.so', 'libaurora_linux_namespace.so', 'libaurora_linux_scope.so', 'libaurora_tcpdump.so', 'libaurora_packet_worker.so', 'libaurora_packet_inject.so', 'libaurora_socket_diag.so', 'libaurora_packet_rotate.so', 'libaurora_managed_guard.so']
 
 
 def inspect(data, machine, loader, executable=False):
@@ -61,13 +61,17 @@ def verify(apk):
         for abi, machine in MACHINES.items():
             for name in FILES + (['libaurora_frida.so'] if abi == 'arm64-v8a' else []):
                 data = archive.read(f'lib/{abi}/{name}')
-                needed = inspect(data, machine, name == 'libaurora_proot_loader.so', name in {'libaurora_managed_guard.so', 'libaurora_frida.so'})
+                needed = inspect(data, machine, name == 'libaurora_proot_loader.so', name in {'libaurora_managed_guard.so', 'libaurora_packet_rotate.so', 'libaurora_frida.so'})
                 allowed = {'libc.so', 'libdl.so', 'libm.so', 'liblog.so', 'libandroid.so', 'libaurora_talloc.so'}
                 if name == 'libaurora_managed_guard.so':
                     allowed = {'libc.so', 'libdl.so'}
                     manifest = archive.read(f'assets/managed/{abi}.guard.sha256')
                     if manifest != hashlib.sha256(data).hexdigest().encode('ascii'):
                         raise ValueError('Guard digest differs from packaged trusted manifest')
+                if name == 'libaurora_packet_rotate.so':
+                    manifest = archive.read(f'assets/managed/{abi}.capture.sha256')
+                    if manifest != hashlib.sha256(data).hexdigest().encode('ascii'):
+                        raise ValueError('Capture digest differs from packaged trusted manifest')
                 if name == 'libaurora_frida.so':
                     allowed = {'libc.so', 'libdl.so', 'liblog.so', 'libm.so'}
                     if archive.read(f'assets/managed/{abi}.worker.sha256') != hashlib.sha256(data).hexdigest().encode('ascii'):

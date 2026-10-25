@@ -44,7 +44,7 @@ internal class RootManagedPublication(private val context: Context) {
         } finally { Os.close(source) }
     }
 
-    private fun ownerDirectory(ticket: RootManagedRunTicket): ParcelFileDescriptor {
+    internal fun ownerDirectory(ticket: RootManagedRunTicket): ParcelFileDescriptor {
         ticket.validate()
         var directory = open(context.filesDir.toPath().toRealPath().toString())
         try {
