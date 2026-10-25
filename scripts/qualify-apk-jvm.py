@@ -95,6 +95,8 @@ def qualify(args):
     if not args.acquire_only and (platform.system() != 'Linux' or platform.machine().lower() not in {'aarch64', 'arm64'}):
         raise ValueError('Execution requires a real Linux ARM64 host; no emulation fallback')
     args.directory = args.directory.resolve()
+    if not args.acquire_only and (args.directory / 'report.json').exists():
+        raise FileExistsError('Preserve the completed qualification; select a new report directory')
     entries = json.loads((ROOT / 'tools/apk-build/catalog.json').read_text())['jvm']
     args.directory.mkdir(parents=True, exist_ok=True)
     inputs = [(entry, acquire(entry, args.directory)) for entry in entries]

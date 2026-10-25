@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import platform
+import posixpath
 import re
 import shutil
 import subprocess
@@ -29,18 +30,17 @@ def unpack(entry, archive, work):
     if destination != '.' and (destination.startswith('/') or '..' in destination.split('/') or '\\' in destination):
         raise ValueError('Unsafe source destination')
     prefix = entry['repository'].startswith('https://github.com/')
-    skipped = []
+    skipped = []; materialized = []
     with tarfile.open(archive) as source:
+        members = {}
         for item in source:
             parts = PurePosixPath(item.name).parts
             if prefix:
                 parts = parts[1:]
             if not parts:
                 continue
+            members['/'.join(parts)] = item
             if item.issym() or item.islnk():
-                # Formatting/compatibility links are not needed by this build. Original archives
-                # remain unchanged; any required missing include must fail compilation explicitly.
-                skipped.append('/'.join(parts))
                 continue
             target = work / destination / Path(*parts)
             target.resolve().relative_to(work.resolve())
@@ -53,7 +53,40 @@ def unpack(entry, archive, work):
                 target.chmod(0o755 if item.mode & 0o111 else 0o644)
             else:
                 raise ValueError('Unexpected source member')
-    return {'source': entry['id'], 'linksNotMaterialized': skipped}
+        for name, item in members.items():
+            if not (item.issym() or item.islnk()):
+                continue
+            resolved = linked_file(name, members)
+            if resolved is None:
+                skipped.append(name)
+                continue
+            target = work / destination / name
+            target.resolve().relative_to(work.resolve())
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with source.extractfile(resolved) as incoming, target.open('xb') as output:
+                shutil.copyfileobj(incoming, output, 65536)
+            target.chmod(0o755 if resolved.mode & 0o111 else 0o644)
+            materialized.append(name)
+    return {'source': entry['id'], 'linksNotMaterialized': skipped, 'linksMaterializedAsFiles': materialized}
+
+
+def linked_file(name, members):
+    seen = set()
+    while name not in seen and len(seen) < 16:
+        seen.add(name)
+        item = members.get(name)
+        if item is None:
+            return None
+        if item.isfile():
+            if item.size > 2_097_152:
+                raise ValueError('Oversized source link destination')
+            return item
+        if not item.issym() or item.linkname.startswith('/'):
+            return None
+        name = posixpath.normpath(posixpath.join(posixpath.dirname(name), item.linkname))
+        if name == '..' or name.startswith('../'):
+            return None
+    return None
 
 
 def run(argv, log, timeout=900, cwd=None):
@@ -66,6 +99,8 @@ def qualify(args):
     if platform.system() != 'Linux' or platform.machine().lower() not in {'aarch64', 'arm64'}:
         raise ValueError('Requires a real Linux ARM64 host')
     directory = args.directory.resolve(); directory.mkdir(parents=True, exist_ok=True)
+    if (directory / 'report.json').exists():
+        raise FileExistsError('Preserve the completed qualification; select a new report directory')
     catalog = json.loads((ROOT / 'tools/apk-build/sources.json').read_text())
     sources = source_helper()
     downloads = directory / 'sources'; downloads.mkdir(exist_ok=True)
