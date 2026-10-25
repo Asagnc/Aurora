@@ -1,5 +1,11 @@
 # 当前接续清单（2026-10-25，0.1.40）
 
+## 2026-10-25 C++23宿主资格与网络后端已确认
+
+资源CI40178607483的JVM成功，资源编译已越过全部缺头阶段，至ResourceTable.cpp遭GCC13/libstdc++缺C++23 P2165R4 tuple/pair转换而失败。官方GCC14起实现该特性；资源实验改用已GA的ubuntu-26.04-arm宿主（与已选Ubuntu26.10 guest兼容方向），保留原C++23源码语义，记录实际宿主包版本；新结果另查。compiler独立job仍按原基线运行，尚未完成。
+
+用户确认NETWORK_ADVANCED_PROPOSAL的libpcap/OkHttp/mitmproxy12.3组合，先来源与资格后产品接入；不自动修改全局路由、安装CA或使用VPN替代抓包。当前仍未安装手机工具，签名密钥仍留集中验收处理。
+
 ## 2026-10-25 资源Binder头闭包与原生编译器候选
 
 资源CI40178107011已编到CursorWindow.cpp，缺binder/Parcel.h失败。已将原先只取native/include的范围扩为同一固定commit的完整frameworks/native归档，避免compatibility链接指向未取得的libs/binder；仍15份归档，总59,443,068字节，新内容身份已固定，失败证据保留。
