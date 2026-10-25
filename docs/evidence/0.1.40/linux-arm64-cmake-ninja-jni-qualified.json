@@ -1,0 +1,41 @@
+{
+  "linuxArm64CmakeNinjaAndroidJniQualified": true,
+  "versions": {
+    "cmake": "cmake version 4.1.2\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).\n",
+    "ninja": "1.13.2\n"
+  },
+  "jni": [
+    {
+      "abi": "arm64-v8a",
+      "machine": 183,
+      "bytes": 148376,
+      "sha256": "23e398cf6bf52f984a27fec31c3ab3b48b691c54dc5e6af5dc16782caa2128ad",
+      "needed": [
+        "libc++_shared.so",
+        "libc.so",
+        "libdl.so",
+        "libm.so"
+      ]
+    },
+    {
+      "abi": "x86_64",
+      "machine": 62,
+      "bytes": 145376,
+      "sha256": "04bd875ccd1d6eef93cd50410d94c18cd740dc07acdada98ad4e8b68e048b4ed",
+      "needed": [
+        "libc++_shared.so",
+        "libc.so",
+        "libdl.so",
+        "libm.so"
+      ]
+    }
+  ],
+  "ndkArchiveSha256": "753611f410d002cfcd3f3dc2ef49aad532089d3180b436c060a90bf0fcb64df2",
+  "compilerSourceArchives": 6,
+  "targetFiles": 3318,
+  "targetBytes": 168450397,
+  "ndkEquivalenceVerified": false,
+  "fullAgpJniBuildQualified": false,
+  "androidRuntime": "NOT TESTED",
+  "phoneInstallReady": false
+}

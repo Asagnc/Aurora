@@ -2,6 +2,7 @@
 """Verify compiled tool pins and official archive layout. Does not prove Android execution."""
 import argparse
 import hashlib
+import http.client
 import json
 from pathlib import Path
 import re
@@ -43,6 +44,8 @@ def fetch(path, url, digest, size):
                     if count > int(size):
                         raise ValueError("Download exceeded pinned byte count")
                     output.write(block)
+        if count < int(size):
+            raise ConnectionError("Download ended before pinned byte count: " + path.name)
         verify(temporary, digest, size)
         temporary.replace(path)
     except BaseException as failure:
@@ -51,6 +54,8 @@ def fetch(path, url, digest, size):
                 temporary.unlink(missing_ok=True)
             except OSError as cleanup:
                 failure.add_note("Owned partial cleanup failed: " + str(cleanup))
+        if isinstance(failure, http.client.IncompleteRead):
+            raise ConnectionError("Incomplete HTTP download: " + path.name) from failure
         raise
 
 

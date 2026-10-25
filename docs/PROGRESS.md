@@ -1,3 +1,9 @@
+## 2026-10-25 原生CMake/Ninja JNI成功与Gradle对齐
+
+CMake首次40204855557已配置/编译，但官方NDK目标材料遗漏libatomic导致链接失败；补同固定归档的双ABI libatomic后，40205203214真实ARM64 CMake4.1.2/Ninja1.13.2通过双ABI JNI构建、16KiB/导出/依赖核验。目标数据3318项168450397字节，无外来host ELF执行，仍非NDK全部补丁等价或Android运行证明。
+
+AGP Java/Compose/JNI入口已接同一候选，核对APK内双ABI JNI/C++运行库、真实strip结果和16KiB zipalign。首轮40205366822在NDK短HTTP体阶段被固定长度检查拦截，尚未进入AGP；已补短EOF/IncompleteRead的有界传输重试与3项真实下载器故障用例，摘要错误不重试。主wrapper从9.8.1对齐用户已批准且ARM64资格通过的9.8.2，官方SHA复核，本地291核心/Debug/Release/testAPK/lint218任务全部执行通过。原wrapper直接下载连接未传数据，复用先前已固定校验归档完成构建。无手机/付费调用。
+
 ## 2026-10-25 PCAP片段、JNI成功与已批准socket快照
 
 classic PCAP精确选择已接Agent/Root注入批次，普通UID封印输入快照，protocol2逐前缀变长帧计数、全选择拒绝、父死亡终止；9234db2的CI40202879875 packet实验步骤13项已通过，整体构建另追踪。真实ARM64 JNI CI40202399728成功，API36双ABI库16KiB/导出/依赖验证，完整AGP/CMake和手机执行仍待做。

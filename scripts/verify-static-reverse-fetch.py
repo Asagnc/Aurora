@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Offline source-download publication/failure cleanup tests; no HTTP requests."""
 import hashlib
+import http.client
 import importlib.util
 import io
 from pathlib import Path
@@ -52,6 +53,34 @@ class FetchTest(unittest.TestCase):
                     source.fetch(target, "https://fixture.invalid/", self.digest, len(self.payload))
                 network.assert_not_called()
             self.assertEqual(b"keep unknown", partial.read_bytes())
+
+    def test_short_eof_is_transport_failure_and_cannot_publish(self):
+        with tempfile.TemporaryDirectory() as root:
+            target = Path(root) / "archive"
+            with patch.object(source.urllib.request, "urlopen", return_value=io.BytesIO(self.payload[:-1])):
+                with self.assertRaises(ConnectionError):
+                    source.fetch(target, "https://fixture.invalid/", self.digest, len(self.payload))
+            self.assertEqual([], list(Path(root).iterdir()))
+
+    def test_incomplete_http_body_is_transport_failure_and_cleans_partial(self):
+        class Incomplete(io.BytesIO):
+            def read(self, size=-1):
+                raise http.client.IncompleteRead(b"partial", 100)
+        with tempfile.TemporaryDirectory() as root:
+            with patch.object(source.urllib.request, "urlopen", return_value=Incomplete()):
+                with self.assertRaises(ConnectionError):
+                    source.fetch(Path(root) / "archive", "https://fixture.invalid/", self.digest, len(self.payload))
+            self.assertEqual([], list(Path(root).iterdir()))
+
+    def test_bounded_retry_recovers_short_body_without_weakening_digest(self):
+        spec = importlib.util.spec_from_file_location('retry_fetch', Path(__file__).with_name('prepare-frida-node.py'))
+        retry = importlib.util.module_from_spec(spec); spec.loader.exec_module(retry)
+        with tempfile.TemporaryDirectory() as root:
+            target = Path(root) / "archive"
+            with patch.object(source.urllib.request, 'urlopen', side_effect=[io.BytesIO(self.payload[:-1]), io.BytesIO(self.payload)]) as request:
+                retry.fetch_binding(source, target, 'https://fixture.invalid/', self.digest, len(self.payload))
+            self.assertEqual(request.call_count, 2); self.assertEqual(target.read_bytes(), self.payload)
+            self.assertFalse(target.with_name('archive.partial').exists())
 
 
 if __name__ == "__main__":
