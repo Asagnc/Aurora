@@ -14,6 +14,31 @@ class RootCaptureRotationTest {
     private fun seal(ordinal: Int = 0) = CaptureSegmentSeal(ordinal, 1, ordinal + 10L, 84, 1, 0, "a".repeat(64), 1,
         5 + ordinal * 10L, 10 + ordinal * 10L, CaptureKernelCounters(10, 2, null))
 
+    private fun ticket(config: RootCaptureConfiguration) = RootManagedRunTicket(config.binding.runId, config.binding.owner,
+        config.binding.identity, 10000, "0.1.40", "a".repeat(64), null, config.snapshot(), observeMs = config.options.seconds * 1000,
+        protocol = 3, kind = "capture", action = "capture")
+
+    @Test fun captureTicketBindsConfigurationAndKeepsTheFridaBudgetSeparate() {
+        val config = RootCaptureConfiguration(binding(), options().copy(seconds = 1800)); val ticket = ticket(config)
+        config.validateTicket(ticket); assertEquals(1_820_000, ticket.timeoutMs)
+        for (changed in listOf(ticket.copy(protocol = 1), ticket.copy(action = "attach"), ticket.copy(kind = "frida"),
+            ticket.copy(target = RootTargetIdentity(1, 2)), ticket.copy(bridge = ticket.script), ticket.copy(spawnPackage = "a.b"),
+            ticket.copy(observeMs = 1_800_001), ticket.copy(script = ticket.script.copy(version = "not-capture"))))
+            assertFailsWith<IllegalArgumentException> { changed.validate() }
+        for (changed in listOf(ticket.copy(owner = uuid()), ticket.copy(runId = uuid()), ticket.copy(observeMs = 1000),
+            ticket.copy(identity = ticket.identity.copy(epoch = uuid())), ticket.copy(script = ticket.script.copy(sha256 = "b".repeat(64)))))
+            assertFailsWith<IllegalArgumentException> { config.validateTicket(changed) }
+    }
+
+    @Test fun captureCleanupUsesActualWorkerDomainFactsWithoutInventingFridaCleanup() {
+        val ticket = ticket(RootCaptureConfiguration(binding(), options()))
+        val proof = RootManagedExitProof(ticket.runId, ticket.identity, ticket.digest(), false, false, false, true, true, 3)
+        assertTrue(ticket.confirms(proof))
+        for (changed in listOf(proof.copy(scriptUnloaded = true), proof.copy(sessionDetached = true), proof.copy(managerClosed = true),
+            proof.copy(workerExited = false), proof.copy(domainRemoved = false), proof.copy(protocol = 1),
+            proof.copy(spawnTarget = RootTargetIdentity(1, 2)))) assertFalse(ticket.confirms(changed))
+    }
+
     @Test fun nativeAndJvmUseTheSameFixedConfigurationGoldenVector() {
         fun fixed(i: Int) = "00000000-0000-0000-0000-%012d".format(java.util.Locale.ROOT, i)
         val value = RootCaptureConfiguration(CaptureRunBinding(fixed(1), fixed(2), LinuxRootIdentity(123, 456, fixed(3), fixed(4))), options())

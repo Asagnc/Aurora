@@ -17,6 +17,7 @@ struct aurora_managed_observer {
     int64_t operation_deadline_ms, force_deadline_ms;
     int cancel_fd, cancel_enabled;
     int suppress_commands; // Unreleased launcher stub: no Frida engine needs cooperative commands.
+    int capture; // Selects AEX2 and CLOCK_BOOTTIME; existing Frida defaults remain AEX1/MONOTONIC.
 };
 /* Owns no FDs and does not reap, kill, remove a scope or publish durable facts.
  * Parent must capture/admit worker and authenticate the private socket first.

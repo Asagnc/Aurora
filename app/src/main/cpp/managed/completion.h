@@ -12,6 +12,9 @@ struct managed_stopped {
     unsigned phase, worker_state, domain_state, reason, error;
     int exit_code; // -1 if absent or unavailable to a recovery process.
 };
+/* Missing kind is the historical Frida protocol. Capture kind is keyed and durable before dispatch. */
+int managed_capture_kind(const struct managed_journal *journal, const struct managed_key *key);
+int managed_capture_kind_store(const struct managed_journal *journal, const struct managed_key *key);
 /* Caller holds the journal's task lock. Worker report must have exact validated
  * EOF, not just 52 bytes. Stores before teardown so a later guard crash need
  * not discard already-proven unload facts. Read: 0 absent, 1 valid, -1 unsafe. */

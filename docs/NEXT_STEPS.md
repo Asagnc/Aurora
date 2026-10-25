@@ -50,7 +50,7 @@
 - 首版明确regular loopback代理，不自动改全局路由或安装系统CA；只导出公有CA，私钥留所有者私有。规则固定结构化数据，不把任意Python脚本当产品规则接口。
 - 单次HTTP构造/重放 `http_request` 已接Agent/账本/会话产物，显式路由、TLS验证、禁止自动重试、取消/超时/解压预算与11项主机回归通过；2项Android已编译未执行，见HTTP_REPLAY_IMPLEMENTATION.md。原始帧packet_inject_root已接Root Binder/受管worker/账本，双ABI构建与4项核心证明回归通过，7项私有veth/短写实验已通过CI40185946093；新增classic PCAP精确片段回放，核心参数/选择/多帧证明与完整本地构建通过，扩展13项Linux实验及整体CI40202879875已通过，见PACKET_INJECTION_IMPLEMENTATION.md。
 - UID精确socket快照和复用现有受管引擎的长时分段轮转均获用户确认，见NETWORK_UID_ROTATION_PROPOSAL；socket_owner_root已接Agent/账本和有界原生查询，本地291核心及完整构建通过，Linux内核7项已通过CI40204214212专属job，整体CI另跟踪，Android2项仅编译。轮转继续按验证后开放推进，不把快照当历史逐包归属。
-- 轮转配置/封口记录已实现独立有界契约，AURC封印memfd解码、固定小端黄金向量、Root身份/票据/顺序/物理inode/总预算验证、原始内核计数未知处理和流式SHA256；300项核心288通过/12跳过。原生配置/摘要双ABI对象编译通过，CI40224294297的capture-primitives已实际执行8组Linux测试通过（完整构建另跟踪）；新增单句柄分段写入/封口存储层：整包预算、Root私有目录、不覆盖/不跟随链接、关闭写句柄、fsync、物理inode/SHA256和原子封口记录；双ABI对象编译通过，Linux真实libpcap及写入/fsync/冲突故障验收已加入。尚未接实时worker、guard恢复、Root发布和Agent，不开放轮转入口。
+- 轮转配置/封口记录已实现独立有界契约，AURC封印memfd解码、固定小端黄金向量、Root身份/票据/顺序/物理inode/总预算验证、原始内核计数未知处理和流式SHA256；300项核心288通过/12跳过。原生配置/摘要双ABI对象编译通过，CI40224294297的capture-primitives已实际执行8组Linux测试通过（完整构建另跟踪）；新增单句柄分段写入/封口存储层：整包预算、Root私有目录、不覆盖/不跟随链接、关闭写句柄、fsync、物理inode/SHA256和原子封口记录；双ABI对象编译通过，CI40224855665实际通过8组封口/短写/fsync/冲突边界和5组封印FD/连续loopback/取消/拒绝损坏配置。新增单句柄实时worker、独立AEX2退出报告，主机资格通过。capture protocol3票据和guard类型/BOOTTIME/持久kind/恢复正在验证，Root发布和Agent尚未接，不开放轮转入口。
 
 ## 其余尚未完成
 

@@ -28,15 +28,21 @@ import kotlinx.serialization.encodeToString
     @EncodeDefault(EncodeDefault.Mode.NEVER) val spawnPackage: String? = null,
 ) {
     fun validate() {
-        require(kind == "frida")
-        require(if (action == "attach") protocol == 1 && target != null && spawnPackage == null else
+        require(kind == "frida" || kind == "capture")
+        if (kind == "capture") {
+            require(protocol == 3 && action == "capture" && target == null && spawnPackage == null && bridge == null)
+            require(script.version == "capture-rotation-v1" && script.bytes in 213..4372)
+            require(observeMs in 1000..1_800_000 && observeMs % 1000 == 0L)
+        } else {
+            require(if (action == "attach") protocol == 1 && target != null && spawnPackage == null else
             action == "spawn" && protocol == 2 && target == null && spawnPackage != null &&
                 spawnPackage.length <= 255 && spawnPackage.matches(Regex("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)+")))
+            require(observeMs in 1..250_000)
+        }
         require(UUID.fromString(runId).toString() == runId && UUID.fromString(owner).toString() == owner)
         identity.validate(); target?.validate(); script.validate(); bridge?.validate()
         require(appUid > 0 && appBuild.isNotBlank() && appBuild.length <= 128 && appBuild.none { it.isISOControl() })
         require(workerSha256.matches(Regex("[a-f0-9]{64}")))
-        require(observeMs in 1..250_000)
     }
     val timeoutMs: Long get() = observeMs + 20_000
     fun digest(): String {
@@ -46,8 +52,9 @@ import kotlinx.serialization.encodeToString
     }
     fun confirms(proof: RootManagedExitProof): Boolean =
         proof.protocol == protocol && proof.runId == runId && proof.identity == identity &&
-            proof.ticketSha256 == digest() && proof.scriptUnloaded && proof.sessionDetached &&
-            proof.managerClosed && proof.workerExited && proof.domainRemoved &&
+            proof.ticketSha256 == digest() && proof.workerExited && proof.domainRemoved &&
+            (if (kind == "capture") !proof.scriptUnloaded && !proof.sessionDetached && !proof.managerClosed && proof.spawnTarget == null else
+                proof.scriptUnloaded && proof.sessionDetached && proof.managerClosed) &&
             (action != "spawn" || proof.spawnTarget?.let { runCatching { it.validate() }.isSuccess } == true)
 }
 

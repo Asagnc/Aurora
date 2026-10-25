@@ -7,6 +7,7 @@ struct aurora_managed_receiver {
     unsigned char frame[AURORA_MANAGED_FACT_BYTES];
     size_t used;
     int state, error;
+    int capture; // Immutable caller-selected protocol, never selected from untrusted frame magic.
     struct aurora_managed_receipt receipt;
 };
 /* Zero-initialize once per admitted worker. Caller owns the socket and must

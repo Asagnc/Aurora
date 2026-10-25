@@ -43,8 +43,10 @@ int aurora_managed_receive(struct aurora_managed_receiver *receiver, int socket,
         if (count < 0) return reject(receiver, errno);
         if (unexpected_control(&message)) return reject(receiver, EPROTO);
         if (!count) {
+            int (*decode)(const unsigned char *, const unsigned char *, const struct aurora_managed_worker *, struct aurora_managed_receipt *) =
+                receiver->capture ? aurora_capture_decode : aurora_managed_decode;
             if (receiver->used != sizeof(receiver->frame) ||
-                aurora_managed_decode(receiver->frame, ticket, worker, &receiver->receipt)) return reject(receiver, EPROTO);
+                decode(receiver->frame, ticket, worker, &receiver->receipt)) return reject(receiver, EPROTO);
             receiver->state = 1; return 1;
         }
         if ((size_t) count > sizeof(receiver->frame) - receiver->used) return reject(receiver, EPROTO);

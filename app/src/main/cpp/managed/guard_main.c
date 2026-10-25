@@ -14,9 +14,17 @@
 #include <sys/prctl.h>
 #include <sys/syscall.h>
 #include <sys/wait.h>
+#include <time.h>
 #include <unistd.h>
 
-struct options { const char *state; struct managed_key key; unsigned observe_ms; int recover, cooperative; char **worker; };
+struct options { const char *state; struct managed_key key; unsigned observe_ms; int recover, cooperative, capture; char **worker; };
+
+int64_t managed_guard_now(int capture) {
+    if (!capture) return task_scope_now();
+    struct timespec now;
+    if (clock_gettime(CLOCK_BOOTTIME, &now)) return -1;
+    return (int64_t)now.tv_sec * 1000 + now.tv_nsec / 1000000;
+}
 
 static int parse(int argc, char **argv, struct options *options) {
     if (argc < 8 || (strcmp(argv[1], "run") && strcmp(argv[1], "recover")) || strcmp(argv[2], "--state-dir") ||
@@ -24,13 +32,14 @@ static int parse(int argc, char **argv, struct options *options) {
     *options = (struct options){.state = argv[3], .recover = !strcmp(argv[1], "recover")};
     if (managed_key_init(&options->key, argv[5], argv[7])) return -1;
     if (options->recover) return argc == 8 ? 0 : -1;
-    options->cooperative = argc == 17 && !strcmp(argv[10], "--cooperative-cancel");
-    int separator = 10 + options->cooperative;
-    if (argc != 16 + options->cooperative || strcmp(argv[8], "--observe-ms") || strcmp(argv[separator], "--") ||
+    options->capture = argc == 20 && !strcmp(argv[10], "--kind") && !strcmp(argv[11], "capture") && !strcmp(argv[12], "--cooperative-cancel");
+    options->cooperative = options->capture || (argc == 17 && !strcmp(argv[10], "--cooperative-cancel"));
+    int separator = options->capture ? 13 : 10 + options->cooperative;
+    if (argc != (options->capture ? 20 : 16 + options->cooperative) || strcmp(argv[8], "--observe-ms") || strcmp(argv[separator], "--") ||
         !*argv[9] || strspn(argv[9], "0123456789") != strlen(argv[9])) return -1;
     errno = 0; char *end;
     unsigned long observe = strtoul(argv[9], &end, 10);
-    if (errno || *end || !observe || observe > 250000) return -1;
+    if (errno || *end || !observe || observe > (options->capture ? 1800000UL : 250000UL)) return -1;
     options->observe_ms = (unsigned)observe; options->worker = argv + separator + 1;
     return 0;
 }
@@ -40,21 +49,21 @@ static int failure(const char *operation) {
     return 126;
 }
 
-static int wait_guard(pid_t guard, int64_t deadline, int cancel_fd, int *status) {
+static int wait_guard(pid_t guard, int64_t deadline, const struct managed_guard_spec *spec, int *status) {
     int descriptor = (int)syscall(SYS_pidfd_open, guard, 0);
     if (descriptor < 0) return -1;
     int forced = 0, stopping = 0;
     for (;;) {
-        long long now = task_scope_now(), remaining = deadline - now;
+        long long now = managed_guard_now(spec->capture), remaining = deadline - now;
         if (now < 0) { close(descriptor); return -1; }
         struct pollfd event[] = {{.fd = descriptor, .events = POLLIN},
-            {.fd = stopping ? -1 : cancel_fd, .events = POLLIN}};
+            {.fd = stopping ? -1 : spec->cancel_fd, .events = POLLIN}};
         int ready = poll(event, 2, remaining <= 0 ? 0 : (int)(remaining > INT_MAX ? INT_MAX : remaining));
         if (ready < 0 && errno == EINTR) continue;
         if (ready > 0 && (event[0].revents & POLLIN)) break;
         if (ready > 0 && !event[0].revents && (event[1].revents & POLLIN)) {
             stopping = 1;
-            long long cancellation = task_scope_now() + 20000;
+            long long cancellation = managed_guard_now(spec->capture) + 20000;
             if (cancellation < deadline) deadline = cancellation;
             continue;
         }
@@ -62,7 +71,7 @@ static int wait_guard(pid_t guard, int64_t deadline, int cancel_fd, int *status)
         if (syscall(SYS_pidfd_send_signal, descriptor, SIGKILL, NULL, 0) < 0 && errno != ESRCH) {
             int saved = errno; close(descriptor); errno = saved; return -1;
         }
-        forced = 1; deadline = task_scope_now() + 1000;
+        forced = 1; deadline = managed_guard_now(spec->capture) + 1000;
     }
     close(descriptor);
     pid_t reaped;
@@ -86,10 +95,10 @@ static int coordinate(const struct managed_guard_spec *spec) {
     close(owner);
     int64_t deadline = spec->started_ms + spec->observe_ms + 20000;
     int status;
-    if (wait_guard(guard, deadline, spec->cancel_fd, &status)) return failure("guard_wait");
+    if (wait_guard(guard, deadline, spec, &status)) return failure("guard_wait");
     int exit_code = WIFEXITED(status) ? WEXITSTATUS(status) : 128 + WTERMSIG(status);
     long long recovery = task_scope_now() + 5000;
-    if (recovery < deadline) deadline = recovery;
+    if (spec->capture || recovery < deadline) deadline = recovery;
     if (managed_guard_recover(spec->journal, spec->key, deadline)) {
         int saved = errno, ignored = -1;
         /* Corrupt metadata must not keep this coordinator's own adopted
@@ -121,7 +130,7 @@ int main(int argc, char **argv) {
         errno = ECANCELED; return failure("parent_identity");
     }
     if (prctl(PR_SET_CHILD_SUBREAPER, 1)) return failure("subreaper");
-    int64_t started = task_scope_now();
+    int64_t started = managed_guard_now(!options.recover && options.capture);
     if (started < 0) return failure("clock");
     int directory = scope_state_open(options.state);
     if (directory < 0) return failure("state_directory");
@@ -135,9 +144,11 @@ int main(int argc, char **argv) {
         if (result) result = failure("recovery");
         else result = managed_guard_summary(&journal, &options.key) < 0 ? failure("final_record") : 0;
     } else if (managed_journal_begin(&journal, &options.key)) result = failure("intent");
+    else if (options.capture && managed_capture_kind_store(&journal, &options.key)) result = failure("capture_kind");
+    else if (!options.capture && managed_capture_kind(&journal, &options.key) != 0) result = failure("unexpected_capture_kind");
     else {
         struct managed_guard_spec spec = {.journal = &journal, .key = &options.key, .argv = options.worker,
-            .observe_ms = options.observe_ms, .started_ms = started, .cancel_fd = cancellation};
+            .observe_ms = options.observe_ms, .started_ms = started, .cancel_fd = cancellation, .capture = options.capture};
         result = coordinate(&spec);
     }
     managed_journal_close(&journal);

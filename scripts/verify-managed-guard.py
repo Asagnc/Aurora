@@ -44,13 +44,17 @@ class GuardTests(unittest.TestCase):
         self.addCleanup(self.space.cleanup)
         self.state = Path(self.space.name) / "state"; self.marker = Path(self.space.name) / "executed"
 
-    def command(self, action="run", mode="normal", observe=1000, worker=None, cooperative=False):
+    def command(self, action="run", mode="normal", observe=1000, worker=None, cooperative=False, capture=False):
         result = [str(self.guard), action, "--state-dir", str(self.state), "--run-id", RUN, "--ticket-sha", TICKET]
         if action == "run":
             result += ["--observe-ms", str(observe)]
-            if cooperative:
+            if capture:
+                result += ["--kind", "capture"]
+            if cooperative or capture:
                 result.append("--cooperative-cancel")
-            result += ["--", str(worker or self.worker), "attach-channel", mode, "22" * 32, "{}"]
+            result += ["--", str(worker or self.worker), "capture-channel" if capture else "attach-channel", mode, "22" * 32, "{}"]
+            if capture:
+                result.append("fixture-root-ticks")
         return result
 
     def start(self, mode="normal", **options):
@@ -233,6 +237,32 @@ class GuardTests(unittest.TestCase):
         self.assertEqual((2, 2, False), (value["workerState"], value["domainState"], value["workerReport"]))
         result = subprocess.run(self.command(), capture_output=True, text=True, timeout=5)
         self.assertEqual(126, result.returncode); self.assertFalse(self.marker.exists())
+
+    def test_capture_kind_uses_distinct_report_and_recovers_exact_record(self):
+        process = self.start(capture=True); result = self.finish(process)
+        self.assertTrue(result["success"]); self.assertEqual(result["workerFlags"], 193)
+        self.assertEqual((self.state / "managed.capture").stat().st_size, 108)
+        recovered = subprocess.run(self.command("recover"), capture_output=True, text=True, timeout=25)
+        self.assertEqual(recovered.returncode, 0, recovered.stderr)
+        self.assertTrue(json.loads(recovered.stdout)["success"])
+
+    def test_capture_rejects_frida_report(self):
+        process = self.start(capture=True, mode="wrong-frida"); result = self.finish(process)
+        self.assertFalse(result["success"]); self.assertFalse(result["workerReport"])
+        self.assertTrue(result["resourcesClear"])
+
+    def test_frida_rejects_capture_report(self):
+        process = self.start(mode="wrong-capture"); result = self.finish(process)
+        self.assertFalse(result["success"]); self.assertFalse(result["workerReport"])
+        self.assertTrue(result["resourcesClear"])
+
+    def test_frida_cannot_gain_long_capture_budget(self):
+        result = subprocess.run(self.command(observe=250001), capture_output=True, text=True, timeout=5)
+        self.assertEqual(result.returncode, 64); self.assertFalse(self.marker.exists())
+
+    def test_long_capture_budget_does_not_change_frida_limits(self):
+        process = self.start(capture=True, observe=1800000); result = self.finish(process)
+        self.assertTrue(result["success"])
 
     def test_valid_report_while_worker_alive_cannot_claim_success(self):
         process = self.start("frame-alive", observe=500); result = self.finish(process)

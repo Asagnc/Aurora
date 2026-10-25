@@ -7,6 +7,22 @@
 
 #define STOPPED_BYTES 123
 
+int managed_capture_kind(const struct managed_journal *journal, const struct managed_key *key) {
+    unsigned char record[MANAGED_KEY_BYTES + 1], expected[MANAGED_KEY_BYTES];
+    if (managed_key_bytes(key, expected)) return -1;
+    int size = managed_record_read(journal->directory, "managed.capture", record, sizeof(record));
+    if (size <= 0) return size;
+    if (size != (int)sizeof(record) || memcmp(record, expected, sizeof(expected)) || record[MANAGED_KEY_BYTES] != 1) { errno = EPROTO; return -1; }
+    return 1;
+}
+
+int managed_capture_kind_store(const struct managed_journal *journal, const struct managed_key *key) {
+    unsigned char record[MANAGED_KEY_BYTES + 1];
+    if (managed_key_bytes(key, record)) return -1;
+    record[MANAGED_KEY_BYTES] = 1;
+    return managed_record_write(journal->directory, "managed.capture", record, sizeof(record), 1);
+}
+
 static void ticket_bytes(const struct managed_key *key, unsigned char ticket[32]) {
     for (unsigned index = 0; index < 32; index++) {
         char byte[3] = {key->ticket[index * 2], key->ticket[index * 2 + 1], 0};
@@ -22,7 +38,9 @@ static int decode_worker(const struct managed_journal *journal, const struct man
     if (!(phase & MANAGED_READY)) { errno = EPROTO; return -1; }
     unsigned char ticket[32]; ticket_bytes(key, ticket);
     struct aurora_managed_worker worker = {.pid = admission.worker_pid, .ticks = admission.worker_ticks};
-    return aurora_managed_decode(frame, ticket, &worker, receipt);
+    int capture = managed_capture_kind(journal, key);
+    if (capture < 0) return -1;
+    return capture ? aurora_capture_decode(frame, ticket, &worker, receipt) : aurora_managed_decode(frame, ticket, &worker, receipt);
 }
 
 int managed_worker_read(const struct managed_journal *journal, const struct managed_key *key,

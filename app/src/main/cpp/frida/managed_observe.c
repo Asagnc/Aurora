@@ -6,9 +6,9 @@
 #include <sys/socket.h>
 #include <time.h>
 
-static int64_t now_ms(void) {
+static int64_t now_ms(const struct aurora_managed_observer *observer) {
     struct timespec now;
-    if (clock_gettime(CLOCK_MONOTONIC, &now)) return -1;
+    if (clock_gettime(observer->capture ? CLOCK_BOOTTIME : CLOCK_MONOTONIC, &now)) return -1;
     return (int64_t) now.tv_sec * 1000 + now.tv_nsec / 1000000;
 }
 
@@ -20,7 +20,7 @@ static int request_stop(const struct aurora_managed_observer *observer,
     struct aurora_managed_observation *result, enum aurora_managed_stop reason, int64_t *deadline) {
     if (result->stop != AURORA_STOP_NONE) return 0;
     result->stop = reason;
-    int64_t now = now_ms();
+    int64_t now = now_ms(observer);
     if (now < 0) return -1;
     shorten(deadline, now);
     if (observer->suppress_commands) return 0;
@@ -39,7 +39,7 @@ static int drain(const struct aurora_managed_observer *observer,
     int state = aurora_managed_receive(&result->receiver, observer->socket, observer->ticket, &observer->worker);
     if (state < 0) return request_stop(observer, result, AURORA_STOP_PROTOCOL, deadline);
     if (state > 0) {
-        int64_t now = now_ms();
+        int64_t now = now_ms(observer);
         if (now < 0) return -1;
         shorten(deadline, now);
     }
@@ -48,14 +48,14 @@ static int drain(const struct aurora_managed_observer *observer,
 
 int aurora_managed_observe(const struct aurora_managed_observer *observer,
     struct aurora_managed_observation *result) {
-    *result = (struct aurora_managed_observation){0};
+    *result = (struct aurora_managed_observation){.receiver = {.capture = observer->capture}};
     if (observer->socket < 0 || observer->owner_pidfd < 0 || observer->worker_pidfd < 0 ||
         !observer->worker.pid || !observer->worker.ticks || observer->operation_deadline_ms <= 0 ||
         observer->force_deadline_ms < observer->operation_deadline_ms ||
         (observer->cancel_enabled && observer->cancel_fd < 0)) { errno = EINVAL; return -1; }
     int64_t deadline = observer->force_deadline_ms;
     for (;;) {
-        int64_t now = now_ms();
+        int64_t now = now_ms(observer);
         if (now < 0) return -1;
         if (now >= deadline) { errno = ETIMEDOUT; return -1; }
         if (!result->stop && now >= observer->operation_deadline_ms &&

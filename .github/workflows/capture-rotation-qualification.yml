@@ -21,3 +21,10 @@ jobs:
           python3 scripts/verify-capture-sha256.py
       - name: Execute real fixed libpcap rotation and durable record failure paths
         run: python3 scripts/qualify-capture-rotation.py
+      - name: Verify capture kind and existing Frida supervisor recovery
+        run: |
+          python3 scripts/verify-frida-managed-receive.py
+          python3 scripts/verify-frida-managed-observe.py
+          sudo -n python3 scripts/verify-managed-journal.py
+          sudo -n python3 scripts/verify-managed-launch.py
+          sudo -n python3 scripts/verify-managed-guard.py

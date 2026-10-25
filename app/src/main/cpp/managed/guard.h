@@ -8,7 +8,9 @@ struct managed_guard_spec {
     unsigned observe_ms;
     int64_t started_ms;
     int cancel_fd;
+    int capture;
 };
+int64_t managed_guard_now(int capture);
 int managed_guard_execute(const struct managed_guard_spec *spec, int owner_pidfd);
 int managed_guard_recover(const struct managed_journal *journal, const struct managed_key *key, int64_t deadline_ms);
 int managed_guard_summary(const struct managed_journal *journal, const struct managed_key *key);

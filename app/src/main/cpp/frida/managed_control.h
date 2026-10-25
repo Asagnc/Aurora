@@ -18,6 +18,9 @@ struct aurora_managed_worker { uint32_t pid; uint64_t ticks; };
 /* Valid worker facts are still NOT proof of worker exit or cgroup removal. */
 int aurora_managed_decode(const unsigned char frame[AURORA_MANAGED_FACT_BYTES], const unsigned char ticket[32],
     const struct aurora_managed_worker *worker, struct aurora_managed_receipt *receipt);
+/* Capture facts deliberately contain no Frida attach/unload/detach/manager bits. */
+int aurora_capture_decode(const unsigned char frame[AURORA_MANAGED_FACT_BYTES], const unsigned char ticket[32],
+    const struct aurora_managed_worker *worker, struct aurora_managed_receipt *receipt);
 /* Only the native parent may deliberately inherit this private stream across exec.
  * Bootstrap restores CLOEXEC before Frida can launch helpers. No Java FD inheritance assumption. */
 int aurora_managed_open(struct aurora_managed_control *control);

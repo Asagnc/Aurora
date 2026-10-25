@@ -1,6 +1,7 @@
 /* Native guard protocol fixture. All injection/cleanup flags are simulated. */
 #define _GNU_SOURCE
 #include "managed_control.h"
+#include "input.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <poll.h>
@@ -61,8 +62,19 @@ static int wait_stop(int descriptor) {
     }
 }
 
+static int capture_report(struct aurora_managed_control *control, int cancelled) {
+    unsigned char frame[AURORA_MANAGED_FACT_BYTES] = {0}; uint64_t ticks;
+    if (frida_process_start(getpid(), &ticks)) return -1;
+    memcpy(frame, "AEX2", 4); frame[4] = 2; frame[5] = cancelled ? 129 : 193; frame[6] = cancelled ? 1 : 0;
+    memcpy(frame + 8, control->ticket, 32);
+    for (unsigned i = 0; i < 4; i++) frame[40 + i] = (unsigned char)((uint32_t)getpid() >> (8 * i));
+    for (unsigned i = 0; i < 8; i++) frame[44 + i] = (unsigned char)(ticks >> (8 * i));
+    return send(control->fd, frame, sizeof(frame), MSG_NOSIGNAL) == (ssize_t)sizeof(frame) ? 0 : -1;
+}
+
 int main(int argc, char **argv) {
-    if (argc != 5 || strcmp(argv[1], "attach-channel")) return 64;
+    int capture = argc == 6 && !strcmp(argv[1], "capture-channel");
+    if (!capture && (argc != 5 || strcmp(argv[1], "attach-channel"))) return 64;
     struct aurora_managed_control control;
     if (aurora_managed_open(&control) || control.fd < 3) return 80;
     const char *path = getenv("AURORA_FIXTURE_MARKER");
@@ -78,7 +90,8 @@ int main(int argc, char **argv) {
     int cancelled = !strcmp(argv[2], "wait") ? wait_stop(control.fd) : 0;
     if (cancelled < 0) return 84;
     struct aurora_managed_facts facts = {.flags = cancelled ? 63 : 127};
-    if (aurora_managed_report(&control, &facts, cancelled ? 1 : 0)) return 74;
+    int use_capture = (capture && strcmp(argv[2], "wrong-frida")) || !strcmp(argv[2], "wrong-capture");
+    if (use_capture ? capture_report(&control, cancelled) : aurora_managed_report(&control, &facts, cancelled ? 1 : 0)) return 74;
     if (!strcmp(argv[2], "frame-alive")) {
         shutdown(control.fd, SHUT_WR);
         for (;;) pause();

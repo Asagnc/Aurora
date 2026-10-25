@@ -22,3 +22,14 @@ int aurora_managed_decode(const unsigned char frame[AURORA_MANAGED_FACT_BYTES], 
     *receipt = (struct aurora_managed_receipt){flags, status};
     return 0;
 }
+
+int aurora_capture_decode(const unsigned char frame[AURORA_MANAGED_FACT_BYTES], const unsigned char ticket[32],
+    const struct aurora_managed_worker *worker, struct aurora_managed_receipt *receipt) {
+    unsigned flags = frame[5], status = frame[6];
+    if (memcmp(frame, "AEX2", 4) || frame[4] != 2 || frame[7] || (flags != 129 && flags != 193) ||
+        memcmp(frame + 8, ticket, 32) || !worker->pid || !worker->ticks ||
+        little(frame + 40, 4) != worker->pid || little(frame + 44, 8) != worker->ticks ||
+        ((flags == 193) != (status == 0))) { errno = EPROTO; return -1; }
+    *receipt = (struct aurora_managed_receipt){flags, status};
+    return 0;
+}

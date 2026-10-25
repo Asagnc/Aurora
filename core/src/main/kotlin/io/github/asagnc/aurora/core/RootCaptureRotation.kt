@@ -43,6 +43,13 @@ import kotlinx.serialization.json.*
 
 /** Opaque sealed configuration, distinct from Frida's UTF-8 JavaScript. Ticket digest is supplied by the guard, avoiding a digest cycle. */
 data class RootCaptureConfiguration(val binding: CaptureRunBinding, val options: CaptureRotationOptions) {
+    fun validateTicket(ticket: RootManagedRunTicket) {
+        ticket.validate(); binding.validate(); options.validate()
+        require(ticket.kind == "capture" && ticket.protocol == 3 && ticket.runId == binding.runId &&
+            ticket.owner == binding.owner && ticket.identity == binding.identity && ticket.script == snapshot() &&
+            ticket.observeMs == options.seconds * 1000)
+    }
+
     fun encode(): ByteArray {
         binding.validate(); options.validate()
         val device = options.device.toByteArray(Charsets.US_ASCII); val filter = options.filter.toByteArray(Charsets.UTF_8)

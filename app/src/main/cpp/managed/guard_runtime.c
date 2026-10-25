@@ -35,9 +35,9 @@ static int observe(const struct managed_guard_spec *spec, int owner, struct runt
         .worker_pidfd = runtime->launch.pidfd, .worker = {.pid = (uint32_t)runtime->launch.pid,
             .ticks = runtime->launch.admission.worker_ticks}, .operation_deadline_ms = runtime->operation,
         .force_deadline_ms = runtime->force, .cancel_fd = spec->cancel_fd, .cancel_enabled = spec->cancel_fd >= 0,
-        .suppress_commands = !runtime->launch.dispatched};
+        .suppress_commands = !runtime->launch.dispatched, .capture = spec->capture};
     if (!runtime->launch.dispatched) {
-        long long pending = task_scope_now() + 1000;
+        long long pending = managed_guard_now(spec->capture) + 1000;
         if (pending < observer.force_deadline_ms) observer.force_deadline_ms = pending;
         if (observer.force_deadline_ms < observer.operation_deadline_ms)
             observer.operation_deadline_ms = observer.force_deadline_ms;
@@ -71,6 +71,7 @@ static int teardown(const struct managed_guard_spec *spec, struct runtime *runti
     if (!runtime->observation.receiver.state && runtime->launch.control >= 0 && runtime->launch.admission.worker_ticks) {
         struct aurora_managed_worker worker = {.pid = (uint32_t)runtime->launch.pid, .ticks = runtime->launch.admission.worker_ticks};
         unsigned char ticket[32]; ticket_bytes(spec->key, ticket);
+        runtime->observation.receiver.capture = spec->capture;
         aurora_managed_receive(&runtime->observation.receiver, runtime->launch.control, ticket, &worker);
     }
     if (!report_saved && save_worker(spec, runtime) && !saved) saved = errno;
@@ -92,11 +93,11 @@ int managed_guard_execute(const struct managed_guard_spec *spec, int owner_pidfd
         .total = spec->started_ms + spec->observe_ms + 20000};
     if (managed_scope_create(spec->journal, spec->key, &runtime.scope)) return 126; // Coordinator recovers the creation plan.
     struct managed_launch_input input = {.scope = &runtime.scope, .journal = spec->journal, .key = spec->key,
-        .argv = spec->argv, .owner_pidfd = owner_pidfd, .admission_deadline_ms = runtime.operation,
+        .argv = spec->argv, .owner_pidfd = owner_pidfd, .admission_deadline_ms = spec->capture ? task_scope_now() + 5000 : runtime.operation,
         .cancel_fd = spec->cancel_fd, .cancel_enabled = spec->cancel_fd >= 0};
     long long quick = task_scope_now() + 5000;
     if (input.admission_deadline_ms > quick) input.admission_deadline_ms = quick;
-    if (task_scope_now() >= runtime.operation) {
+    if (managed_guard_now(spec->capture) >= runtime.operation) {
         runtime.error = ETIMEDOUT; runtime.reason = MANAGED_DURATION;
     } else if (managed_launch_prepare(&input, &runtime.launch) || managed_launch_release(&input, &runtime.launch)) {
         runtime.error = errno; runtime.reason = MANAGED_PREPARE_FAILED;
@@ -105,7 +106,7 @@ int managed_guard_execute(const struct managed_guard_spec *spec, int owner_pidfd
     if (observe(spec, owner_pidfd, &runtime) && !runtime.error) runtime.error = errno;
     if (!runtime.reason) runtime.reason = runtime.observation.stop;
     long long cleanup = task_scope_now() + 5000;
-    if (cleanup < runtime.total) runtime.total = cleanup;
+    if (spec->capture || cleanup < runtime.total) runtime.total = cleanup;
     int cleaned = teardown(spec, &runtime), saved = errno;
     managed_launch_close(&runtime.launch); errno = saved;
     if (cleaned) return 126;
