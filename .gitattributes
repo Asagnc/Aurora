@@ -10,6 +10,7 @@
 *.c text eol=lf
 *.py text eol=lf
 *.json text eol=lf
+tools/frida-bridge/entrypoint.js text eol=lf
 gradlew text eol=lf
 gradlew.bat text eol=crlf
 *.jar binary
@@ -18,3 +19,4 @@ gradlew.bat text eol=crlf
 docs/evidence/**/SHA256SUMS -text
 tools/frida-licenses/*COPYING -text
 tools/frida-licenses/LGPL-2.0-only.txt -text
+app/src/main/assets/licenses/frida/NOTICE.txt -text

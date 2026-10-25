@@ -24,7 +24,7 @@ Windows/现有NDK30实际从ZIP临时目录离线重链接通过，得到89,143,
 
 这是Aurora worker的可复现重链接证据，未从源码重建官方完整SDK，也不是Android执行证据。独立workflow frida-materials.yml将复核Linux获取/重链接与上传材料，执行结果另记。
 
-当前仍待：最终APK携带的notice/源码对应入口、worker/桥打包及Agent注入动作、真实Root/ART与服务死亡/取消集中手机验收。现有Agent仅提供受管意图status/recover，不因源码材料完成就显示注入ready。
+当前仍待：真实 Root/ART 与服务死亡/取消集中手机验收、正式签名发布。worker/桥/notice 已进入 APK，Agent 已提供显式探测与 attach；源码材料完成不会授予当前 Root 服务的运行资格。
 
 ## 后续接入APK与Gitiles容器修复
 
@@ -34,6 +34,14 @@ worker现由Gradle复用独立资格构建器生成，再复制固定SHA的同�
 
 APK已携带65份源码材料关联的132份去重许可文本（1,051,122字节）及160条notice/companion来源记录。材料ZIP另补桥源入口/包锁/构建说明和标准许可文本；仍不把SDK完整重建或Android执行写成通过。
 
-本地Debug APK85,268,848字节、Release unsigned APK44,448,774字节。Release内worker ZIP压缩条目36,054,208字节、桥64,748字节、notice275,069字节；这是实际APK条目和总文件大小，不是安装/RSS或设备性能测量。见local-frida-apk-payloads.json。Debug/Release/testAPK/lint通过，新增ARM64版本/桥快照用例仅编译。Agent注入动作、最终Root/ART和正式发布签名仍待完成；APK携带不改变injectionReady=false。
+本地最终 Debug APK85,751,374字节、Release unsigned APK44,475,066字节。Release内worker ZIP压缩条目36,054,208字节、桥64,748字节、notice275,069字节；这是实际APK条目和总文件大小，不是安装/RSS或设备性能测量。见local-frida-apk-payloads.json。Debug/Release/testAPK/lint通过，新增ARM64版本/桥快照用例仅编译。Agent 注入动作已接入，最终 Root/ART 和正式发布签名仍待完成；APK 携带不等于 nativeProbePassed/javaProbePassed。
 
 依据：[固定releng依赖](https://github.com/frida/releng/blob/8429c0c9caf8b071955f64869a1b0ede58ad9f34/deps.toml)、[固定V8子模块声明](https://github.com/frida/v8/blob/f6d7f6610f2f21e2817ed180b72ea750a3f63ce8/.gitmodules)、[NDK r29官方变更记录](https://github.com/android/ndk/wiki/Changelog-r29)、[固定Android编译器来源](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/568b941cf0c249b9c2a1f853e94a29f0e6291c59/clang-r563880c/clang_source_info.md)。
+
+## 18c1474 远端源码复核
+
+独立源码 CI40155072277 已成功：完整65项输入在 Linux 重新获取、校验、打包与离线重链接通过。完整 CI40155067590 中真实 Frida 与原生监督 job 已成功，Android job 因桥输入 CRLF/LF 摘要差异失败，已固定 LF 输入重跑；桥产物摘要不变。
+
+最终本地材料 ZIP349,797,430字节，SHA256 为1dde76320dd2c32476dacf8c250fe16ad713a088470b6822134217605f922915；对应更新后的桥构建说明及固定输入。离线重链接 worker 摘要仍为a1486cd…，详见frida-agent-offline-relink.json。不同平台重新压缩源码包的 ZIP 容器摘要可以不同，包内固定源码身份及重链接产物独立验证。
+
+Linux NDK30 重链接 worker 为89,143,808字节、SHA256 402a241e45348d80ae8447354629d245dfef9f623feb8004a7d805815aab4d1e；Windows 同主机重链接为89,143,968字节、a1486cd… 。两者分别完成同主机离线复核，不声称跨宿主二进制完全一致；每份 APK 从自身最终载荷生成并校验可信摘要。
