@@ -128,6 +128,7 @@ class LinuxPreparationProtocolTest {
         }
         override fun linuxFiles(id: String, owner: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
         override fun capturePackets(id: String, conversation: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture has no packet capability") }
+        override fun injectPackets(id: String, conversation: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture has no packet capability") }
         override fun maintainLinuxMetadata(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture has no metadata capability") }
         override fun openLinuxTerminal(id: String, request: android.os.Bundle, callback: IRootResult): android.os.Bundle { throw SecurityException("Fixture is not Root") }
         override fun startLinuxRun(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }

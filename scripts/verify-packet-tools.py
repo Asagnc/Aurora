@@ -91,6 +91,18 @@ class PacketToolsTest(unittest.TestCase):
         self.assertIn(b'tcpdump version 4.99.7', result.stdout)
         self.assertIn(b'libpcap version 1.10.7', result.stdout)
 
+    def test_injection_only_on_owned_private_veth_pair(self):
+        prefix = self.root / 'prefix'; module = ROOT / 'app/src/main/cpp/packet'
+        binary = self.root / 'inject-worker'
+        subprocess.run(['cc', '-Wall', '-Wextra', '-Werror', '-I' + str(prefix / 'include'),
+            str(module / 'Inject.c'), str(prefix / 'lib/libpcap.a'), '-o', str(binary)], check=True)
+        fault = self.root / 'inject-short-write'
+        subprocess.run(['cc', '-Wall', '-Wextra', '-Werror', '-I' + str(prefix / 'include'),
+            str(module / 'Inject.c'), str(ROOT / 'scripts/packet-injection-fault.c'), str(prefix / 'lib/libpcap.a'),
+            '-Wl,--wrap=pcap_inject', '-o', str(fault)], check=True)
+        subprocess.run(['sudo', '-n', 'unshare', '--net', '--', sys.executable,
+            str(ROOT / 'scripts/verify-packet-injection.py'), str(binary), str(fault)], check=True, timeout=45)
+
     def test_matching_filter_preserves_packet(self):
         result = self.run_tool('-nn', '-r', 'input.pcap', '-w', 'matching.pcap', 'udp', 'dst', 'port', '4321')
         self.assertEqual(result.returncode, 0, result.stderr)

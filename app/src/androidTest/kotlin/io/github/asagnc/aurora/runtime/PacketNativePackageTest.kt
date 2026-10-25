@@ -83,4 +83,14 @@ class PacketNativePackageTest {
         val root = Files.createTempDirectory(context.cacheDir.toPath(), "packet-offline-")
         try { block(root) } finally { removeSkillTree(root) }
     }
+
+    @Test fun injectionWorkerRejectsOrdinaryUidBeforeOpeningAnInterface() = runBlocking { fixture { root ->
+        val binary = Path.of(context.applicationInfo.nativeLibraryDir, "libaurora_packet_inject.so")
+        val frame = ByteArray(60)
+        val request = PacketInjectionRequest.parse(objectOf("interface" to string("lo"),
+            "frameBase64" to string(java.util.Base64.getEncoder().encodeToString(frame))))
+        val result = NativeCommandRunner(context, artifactWorkingDirectory = true).execute(root, CommandRequest(request.argv(binary.toString())))
+        assertEquals(result.toString(), 64L, result.number("exitCode"))
+        assertEquals("", result["stdout"]!!.jsonObject.text("text"))
+    } }
 }

@@ -46,7 +46,7 @@
 - 真实ARM64 HTTP/HTTPS请求响应修改、严格信任/未信任CA拒绝、WebSocket修改、完成流离线回读在CI40180289970成功；新增索引审计CI40180852638也成功。
 - 仍未完成内嵌Python/原生库/第三方源码许可闭包、手机chroot运行闭包、共享安装/持久租约/Agent规则与产物入口；不显示proxyReady。
 - 首版明确regular loopback代理，不自动改全局路由或安装系统CA；只导出公有CA，私钥留所有者私有。规则固定结构化数据，不把任意Python脚本当产品规则接口。
-- 单次HTTP构造/重放 `http_request` 已接Agent/账本/会话产物，显式路由、TLS验证、禁止自动重试、取消/超时/解压预算与11项主机回归通过；2项Android已编译未执行，见HTTP_REPLAY_IMPLEMENTATION.md。原始发包与PCAP重放仍待实现。
+- 单次HTTP构造/重放 `http_request` 已接Agent/账本/会话产物，显式路由、TLS验证、禁止自动重试、取消/超时/解压预算与11项主机回归通过；2项Android已编译未执行，见HTTP_REPLAY_IMPLEMENTATION.md。原始帧packet_inject_root已接Root Binder/受管worker/账本，双ABI构建与4项核心证明回归通过，7项私有veth/短写实验待CI；PCAP片段重放仍待接，见PACKET_INJECTION_IMPLEMENTATION.md。
 - UID精确归属、长时分段轮转/空间预算/崩溃恢复仍待核实选型；涉及新增持久格式时先比较确认，不能猜UID或无限常驻。
 
 ## 其余尚未完成

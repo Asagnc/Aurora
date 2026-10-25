@@ -1,3 +1,9 @@
+## 2026-10-25 Root原始帧发送产品接入
+
+新增packet_inject_root，沿用已批准libpcap1.10.7与既有Root任务监督、Binder/账本/产物，不改系统路由。明确接口、14..16384字节帧、包数/字节/间隔/BOOTTIME截止，非阻塞发送，首次错误/短写不重试；只有全部接受且真实正常退出/完整报告/计数一致才完成，pcap接受不等于送达。双ABI Debug/Release/testAPK/lint和ELF16KiB审计本地通过，核心284项272通过/12跳过。
+
+新增7项私有netns/veth真实收帧/节流/预算/截止/取消/MTU拒绝及host-only短写故障实验待CI；普通UID拒绝和显式Root自有lo实验帧2项Android仅编译。PCAP/PCAPNG重放仍在接续。无手机或付费调用。见PACKET_INJECTION_IMPLEMENTATION.md。
+
 ## 2026-10-25 单次HTTP产品工具与Android网络权限
 
 已实现http_request Agent工具，复用OkHttp5.5、既有tool_runs/schema8/OwnedTasks和download.bin发布器；显式direct/http/socks，精确文件体SHA、无自动重定向/重试/凭据继承、TLS正常验证、有界解压响应、取消/超时与未知结果提示。特别处理OkHttp503/Retry-After:0内部follow-up，不重放GET并恢复原头。11项真实loopback测试通过（含SOCKS远端DNS、自签名TLS拒绝、失败发布/取消不重发），核心280项268通过/12跳过，完整Debug/Release/testAPK/lint本地通过；新增2项Android只编译。

@@ -18,6 +18,7 @@ import kotlinx.coroutines.runBlocking
 class AuroraRootService : RootService() {
     private val commands = RootCommandSession()
     private val packets by lazy { RootPacketCapture(this) }
+    private val injection by lazy { RootPacketInjection(this) }
     private val terminals by lazy { RootTerminalSessions(this) }
     private val linuxFiles by lazy { RootLinuxFiles(this) }
     private val linuxRuns by lazy { RootLinuxRuns(this) { linux.identity } }
@@ -57,6 +58,14 @@ class AuroraRootService : RootService() {
             val args = io.github.asagnc.aurora.core.WireJson.parseToJsonElement(encoded) as kotlinx.serialization.json.JsonObject
             val options = io.github.asagnc.aurora.core.PacketCaptureRequest.parse(args)
             commands.start(id, callback) { packets.execute(conversationRoot(conversation), id, options) }
+        }
+
+        override fun injectPackets(id: String, conversation: String, request: Bundle, callback: IRootResult) {
+            verifyCaller()
+            val encoded = requireNotNull(request.getString("arguments")).also { require(it.length <= 32768) }
+            val args = io.github.asagnc.aurora.core.WireJson.parseToJsonElement(encoded) as kotlinx.serialization.json.JsonObject
+            val options = io.github.asagnc.aurora.core.PacketInjectionRequest.parse(args)
+            commands.start(id, callback) { injection.execute(conversationRoot(conversation), id, options) }
         }
 
         override fun cancelAndWait(id: String) {

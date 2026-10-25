@@ -8,7 +8,7 @@ import struct
 import zipfile
 
 MACHINES = {'arm64-v8a': 183, 'x86_64': 62}
-FILES = ['libaurora_proot.so', 'libaurora_proot_loader.so', 'libaurora_talloc.so', 'libaurora_linux_namespace.so', 'libaurora_linux_scope.so', 'libaurora_tcpdump.so', 'libaurora_packet_worker.so', 'libaurora_managed_guard.so']
+FILES = ['libaurora_proot.so', 'libaurora_proot_loader.so', 'libaurora_talloc.so', 'libaurora_linux_namespace.so', 'libaurora_linux_scope.so', 'libaurora_tcpdump.so', 'libaurora_packet_worker.so', 'libaurora_packet_inject.so', 'libaurora_managed_guard.so']
 
 
 def inspect(data, machine, loader, executable=False):
