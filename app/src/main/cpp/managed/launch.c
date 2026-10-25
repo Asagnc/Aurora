@@ -6,6 +6,7 @@
 #include <limits.h>
 #include <poll.h>
 #include <signal.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/syscall.h>
@@ -25,14 +26,24 @@ static int owner_active(const struct managed_launch_input *input) {
     return input->cancel_enabled ? alive(input->cancel_fd) : 0;
 }
 
+static int positive_number(const char *text, unsigned long long maximum) {
+    if (!text || !*text || strlen(text) > 20 || strspn(text, "0123456789") != strlen(text)) return 0;
+    errno = 0; char *end; unsigned long long value = strtoull(text, &end, 10);
+    return !errno && !*end && value > 0 && value <= maximum;
+}
+
 static int valid_input(const struct managed_launch_input *input) {
     if (geteuid()) { errno = EPERM; return -1; }
     if (!input->scope || !input->journal || !input->key || !input->argv || input->owner_pidfd < 0 ||
         input->admission_deadline_ms <= 0 || (input->cancel_enabled && input->cancel_fd < 0)) { errno = EINVAL; return -1; }
-    for (int index = 0; index < 5; index++) if (!input->argv[index]) { errno = EINVAL; return -1; }
-    if (input->argv[5] || input->argv[0][0] != '/' || strcmp(input->argv[1], "attach-channel") ||
+    int count = input->capture ? 6 : 5;
+    for (int index = 0; index < count; index++) if (!input->argv[index]) { errno = EINVAL; return -1; }
+    if (input->argv[count] || input->argv[0][0] != '/' || strcmp(input->argv[1], input->capture ? "capture-channel" : "attach-channel") ||
         !*input->argv[2] || strnlen(input->argv[2], 97) > 96 || strnlen(input->argv[3], 65) != 64 ||
         strspn(input->argv[3], "0123456789abcdef") != 64 || strnlen(input->argv[4], 16385) > 16384) {
+        errno = EINVAL; return -1;
+    }
+    if (input->capture && (!positive_number(input->argv[4], INT_MAX) || !positive_number(input->argv[5], INT64_MAX))) {
         errno = EINVAL; return -1;
     }
     for (int descriptor = 0; descriptor < 3; descriptor++) if (fcntl(descriptor, F_GETFD) < 0) return -1;

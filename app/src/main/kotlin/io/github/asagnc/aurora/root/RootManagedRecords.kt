@@ -33,6 +33,9 @@ internal object RootManagedRecords {
                 val bytes = read(owned, name, 107, optional = true)
                 require(if (expected) bytes?.contentEquals(key) == true else bytes == null) { "Task journal stages disagree" }
             }
+            val capture = read(owned, "managed.capture", 108, optional = true)
+            require(if (ticket.kind == "capture" && state.phase and 4 != 0) capture?.contentEquals(key + byteArrayOf(1)) == true
+                else capture == null || (ticket.kind == "capture" && capture.contentEquals(key + byteArrayOf(1))))
             state
         }
 

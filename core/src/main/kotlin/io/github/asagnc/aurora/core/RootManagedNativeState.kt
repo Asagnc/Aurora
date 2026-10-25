@@ -30,13 +30,14 @@ class RootManagedNativeState private constructor(
 
     /** GO may have run, but a strict final worker record can still prove no attach was attempted. */
     fun noInjectionProof(): RootManagedRetirementProof? =
-        if (phase and 4 != 0 && worker != null && workerState == CLEAR && domainState == CLEAR &&
+        if (ticket.kind == "frida" && phase and 4 != 0 && worker != null && workerState == CLEAR && domainState == CLEAR &&
             (spawn == null || !spawn.requested || spawn.retired) &&
             workerFlags == (FINAL or CLEAN) && workerStatus != null && workerStatus != 0)
             RootManagedRetirementProof.fromNoInjection(ticket) else null
 
     /** Only a trusted Root observer may supply a boot change, exact replacement identity or confirmed ESRCH (null). */
     fun targetExitProof(bootId: String, observed: RootTargetIdentity?): RootManagedTargetExitProof? {
+        if (ticket.kind != "frida") return null
         // A confirmed new boot independently ends all old-boot processes and cgroups.
         if (bootId == ticket.identity.bootId && (workerState != CLEAR || domainState != CLEAR)) return null
         val proof = RootManagedTargetExitProof.confirmed(ticket, bootId, observed, spawn?.target)
@@ -45,6 +46,10 @@ class RootManagedNativeState private constructor(
 
     /** Resource reclamation and script cleanup remain independent facts, including on cancellation. */
     fun normalCleanupProof(): RootManagedExitProof? {
+        if (ticket.kind == "capture") {
+            if (worker == null || workerState != CLEAR || domainState != CLEAR) return null
+            return RootManagedExitProof(ticket.runId, ticket.identity, ticket.digest(), false, false, false, true, true, ticket.protocol)
+        }
         val flags = workerFlags ?: return null
         if (spawn != null && !spawn.settled) return null
         if (worker == null || workerState != CLEAR || domainState != CLEAR || flags and CLEAN != CLEAN || flags and ATTEMPTED == 0) return null
@@ -68,7 +73,7 @@ class RootManagedNativeState private constructor(
             val digest = ticket.digest()
             val admission = ready?.let { RootManagedAdmission.decode(ticket, it) }
             val completion = stopped(ticket, digest, stopped, admission != null)
-            val facts = report?.let { worker(digest, requireNotNull(admission).worker, it) }
+            val facts = report?.let { worker(digest, requireNotNull(admission).worker, it, ticket.kind == "capture") }
             return RootManagedNativeState(ticket, admission?.guard, admission?.worker, completion, facts, spawn)
         }
 
@@ -86,12 +91,17 @@ class RootManagedNativeState private constructor(
             return Stopped(phase, worker, domain, code, reason, error)
         }
 
-        private fun worker(digest: String, identity: RootTargetIdentity, bytes: ByteArray): Pair<Int, Int> {
-            require(bytes.size == 52 && text(bytes, 0, 4) == "AEX1" && bytes[4] == 1.toByte() && bytes[7] == 0.toByte())
+        private fun worker(digest: String, identity: RootTargetIdentity, bytes: ByteArray, capture: Boolean): Pair<Int, Int> {
+            require(bytes.size == 52 && text(bytes, 0, 4) == (if (capture) "AEX2" else "AEX1") &&
+                bytes[4] == (if (capture) 2 else 1).toByte() && bytes[7] == 0.toByte())
             val flags = unsigned(bytes[5]); val status = unsigned(bytes[6])
             require(bytes.copyOfRange(8, 40).joinToString("") { "%02x".format(unsigned(it)) } == digest)
             val input = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
             require(input.getInt(40) == identity.pid && input.getLong(44) == identity.startTicks)
+            if (capture) {
+                require(flags in setOf(129, 193) && ((flags == 193) == (status == 0)))
+                return flags to status
+            }
             require(flags in 1..127 && flags and FINAL != 0 && (flags and LOADED == 0 || flags and ATTEMPTED != 0))
             val success = flags and SUCCESS != 0
             require(if (success) status == 0 && flags and CLEAN == CLEAN && flags and LOADED != 0 else status != 0)

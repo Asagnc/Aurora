@@ -24,6 +24,7 @@ internal class RootManagedDispatch(private val context: Context, private val ide
 
     suspend fun start(ticket: RootManagedRunTicket, snapshots: List<ParcelFileDescriptor>): String {
         ticket.validate()
+        require(ticket.kind == "frida") { "Capture publication qualification is not complete" }
         require(ticket.identity == identity() && ticket.appUid == context.applicationInfo.uid)
         require(ticket.appBuild == context.packageManager.getPackageInfo(context.packageName, 0).longVersionCode.toString())
         if (ticket.bridge != null) require(ticket.bridge == bundle.bridgeSnapshot()) { "Java bridge differs from the installed immutable bundle" }

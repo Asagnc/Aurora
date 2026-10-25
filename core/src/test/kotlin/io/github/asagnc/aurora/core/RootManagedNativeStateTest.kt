@@ -9,6 +9,19 @@ import kotlinx.serialization.json.jsonObject
 import kotlin.test.*
 
 class RootManagedNativeStateTest {
+    @Test fun captureUsesActualWorkerDomainExitAndRejectsCrossKindReports() {
+        val capture = ticket.copy(protocol = 3, kind = "capture", action = "capture", target = null,
+            script = RootScriptSnapshot("capture-rotation-v1", "b".repeat(64), 227), observeMs = 30_000)
+        val facts = report(193, 0, capture).also { "AEX2".toByteArray().copyInto(it); it[4] = 2 }
+        fun state(bytes: ByteArray?) = RootManagedNativeState.decode(capture, ready(capture), bytes, stopped(ticket = capture))
+        assertTrue(capture.confirms(assertNotNull(state(facts).normalCleanupProof())))
+        assertTrue(capture.confirms(assertNotNull(state(null).normalCleanupProof())))
+        assertNull(state(null).noInjectionProof()); assertNull(state(null).targetExitProof(capture.identity.bootId, null))
+        assertFailsWith<IllegalArgumentException> { state(report(127, 0, capture)) }
+        assertFailsWith<IllegalArgumentException> { state(facts.copyOf().also { it[5] = 255.toByte() }) }
+        assertFailsWith<IllegalArgumentException> { RootManagedNativeState.decode(ticket, ready(), facts, stopped()) }
+    }
+
     @Test fun workerCleanupCannotEraseAnUnsettledSpawnOrInventCapture() {
         val spawnTicket = ticket.copy(protocol = 2, action = "spawn", target = null, spawnPackage = "io.aurora.fixture")
         val target = RootTargetIdentity(90, 900)

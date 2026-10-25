@@ -12,6 +12,7 @@ struct managed_launch_input {
     int owner_pidfd;
     int64_t admission_deadline_ms;
     int cancel_fd, cancel_enabled;
+    int capture;
 };
 struct managed_launch {
     pid_t pid;

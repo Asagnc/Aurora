@@ -94,7 +94,7 @@ int managed_guard_execute(const struct managed_guard_spec *spec, int owner_pidfd
     if (managed_scope_create(spec->journal, spec->key, &runtime.scope)) return 126; // Coordinator recovers the creation plan.
     struct managed_launch_input input = {.scope = &runtime.scope, .journal = spec->journal, .key = spec->key,
         .argv = spec->argv, .owner_pidfd = owner_pidfd, .admission_deadline_ms = spec->capture ? task_scope_now() + 5000 : runtime.operation,
-        .cancel_fd = spec->cancel_fd, .cancel_enabled = spec->cancel_fd >= 0};
+        .cancel_fd = spec->cancel_fd, .cancel_enabled = spec->cancel_fd >= 0, .capture = spec->capture};
     long long quick = task_scope_now() + 5000;
     if (input.admission_deadline_ms > quick) input.admission_deadline_ms = quick;
     if (managed_guard_now(spec->capture) >= runtime.operation) {

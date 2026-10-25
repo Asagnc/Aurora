@@ -52,9 +52,9 @@ class GuardTests(unittest.TestCase):
                 result += ["--kind", "capture"]
             if cooperative or capture:
                 result.append("--cooperative-cancel")
-            result += ["--", str(worker or self.worker), "capture-channel" if capture else "attach-channel", mode, "22" * 32, "{}"]
+            result += ["--", str(worker or self.worker), "capture-channel" if capture else "attach-channel", mode, "22" * 32, "123" if capture else "{}"]
             if capture:
-                result.append("fixture-root-ticks")
+                result.append("456")
         return result
 
     def start(self, mode="normal", **options):
@@ -240,7 +240,7 @@ class GuardTests(unittest.TestCase):
 
     def test_capture_kind_uses_distinct_report_and_recovers_exact_record(self):
         process = self.start(capture=True); result = self.finish(process)
-        self.assertTrue(result["success"]); self.assertEqual(result["workerFlags"], 193)
+        self.assertTrue(result["success"], result); self.assertEqual(result["workerFlags"], 193)
         self.assertEqual((self.state / "managed.capture").stat().st_size, 108)
         recovered = subprocess.run(self.command("recover"), capture_output=True, text=True, timeout=25)
         self.assertEqual(recovered.returncode, 0, recovered.stderr)
@@ -262,7 +262,7 @@ class GuardTests(unittest.TestCase):
 
     def test_long_capture_budget_does_not_change_frida_limits(self):
         process = self.start(capture=True, observe=1800000); result = self.finish(process)
-        self.assertTrue(result["success"])
+        self.assertTrue(result["success"], result)
 
     def test_valid_report_while_worker_alive_cannot_claim_success(self):
         process = self.start("frame-alive", observe=500); result = self.finish(process)
