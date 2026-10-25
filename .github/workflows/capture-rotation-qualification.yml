@@ -1,0 +1,23 @@
+name: Root capture rotation qualification
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  rotation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Prepare host parser generators
+        run: |
+          if ! command -v flex || ! command -v bison; then
+            sudo apt-get update
+            sudo apt-get install -y --no-install-recommends flex bison
+          fi
+      - name: Verify sealed configuration and streaming SHA256
+        run: |
+          python3 scripts/verify-capture-config.py
+          python3 scripts/verify-capture-sha256.py
+      - name: Execute real fixed libpcap rotation and durable record failure paths
+        run: python3 scripts/qualify-capture-rotation.py

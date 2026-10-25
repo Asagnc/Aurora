@@ -92,6 +92,14 @@ class PacketToolsTest(unittest.TestCase):
             str(module / 'Sha256.c'), str(prefix / 'lib/libpcap.a'), '-Wl,--wrap=fsync', '-o', str(binary)], check=True)
         subprocess.run(['sudo', '-n', sys.executable, str(ROOT / 'scripts/verify-capture-store.py'), str(binary)], check=True, timeout=60)
 
+    def test_rotating_authenticated_worker_in_private_network_namespace(self):
+        prefix = self.root / 'prefix'; module = ROOT / 'app/src/main/cpp/packet'; binary = self.root / 'rotate-worker'
+        sources = [module / (name + '.c') for name in ['RotateMain', 'RotateSource', 'RotateLoop', 'RotateStore', 'RotateSeal', 'RotateChannel', 'RotateConfig', 'Sha256']]
+        sources += [module.parent / 'frida' / (name + '.c') for name in ['managed_control', 'input', 'fd_channel', 'fd_io']]
+        subprocess.run(['cc', '-Wall', '-Wextra', '-Werror', '-I' + str(prefix / 'include'), *map(str, sources),
+            str(prefix / 'lib/libpcap.a'), '-o', str(binary)], check=True)
+        subprocess.run(['sudo', '-n', 'unshare', '--net', '--', sys.executable, str(ROOT / 'scripts/verify-capture-rotation.py'), str(binary)], check=True, timeout=45)
+
     def test_exact_stable_versions(self):
         result = self.run_tool('--version')
         self.assertEqual(result.returncode, 0, result.stderr)
