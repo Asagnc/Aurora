@@ -47,7 +47,7 @@
 - 仍未完成内嵌Python/原生库/第三方源码许可闭包、手机chroot运行闭包、共享安装/持久租约/Agent规则与产物入口；不显示proxyReady。
 - 首版明确regular loopback代理，不自动改全局路由或安装系统CA；只导出公有CA，私钥留所有者私有。规则固定结构化数据，不把任意Python脚本当产品规则接口。
 - 单次HTTP构造/重放 `http_request` 已接Agent/账本/会话产物，显式路由、TLS验证、禁止自动重试、取消/超时/解压预算与11项主机回归通过；2项Android已编译未执行，见HTTP_REPLAY_IMPLEMENTATION.md。原始帧packet_inject_root已接Root Binder/受管worker/账本，双ABI构建与4项核心证明回归通过，7项私有veth/短写实验已通过CI40185946093；新增classic PCAP精确片段回放，核心参数/选择/多帧证明与完整本地构建通过，扩展13项Linux实验待CI，见PACKET_INJECTION_IMPLEMENTATION.md。
-- UID精确socket快照和复用现有受管引擎的长时分段轮转均获用户确认，见NETWORK_UID_ROTATION_PROPOSAL；按验证后开放推进，不把快照当历史逐包归属。
+- UID精确socket快照和复用现有受管引擎的长时分段轮转均获用户确认，见NETWORK_UID_ROTATION_PROPOSAL；socket_owner_root已接Agent/账本和有界原生查询，本地291核心及完整构建通过，Linux内核资格待CI，Android2项仅编译。轮转继续按验证后开放推进，不把快照当历史逐包归属。
 
 ## 其余尚未完成
 

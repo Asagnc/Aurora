@@ -53,6 +53,7 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
             CommandToolExecutor(app.commands, directory, prepared = prepared),
             PacketInspectionTool(app, directory, app.commands, prepared),
             HttpReplayTool(directory, prepared),
+            app.root.commandClient?.let { SocketOwnerTool(app, it, id, prepared) },
             app.root.packetClient?.let { PacketCaptureTool(it, id, prepared) },
             app.root.packetClient?.let { PacketInjectionTool(it, id, prepared) },
             app.root.packetClient?.let { PacketReplayTool(app, it, id, directory, prepared) },

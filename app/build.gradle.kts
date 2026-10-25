@@ -15,7 +15,7 @@ android {
     externalNativeBuild { cmake { path = file("src/main/cpp/CMakeLists.txt"); version = "4.1.2" } }
     defaultConfig {
         ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
-        externalNativeBuild { cmake { targets += listOf("aurora_runner", "aurora_pty", "aurora_proot", "aurora_linux_namespace", "aurora_linux_scope", "aurora_tcpdump", "aurora_packet_worker", "aurora_packet_inject", "aurora_managed_guard") } }
+        externalNativeBuild { cmake { targets += listOf("aurora_runner", "aurora_pty", "aurora_proot", "aurora_linux_namespace", "aurora_linux_scope", "aurora_tcpdump", "aurora_packet_worker", "aurora_packet_inject", "aurora_socket_diag", "aurora_managed_guard") } }
         applicationId = "io.github.asagnc.aurora"
         minSdk = 36
         targetSdk = 37
@@ -98,7 +98,7 @@ abstract class StageNativeRunner : DefaultTask() {
         check(NativeDigests.sha256(fridaBinary.get().asFile) == fridaDigest.get().asFile.readText()) { "Frida qualification binary changed" }
         fileOperations.sync {
             from(binaries) {
-                include("*/aurora_runner", "*/aurora_pty", "*/aurora_proot", "*/aurora_proot_loader", "*/aurora_linux_namespace", "*/aurora_linux_scope", "*/aurora_tcpdump", "*/aurora_packet_worker", "*/aurora_packet_inject", "*/aurora_managed_guard")
+                include("*/aurora_runner", "*/aurora_pty", "*/aurora_proot", "*/aurora_proot_loader", "*/aurora_linux_namespace", "*/aurora_linux_scope", "*/aurora_tcpdump", "*/aurora_packet_worker", "*/aurora_packet_inject", "*/aurora_socket_diag", "*/aurora_managed_guard")
                 eachFile { path = "${file.parentFile.name}/lib${file.name}.so" }
                 includeEmptyDirs = false
             }

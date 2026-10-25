@@ -20,6 +20,7 @@ for (const item of cases) {
   const input = new Input(); input.accept=item.accept || ''; input.multiple=item.multiple !== false;
   globalThis.document = {querySelector:()=>input};
   const {port1,port2}=new MessageChannel();
+  const closed=new Promise(resolve=>port2.once('close',resolve));
   const queue=[];let pending;
   port1.on('message',value=>{if(pending){const resolve=pending;pending=null;resolve(value);}else queue.push(value);});
   const next=async()=>{
@@ -95,7 +96,11 @@ for (const item of cases) {
         }
       }
     }
-    await wait(10);assert.equal(typeof window[`__aurora_transfer_${item.id}`],'undefined');
+    // Completion ACK crosses an actual MessagePort. A fixed 10 ms delay races Windows scheduling under a parallel build.
+    let closeTimer;
+    try {await Promise.race([closed,new Promise((_,reject)=>{closeTimer=setTimeout(()=>reject(Error('Transfer port did not close')),2000);})]);}
+    finally {clearTimeout(closeTimer);}
+    assert.equal(typeof window[`__aurora_transfer_${item.id}`],'undefined');
     assert.equal(listeners.size,0);console.log(`PASS ${item.name}`);passed++;
   } finally {(0,eval)(item.cleanup);port1.close();port2.close();}
 }

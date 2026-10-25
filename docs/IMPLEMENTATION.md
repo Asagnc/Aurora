@@ -1,3 +1,9 @@
+## 2026-10-25 PCAP片段、JNI成功与已批准socket快照
+
+classic PCAP精确选择已接Agent/Root注入批次，普通UID封印输入快照，protocol2逐前缀变长帧计数、全选择拒绝、父死亡终止；9234db2的CI40202879875 packet实验步骤13项已通过，整体构建另追踪。真实ARM64 JNI CI40202399728成功，API36双ABI库16KiB/导出/依赖验证，完整AGP/CMake和手机执行仍待做。
+
+用户确认精确socket快照和复用受管引擎的长时轮转。新增socket_owner_root与原生有界SOCK_DIAG，所有精确匹配UID/cookie/inode、时间/namespace、unknown/multiple保留。291核心279通过/12跳过，完整本地构建/lint通过；Linux内核7项新增实验待CI，Android2项仅编译。浏览器夹具固定10ms清理等待在Windows并行构建暴露竞争，已改实际MessagePort关闭事件并通过。见SOCKET_OWNER_IMPLEMENTATION.md；轮转尚未开放。无手机/付费调用。
+
 ## 2026-10-25 完整ARM64编译器候选成功与Android JNI入口
 
 CI40183812668实际成功，6份固定源码构建、原生AArch64 intrinsic C与C++ vector在迁移后的候选中编译执行成功；工具、clang资源头及入口合计282文件228,341,810字节已保留。仍明确不是全部Android补丁等价或手机JNI执行证明。

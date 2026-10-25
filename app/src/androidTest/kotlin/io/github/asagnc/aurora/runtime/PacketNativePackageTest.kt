@@ -19,6 +19,14 @@ class PacketNativePackageTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val binary get() = Path.of(context.applicationInfo.nativeLibraryDir, "libaurora_tcpdump.so").toString()
 
+    @Test fun socketSnapshotWorkerRejectsOrdinaryUid() = runBlocking { fixture { root ->
+        val worker = Path.of(context.applicationInfo.nativeLibraryDir, "libaurora_socket_diag.so")
+        val result = NativeCommandRunner(context).execute(root, CommandRequest(listOf(worker.toString(),
+            "ipv4", "tcp", "127.0.0.1", "1234", "127.0.0.1", "5678")))
+        assertEquals(result.toString(), 1L, result.number("exitCode"))
+        assertEquals("root_required", WireJson.parseToJsonElement(result["stdout"]!!.jsonObject.text("text")!!).jsonObject.text("error"))
+    } }
+
     @Test fun packagedVersionsStartWithoutRoot() = runBlocking { fixture { root ->
         val result = NativeCommandRunner(context).execute(root, CommandRequest(listOf(binary, "--version")))
         assertEquals(result.toString(), 0L, result.number("exitCode"))

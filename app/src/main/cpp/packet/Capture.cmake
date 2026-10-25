@@ -90,3 +90,6 @@ target_include_directories(aurora_packet_inject PRIVATE "${capture_prefix}/inclu
 target_link_libraries(aurora_packet_inject PRIVATE "${capture_prefix}/lib/libpcap.a")
 target_compile_options(aurora_packet_inject PRIVATE -Wall -Wextra -Werror -fstack-protector-strong)
 target_link_options(aurora_packet_inject PRIVATE -Wl,-z,relro,-z,now,-z,noexecstack,-z,max-page-size=16384)
+add_executable(aurora_socket_diag "${capture_module}/SocketDiag.c")
+target_compile_options(aurora_socket_diag PRIVATE -Wall -Wextra -Werror -fstack-protector-strong)
+target_link_options(aurora_socket_diag PRIVATE -Wl,-z,relro,-z,now,-z,noexecstack,-z,max-page-size=16384)
