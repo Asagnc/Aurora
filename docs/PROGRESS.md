@@ -1,3 +1,9 @@
+## 2026-10-25 ARM64资源实际构建通过与网络资格入口
+
+真实ARM64 CI40178993015的资源/JVM两job成功，aapt2/aidl/zipalign已从固定源码编译并执行版本检查；报告已保存。还未完成API37/AGP/Compose/JNI工程资格或手机运行闭包。成功产物现保留bin与固定源码归档供下一阶段使用。c9878b9完整CI40178992261成功；独立LLVM编译实验仍在运行。
+
+新增官方mitmproxy12.3.0归档固定与有界只读PyInstaller审计：98,927,179字节，121内嵌条目、14 ARM64 ELF；仅选择mitmdump。3项拒绝路径测试本地通过。新增真实ARM64自有loopback HTTP/HTTPS/WebSocket修改及流文件离线读取实验，结果另查；不是产品已接入、许可闭包完成或Android已验收。无手机/付费模型操作。
+
 ## 2026-10-25 C++23宿主资格与网络后端已确认
 
 资源CI40178607483的JVM成功，资源编译已越过全部缺头阶段，至ResourceTable.cpp遭GCC13/libstdc++缺C++23 P2165R4 tuple/pair转换而失败。官方GCC14起实现该特性；资源实验改用已GA的ubuntu-26.04-arm宿主（与已选Ubuntu26.10 guest兼容方向），保留原C++23源码语义，记录实际宿主包版本；新结果另查。compiler独立job仍按原基线运行，尚未完成。

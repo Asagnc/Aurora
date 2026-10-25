@@ -109,7 +109,7 @@ def qualify(args):
     if platform.system() != 'Linux' or platform.machine().lower() not in {'aarch64', 'arm64'}:
         raise ValueError('Requires a real Linux ARM64 host')
     directory = args.directory.resolve(); directory.mkdir(parents=True, exist_ok=True)
-    if (directory / 'report.json').exists():
+    if (directory / 'report.json').exists() or (directory / 'bin').exists():
         raise FileExistsError('Preserve the completed qualification; select a new report directory')
     catalog = json.loads((ROOT / 'tools/apk-build/sources.json').read_text())
     sources = source_helper()
@@ -148,6 +148,11 @@ def qualify(args):
                 digest = hashlib.file_digest(stream, 'sha256').hexdigest()
             reports.append({'tool': binary.name, 'bytes': binary.stat().st_size, 'sha256': digest, 'ldd': result.stdout})
         run([candidates[0], 'version'], directory / 'aapt2-version.txt', timeout=30)
+        binaries = work / 'qualified-bin'; binaries.mkdir()
+        for binary in candidates:
+            shutil.copyfile(binary, binaries / binary.name)
+            (binaries / binary.name).chmod(0o755)
+        shutil.copytree(binaries, directory / 'bin')
         report = {'linuxArm64ResourceToolsBuilt': True, 'apkBuildQualified': False, 'androidRuntime': 'NOT TESTED',
                   'tools': reports, 'sourceLinks': skipped, 'sourceArchives': len(acquired)}
         (directory / 'report.json').write_text(json.dumps(report, indent=2) + '\n')

@@ -23,6 +23,8 @@ jobs:
           path: |
             app/build/outputs/apk-resource-qualification/*.json
             app/build/outputs/apk-resource-qualification/*.txt
+            app/build/outputs/apk-resource-qualification/bin/*
+            app/build/outputs/apk-resource-qualification/sources/*.tar.gz
           if-no-files-found: warn
           retention-days: 14
   jvm:

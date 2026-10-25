@@ -1,0 +1,278 @@
+{
+  "linuxArm64ResourceToolsBuilt": true,
+  "apkBuildQualified": false,
+  "androidRuntime": "NOT TESTED",
+  "tools": [
+    {
+      "tool": "aapt2",
+      "bytes": 5594424,
+      "sha256": "273990bae5e1e89c68061510855ed54751565f6748f1d9c2e7993a995ff4ea34",
+      "ldd": "\tlinux-vdso.so.1 (0x0000f5f54f95b000)\n\tlibfmt.so.10 => /usr/lib/aarch64-linux-gnu/libfmt.so.10 (0x0000f5f54f450000)\n\tlibz.so.1 => /usr/lib/aarch64-linux-gnu/libz.so.1 (0x0000f5f54f410000)\n\tlibpng16.so.16 => /usr/lib/aarch64-linux-gnu/libpng16.so.16 (0x0000f5f54f3b0000)\n\tlibexpat.so.1 => /usr/lib/aarch64-linux-gnu/libexpat.so.1 (0x0000f5f54f360000)\n\tlibprotobuf.so.32 => /usr/lib/aarch64-linux-gnu/libprotobuf.so.32 (0x0000f5f54f050000)\n\tlibstdc++.so.6 => /usr/lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000f5f54edb0000)\n\tlibgcc_s.so.1 => /usr/lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000f5f54ed70000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000f5f54eba0000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000f5f54f910000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000f5f54ead0000)\n"
+    },
+    {
+      "tool": "aidl",
+      "bytes": 2973848,
+      "sha256": "6cb655c53816d6cb98893c340868f9bdcb54630b753993abd663a63e873ff3dd",
+      "ldd": "\tlinux-vdso.so.1 (0x0000ea65ad899000)\n\tlibfmt.so.10 => /usr/lib/aarch64-linux-gnu/libfmt.so.10 (0x0000ea65ad5a0000)\n\tlibstdc++.so.6 => /usr/lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000ea65ad300000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000ea65ad230000)\n\tlibgcc_s.so.1 => /usr/lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000ea65ad1f0000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000ea65ad020000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000ea65ad850000)\n"
+    },
+    {
+      "tool": "zipalign",
+      "bytes": 316976,
+      "sha256": "cc8da4366c3bdfbaa0caec44628cbe52b5c14cca4d4758cf6c88fee7dab89bd9",
+      "ldd": "\tlinux-vdso.so.1 (0x0000fa6c45586000)\n\tlibz.so.1 => /usr/lib/aarch64-linux-gnu/libz.so.1 (0x0000fa6c454a0000)\n\tlibstdc++.so.6 => /usr/lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000fa6c45200000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000fa6c45130000)\n\tlibgcc_s.so.1 => /usr/lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000fa6c450f0000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000fa6c44f20000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000fa6c45540000)\n"
+    }
+  ],
+  "sourceLinks": [
+    {
+      "source": "android-build-tools",
+      "linksNotMaterialized": [],
+      "linksMaterializedAsFiles": [],
+      "internalDirectoryAliases": []
+    },
+    {
+      "source": "aapt-build-tools-zipalign",
+      "linksNotMaterialized": [],
+      "linksMaterializedAsFiles": [],
+      "internalDirectoryAliases": []
+    },
+    {
+      "source": "aapt-zopfli",
+      "linksNotMaterialized": [],
+      "linksMaterializedAsFiles": [],
+      "internalDirectoryAliases": []
+    },
+    {
+      "source": "aapt-base-tools-aapt",
+      "linksNotMaterialized": [],
+      "linksMaterializedAsFiles": [],
+      "internalDirectoryAliases": []
+    },
+    {
+      "source": "aapt-base-tools-aapt2",
+      "linksNotMaterialized": [],
+      "linksMaterializedAsFiles": [
+        "integration-tests/SymlinkTest/res/drawable/white_3x3.9.png",
+        "integration-tests/SymlinkTest/res/layout/layout.xml",
+        "integration-tests/SymlinkTest/res/values/values.xml"
+      ],
+      "internalDirectoryAliases": []
+    },
+    {
+      "source": "aapt-base-libs-androidfw",
+      "linksNotMaterialized": [],
+      "linksMaterializedAsFiles": [],
+      "internalDirectoryAliases": []
+    },
+    {
+      "source": "aapt-base-cmds-idmap2-libidmap2_policies-include",
+      "linksNotMaterialized": [],
+      "linksMaterializedAsFiles": [],
+      "internalDirectoryAliases": []
+    },
+    {
+      "source": "aapt-native",
+      "linksNotMaterialized": [
+        "include/ftl/.clang-format",
+        "include/private/binder",
+        "libs/ftl/.clang-format",
+        "rustfmt.toml",
+        "services/surfaceflinger/tests/end2end/.clang-format"
+      ],
+      "linksMaterializedAsFiles": [
+        "include/binder/Binder.h",
+        "include/binder/BinderService.h",
+        "include/binder/Common.h",
+        "include/binder/IBinder.h",
+        "include/binder/IInterface.h",
+        "include/binder/IMemory.h",
+        "include/binder/IPCThreadState.h",
+        "include/binder/IServiceManager.h",
+        "include/binder/MemoryDealer.h",
+        "include/binder/MemoryHeapBase.h",
+        "include/binder/Parcel.h",
+        "include/binder/ParcelFileDescriptor.h",
+        "include/binder/Parcelable.h",
+        "include/binder/PermissionCache.h",
+        "include/binder/PersistableBundle.h",
+        "include/binder/ProcessState.h",
+        "include/binder/Stability.h",
+        "include/binder/Status.h",
+        "include/binder/unique_fd.h",
+        "include/ui/FatVector.h",
+        "include/ui/FloatRect.h",
+        "include/ui/PixelFormat.h",
+        "include/ui/Point.h",
+        "include/ui/PublicFormat.h",
+        "include/ui/Rect.h",
+        "include/ui/Region.h",
+        "include/ui/Rotation.h",
+        "include/ui/Size.h",
+        "include/ui/StaticDisplayInfo.h",
+        "include/ui/Transform.h",
+        "include_sensor/android/looper.h",
+        "include_sensor/android/sensor.h",
+        "libs/ui/include_types/ui/GraphicTypes.h",
+        "libs/ui/include_vndk/ui/ANativeObjectBase.h",
+        "libs/ui/include_vndk/ui/BufferQueueDefs.h",
+        "libs/ui/include_vndk/ui/ColorSpace.h",
+        "libs/ui/include_vndk/ui/DebugUtils.h",
+        "libs/ui/include_vndk/ui/DeviceProductInfo.h",
+        "libs/ui/include_vndk/ui/DisplayId.h",
+        "libs/ui/include_vndk/ui/DisplayMode.h",
+        "libs/ui/include_vndk/ui/DisplayStatInfo.h",
+        "libs/ui/include_vndk/ui/DisplayState.h",
+        "libs/ui/include_vndk/ui/DisplayedFrameStats.h",
+        "libs/ui/include_vndk/ui/FatVector.h",
+        "libs/ui/include_vndk/ui/Fence.h",
+        "libs/ui/include_vndk/ui/FenceTime.h",
+        "libs/ui/include_vndk/ui/FloatRect.h",
+        "libs/ui/include_vndk/ui/FrameStats.h",
+        "libs/ui/include_vndk/ui/GraphicBuffer.h",
+        "libs/ui/include_vndk/ui/GraphicBufferAllocator.h",
+        "libs/ui/include_vndk/ui/GraphicBufferMapper.h",
+        "libs/ui/include_vndk/ui/GraphicTypes.h",
+        "libs/ui/include_vndk/ui/HdrCapabilities.h",
+        "libs/ui/include_vndk/ui/PixelFormat.h",
+        "libs/ui/include_vndk/ui/Point.h",
+        "libs/ui/include_vndk/ui/Rect.h",
+        "libs/ui/include_vndk/ui/Region.h",
+        "libs/ui/include_vndk/ui/Rotation.h",
+        "libs/ui/include_vndk/ui/Size.h",
+        "libs/ui/include_vndk/ui/StaticDisplayInfo.h",
+        "libs/ui/include_vndk/ui/Transform.h"
+      ],
+      "internalDirectoryAliases": [
+        "include/gui",
+        "include/layerproto",
+        "include/media",
+        "include/private/gui"
+      ]
+    },
+    {
+      "source": "aapt-core",
+      "linksNotMaterialized": [
+        ".clang-format",
+        ".clang-format-2",
+        ".clang-format-4",
+        "bootstat/.clang-format",
+        "cli-test/.clang-format",
+        "debuggerd/.clang-format",
+        "fastboot/.clang-format",
+        "fs_mgr/.clang-format",
+        "init/.clang-format",
+        "libcrypto_utils/.clang-format",
+        "libpackagelistparser/.clang-format",
+        "libsparse/.clang-format",
+        "property_service/.clang-format",
+        "run-as/.clang-format",
+        "rustfmt.toml"
+      ],
+      "linksMaterializedAsFiles": [
+        "libcutils/include/cutils/android_filesystem_config.h",
+        "libcutils/include_outside_system/cutils/android_filesystem_config.h",
+        "libcutils/include_outside_system/cutils/android_get_control_file.h",
+        "libcutils/include_outside_system/cutils/android_reboot.h",
+        "libcutils/include_outside_system/cutils/ashmem.h",
+        "libcutils/include_outside_system/cutils/atomic.h",
+        "libcutils/include_outside_system/cutils/bitops.h",
+        "libcutils/include_outside_system/cutils/compiler.h",
+        "libcutils/include_outside_system/cutils/config_utils.h",
+        "libcutils/include_outside_system/cutils/fs.h",
+        "libcutils/include_outside_system/cutils/hashmap.h",
+        "libcutils/include_outside_system/cutils/iosched_policy.h",
+        "libcutils/include_outside_system/cutils/klog.h",
+        "libcutils/include_outside_system/cutils/list.h",
+        "libcutils/include_outside_system/cutils/log.h",
+        "libcutils/include_outside_system/cutils/memory.h",
+        "libcutils/include_outside_system/cutils/misc.h",
+        "libcutils/include_outside_system/cutils/multiuser.h",
+        "libcutils/include_outside_system/cutils/native_handle.h",
+        "libcutils/include_outside_system/cutils/partition_utils.h",
+        "libcutils/include_outside_system/cutils/properties.h",
+        "libcutils/include_outside_system/cutils/qtaguid.h",
+        "libcutils/include_outside_system/cutils/record_stream.h",
+        "libcutils/include_outside_system/cutils/sched_policy.h",
+        "libcutils/include_outside_system/cutils/sockets.h",
+        "libcutils/include_outside_system/cutils/str_parms.h",
+        "libcutils/include_outside_system/cutils/trace.h",
+        "libcutils/include_outside_system/cutils/uevent.h",
+        "libsync/include/sync/sync.h",
+        "libutils/include/utils/AllocatorTracker.h",
+        "libutils/include/utils/Errors.h",
+        "libutils/include/utils/LightRefBase.h",
+        "libutils/include/utils/RefBase.h",
+        "libutils/include/utils/String16.h",
+        "libutils/include/utils/String8.h",
+        "libutils/include/utils/StrongPointer.h",
+        "libutils/include/utils/TypeHelpers.h",
+        "libutils/include/utils/Unicode.h",
+        "libutils/include/utils/Vector.h",
+        "libutils/include/utils/VectorImpl.h"
+      ],
+      "internalDirectoryAliases": [
+        "include/cutils",
+        "include/system",
+        "include/utils"
+      ]
+    },
+    {
+      "source": "aapt-incremental_delivery-incfs",
+      "linksNotMaterialized": [],
+      "linksMaterializedAsFiles": [],
+      "internalDirectoryAliases": []
+    },
+    {
+      "source": "aapt-libbase",
+      "linksNotMaterialized": [
+        ".clang-format"
+      ],
+      "linksMaterializedAsFiles": [],
+      "internalDirectoryAliases": []
+    },
+    {
+      "source": "aapt-libziparchive",
+      "linksNotMaterialized": [],
+      "linksMaterializedAsFiles": [],
+      "internalDirectoryAliases": []
+    },
+    {
+      "source": "aapt-logging",
+      "linksNotMaterialized": [
+        ".clang-format",
+        ".clang-format-2",
+        ".clang-format-4",
+        "liblog/.clang-format",
+        "logd/.clang-format",
+        "rust/rustfmt.toml"
+      ],
+      "linksMaterializedAsFiles": [
+        "liblog/include_vndk/log/log_id.h",
+        "liblog/include_vndk/log/log_main.h",
+        "liblog/include_vndk/log/log_properties.h",
+        "liblog/include_vndk/log/log_radio.h",
+        "liblog/include_vndk/log/log_read.h",
+        "liblog/include_vndk/log/log_safetynet.h",
+        "liblog/include_vndk/log/log_system.h"
+      ],
+      "internalDirectoryAliases": [
+        "liblog/include_vndk/android"
+      ]
+    },
+    {
+      "source": "aapt-aidl",
+      "linksNotMaterialized": [
+        ".clang-format",
+        "rustfmt.toml"
+      ],
+      "linksMaterializedAsFiles": [],
+      "internalDirectoryAliases": []
+    },
+    {
+      "source": "aapt-sysprop",
+      "linksNotMaterialized": [],
+      "linksMaterializedAsFiles": [],
+      "internalDirectoryAliases": []
+    }
+  ],
+  "sourceArchives": 15
+}
