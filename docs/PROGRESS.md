@@ -1,3 +1,13 @@
+## 2026-10-25 AGP SDK注册元数据修复
+
+CI40181504510已越过旧Kotlin/JVM25错误，在查找android-37.0目标时失败。固定SDK ZIP只有source.properties，缺sdkmanager安装时另行生成的package.xml；现保留原ZIP及API37.0身份不变，复制现有官方SDK安装的两份精确注册元数据（含原许可），只写CI私有SDK，报告记录其摘要。不重装IDE、不访问手机。失败日志保留，完整AGP成功仍待新实验。
+
+## 2026-10-25 API37/AIDL整体通过，AGP显式Kotlin版本修复
+
+资源/JVM CI40180937353整体成功，实际API37资源编译链接、R.java、AIDL Binder Java、16KiB zipalign与坏XML拒绝全部通过。网络CI40181238469新增严格退出码0收尾后也成功。
+
+首轮完整AGP CI40181353310在dex任务依赖阶段失败：夹具只声明AGP，没有主工程顶层Kotlin2.4.21 apply false约束，默认内置Kotlin不支持JVM25。按现有主工程补相同Kotlin版本声明，保持JDK/Java25目标，不降级。官方built-in Kotlin支持更高KGP版本的说明见https://developer.android.com/build/releases/agp-9-0-0-release-notes。失败证据保留，新CI40181504510结果另查；仍无手机或付费调用。
+
 ## 2026-10-25 API37资源成功、AIDL夹具失败修复
 
 CI40180474337资源源码构建再次成功，API37 compile/link/R.java/16KiB zipalign/坏XML拒绝均实际通过；AIDL因夹具未传源码import根目录而失败，保留失败日志，不记整体验证通过。现补显式-I目录，新运行另记。网络新增冻结索引审计CI40180852638成功，仍不代表许可闭包或手机接入完成。

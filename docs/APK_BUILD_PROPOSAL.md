@@ -10,7 +10,7 @@
 
 推荐组合：Temurin25.0.5+8 Linux AArch64 JDK（不是现有 JRE）、Gradle9.8.2、AGP9.4.1、Kotlin2.4.21，平台37/Build Tools36及NDK30对应 API/sysroot。JDK25已符合 Gradle运行要求，且与 Aurora 现有 Java25 构建一致；不为追求主版本数字替换成未经本项目验证的组合。
 
-实际查询到 JDK 归档140,178,170字节，SHA256 bb5b2ded252f21c6090cf780b0a408ad0d83bbb557e702955643557f13231880。这只是发布元数据，尚未下载/执行/确认展开闭包；不得先显示 buildReady。
+实际查询到 JDK 归档140,178,170字节，SHA256 bb5b2ded252f21c6090cf780b0a408ad0d83bbb557e702955643557f13231880。已下载校验，并在真实ARM64 CI40177012737及后续运行实际完成JVM/Gradle自有Java编译与执行；这还不是Android完整构建或手机运行闭包，不显示buildReady。
 
 资源工具优先以 Termux android-build-tools 固定源码 c4edf8539a34a8600538e6642c1ecb170452a79e 为可审查移植候选，在 Linux ARM64/glibc 构建验证 aapt2/aidl/zipalign；不直接运行依赖 Termux 固定前缀的包。其16.0.0.4配方关联 Android16源码，不等于 SDK Build Tools36 的逐组件等价，平台37资源和AGP daemon调用均须单独验证。若不能满足兼容/最新稳定要求，呈现实际失败与 AOSP替代方案后再调整，不静默换库。
 

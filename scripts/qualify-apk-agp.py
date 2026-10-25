@@ -135,6 +135,10 @@ def qualify(directory, resources):
         extract_sdk(directory / pins[0]['archive'], sdk / 'platforms/android-37.0')
         native = sdk / 'build-tools/36.0.0'
         rejected = extract_sdk(directory / pins[1]['archive'], native)
+        # sdkmanager supplies package.xml separately from archive source.properties.
+        metadata = ROOT / 'tools/apk-build/sdk-metadata'
+        shutil.copyfile(metadata / 'platform-package.xml', sdk / 'platforms/android-37.0/package.xml')
+        shutil.copyfile(metadata / 'build-tools-package.xml', native / 'package.xml')
         references = json.loads((resources / 'report.json').read_text())['tools']
         for reference in references:
             original = resources / 'bin' / reference['tool']; data = original.read_bytes()
@@ -152,6 +156,7 @@ def qualify(directory, resources):
         results = [build(tools['gradle'], environment, work, directory, compose) for compose in [False, True]]
     report = {'linuxArm64AgpJavaComposeQualified': True, 'agp': '9.4.1', 'kotlin': '2.4.21',
               'artifacts': results, 'foreignElfReplacedByRejection': rejected,
+              'sdkMetadataSha256': {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(metadata.glob('*.xml'))},
               'androidRuntime': 'NOT TESTED', 'androidJniQualified': False, 'phoneInstallReady': False}
     (directory / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report))
