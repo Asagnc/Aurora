@@ -10,6 +10,11 @@ on:
         description: Exact reviewed resource workflow commit
         required: true
         default: b2cbed2003c6cc5c3cd0483d0833ce466fccf898
+      export_bundle:
+        description: Rebuild after relocation with private runtime closure and export only the qualified native bundle
+        type: boolean
+        required: true
+        default: false
 permissions:
   contents: read
   actions: read
@@ -58,9 +63,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends libprotobuf-dev libfmt-dev libexpat1-dev libpng-dev zlib1g-dev
       - name: Build owned Java then Kotlin Compose APKs using actual ARM64 tools
+        env:
+          EXPORT_BUNDLE: ${{ inputs.export_bundle }}
         run: |
           python3 scripts/verify-apk-owned-dex.py
-          python3 scripts/qualify-apk-agp.py --directory app/build/outputs/apk-agp-jni-qualification --resources app/build/outputs/qualified-resources --compiler app/build/outputs/qualified-compiler
+          python3 scripts/verify-apk-shared-bundle.py
+          extra=()
+          if [ "$EXPORT_BUNDLE" = "true" ]; then
+            extra=(--bundle-output app/build/outputs/apk-agp-jni-qualification/android-host-arm64.tar.gz)
+          fi
+          python3 scripts/qualify-apk-agp.py --directory app/build/outputs/apk-agp-jni-qualification --resources app/build/outputs/qualified-resources --compiler app/build/outputs/qualified-compiler "${extra[@]}"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
@@ -69,5 +81,7 @@ jobs:
             app/build/outputs/apk-agp-jni-qualification/*.json
             app/build/outputs/apk-agp-jni-qualification/*.txt
             app/build/outputs/apk-agp-jni-qualification/*-owned-unsigned.apk
+            app/build/outputs/apk-agp-jni-qualification/*.tar.gz
+            app/build/outputs/apk-agp-jni-qualification/portable-build/*
           if-no-files-found: warn
           retention-days: 14

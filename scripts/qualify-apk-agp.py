@@ -114,7 +114,7 @@ def build(gradle, environment, work, directory, stage):
     return result
 
 
-def qualify(directory, resources, compiler=None):
+def qualify(directory, resources, compiler=None, bundle_output=None):
     if platform.system() != 'Linux' or platform.machine().lower() not in {'aarch64', 'arm64'}:
         raise ValueError('Requires real Linux ARM64')
     directory = directory.resolve(); resources = resources.resolve(); directory.mkdir(parents=True, exist_ok=True)
@@ -161,13 +161,48 @@ def qualify(directory, resources, compiler=None):
         native_fixture = module('agp_jni', 'apk_agp_jni_fixture.py').NativeAgpFixture(directory, compiler, work,
             environment, native / 'zipalign') if compiler is not None else None
         results = [build(tools['gradle'], environment, work, directory, (compose, native_fixture)) for compose in [False, True]]
+        portable = None
+        if bundle_output is not None:
+            if native_fixture is None:
+                raise ValueError('Native AGP qualification is required before bundle export')
+            portable = qualify_portable(directory, (resources, compiler), tools, (sdk, native_fixture, work), bundle_output)
     report = {'linuxArm64AgpJavaComposeQualified': True, 'agp': '9.4.1', 'kotlin': '2.4.21',
               'artifacts': results, 'foreignElfReplacedByRejection': rejected,
               'sdkMetadataSha256': {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(metadata.glob('*.xml'))},
               'androidRuntime': 'NOT TESTED', 'androidJniQualified': False, 'fullAgpJniBuildQualified': compiler is not None,
               'ndkEquivalenceVerified': False, 'phoneInstallReady': False}
+    if portable is not None:
+        report['portableNativeBundle'] = portable
     (directory / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report))
+
+
+def qualify_portable(directory, materials, tools, current, output):
+    from apk_shared_bundle import relocate, export_native, verify_private_resolution
+    sdk, native, work = current
+    resources, compiler = materials
+    portable, selected, closure = relocate(sdk, native, work)
+    environment = dict(native.environment)
+    environment.update(LD_LIBRARY_PATH=str(portable / 'runtime-lib'), GRADLE_USER_HOME=str(work / 'cache'),
+        PATH=str(selected / 'cmake/4.1.2/bin') + ':' + str(tools['jdk'] / 'bin') + ':/usr/bin:/bin')
+    closure['privateResolution'] = verify_private_resolution(selected, portable / 'runtime-lib', environment)
+    fixture = portable / 'project'; fixture.mkdir()
+    (fixture / 'local.properties').write_text('sdk.dir=' + str(selected) + '\n')
+    (fixture / 'gradle.properties').write_text('android.aapt2FromMavenOverride=' + str(selected / 'build-tools/36.0.0/aapt2') + '\nandroid.builder.sdkDownload=false\n')
+    relocated = object.__new__(type(native))
+    relocated.cmake = selected / 'cmake/4.1.2'; relocated.ndk = selected / 'ndk/30.0.16248370'
+    relocated.toolchain = relocated.ndk / 'toolchains/llvm/prebuilt/linux-x86_64'
+    relocated.work = portable; relocated.environment = environment; relocated.zipalign = selected / 'build-tools/36.0.0/zipalign'
+    relocated.framework = native.framework; relocated.sdk_managed = True
+    results_directory = directory / 'portable-build'; results_directory.mkdir()
+    results = [build(tools['gradle'], environment, portable, results_directory, (compose, relocated)) for compose in [False, True]]
+    report = {'relocatedAgpJavaComposeJniQualified': True, 'sdkCmakeDiscoveryQualified': True,
+        'runtimeClosure': closure, 'artifacts': results, 'androidRuntime': 'NOT TESTED', 'ndkEquivalenceVerified': False}
+    output = output.resolve(); output.parent.mkdir(parents=True, exist_ok=True)
+    archive = export_native(selected, portable / 'runtime-lib', output, report, [resources, compiler.resolve()])
+    report['archive'] = archive
+    (directory / 'portable-bundle-report.json').write_text(json.dumps(report, indent=2) + '\n')
+    return report
 
 
 if __name__ == '__main__':
@@ -175,4 +210,5 @@ if __name__ == '__main__':
     parser.add_argument('--directory', type=Path, required=True)
     parser.add_argument('--resources', type=Path, required=True)
     parser.add_argument('--compiler', type=Path)
-    args = parser.parse_args(); qualify(args.directory, args.resources, args.compiler)
+    parser.add_argument('--bundle-output', type=Path)
+    args = parser.parse_args(); qualify(args.directory, args.resources, args.compiler, args.bundle_output)

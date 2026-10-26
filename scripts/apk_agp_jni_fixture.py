@@ -14,6 +14,7 @@ class NativeAgpFixture:
         self.cmake, host = prepare_host(directory, work)
         self.ndk, self.toolchain, files = prepare_ndk(archive, pin, candidate, work)
         self.work = work; self.environment = environment; self.zipalign = zipalign
+        self.sdk_managed = False
         self.framework = json.loads((ROOT / 'tools/apk-build/compose-native.json').read_text())
         module('compose_native_fetch', 'qualify-apk-jvm.py').acquire(self.framework, directory)
         (directory / 'native-host.json').write_text(json.dumps(host, indent=2) + '\n')
@@ -26,8 +27,9 @@ class NativeAgpFixture:
     def configure(self, project):
         module('agp_cmake_fixture', 'qualify-apk-cmake.py').write_project(project)
         # These absolute paths only exist in the private qualification fixture, never in a published project.
-        with (project / 'local.properties').open('a') as output:
-            output.write('cmake.dir=' + str(self.cmake) + '\n')
+        if not self.sdk_managed:
+            with (project / 'local.properties').open('a') as output:
+                output.write('cmake.dir=' + str(self.cmake) + '\n')
         with (project / 'build.gradle').open('a') as output:
             output.write('''
 android {
@@ -39,7 +41,7 @@ android {
  }
  externalNativeBuild { cmake { path file('CMakeLists.txt'); version '4.1.2' } }
 }
-'''.replace('REPLACE_NDK', str(self.ndk)))
+'''.replace(" ndkPath 'REPLACE_NDK'", '' if self.sdk_managed else " ndkPath 'REPLACE_NDK'").replace('REPLACE_NDK', str(self.ndk)))
         source = project / 'src/main/java/io/github/asagnc/aurora/buildfixture/Owned.java'
         source.write_text(source.read_text().replace('public class Owned {',
             'public class Owned { static { System.loadLibrary("owned"); } public static native String nativeMarker();'))
