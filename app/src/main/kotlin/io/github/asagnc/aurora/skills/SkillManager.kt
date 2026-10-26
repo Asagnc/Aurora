@@ -13,11 +13,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-internal data class SkillInstallOptions(val expectedSha256: String? = null, val replaceId: String? = null)
+internal data class SkillInstallOptions(val expectedSha256: String? = null, val replaceId: String? = null, val profileId: String? = null)
 
 /** A single installer, short catalog transactions, no permanent Skill process. */
 internal class SkillManager(private val app: AuroraApplication, internal val registry: SkillRegistry = SkillRegistry(app.conversations)) {
     internal val catalog = Mutex()
+    internal val trust = SkillTrustManager(app, catalog)
     private val installer = Mutex()
     internal val store = SkillContentStore(app.filesDir.toPath().resolve("spaces/resources/skills"))
     private val publication = SkillPublication(store, registry)
@@ -30,22 +31,29 @@ internal class SkillManager(private val app: AuroraApplication, internal val reg
         app.spaces.sharedResources(); store.initialize()
         require(!Files.isSymbolicLink(staging)); Files.createDirectories(staging)
         publication.recover()
+        trust.recover()
         Files.newDirectoryStream(staging).use { entries -> entries.forEach { removeSkillTree(it) } }
     } }
 
     suspend fun remote(source: SkillSource, options: SkillInstallOptions = SkillInstallOptions()): List<SkillEntry> {
         status.value = "解析来源与固定版本…"
-        val resolved = try { network.resolve(source) } catch (failure: Exception) {
+        val profile = policy(source, options)
+        val credential = trust.credential(profile)
+        val resolved = try { network.resolve(source, credential) } catch (failure: Exception) {
             status.value = if (failure is CancellationException) "安装已取消" else "来源解析失败，请检查网址与网络"
             throw failure
         }
-        return install(resolved.source, options) { archive -> network.download(resolved.archiveUrl, archive) }
+        return install(resolved.source, options, profile) { archive ->
+            if (credential == null) network.download(resolved.archiveUrl, archive) else network.downloadPrivate(resolved.archiveUrl, archive, credential)
+        }
     }
 
-    suspend fun import(uri: Uri, replaceId: String? = null): List<SkillEntry> {
+    suspend fun import(uri: Uri, replaceId: String? = null, profileId: String? = null): List<SkillEntry> {
         val name = withContext(Dispatchers.IO) { app.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
             ?.use { if (it.moveToFirst()) it.getString(0) else null } ?: "本地 ZIP" }
-        return install(SkillSource(uri.toString(), label = name), SkillInstallOptions(replaceId = replaceId)) { archive ->
+        val source = SkillSource(uri.toString(), label = name)
+        val options = SkillInstallOptions(replaceId = replaceId, profileId = profileId)
+        return install(source, options, policy(source, options)) { archive ->
             val signal = android.os.CancellationSignal()
             SkillArchiveTransfer.copy(archive, {
                 val descriptor = requireNotNull(app.contentResolver.openAssetFileDescriptor(uri, "r", signal))
@@ -61,12 +69,20 @@ internal class SkillManager(private val app: AuroraApplication, internal val reg
             require(Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS) && Files.size(path) <= 64L * 1024 * 1024)
             path
         }
-        return install(SkillSource("conversation:$owner/$relative", selection, "会话 ZIP · $relative"), options) { archive ->
+        val source = SkillSource("conversation:$owner/$relative", selection, "会话 ZIP · $relative")
+        return install(source, options, policy(source, options)) { archive ->
             SkillArchiveTransfer.copy(archive, { Files.newInputStream(sourcePath, LinkOption.NOFOLLOW_LINKS) })
         }
     }
 
-    private suspend fun install(source: SkillSource, options: SkillInstallOptions, fetch: suspend (Path) -> Unit): List<SkillEntry> =
+    private suspend fun policy(source: SkillSource, options: SkillInstallOptions): SkillSourceProfile? {
+        val previous = options.replaceId?.let { id -> requireNotNull(registry.entries().firstOrNull { it.id == id }) }
+        val bound = previous?.source?.profileId
+        require(bound == null || options.profileId == null || options.profileId == bound)
+        return trust.select(source, bound ?: options.profileId)
+    }
+
+    private suspend fun install(source: SkillSource, options: SkillInstallOptions, profile: SkillSourceProfile?, fetch: suspend (Path) -> Unit): List<SkillEntry> =
         installer.withLock { withContext(Dispatchers.IO) {
             val id = UUID.randomUUID().toString()
             val stage = Files.createDirectory(staging.resolve(id))
@@ -74,25 +90,18 @@ internal class SkillManager(private val app: AuroraApplication, internal val reg
             try {
                 status.value = "读取 ZIP…"
                 val archive = stage.resolve("download.zip"); fetch(archive)
-                options.expectedSha256?.let { expected ->
-                    require(expected.matches(Regex("[a-fA-F0-9]{64}")))
-                    val digest = runInterruptible { Files.newInputStream(archive).use { input ->
-                        val sha = java.security.MessageDigest.getInstance("SHA-256"); val bytes = ByteArray(65536)
-                        while (true) { val count = input.read(bytes); if (count < 0) break; sha.update(bytes, 0, count) }
-                        sha.digest().joinToString("") { "%02x".format(it) }
-                    } }
-                    require(digest.equals(expected, true)) { "Downloaded archive SHA256 mismatch" }
-                }
+                val selectedSource = verifiedSource(archive, source, options, profile)
                 status.value = "校验归档与工作流…"
                 val prepared = runInterruptible { prepare(archive, stage, source.selection) }
                 require(options.replaceId == null || prepared.size == 1) { "Updating a local skill requires one selected skill" }
                 val entries = prepared.map { skill ->
                     SkillEntry(options.replaceId ?: skillSourceId(source, skill.relative),
-                        skill.manifest.digest, true, source.copy(selection = skill.relative), skill.manifest.metadata, skill.manifest.bytes)
+                        skill.manifest.digest, true, selectedSource.copy(selection = skill.relative), skill.manifest.metadata, skill.manifest.bytes)
                 }
                 currentCoroutineContext().ensureActive()
                 // Once publication begins, finish the journal/index transaction even if its caller cancels.
                 catalog.withLock {
+                    trust.requireCurrent(profile, source)
                     options.replaceId?.let { require(registry.entries().any { entry -> entry.id == it }) { "Update target no longer exists" } }
                     status.value = "发布已校验版本…"
                     publication.publish(id, prepared) {
@@ -114,6 +123,23 @@ internal class SkillManager(private val app: AuroraApplication, internal val reg
                 removeSkillTree(stage)
             } }
         } }
+
+    private suspend fun verifiedSource(archive: Path, source: SkillSource, options: SkillInstallOptions, profile: SkillSourceProfile?): SkillSource {
+        options.expectedSha256?.let { expected ->
+            require(expected.matches(Regex("[a-fA-F0-9]{64}")))
+            val digest = runInterruptible { Files.newInputStream(archive, LinkOption.NOFOLLOW_LINKS).use { input ->
+                val sha = java.security.MessageDigest.getInstance("SHA-256"); val bytes = ByteArray(65536)
+                while (true) { val count = input.read(bytes); if (count < 0) break; sha.update(bytes, 0, count) }
+                sha.digest().joinToString("") { "%02x".format(it.toInt() and 255) }
+            } }
+            require(digest.equals(expected, true)) { "Downloaded archive SHA256 mismatch" }
+        }
+        val proof = if (profile?.publicKey?.isNotBlank() == true) {
+            val signature = network.signature(profile.signatureUrl, trust.credential(profile))
+            runInterruptible { SkillSignatures.verify(archive, profile, signature) }
+        } else null
+        return source.copy(profileId = profile?.id, verification = proof)
+    }
 
     private fun prepare(archive: Path, stage: Path, selection: String): List<PreparedSkill> {
         val extracted = stage.resolve("extracted")

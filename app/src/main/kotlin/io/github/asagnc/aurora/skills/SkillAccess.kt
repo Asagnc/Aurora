@@ -10,7 +10,8 @@ import kotlinx.serialization.json.*
 
 internal suspend fun SkillManager.list(): List<SkillEntry> = registry.entries()
 internal suspend fun SkillManager.snapshot(owner: String): List<SkillEntry> = catalog.withLock {
-    registry.entries().filter { it.enabled }.also { registry.pin(owner, it) }
+    val policies = trust.currentPolicies()
+    registry.entries().filter { it.enabled && skillSourcePermitted(it.source, policies) }.also { registry.pin(owner, it) }
 }
 internal suspend fun SkillManager.files(entry: SkillEntry, query: String = "", offset: Int = 0): JsonObject = catalog.withLock {
     runInterruptible(Dispatchers.IO) {
@@ -31,14 +32,24 @@ internal suspend fun SkillManager.read(entry: SkillEntry, relative: String, offs
             "encoding" to string(if (slice.text == null) "binary-or-invalid-UTF8-offset" else "UTF-8"))
     }
 }
-internal suspend fun SkillManager.pin(owner: String, entry: SkillEntry) = catalog.withLock { registry.pin(owner, listOf(entry)) }
+internal suspend fun SkillManager.pin(owner: String, entry: SkillEntry) = catalog.withLock {
+    require(trust.permitted(entry.source)); registry.pin(owner, listOf(entry))
+}
 internal suspend fun SkillManager.resolve(owner: String, id: String, hash: String): SkillEntry = catalog.withLock {
     requireNotNull(registry.versions(id).firstOrNull { it.hash == hash }) { "Unknown installed skill version" }.also {
+        require(trust.permitted(it.source)) { "Source policy blocks a new workflow acquisition" }
         registry.pin(owner, listOf(it))
     }
 }
-internal suspend fun SkillManager.enable(id: String, enabled: Boolean) = catalog.withLock { registry.enabled(id, enabled); version.update { it + 1 } }
-internal suspend fun SkillManager.rollback(id: String, hash: String) = catalog.withLock { registry.select(id, hash); version.update { it + 1 } }
+internal suspend fun SkillManager.enable(id: String, enabled: Boolean) = catalog.withLock {
+    if (enabled) require(trust.permitted(requireNotNull(registry.entries().firstOrNull { it.id == id }).source))
+    registry.enabled(id, enabled); version.update { it + 1 }
+}
+internal suspend fun SkillManager.rollback(id: String, hash: String) = catalog.withLock {
+    val selected = requireNotNull(registry.versions(id).firstOrNull { it.hash == hash })
+    require(trust.permitted(selected.source)) { "Source policy blocks this version" }
+    registry.select(id, hash, selected.source); version.update { it + 1 }
+}
 internal suspend fun SkillManager.remove(id: String): List<String> = catalog.withLock { registry.remove(id).also { version.update { it + 1 } } }
 internal suspend fun SkillManager.cleanup(): Long = catalog.withLock { withContext(Dispatchers.IO) {
     var bytes = 0L

@@ -56,7 +56,7 @@
 
 ## 其余尚未完成
 
-- Skills私有认证/签名（已核实缺失；新选型比较与待确认范围见SKILLS_TRUST_PROPOSAL.md）、更多结构化系统API、浏览器跨站frame/renderer完整矩阵、正式发布图标检查：先核实代码，再做必要增强。
+- 更多结构化系统API、浏览器跨站frame/renderer完整矩阵、正式发布图标检查：先核实代码，再做必要增强。
 - 固定Release性能工作负载：Agent正确率、TTFT/整轮/工具时间、CPU/RSS/耗电、抓包吞吐与内核丢包。尚未测量，不宣称领先。
 - 普通PRoot在用户Android16的完整资格不足，已有硬链接探测失败则executionReady=false；不隐式加入link2symlink/QEMU。
 
@@ -64,6 +64,8 @@
 
 Root/ART/自有spawn、静态逆向/JVM、APK构建、网络代理、抓包、浏览器WebView/SAF、管理器撤权、未知恢复、取消/删除/服务死亡、熄屏/后台/Thanox与长时压力；镜像真实联网/提供器/崩溃边界均需实际设备证据。正式签名在手机密钥可用时进行，验证覆盖安装与数据保留。当前不因看到此清单就请求连接手机。
 
-最新完整代码CI成功基线：64ffffb的40318472783；后续main实验脚本变更跟踪最新core.yml，取消不记通过。历史精确结果和失败日志保留在PROGRESS/IMPLEMENTATION和evidence，不在本文件重复展开。
+最新完整代码CI成功基线：1531817的40319997196；后续main实验脚本变更跟踪最新core.yml，取消不记通过。历史精确结果和失败日志保留在PROGRESS/IMPLEMENTATION和evidence，不在本文件重复展开。
 
 代理584项固定输入离线配套打包和发布APK profiles/编译pin绑定已实现，13组发布材料回归本地通过；当前刷新审查包，旧25bcbc5包不代表最新产品代理接入。
+
+Skills已按用户确认接私有GitHub API/仓库限定PAT、现有KeyStore/schema10恢复和钉住公钥的JCA Ed25519验签；Agent只选已配置来源、原生配置/撤销/指纹已接，发布前重核策略。346核心331通过/15跳过、220任务全量构建成功，新Android平台/JCA/KeyStore/迁移/恢复用例仅编译。真实自有私仓和设备资格待最终集中验收；见SKILLS_TRUST_FORMAT与SKILLS_IMPLEMENTATION。

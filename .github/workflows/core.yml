@@ -38,6 +38,7 @@ jobs:
         run: |
           python3 scripts/verify-android-files-api.py
           python3 scripts/verify-capture-migration.py
+          python3 scripts/verify-skill-source-migration.py
           python3 scripts/verify-static-reverse-fetch.py
           python3 scripts/verify-frida-probe-build.py
           python3 scripts/verify-frida-resources.py

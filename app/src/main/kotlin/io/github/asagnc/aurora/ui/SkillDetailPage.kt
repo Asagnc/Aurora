@@ -55,6 +55,8 @@ import kotlinx.coroutines.launch
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(current.metadata.description, style = MaterialTheme.typography.titleMedium)
             Text("${if (current.enabled) "已启用" else "已停用"} · ${current.bytes} 字节\n版本 ${current.hash}\n来源：${current.source.label.ifBlank { current.source.input.substringBefore('?') }}", color = AuroraMuted)
+            Text(current.source.verification?.let { "安装时发布者签名已验证\n公钥 SHA256：${it.keySha256}\nZIP SHA256：${it.archiveSha256}" }
+                ?: "发布者签名未认证；内容哈希只记录字节一致性。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
             current.metadata.compatibility.takeIf { it.isNotBlank() }?.let { Text("环境要求：$it") }
             current.metadata.license.takeIf { it.isNotBlank() }?.let { Text("许可：$it") }
             current.metadata.warnings.forEach { Text(it, color = MaterialTheme.colorScheme.error) }

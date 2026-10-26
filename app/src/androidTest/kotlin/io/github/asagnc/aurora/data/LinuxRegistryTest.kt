@@ -59,7 +59,7 @@ class LinuxRegistryTest {
                 assertEquals("saved", store.messages(owner).single().message.text)
                 assertEquals(skill.hash, SkillRegistry(store).entries().single().hash)
                 assertTrue(LinuxRegistry(store).versions().isEmpty())
-                assertEquals(9, upgraded.readableDatabase.version)
+                assertEquals(10, upgraded.readableDatabase.version)
             } finally { upgraded.close() }
         } finally { old.close(); context.deleteDatabase(name) }
     }

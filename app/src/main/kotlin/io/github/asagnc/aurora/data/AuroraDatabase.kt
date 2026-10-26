@@ -4,7 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenHelper(context, name, null, 9) {
+class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenHelper(context, name, null, 10) {
     init { setWriteAheadLoggingEnabled(true) }
 
     override fun onConfigure(db: SQLiteDatabase) { db.setForeignKeyConstraintsEnabled(true) }
@@ -34,6 +34,7 @@ class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenH
         db.execSQL("CREATE TABLE connections (id TEXT PRIMARY KEY, configuration TEXT NOT NULL)")
         createTaskRuns(db)
         SkillRegistry.create(db)
+        SkillSourceRegistry.create(db)
         LinuxRegistry.create(db)
         LinuxRunRegistry.create(db)
         RootManagedRunRegistry.create(db)
@@ -48,7 +49,7 @@ class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenH
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        require(oldVersion in 1..8 && newVersion == 9)
+        require(oldVersion in 1..9 && newVersion == 10)
         if (oldVersion < 2) createTaskRuns(db)
         if (oldVersion < 3) {
             db.execSQL("ALTER TABLE tool_runs ADD COLUMN artifact_directory TEXT")
@@ -62,6 +63,7 @@ class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenH
         createBrowserRecoveryIndex(db)
         if (oldVersion == 8) RootManagedRunRegistry.migrateCapture(db)
         RootManagedRunRegistry.create(db)
+        SkillSourceRegistry.create(db)
     }
     private fun createBrowserRecoveryIndex(db: SQLiteDatabase) {
         db.execSQL("CREATE INDEX IF NOT EXISTS browser_download_pending ON tool_runs(owner) WHERE $BROWSER_DOWNLOAD_PENDING")

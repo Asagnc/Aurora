@@ -11,7 +11,10 @@ import kotlinx.serialization.json.*
     fun summary() = objectOf("id" to string(id), "version" to string(hash), "name" to string(metadata.name),
         "description" to string(metadata.description), "compatibility" to string(metadata.compatibility),
         "source" to string(source.label.ifBlank { source.input.substringBefore('?') }), "revision" to string(source.revision),
-        "enabled" to JsonPrimitive(enabled), "bytes" to JsonPrimitive(bytes))
+        "enabled" to JsonPrimitive(enabled), "bytes" to JsonPrimitive(bytes),
+        "sourceProfile" to (source.profileId?.let(::string) ?: JsonNull),
+        "signatureVerifiedAtInstall" to JsonPrimitive(source.verification != null),
+        "signingKeySha256" to (source.verification?.keySha256?.let(::string) ?: JsonNull))
 }
 
 internal class SkillRegistry(private val conversations: ConversationStore) : SkillPublicationJournal {
@@ -21,7 +24,7 @@ internal class SkillRegistry(private val conversations: ConversationStore) : Ski
                 WireJson.decodeFromString(cursor.getString(3)), WireJson.decodeFromString(cursor.getString(4)), cursor.getLong(5))) } }
     }
     suspend fun versions(id: String): List<SkillEntry> = conversations.read { db ->
-        db.rawQuery("SELECT r.hash,s.enabled,r.source,v.metadata,v.bytes FROM skill_releases r JOIN skills s ON s.id=r.skill_id JOIN skill_versions v ON v.hash=r.hash WHERE s.id=? ORDER BY r.installed_at DESC,r.hash", arrayOf(id))
+        db.rawQuery("SELECT r.hash,s.enabled,CASE WHEN s.current_hash=r.hash THEN s.source ELSE r.source END,v.metadata,v.bytes FROM skill_releases r JOIN skills s ON s.id=r.skill_id JOIN skill_versions v ON v.hash=r.hash WHERE s.id=? ORDER BY r.installed_at DESC,r.hash", arrayOf(id))
             .use { cursor -> buildList { while (cursor.moveToNext()) add(SkillEntry(id, cursor.getString(0), cursor.getInt(1) != 0,
                 WireJson.decodeFromString(cursor.getString(2)), WireJson.decodeFromString(cursor.getString(3)), cursor.getLong(4))) } }
     }
@@ -58,10 +61,9 @@ internal class SkillRegistry(private val conversations: ConversationStore) : Ski
     suspend fun enabled(id: String, enabled: Boolean) = conversations.write { db ->
         require(db.update("skills", values("enabled" to if (enabled) 1 else 0), "id=?", arrayOf(id)) == 1)
     }
-    suspend fun select(id: String, hash: String) = conversations.write { db ->
-        val source = db.rawQuery("SELECT source FROM skill_releases WHERE skill_id=? AND hash=?", arrayOf(id, hash))
-            .use { require(it.moveToFirst()); it.getString(0) }
-        require(db.update("skills", values("current_hash" to hash, "source" to source), "id=?", arrayOf(id)) == 1)
+    suspend fun select(id: String, hash: String, source: SkillSource) = conversations.write { db ->
+        require(db.rawQuery("SELECT 1 FROM skill_releases WHERE skill_id=? AND hash=?", arrayOf(id, hash)).use { it.moveToFirst() })
+        require(db.update("skills", values("current_hash" to hash, "source" to WireJson.encodeToString(source)), "id=?", arrayOf(id)) == 1)
     }
     suspend fun remove(id: String): List<String> = conversations.write { db ->
         val owners = db.rawQuery("SELECT DISTINCT owner FROM skill_pins WHERE skill_id=?", arrayOf(id))

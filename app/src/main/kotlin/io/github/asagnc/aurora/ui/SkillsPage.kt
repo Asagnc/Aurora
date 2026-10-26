@@ -33,6 +33,10 @@ import kotlinx.coroutines.launch
     var busy by remember { mutableStateOf(false) }
     var notice by remember { mutableStateOf<String?>(null) }
     var selected by remember { mutableStateOf<SkillEntry?>(null) }
+    var sources by remember { mutableStateOf(false) }
+    var profiles by remember { mutableStateOf(emptyList<SkillSourceProfile>()) }
+    var selectedProfile by remember { mutableStateOf<String?>(null) }
+    var profileMenu by remember { mutableStateOf(false) }
     fun run(action: suspend () -> Unit) {
         if (busy) return
         scope.launch {
@@ -44,15 +48,16 @@ import kotlinx.coroutines.launch
         }
     }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if (uri != null) run { manager.import(uri) }
+        if (uri != null) run { manager.import(uri, profileId = selectedProfile) }
     }
-    LaunchedEffect(revision) { app.ready.await(); entries = manager.list() }
+    LaunchedEffect(revision, sources) { app.ready.await(); entries = manager.list(); profiles = manager.trust.list() }
     FullPage("Skills", dismiss) {
         LazyColumn(Modifier.fillMaxSize().padding(horizontal = 24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text("给 Agent 装上工作流", style = MaterialTheme.typography.headlineSmall)
                     Text("按需读取，任务固定版本。共享资源不随会话删除；工作流需要的命令与运行环境必须实际可用。", color = AuroraMuted)
+                    TextButton({ sources = true }, enabled = !busy) { Text("来源与信任") }
                     OutlinedTextField(query, { query = it }, label = { Text("搜索已安装") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
                     OutlinedTextField(url, { url = it }, label = { Text("GitHub 仓库或 HTTPS ZIP") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
                     TextButton({ advanced = !advanced }) { Text(if (advanced) "收起来源选项" else "指定子目录或分支") }
@@ -60,9 +65,18 @@ import kotlinx.coroutines.launch
                         OutlinedTextField(selection, { selection = it }, label = { Text("子目录（可选）") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
                         OutlinedTextField(ref, { ref = it }, label = { Text("GitHub 分支或标签（可选）") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
                         Text("留空时，仓库链接使用最新正式发布；tree 链接跟随所指引用。含斜杠的分支请在此完整填写。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
+                        Box {
+                            TextButton({ profileMenu = true }) { Text("来源策略：${profiles.firstOrNull { it.id == selectedProfile }?.repository ?: "自动匹配（本地ZIP默认未认证）"}") }
+                            DropdownMenu(profileMenu, { profileMenu = false }) {
+                                DropdownMenuItem(text = { Text("自动匹配") }, onClick = { selectedProfile = null; profileMenu = false })
+                                profiles.filter { !it.revoked }.forEach { profile ->
+                                    DropdownMenuItem(text = { Text(profile.repository) }, onClick = { selectedProfile = profile.id; profileMenu = false })
+                                }
+                            }
+                        }
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        FilledTonalButton({ run { manager.remote(SkillSource(url.trim(), selection.trim('/'), ref = ref.trim())); url = ""; selection = ""; ref = "" } }, enabled = !busy && url.isNotBlank()) { Text("安装") }
+                        FilledTonalButton({ run { manager.remote(SkillSource(url.trim(), selection.trim('/'), ref = ref.trim()), SkillInstallOptions(profileId = selectedProfile)); url = ""; selection = ""; ref = "" } }, enabled = !busy && url.isNotBlank()) { Text("安装") }
                         TextButton({ picker.launch(arrayOf("application/zip", "application/octet-stream")) }, enabled = !busy) { Text("导入 ZIP") }
                         TextButton({ run { notice = "已清理 ${manager.cleanup()} 字节未引用资源" } }, enabled = !busy) { Text("清理旧版") }
                     }
@@ -82,6 +96,7 @@ import kotlinx.coroutines.launch
                         }
                         Text(entry.metadata.description, style = MaterialTheme.typography.bodyMedium)
                         Text("${entry.hash.take(10)} · ${entry.bytes / 1024} KiB · ${entry.source.label.ifBlank { "已安装" }}", color = AuroraMuted, style = MaterialTheme.typography.bodySmall)
+                        if (!skillSourcePermitted(entry.source, profiles)) Text("来源策略阻止新任务；请检查签名或来源配置。", color = MaterialTheme.colorScheme.error)
                     }
                 }
             }
@@ -89,4 +104,5 @@ import kotlinx.coroutines.launch
         }
     }
     selected?.let { entry -> SkillDetailPage(entry, manager, { selected = null }) }
+    if (sources) SkillSourcesPage(manager.trust) { sources = false }
 }

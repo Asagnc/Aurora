@@ -1,6 +1,6 @@
-# Skills 私有来源与发布者签名方案（待确认）
+# Skills 私有来源与发布者签名方案（已确认）
 
-核查日期：2026-10-26。当前公共HTTPS/GitHub、SHA256一致性检查、原子发布、版本引用已实现；私有认证和发布者签名未实现。本文件不授予任何新入口资格，不把已计算哈希当成作者认证。
+核查日期：2026-10-26。当前公共HTTPS/GitHub、SHA256一致性检查、原子发布、版本引用已实现；私有认证和发布者签名未实现。用户于2026-10-26确认推荐方案；实现和资格状态见SKILLS_IMPLEMENTATION.md。本文件不授予任何新入口资格，不把已计算哈希当成作者认证。
 
 ## 私有来源比较
 
@@ -46,4 +46,4 @@
 - Android Signature算法支持，Ed25519为API33+：https://developer.android.com/reference/java/security/Signature
 - Sigstore bundle证书/透明日志材料：https://docs.sigstore.dev/about/bundle/
 
-以上官方资料支持各自协议事实。仓库限定、SQLite/凭据事务、来源策略及最小封装属于本提案设计，尚未实现或授权。
+以上官方资料支持各自协议事实。仓库限定、SQLite/凭据事务、来源策略及最小封装属于本提案设计，用户已确认实施；不代表手机或真实私仓验收通过。

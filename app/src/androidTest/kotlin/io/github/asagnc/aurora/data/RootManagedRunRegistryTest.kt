@@ -46,7 +46,7 @@ class RootManagedRunRegistryTest {
         }
         db.close()
         AuroraDatabase(context, db.databaseName).use { upgraded ->
-            assertEquals(9, upgraded.readableDatabase.version)
+            assertEquals(10, upgraded.readableDatabase.version)
             val migrated = ConversationStore(upgraded); val registry = RootManagedRunRegistry(migrated)
             assertEquals(listOf(ticket), registry.pending(ticket.owner))
             assertEquals(encoded, migrated.read { source -> source.rawQuery("SELECT ticket FROM root_managed_runs WHERE id=?", arrayOf(ticket.runId)).use {
@@ -238,7 +238,7 @@ class RootManagedRunRegistryTest {
                 }
                 AuroraDatabase(context, name).use { upgraded ->
                     val store = ConversationStore(upgraded); val runs = RootManagedRunRegistry(store)
-                    assertEquals(9, upgraded.readableDatabase.version)
+                    assertEquals(10, upgraded.readableDatabase.version)
                     assertEquals("keep", store.messages(owner).single().message.text)
                     val ticket = ticket(owner); runs.begin(ticket)
                     assertEquals(listOf(ticket), runs.pending(owner))

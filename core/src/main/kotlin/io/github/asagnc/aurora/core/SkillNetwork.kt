@@ -8,37 +8,52 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 
-@Serializable data class SkillSource(val input: String, val selection: String = "", val label: String = "", val revision: String = "", val ref: String = "")
+@Serializable data class SkillSource(val input: String, val selection: String = "", val label: String = "", val revision: String = "", val ref: String = "",
+    val profileId: String? = null, val verification: SkillVerification? = null)
 data class ResolvedSkillSource(val source: SkillSource, val archiveUrl: String)
 class SkillHttpStatus(val code: Int) : java.io.IOException("Skill source HTTP $code")
 
 /** Public downloads have no model credentials, cookies, automatic retry or cross-request authentication. */
 class SkillNetwork(private val client: OkHttpClient = OkHttpClient.Builder().followRedirects(false).followSslRedirects(false)
     .retryOnConnectionFailure(false).callTimeout(45, TimeUnit.SECONDS).build()) {
-    suspend fun resolve(source: SkillSource): ResolvedSkillSource {
+    suspend fun resolve(source: SkillSource, credential: SkillGithubCredential? = null): ResolvedSkillSource {
         val url = checked(source.input)
         if (source.selection.isNotBlank()) skillRelativePath(source.selection)
-        val location = skillGithubLocation(url, source) ?: return ResolvedSkillSource(source, url.toString())
+        val location = skillGithubLocation(url, source) ?: run {
+            require(credential == null) { "Private source requires a repository or tree URL" }
+            return ResolvedSkillSource(source, url.toString())
+        }
         val owner = location.owner; val repo = location.repo
+        require(credential == null || "${owner}/${repo}".lowercase(java.util.Locale.ROOT) == credential.repository)
         val api = "https://api.github.com/repos/$owner/$repo"
         var kind = "引用"
         val ref = location.ref ?: run {
-            try { kind = "正式发布"; requireNotNull(json("$api/releases/latest").text("tag_name")) }
+            try { kind = "正式发布"; requireNotNull(json("$api/releases/latest", credential).text("tag_name")) }
             catch (missing: SkillHttpStatus) {
                 if (missing.code != 404) throw missing
-                kind = "分支快照"; requireNotNull(json(api).text("default_branch"))
+                kind = "分支快照"; requireNotNull(json(api, credential).text("default_branch"))
             }
         }
         val endpoint = "$api/commits".toHttpUrl().newBuilder().addPathSegment(ref).build()
-        val sha = requireNotNull(json(endpoint.toString()).text("sha"))
+        val sha = requireNotNull(json(endpoint.toString(), credential).text("sha"))
         require(sha.matches(Regex("[a-f0-9]{40}")))
         return ResolvedSkillSource(source.copy(selection = location.selection, label = "$owner/$repo · $kind $ref", revision = sha),
-            "https://codeload.github.com/$owner/$repo/zip/$sha")
+            if (credential == null) "https://codeload.github.com/$owner/$repo/zip/$sha" else "$api/zipball/$sha")
     }
 
     suspend fun download(url: String, target: Path, maxBytes: Long = 64L * 1024 * 1024) = withTimeout(60_000) {
         require(maxBytes in 1..128L * 1024 * 1024)
         downloadBounded(url, target, maxBytes, 60_000)
+    }
+
+    suspend fun downloadPrivate(url: String, target: Path, credential: SkillGithubCredential) = withTimeout(60_000) {
+        downloadBounded(url, target, 64L * 1024 * 1024, 60_000, credential)
+    }
+
+    suspend fun signature(url: String, credential: SkillGithubCredential? = null): String = response(url,
+        credential = credential?.takeIf { it.authorization(checked(url)) != null }) { result ->
+        val bytes = result.body.byteStream().use { it.readNBytes(1025) }; require(bytes.size <= 1024)
+        require(bytes.all { it.toInt() in 0..127 }); bytes.toString(Charsets.US_ASCII)
     }
 
     /** Only fixed compiled tool inputs get the larger transport budget; ordinary Skills keep their original limits. */
@@ -48,8 +63,8 @@ class SkillNetwork(private val client: OkHttpClient = OkHttpClient.Builder().fol
         runInterruptible(Dispatchers.IO) { verifyStaticReverseArchive(component, target) }
     }
 
-    private suspend fun downloadBounded(url: String, target: Path, maxBytes: Long, timeoutMs: Long) {
-        response(url, timeoutMs) { result ->
+    private suspend fun downloadBounded(url: String, target: Path, maxBytes: Long, timeoutMs: Long, credential: SkillGithubCredential? = null) {
+        response(url, timeoutMs, credential) { result ->
             require(result.body.contentLength() <= maxBytes)
             Files.newOutputStream(target, StandardOpenOption.CREATE_NEW, LinkOption.NOFOLLOW_LINKS).use { output ->
                 result.body.byteStream().use { input ->
@@ -65,17 +80,22 @@ class SkillNetwork(private val client: OkHttpClient = OkHttpClient.Builder().fol
         }
     }
 
-    private suspend fun json(url: String): JsonObject = response(url) { response ->
+    private suspend fun json(url: String, credential: SkillGithubCredential? = null): JsonObject = response(url, credential = credential) { response ->
         val bytes = response.body.byteStream().use { it.readNBytes(1024 * 1024 + 1) }
         require(bytes.size <= 1024 * 1024)
         val text = String(bytes, Charsets.UTF_8); require(jsonWithinDepth(text))
         WireJson.parseToJsonElement(text).jsonObject
     }
 
-    private suspend fun <T> response(address: String, timeoutMs: Long = 60_000, block: (Response) -> T): T = withTimeout(timeoutMs) {
+    private suspend fun <T> response(address: String, timeoutMs: Long = 60_000, credential: SkillGithubCredential? = null, block: (Response) -> T): T = withTimeout(timeoutMs) {
         var url = checked(address)
         repeat(6) {
-            val call = client.newCall(Request.Builder().url(url).header("User-Agent", "Aurora-Skills").build())
+            require(credential == null || credential.accepts(url)) { "Private skill redirect outside repository" }
+            val request = Request.Builder().url(url).header("User-Agent", "Aurora-Skills")
+            if (url.host == "api.github.com") request.header("Accept",
+                if (url.encodedPath.contains("/contents/")) "application/vnd.github.raw+json" else "application/vnd.github+json")
+            credential?.authorization(url)?.let { request.header("Authorization", it) }
+            val call = client.newCall(request.build())
             if (timeoutMs > 60_000) call.timeout().timeout(timeoutMs, TimeUnit.MILLISECONDS)
             val next = coroutineScope {
                 val cancel = launch(start = CoroutineStart.UNDISPATCHED) { try { awaitCancellation() } finally { call.cancel() } }
