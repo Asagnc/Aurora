@@ -1,0 +1,342 @@
+{
+  "relocatedAgpJavaComposeJniQualified": true,
+  "sdkCmakeDiscoveryQualified": true,
+  "runtimeClosure": {
+    "libraries": {
+      "libfmt.so.10": {
+        "sha256": "0e4d84d57319d8e9ce672a9e016035a6e06189ea80c95b0d2e3d48d04dac510a",
+        "bytes": 199384,
+        "binaryPackage": [
+          "libfmt10",
+          "10.1.1+ds1-4build1",
+          "arm64"
+        ],
+        "sourcePackage": [
+          "fmtlib",
+          "10.1.1+ds1-4build1"
+        ],
+        "copyrightSha256": "dfaa7ad8c59bedf69b82afb0114431727f211c8438cc3356226dc95d80f9a27a"
+      },
+      "libz.so.1": {
+        "sha256": "2d2437c87551b247720b69dd3d761227b4d6f7ee9a20a10ee75e6efc2808b79a",
+        "bytes": 133544,
+        "binaryPackage": [
+          "zlib1g",
+          "1:1.3.dfsg+really1.3.1-1ubuntu3.2",
+          "arm64"
+        ],
+        "sourcePackage": [
+          "zlib",
+          "1:1.3.dfsg+really1.3.1-1ubuntu3.2"
+        ],
+        "copyrightSha256": "9e5b96d63773a5d177ba264254390f792be07e41748ebd94730981c6cac31cc6"
+      },
+      "libpng16.so.16": {
+        "sha256": "82e5ddbf6d7254904fc2303c53f0a8d454a0408b87f8a660d2dc2de670b6b82a",
+        "bytes": 264392,
+        "binaryPackage": [
+          "libpng16-16t64",
+          "1.6.57-1ubuntu0.1",
+          "arm64"
+        ],
+        "sourcePackage": [
+          "libpng1.6",
+          "1.6.57-1ubuntu0.1"
+        ],
+        "copyrightSha256": "55c6fc6ffe83143f360b83f26b3064fff499120eff31e4f14ebba6d667308352"
+      },
+      "libexpat.so.1": {
+        "sha256": "ab708bf035b6fa96ddc16b9363700f5f2d1834e52ed3db319eb98837417e59e3",
+        "bytes": 198912,
+        "binaryPackage": [
+          "libexpat1",
+          "2.7.4-1ubuntu0.2",
+          "arm64"
+        ],
+        "sourcePackage": [
+          "expat",
+          "2.7.4-1ubuntu0.2"
+        ],
+        "copyrightSha256": "60919fe1a156395ff14511bb6ff79756c50ade2fff59ac60c9bae1d8a7fe6292"
+      },
+      "libprotobuf.so.32": {
+        "sha256": "dd89db82e9878f0c8750be6c7ecb3d5f4bf8fa85b548307a9183cac720cf7fd5",
+        "bytes": 3154152,
+        "binaryPackage": [
+          "libprotobuf32t64",
+          "3.21.12-15ubuntu1.1",
+          "arm64"
+        ],
+        "sourcePackage": [
+          "protobuf",
+          "3.21.12-15ubuntu1.1"
+        ],
+        "copyrightSha256": "77ae762c8b3aa11e07a48184818111d28e2274229a8eb121e19477d1a40f3b76"
+      },
+      "libstdc++.so.6": {
+        "sha256": "d604f900ea3d02c57ad0a97b48b1666262759be4accc08bf37150b36715d48ef",
+        "bytes": 2699072,
+        "binaryPackage": [
+          "libstdc++6",
+          "16-20260322-1ubuntu1",
+          "arm64"
+        ],
+        "sourcePackage": [
+          "gcc-16",
+          "16-20260322-1ubuntu1"
+        ],
+        "copyrightSha256": "d7815dd2364180835891947d96d808878204dea45b8597602a7952332195fbea"
+      },
+      "libgcc_s.so.1": {
+        "sha256": "a886d874bfcc27b5b3de47504eb861af8f15cf8c2aea160bd3b973e1a1a95255",
+        "bytes": 133776,
+        "binaryPackage": [
+          "libgcc-s1",
+          "16-20260322-1ubuntu1",
+          "arm64"
+        ],
+        "sourcePackage": [
+          "gcc-16",
+          "16-20260322-1ubuntu1"
+        ],
+        "copyrightSha256": "d7815dd2364180835891947d96d808878204dea45b8597602a7952332195fbea"
+      }
+    },
+    "hostExecutables": [
+      {
+        "path": "build-tools/36.0.0/aapt2",
+        "sha256": "7788487ad62e2a92b6dc48d4a595bc324b53e10122267739326a1f7d05888954",
+        "ldd": "\tlinux-vdso.so.1 (0x0000fab35ea69000)\n\tlibfmt.so.10 => /usr/lib/aarch64-linux-gnu/libfmt.so.10 (0x0000fab35e560000)\n\tlibz.so.1 => /usr/lib/aarch64-linux-gnu/libz.so.1 (0x0000fab35e520000)\n\tlibpng16.so.16 => /usr/lib/aarch64-linux-gnu/libpng16.so.16 (0x0000fab35e4c0000)\n\tlibexpat.so.1 => /usr/lib/aarch64-linux-gnu/libexpat.so.1 (0x0000fab35e470000)\n\tlibprotobuf.so.32 => /usr/lib/aarch64-linux-gnu/libprotobuf.so.32 (0x0000fab35e160000)\n\tlibstdc++.so.6 => /usr/lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000fab35dec0000)\n\tlibgcc_s.so.1 => /usr/lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000fab35de80000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000fab35dcb0000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000fab35ea20000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000fab35dbe0000)\n"
+      },
+      {
+        "path": "build-tools/36.0.0/aidl",
+        "sha256": "0202bda65f79a58d47c6a6ac7e78baf7678cbf4b866e728685831e2183a2f576",
+        "ldd": "\tlinux-vdso.so.1 (0x0000f6f2240ea000)\n\tlibfmt.so.10 => /usr/lib/aarch64-linux-gnu/libfmt.so.10 (0x0000f6f223df0000)\n\tlibstdc++.so.6 => /usr/lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000f6f223b50000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000f6f223a80000)\n\tlibgcc_s.so.1 => /usr/lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000f6f223a40000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000f6f223870000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000f6f2240a0000)\n"
+      },
+      {
+        "path": "build-tools/36.0.0/zipalign",
+        "sha256": "17ebf24d930cf386c8da6db0123e55b06719f1a76e40c7e7fdad65bb92bd9cca",
+        "ldd": "\tlinux-vdso.so.1 (0x0000e0aa6f309000)\n\tlibz.so.1 => /usr/lib/aarch64-linux-gnu/libz.so.1 (0x0000e0aa6f220000)\n\tlibstdc++.so.6 => /usr/lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000e0aa6ef80000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000e0aa6eeb0000)\n\tlibgcc_s.so.1 => /usr/lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000e0aa6ee70000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000e0aa6eca0000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000e0aa6f2c0000)\n"
+      },
+      {
+        "path": "cmake/4.1.2/bin/cmake",
+        "sha256": "532371db170b038f86ea5b106c04307a46fc1a024a0a75b57a1b6fd557178965",
+        "ldd": "\tlinux-vdso.so.1 (0x0000faab7aecc000)\n\tlibdl.so.2 => /usr/lib/aarch64-linux-gnu/libdl.so.2 (0x0000faab7ae60000)\n\tlibrt.so.1 => /usr/lib/aarch64-linux-gnu/librt.so.1 (0x0000faab7ae30000)\n\tlibpthread.so.0 => /usr/lib/aarch64-linux-gnu/libpthread.so.0 (0x0000faab7ae00000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000faab7ad30000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000faab7ab60000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000faab7ae90000)\n"
+      },
+      {
+        "path": "cmake/4.1.2/bin/cpack",
+        "sha256": "94aa05c446e2579a397170169a166238b5e409490cfd5423187ca6d81c9eec74",
+        "ldd": "\tlinux-vdso.so.1 (0x0000e8fb1a03f000)\n\tlibdl.so.2 => /usr/lib/aarch64-linux-gnu/libdl.so.2 (0x0000e8fb19fc0000)\n\tlibrt.so.1 => /usr/lib/aarch64-linux-gnu/librt.so.1 (0x0000e8fb19f90000)\n\tlibpthread.so.0 => /usr/lib/aarch64-linux-gnu/libpthread.so.0 (0x0000e8fb19f60000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000e8fb19e90000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000e8fb19cc0000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000e8fb19ff0000)\n"
+      },
+      {
+        "path": "cmake/4.1.2/bin/ctest",
+        "sha256": "cbdca8c231d78155a059025e7b193e35209733ce4ee22b4d0b993c2a2ab5d9b8",
+        "ldd": "\tlinux-vdso.so.1 (0x0000eb01c519c000)\n\tlibdl.so.2 => /usr/lib/aarch64-linux-gnu/libdl.so.2 (0x0000eb01c5120000)\n\tlibrt.so.1 => /usr/lib/aarch64-linux-gnu/librt.so.1 (0x0000eb01c50f0000)\n\tlibpthread.so.0 => /usr/lib/aarch64-linux-gnu/libpthread.so.0 (0x0000eb01c50c0000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000eb01c4ff0000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000eb01c4e20000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000eb01c5150000)\n"
+      },
+      {
+        "path": "cmake/4.1.2/bin/ninja",
+        "sha256": "4394c776aa5031eea095055f50977479fbb0912080607bb1eff61f2d3af0e2f5",
+        "ldd": "\tlinux-vdso.so.1 (0x0000f9c12472c000)\n\tlibstdc++.so.6 => /usr/lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000f9c124450000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000f9c124380000)\n\tlibgcc_s.so.1 => /usr/lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000f9c124340000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000f9c124170000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000f9c1246f0000)\n"
+      },
+      {
+        "path": "ndk/30.0.16248370/toolchains/llvm/prebuilt/linux-x86_64/bin/clang",
+        "sha256": "bb5b99a219ef2fc5e6fcc67381ccc1adfb5729fc3006267290a109422d440891",
+        "ldd": "\tlinux-vdso.so.1 (0x0000e30ff3d27000)\n\tlibstdc++.so.6 => /usr/lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000e30fecb30000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000e30feca60000)\n\tlibgcc_s.so.1 => /usr/lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000e30feca20000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000e30fec850000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000e30ff3ce0000)\n"
+      },
+      {
+        "path": "ndk/30.0.16248370/toolchains/llvm/prebuilt/linux-x86_64/bin/lld",
+        "sha256": "c078d21d8ab8751ae531be53ba8bf2eefd4aaf2243918fad15bd8ef39087a877",
+        "ldd": "\tlinux-vdso.so.1 (0x0000e4cc0efba000)\n\tlibstdc++.so.6 => /usr/lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000e4cc0a710000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000e4cc0a640000)\n\tlibgcc_s.so.1 => /usr/lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000e4cc0a600000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000e4cc0a430000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000e4cc0ef70000)\n"
+      },
+      {
+        "path": "ndk/30.0.16248370/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar",
+        "sha256": "acf422ff6dfe776bf6a66a769b1a7f8cad7ad493d6ecf24a07509bc77a444759",
+        "ldd": "\tlinux-vdso.so.1 (0x0000f4da628ac000)\n\tlibstdc++.so.6 => /usr/lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000f4da619d0000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000f4da61900000)\n\tlibgcc_s.so.1 => /usr/lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000f4da618c0000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000f4da616f0000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000f4da62870000)\n"
+      },
+      {
+        "path": "ndk/30.0.16248370/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-objcopy",
+        "sha256": "5426ad358741eecc4dec703142cc1cb134bc611a05b6c359b8338d6078fdeb51",
+        "ldd": "\tlinux-vdso.so.1 (0x0000f1e1cf62c000)\n\tlibstdc++.so.6 => /usr/lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000f1e1cee10000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000f1e1ced40000)\n\tlibgcc_s.so.1 => /usr/lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000f1e1ced00000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000f1e1ceb30000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000f1e1cf5e0000)\n"
+      },
+      {
+        "path": "ndk/30.0.16248370/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ranlib",
+        "sha256": "acf422ff6dfe776bf6a66a769b1a7f8cad7ad493d6ecf24a07509bc77a444759",
+        "ldd": "\tlinux-vdso.so.1 (0x0000f4fb7071e000)\n\tlibstdc++.so.6 => /usr/lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000f4fb6f830000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000f4fb6f760000)\n\tlibgcc_s.so.1 => /usr/lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000f4fb6f720000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000f4fb6f550000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000f4fb706d0000)\n"
+      },
+      {
+        "path": "ndk/30.0.16248370/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-readobj",
+        "sha256": "c025e166f02daa3e040dbdd609ffeb47f3eadea2949fdd55c5dd62a4d81e9abc",
+        "ldd": "\tlinux-vdso.so.1 (0x0000e01e37ae9000)\n\tlibstdc++.so.6 => /usr/lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000e01e37070000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000e01e36fa0000)\n\tlibgcc_s.so.1 => /usr/lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000e01e36f60000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000e01e36d90000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000e01e37aa0000)\n"
+      },
+      {
+        "path": "ndk/30.0.16248370/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip",
+        "sha256": "5426ad358741eecc4dec703142cc1cb134bc611a05b6c359b8338d6078fdeb51",
+        "ldd": "\tlinux-vdso.so.1 (0x0000ff5ed9aee000)\n\tlibstdc++.so.6 => /usr/lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000ff5ed92d0000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000ff5ed9200000)\n\tlibgcc_s.so.1 => /usr/lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000ff5ed91c0000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000ff5ed8ff0000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000ff5ed9aa0000)\n"
+      }
+    ],
+    "systemProvided": [
+      "ld-linux-aarch64.so.1",
+      "libc.so.6",
+      "libdl.so.2",
+      "libm.so.6",
+      "libpthread.so.0",
+      "librt.so.1"
+    ],
+    "scope": "Actual host CLI transitive ELF closure. GNU libc is supplied by the qualified Root image; JDK GUI paths are not qualified.",
+    "privateResolution": [
+      {
+        "path": "build-tools/36.0.0/aapt2",
+        "ldd": "\tlinux-vdso.so.1 (0x0000e3641b3fb000)\n\tlibfmt.so.10 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libfmt.so.10 (0x0000e3641aef0000)\n\tlibz.so.1 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libz.so.1 (0x0000e3641aeb0000)\n\tlibpng16.so.16 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libpng16.so.16 (0x0000e3641ae50000)\n\tlibexpat.so.1 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libexpat.so.1 (0x0000e3641ae00000)\n\tlibprotobuf.so.32 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libprotobuf.so.32 (0x0000e3641aaf0000)\n\tlibstdc++.so.6 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libstdc++.so.6 (0x0000e3641a850000)\n\tlibgcc_s.so.1 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libgcc_s.so.1 (0x0000e3641a810000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000e3641a640000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000e3641b3b0000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000e3641a570000)\n"
+      },
+      {
+        "path": "build-tools/36.0.0/aidl",
+        "ldd": "\tlinux-vdso.so.1 (0x0000fe701f74c000)\n\tlibfmt.so.10 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libfmt.so.10 (0x0000fe701f460000)\n\tlibstdc++.so.6 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libstdc++.so.6 (0x0000fe701f1c0000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000fe701f0f0000)\n\tlibgcc_s.so.1 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libgcc_s.so.1 (0x0000fe701f0b0000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000fe701eee0000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000fe701f710000)\n"
+      },
+      {
+        "path": "build-tools/36.0.0/zipalign",
+        "ldd": "\tlinux-vdso.so.1 (0x0000f32e6ec9c000)\n\tlibz.so.1 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libz.so.1 (0x0000f32e6ebc0000)\n\tlibstdc++.so.6 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libstdc++.so.6 (0x0000f32e6e920000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000f32e6e850000)\n\tlibgcc_s.so.1 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libgcc_s.so.1 (0x0000f32e6e810000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000f32e6e640000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000f32e6ec60000)\n"
+      },
+      {
+        "path": "cmake/4.1.2/bin/cmake",
+        "ldd": "\tlinux-vdso.so.1 (0x0000faef67b9c000)\n\tlibdl.so.2 => /usr/lib/aarch64-linux-gnu/libdl.so.2 (0x0000faef67b30000)\n\tlibrt.so.1 => /usr/lib/aarch64-linux-gnu/librt.so.1 (0x0000faef67b00000)\n\tlibpthread.so.0 => /usr/lib/aarch64-linux-gnu/libpthread.so.0 (0x0000faef67ad0000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000faef67a00000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000faef67830000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000faef67b60000)\n"
+      },
+      {
+        "path": "cmake/4.1.2/bin/cpack",
+        "ldd": "\tlinux-vdso.so.1 (0x0000f9e14f6ec000)\n\tlibdl.so.2 => /usr/lib/aarch64-linux-gnu/libdl.so.2 (0x0000f9e14f680000)\n\tlibrt.so.1 => /usr/lib/aarch64-linux-gnu/librt.so.1 (0x0000f9e14f650000)\n\tlibpthread.so.0 => /usr/lib/aarch64-linux-gnu/libpthread.so.0 (0x0000f9e14f620000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000f9e14f550000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000f9e14f380000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000f9e14f6b0000)\n"
+      },
+      {
+        "path": "cmake/4.1.2/bin/ctest",
+        "ldd": "\tlinux-vdso.so.1 (0x0000ff279ab7c000)\n\tlibdl.so.2 => /usr/lib/aarch64-linux-gnu/libdl.so.2 (0x0000ff279ab10000)\n\tlibrt.so.1 => /usr/lib/aarch64-linux-gnu/librt.so.1 (0x0000ff279aae0000)\n\tlibpthread.so.0 => /usr/lib/aarch64-linux-gnu/libpthread.so.0 (0x0000ff279aab0000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000ff279a9e0000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000ff279a810000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000ff279ab40000)\n"
+      },
+      {
+        "path": "cmake/4.1.2/bin/ninja",
+        "ldd": "\tlinux-vdso.so.1 (0x0000e13710c5b000)\n\tlibstdc++.so.6 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libstdc++.so.6 (0x0000e13710970000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000e137108a0000)\n\tlibgcc_s.so.1 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libgcc_s.so.1 (0x0000e13710860000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000e13710690000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000e13710c10000)\n"
+      },
+      {
+        "path": "ndk/30.0.16248370/toolchains/llvm/prebuilt/linux-x86_64/bin/clang",
+        "ldd": "\tlinux-vdso.so.1 (0x0000e9b9620ac000)\n\tlibstdc++.so.6 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libstdc++.so.6 (0x0000e9b95aec0000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000e9b95adf0000)\n\tlibgcc_s.so.1 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libgcc_s.so.1 (0x0000e9b95adb0000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000e9b95abe0000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000e9b962070000)\n"
+      },
+      {
+        "path": "ndk/30.0.16248370/toolchains/llvm/prebuilt/linux-x86_64/bin/lld",
+        "ldd": "\tlinux-vdso.so.1 (0x0000e955e1e8c000)\n\tlibstdc++.so.6 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libstdc++.so.6 (0x0000e955dd5f0000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000e955dd520000)\n\tlibgcc_s.so.1 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libgcc_s.so.1 (0x0000e955dd4e0000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000e955dd310000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000e955e1e50000)\n"
+      },
+      {
+        "path": "ndk/30.0.16248370/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar",
+        "ldd": "\tlinux-vdso.so.1 (0x0000e7fe9703c000)\n\tlibstdc++.so.6 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libstdc++.so.6 (0x0000e7fe96160000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000e7fe96090000)\n\tlibgcc_s.so.1 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libgcc_s.so.1 (0x0000e7fe96050000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000e7fe95e80000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000e7fe97000000)\n"
+      },
+      {
+        "path": "ndk/30.0.16248370/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-objcopy",
+        "ldd": "\tlinux-vdso.so.1 (0x0000e8bf3ef4c000)\n\tlibstdc++.so.6 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libstdc++.so.6 (0x0000e8bf3e740000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000e8bf3e670000)\n\tlibgcc_s.so.1 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libgcc_s.so.1 (0x0000e8bf3e630000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000e8bf3e460000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000e8bf3ef10000)\n"
+      },
+      {
+        "path": "ndk/30.0.16248370/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ranlib",
+        "ldd": "\tlinux-vdso.so.1 (0x0000f074db30f000)\n\tlibstdc++.so.6 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libstdc++.so.6 (0x0000f074da420000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000f074da350000)\n\tlibgcc_s.so.1 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libgcc_s.so.1 (0x0000f074da310000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000f074da140000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000f074db2c0000)\n"
+      },
+      {
+        "path": "ndk/30.0.16248370/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-readobj",
+        "ldd": "\tlinux-vdso.so.1 (0x0000e6ffb81ed000)\n\tlibstdc++.so.6 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libstdc++.so.6 (0x0000e6ffb7770000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000e6ffb76a0000)\n\tlibgcc_s.so.1 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libgcc_s.so.1 (0x0000e6ffb7660000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000e6ffb7490000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000e6ffb81a0000)\n"
+      },
+      {
+        "path": "ndk/30.0.16248370/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip",
+        "ldd": "\tlinux-vdso.so.1 (0x0000e3d6c5dab000)\n\tlibstdc++.so.6 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libstdc++.so.6 (0x0000e3d6c5590000)\n\tlibm.so.6 => /usr/lib/aarch64-linux-gnu/libm.so.6 (0x0000e3d6c54c0000)\n\tlibgcc_s.so.1 => /home/runner/work/Aurora/Aurora/app/build/outputs/apk-agp-jni-qualification/.owned-agp-0ogg4ags/portable-check/runtime-lib/libgcc_s.so.1 (0x0000e3d6c5480000)\n\tlibc.so.6 => /usr/lib/aarch64-linux-gnu/libc.so.6 (0x0000e3d6c52b0000)\n\t/lib/ld-linux-aarch64.so.1 (0x0000e3d6c5d60000)\n"
+      }
+    ]
+  },
+  "artifacts": [
+    {
+      "stage": "java-jni",
+      "apkBytes": 5170510,
+      "apkSha256": "0f4ed3f726ff319892277c119627ae3b9609a2617b580430b5fd870101ea4887",
+      "ownedClassDefinitions": {
+        "Lio/github/asagnc/aurora/buildfixture/Owned;": "classes.dex"
+      },
+      "jni": [
+        {
+          "abi": "arm64-v8a",
+          "ownedSha256": "806a740d5ad4df435f4b05f14bce87f0d85789e0ade03821209ddbce81fbcd40",
+          "runtimeSha256": "b5d97c38a728afe28d341cda3369f512d35eaf9c680c1b0563cd6a63e395230f",
+          "needed": [
+            "libc++_shared.so",
+            "libc.so",
+            "libdl.so",
+            "libm.so"
+          ],
+          "frameworkNative": null
+        },
+        {
+          "abi": "x86_64",
+          "ownedSha256": "eea660292b7333a7280e365d02ed6f49f369419f72b471ecb15e49cc5a28a6ec",
+          "runtimeSha256": "39faf2d59346e65a18980f207794fab2f1faff8a8de3f087b8319a181fa16fbd",
+          "needed": [
+            "libc++_shared.so",
+            "libc.so",
+            "libdl.so",
+            "libm.so"
+          ],
+          "frameworkNative": null
+        }
+      ]
+    },
+    {
+      "stage": "compose-jni",
+      "apkBytes": 20876274,
+      "apkSha256": "4555c9a6dce83340329d474782035b62b94558855a547cc9d1a5e60b13af959c",
+      "ownedClassDefinitions": {
+        "Lio/github/asagnc/aurora/buildfixture/OwnedScreenKt;": "classes.dex",
+        "Lio/github/asagnc/aurora/buildfixture/Owned;": "classes2.dex"
+      },
+      "jni": [
+        {
+          "abi": "arm64-v8a",
+          "ownedSha256": "806a740d5ad4df435f4b05f14bce87f0d85789e0ade03821209ddbce81fbcd40",
+          "runtimeSha256": "b5d97c38a728afe28d341cda3369f512d35eaf9c680c1b0563cd6a63e395230f",
+          "needed": [
+            "libc++_shared.so",
+            "libc.so",
+            "libdl.so",
+            "libm.so"
+          ],
+          "frameworkNative": {
+            "coordinate": "androidx.graphics:graphics-path:1.0.1",
+            "sha256": "41e9a793c43a0f4fddb19e33f346bace464f30f888ba7b9eaf96294ea115bfb6",
+            "needed": [
+              "libc.so",
+              "libdl.so",
+              "libm.so"
+            ]
+          }
+        },
+        {
+          "abi": "x86_64",
+          "ownedSha256": "eea660292b7333a7280e365d02ed6f49f369419f72b471ecb15e49cc5a28a6ec",
+          "runtimeSha256": "39faf2d59346e65a18980f207794fab2f1faff8a8de3f087b8319a181fa16fbd",
+          "needed": [
+            "libc++_shared.so",
+            "libc.so",
+            "libdl.so",
+            "libm.so"
+          ],
+          "frameworkNative": {
+            "coordinate": "androidx.graphics:graphics-path:1.0.1",
+            "sha256": "4e56c996f13670e70082658de7880c4020eabf4f25e43387f88ed78a713fc9f0",
+            "needed": [
+              "libc.so",
+              "libdl.so",
+              "libm.so"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "androidRuntime": "NOT TESTED",
+  "ndkEquivalenceVerified": false,
+  "archive": {
+    "archive": "android-host-arm64.tar.gz",
+    "bytes": 180242303,
+    "sha256": "f899eda7aee47fe3edc11546f26d7853aa6f8962f08bb2225f59a327b2327042",
+    "expandedBytes": 544069438,
+    "regularFiles": 11971,
+    "containsOfficialSdkDistributions": false
+  }
+}

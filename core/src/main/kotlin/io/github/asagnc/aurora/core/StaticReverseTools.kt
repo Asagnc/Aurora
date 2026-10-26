@@ -5,11 +5,17 @@ import java.security.MessageDigest
 
 /** Compiled trust catalogue. Updates create a different bundle; active tasks keep their pinned version. */
 data class StaticReverseComponent(val id: String, val version: String, val url: String,
-    val sha256: String, val compressedBytes: Long) {
+    val sha256: String, val compressedBytes: Long, val localOnly: Boolean = false) {
     init {
-        require(id in setOf("jre", "jadx", "apktool"))
-        require(url.startsWith("https://github.com/") && sha256.matches(Regex("[0-9a-f]{64}")))
-        require(compressedBytes in 1..128L * 1024 * 1024)
+        require(id in setOf("jre", "jadx", "apktool", "jdk", "gradle", "platform", "build-tools", "android-host", "mitmdump"))
+        if (localOnly) require(id == "android-host" && url.isEmpty())
+        else {
+            val address = runCatching { java.net.URI(url) }.getOrElse { throw IllegalArgumentException("Invalid tool archive address") }
+            require(address.scheme == "https" && address.host in setOf("github.com", "dl.google.com") &&
+                address.userInfo == null && address.rawQuery == null && address.fragment == null && address.port in setOf(-1, 443))
+        }
+        require(sha256.matches(Regex("[0-9a-f]{64}")))
+        require(compressedBytes in 1..(if (id in setOf("jre", "jadx", "apktool")) 128L else 512L) * 1024 * 1024)
     }
 }
 
@@ -28,6 +34,7 @@ object StaticReverseTools {
         .digest(components.joinToString("\n") { "${it.id}:${it.version}:${it.sha256}:${it.compressedBytes}" }.toByteArray(Charsets.UTF_8))
         .joinToString("") { "%02x".format(it) }
     val compressedBytes: Long get() = components.sumOf { it.compressedBytes }
+    val catalog get() = SharedToolCatalog("static-reverse-v1", "legacy", components, 800L * 1024 * 1024)
 }
 
 /** IO-thread operation; no following links, partial files, or trusting an adjacent digest file. */

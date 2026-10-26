@@ -897,3 +897,10 @@ CI40224855665通过8组真实libpcap封口/短写/fsync/冲突和5组封印FD/�
 fd10377完整CI40228422302和轮转最终统计专项40228422825均通过。release-review-fd10377已生成，APK44,861,876字节，workTreeDirty=false；全部checksums独立复核，Frida离线重链接和guard源码重建通过。仍unsigned-review/releaseReady=false，未操作设备/密钥。
 
 代理静态OpenSSL材料补齐：实际cryptography3.5.5；aioquic1.2.0精确固定上游wheel配方→vendor3.3.0-1→源码3.3.0，vendor头实际相符。两份官方源码、许可和3组只读/篡改/重复或链接头拒绝测试本地通过；静态代码全面可复现重建未建立，不扩大材料证明。新增源码审计CI待跟踪，产品共享安装/规则/Agent仍继续。
+
+
+## 2026-10-26 APK共享安装与Agent接入
+
+便携原生SDK资格40282040597通过：180,242,303字节，7项私有动态库解析与迁移后Java/Compose/双ABI JNI真实重建成功。现沿用同一版本目录/原子发布/持久租约/取消清理安装器接入android-build家族；旧静态逆向身份保留。固定元数据、官方SDK/JVM独立输入、ARM64资源/LLVM/CMake、外来ELF拒绝入口、字面Gradle参数、当前Root身份/环境代/bundle资格及Agent apk_build均已实现。安装完成不等于当前设备资格。
+
+317核心304通过/13跳过；Debug/Release/AndroidTest/lint本地219任务通过。生产Kotlin解包＋readonly挂载运行固定Java/Compose/JNI自检的ARM64专项已写，待CI实际执行；270秒既有执行预算不变，无手机/密钥/付费模型操作。原生SDK包暂用精确本地选择，不冒充已发布公共工具资产。

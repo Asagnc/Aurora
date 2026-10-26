@@ -38,7 +38,9 @@
 - 完整AGP Java/Kotlin Compose实验入口已实现（apk-agp-qualification.yml、qualify-apk-agp.py）；已引用CI40180937353的精确成功资源workflow。官方SDK只复用Java/元数据，39个外来ELF替换为明确失败入口，仅已验证ARM64资源工具可执行。首轮CI40181353310因夹具遗漏显式Kotlin版本而使用AGP默认旧Kotlin，不支持JVM25；已按Aurora主工程锁定2.4.21后CI40181504510已越过该问题，但手工解包缺sdkmanager生成的package.xml导致API37.0未注册；已补现有官方SDK精确元数据后，CI40181701787真实ARM64 Java/Compose两种APK构建整体通过（43/48项任务实际执行），自有类已进入DEX；JNI和手机运行资格仍未完成。
 - 新增固定CMake4.1.2官方ARM64归档与Ninja1.13.2 ARM64，准备NDK官方CMake数据（拒绝外来host ELF）与已资格编译器组合的双ABI真实实验；5项元数据边界测试本地通过，首次CMake实验40204855557配置/编译已通过，链接因目标libatomic.a遗漏失败；已补同固定NDK30的双ABI库后CI40205203214整体通过，真实CMake/Ninja构建双ABI JNI及16KiB/导出/依赖审计成功。AGP/Compose/JNI首轮40205366822因NDK HTTP短体下载失败，校验按预期阻止构建；已将短EOF/IncompleteRead明确归为有界可重试传输失败，完整长度摘要不匹配仍立即失败。主工程wrapper同步已资格的9.8.2，实际218任务全量执行通过。第二轮40205753544已越过下载进入AGP配置，夹具遗漏ndkVersion导致AGP默认28.2与显式NDK30不符，已补与主工程一致的30.0.16248370后继续。第三轮40206074783已真实生成Java/JNI APK，但检测到strip包装未兼容AGP的-o导致退回原库；已改LLVM原生别名并补真实strip/ranlib资格，原生别名/strip-o/ranlib索引已通过40206934943；AGP40206938845两APK均生成，最终检测器只看首DEX导致误判，已按真实class_defs遍历全部DEX并在现有APK验证Owned位于classes2.dex，新增4项拒绝/多DEX回归后重跑。仍不显示buildReady。
 - CI40210689697已完整通过真实ARM64 Java/Compose/双ABI JNI构建：验证所有DEX的真实类定义、4/6个JNI库、Compose graphics-path固定AAR逐字节对应、NDK目标运行库和16KiB对齐；CI40206934943通过原生strip -o与ranlib索引。上述早期失败均保留，已修复。
-- 后续：完成运行闭包材料，再接共享安装/版本资格和Agent构建入口；手机运行未验证，不显示buildReady。
+- 便携SDK实验CI40282040597通过：SDK自动发现CMake/NDK，迁移后再构建Java/Compose/双ABI JNI；7个非系统动态库实际从包内加载。原生包180,242,303字节/SHA256 f899eda7aee47fe3edc11546f26d7853aa6f8962f08bb2225f59a327b2327042，不含另行直接下载的官方SDK/JDK/Gradle分发。
+- 同一共享安装器已接android-build家族、固定输入/元数据/ARM64校验、外来SDK ELF拒绝入口和readonly SDK布局；保留旧静态逆向bundle身份/租约/清理。Agent shared_toolchain family=android-build install/probe和apk_build已接，只有当前Root身份/环境代/bundle实际自检通过才开放构建。原生包当前使用所有者命名空间内显式选择的精确本地归档，未虚构公开下载URL；不另建安装服务。
+- 本地317核心304通过/13跳过，Debug/Release/AndroidTest/lint共219任务成功；新增产品Kotlin安装器＋真实ARM64固定自检专项工作流，尚待实际执行。每次构建仍受现有270秒Linux任务预算和真实退出/清理证明约束，不扩大普通命令时限。手机运行未验证，不显示buildReady。
 
 ## 正在推进：网络进阶
 

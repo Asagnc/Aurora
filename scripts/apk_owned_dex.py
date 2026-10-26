@@ -50,13 +50,16 @@ def defined_classes(data):
     return result
 
 
-def verify(archive, compose):
+def verify(archive, compose, required=None):
     names = [name for name in archive.namelist() if re.fullmatch(r'classes(?:[2-9]|[1-9][0-9]+)?\.dex', name)]
     if not names or len(names) > 32 or sum(archive.getinfo(name).file_size for name in names) > 128 * 1024 ** 2:
         raise ValueError('Owned APK DEX budget differs')
-    required = {b'Lio/github/asagnc/aurora/buildfixture/Owned;'}
-    if compose:
-        required.add(b'Lio/github/asagnc/aurora/buildfixture/OwnedScreenKt;')
+    if required is None:
+        required = {b'Lio/github/asagnc/aurora/buildfixture/Owned;'}
+        if compose:
+            required.add(b'Lio/github/asagnc/aurora/buildfixture/OwnedScreenKt;')
+    if not required or not isinstance(required, set) or not all(isinstance(item, bytes) for item in required):
+        raise ValueError('Explicit owned class descriptors must be a nonempty byte set')
     locations = {}; observed = set()
     for name in names:
         classes = defined_classes(archive.read(name))

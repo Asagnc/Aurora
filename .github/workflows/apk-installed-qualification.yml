@@ -1,0 +1,45 @@
+name: Production ARM64 APK SDK installation qualification
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  installed:
+    runs-on: ubuntu-26.04-arm
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Obtain the exact successful portable bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import json, subprocess
+          run = '40282040597'
+          result = json.loads(subprocess.check_output(['gh', 'api', 'repos/Asagnc/Aurora/actions/runs/' + run]))
+          if result['head_sha'] != '3d42f73f089ae8edfcde466cfe3c5903de8f3e04' or result['conclusion'] != 'success' or result['path'] != '.github/workflows/apk-agp-jni-qualification.yml':
+              raise ValueError('Fixed portable bundle provenance differs')
+          subprocess.run(['gh', 'run', 'download', run, '--name', 'apk-arm64-agp-jni-qualification', '--dir', 'app/build/outputs/portable-input'], check=True)
+          PY
+      - name: Obtain fixed official SDK distributions and bootstrap the same ARM64 JDK
+        run: |
+          python3 scripts/qualify-apk-installed.py --directory app/build/outputs/installed-sdk --artifact app/build/outputs/portable-input
+          mkdir -p app/build/outputs/bootstrap
+          tar -xf app/build/outputs/installed-sdk/jdk.archive -C app/build/outputs/bootstrap
+          echo "JAVA_HOME=$PWD/app/build/outputs/bootstrap/jdk-25.0.5+8" >> "$GITHUB_ENV"
+          echo "$PWD/app/build/outputs/bootstrap/jdk-25.0.5+8/bin" >> "$GITHUB_PATH"
+      - name: Run the actual production Kotlin preparation on all fixed inputs
+        env:
+          AURORA_ANDROID_BUILD_INPUTS: ${{ github.workspace }}/app/build/outputs/installed-sdk
+        run: ./gradlew :core:test --tests '*AndroidBuildIntegrationTest' --console=plain
+      - name: Execute the production probe against the readonly installed bundle in a private namespace
+        run: sudo -n unshare --mount --propagation private python3 scripts/qualify-apk-installed.py --directory app/build/outputs/installed-sdk --probe
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: apk-installed-sdk-qualification
+          path: |
+            core/build/test-results/test/*.xml
+            app/build/outputs/installed-sdk/installed-*
+          retention-days: 14

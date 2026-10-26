@@ -70,6 +70,39 @@ class OwnedFiles(private val root: Path, private val writable: Boolean = true) {
         }
     }
 
+    /** Streams only an explicitly selected fixed archive into caller-owned staging; never allocates the whole tool bundle. */
+    suspend fun copyVerifiedArchive(relative: String, target: Path, expected: StaticReverseComponent) = withContext(Dispatchers.IO) {
+        reads.withPermit {
+            val source = resolve(relative)
+            val before = Files.readAttributes(source, java.nio.file.attribute.BasicFileAttributes::class.java, LinkOption.NOFOLLOW_LINKS)
+            require(before.isRegularFile && before.size() == expected.compressedBytes)
+            require(target.isAbsolute && !Files.exists(target, LinkOption.NOFOLLOW_LINKS))
+            var created = false
+            try {
+                FileChannel.open(source, StandardOpenOption.READ, LinkOption.NOFOLLOW_LINKS).use { input ->
+                    FileChannel.open(target, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE, LinkOption.NOFOLLOW_LINKS).use { output ->
+                        created = true
+                        val hash = MessageDigest.getInstance("SHA-256"); val buffer = ByteBuffer.allocate(65536); var total = 0L
+                        while (true) {
+                            currentCoroutineContext().ensureActive(); buffer.clear()
+                            val count = input.read(buffer); if (count < 0) break
+                            require(count > 0); total += count; require(total <= expected.compressedBytes)
+                            hash.update(buffer.array(), 0, count); buffer.flip()
+                            while (buffer.hasRemaining()) { currentCoroutineContext().ensureActive(); require(output.write(buffer) > 0) }
+                        }
+                        require(total == expected.compressedBytes && hash.digest().joinToString("") { "%02x".format(it.toInt() and 255) } == expected.sha256)
+                        val after = Files.readAttributes(source, java.nio.file.attribute.BasicFileAttributes::class.java, LinkOption.NOFOLLOW_LINKS)
+                        require(before.fileKey() == after.fileKey() && before.size() == after.size() && before.lastModifiedTime() == after.lastModifiedTime())
+                        output.force(true)
+                    }
+                }
+            } catch (failure: Throwable) {
+                if (created) try { Files.deleteIfExists(target) } catch (cleanup: Throwable) { failure.addSuppressed(cleanup) }
+                throw failure
+            }
+        }
+    }
+
     suspend fun list(relative: String = "", limit: Int = 200): List<Pair<String, Boolean>> = withContext(Dispatchers.IO) {
         require(limit in 1..200)
         val directory = if (relative.isEmpty()) root else resolve(relative)

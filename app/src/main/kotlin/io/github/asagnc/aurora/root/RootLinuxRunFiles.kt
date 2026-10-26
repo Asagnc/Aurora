@@ -37,8 +37,7 @@ internal class RootLinuxRunFiles(private val context: Context) {
         require(bundle.matches(Regex("[a-f0-9]{64}")))
         val path = privatePath(listOf("spaces", "resources", "static-reverse", "versions", bundle))
         require(text(path.resolve("bundle"), 64) == bundle)
-        for (name in listOf("jre", "jadx", "apktool"))
-            require(Files.isDirectory(path.resolve(name), LinkOption.NOFOLLOW_LINKS))
+        require(io.github.asagnc.aurora.core.SharedToolLayout.complete(path)) { "Unknown or incomplete shared tool family" }
         return path
     }
     fun state(ticket: LinuxRunTicket): Path {

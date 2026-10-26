@@ -39,26 +39,33 @@ class StaticReverseStore(private val root: Path,
         Files.newDirectoryStream(versions).use { entries -> entries.filter { complete(it) }.map { it.fileName.toString() }.sorted() }
     } }
 
-    suspend fun install(fetch: suspend (StaticReverseComponent, Path) -> Unit): String = withContext(Dispatchers.IO) { operations.withLock {
+    suspend fun install(fetch: suspend (StaticReverseComponent, Path) -> Unit): String = install(StaticReverseTools.catalog, fetch)
+
+    suspend fun install(catalog: SharedToolCatalog,
+        fetch: suspend (StaticReverseComponent, Path) -> Unit): String = withContext(Dispatchers.IO) { operations.withLock {
+        val selected = catalog.copy(components = catalog.components.toList())
         initialize()
-        val id = StaticReverseTools.bundleId
+        val id = selected.bundleId
         val published = versions.resolve(id)
         if (complete(published)) return@withLock id
         require(!Files.exists(published, LinkOption.NOFOLLOW_LINKS)) { "Incomplete published bundle: remove the catalogBundle id before reinstalling" }
         // Includes compressed, conservative expanded maxima and per-file metadata headroom before any download.
-        require(Files.getFileStore(root).usableSpace >= StaticReverseTools.compressedBytes + 800L*1024*1024) { "Insufficient tool installation space" }
+        require(Files.getFileStore(root).usableSpace >= selected.compressedBytes + selected.headroomBytes) { "Insufficient tool installation space" }
         val stage = Files.createDirectory(staging.resolve(UUID.randomUUID().toString()))
         var original: Throwable? = null
         try {
             durable(stage.resolve("owner"), marker)
             val prepared = Files.createDirectory(stage.resolve("prepared"))
-            for (component in StaticReverseTools.components) {
+            for (component in selected.components) {
                 currentCoroutineContext().ensureActive()
                 val archive = stage.resolve(component.id + ".archive")
                 fetch(component, archive)
                 runInterruptible { prepare(component, archive, prepared.resolve(component.id)) }
                 Files.delete(archive)
             }
+            runInterruptible { selected.finish(prepared) }
+            durable(prepared.resolve("family"), selected.family)
+            require(SharedToolLayout.complete(prepared)) { "Prepared tool bundle layout is incomplete" }
             durable(prepared.resolve("bundle"), id)
             currentCoroutineContext().ensureActive()
             withContext(NonCancellable) { Files.move(prepared, published, StandardCopyOption.ATOMIC_MOVE) }
@@ -126,8 +133,7 @@ class StaticReverseStore(private val root: Path,
         }
     }
 
-    private fun complete(directory: Path): Boolean = ownedVersion(directory) &&
-        listOf("jre", "jadx", "apktool").all { Files.isDirectory(directory.resolve(it), LinkOption.NOFOLLOW_LINKS) }
+    private fun complete(directory: Path): Boolean = ownedVersion(directory) && SharedToolLayout.complete(directory)
 
     private fun ownedVersion(directory: Path): Boolean {
         if (!Files.isDirectory(directory, LinkOption.NOFOLLOW_LINKS)) return false

@@ -14,6 +14,7 @@ internal fun presentTool(event: ToolRun): ToolPresentation {
     val title = when (event.tool) {
         "reverse_analyze" -> "分析 APK / DEX"
         "shared_toolchain" -> "管理共享工具"
+        "apk_build" -> "构建 Android APK"
         "images_publish" -> "发布图片"
         "command_execute" -> "执行原生命令"
         "command_execute_root" -> "执行 Root 命令"

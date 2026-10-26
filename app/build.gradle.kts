@@ -153,6 +153,26 @@ androidComponents.onVariants { variant ->
     }
     variant.sources.assets?.addGeneratedSourceDirectory(manifest, StageManagedManifest::outputDirectory)
     variant.sources.assets?.addGeneratedSourceDirectory(fridaBridge, StageFridaBridge::outputDirectory)
+    variant.sources.assets?.addGeneratedSourceDirectory(apkBuildMetadata, StageApkBuildMetadata::outputDirectory)
+}
+
+abstract class StageApkBuildMetadata : DefaultTask() {
+    @get:InputDirectory @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val metadata: DirectoryProperty
+    @get:OutputDirectory abstract val outputDirectory: DirectoryProperty
+    @TaskAction fun stage() {
+        val output = outputDirectory.get().asFile.resolve("apk-build")
+        output.mkdirs()
+        for (name in listOf("platform-package.xml", "build-tools-package.xml")) {
+            val text = metadata.get().asFile.resolve(name).readText(Charsets.UTF_8).replace("\r\n", "\n")
+            output.resolve(name).writeText(text, Charsets.UTF_8)
+        }
+    }
+}
+
+val apkBuildMetadata = tasks.register<StageApkBuildMetadata>("stageApkBuildMetadata") {
+    metadata.set(rootProject.layout.projectDirectory.dir("tools/apk-build/sdk-metadata"))
+    outputDirectory.set(layout.buildDirectory.dir("generated/apk-build-metadata"))
 }
 
 /** Digests of the actual APK payload, after symbol stripping; never hashes a caller-supplied path. */
