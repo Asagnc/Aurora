@@ -68,3 +68,6 @@ Root/ART/自有spawn、静态逆向/JVM、APK构建、网络代理、抓包、�
 
 
 APK产品安装专项40286606912在执行安装测试前，因ARM64 runner没有宿主Android SDK、Gradle配置了无关:app模块而失败；固定下载均已校验。改为按需仅配置:core，不安装另一套宿主SDK，继续运行实际Kotlin安装和生产自检；该次不记通过。
+
+
+APK安装专项40286923028已实际通过生产Kotlin的五份固定归档解包/SDK布置，并在readonly /opt真实发现SDK/CMake/NDK后进入双ABI JNI编译；生产自检夹具误将C的JNI调用参数用于C++成员函数，编译按预期失败，未置qualified。已修正NewStringUTF调用并继续。另将静态逆向/APK工具派发绑定刚通过资格检查的Root身份，避免期间重连后误用新连接。

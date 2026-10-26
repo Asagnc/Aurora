@@ -57,7 +57,7 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
         val attempt = qualifications.begin(scope)
         val id = UUID.randomUUID().toString(); prepared(id)
         val result = app.linux.runs.executeTools(owner, LinuxToolRun(listOf(AndroidBuildRuntime.probePath, id),
-            AndroidBuildTools.bundleId, 270000, id), generation)
+            AndroidBuildTools.bundleId, 270000, id, identity), generation)
         val passed = androidBuildProbePassed(StaticReverseProbeContext(0, id, generation), result) && app.root.linuxExecution?.identity == identity
         val ready = passed && qualifications.complete(attempt)
         return objectOf("qualified" to JsonPrimitive(ready), "result" to result, "logDirectory" to string("runs/$id"))
@@ -67,7 +67,7 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
         check(qualifications.ready(StaticReverseQualifications.Scope(generation, identity, AndroidBuildTools.bundleId))) {
             "Run shared_toolchain family=android-build probe for this environment first"
         }
-        return app.linux.runs.executeTools(owner, LinuxToolRun(request.argv, AndroidBuildTools.bundleId, 270000, id), generation)
+        return app.linux.runs.executeTools(owner, LinuxToolRun(request.argv, AndroidBuildTools.bundleId, 270000, id, identity), generation)
     }
     suspend fun <T> reserve(id: String, record: suspend () -> T): T = store.reserve(id, record)
     suspend fun remove(id: String): Boolean {
@@ -78,7 +78,7 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
     suspend fun analyze(owner: String, request: LinuxToolRun, generation: String): JsonObject {
         val identity = requireNotNull(app.root.linuxExecution?.identity) { "Connect Root before analysis" }
         check(qualifications.ready(StaticReverseQualifications.Scope(generation, identity, request.bundle))) { "Run shared_toolchain probe for this environment first" }
-        return app.linux.runs.executeTools(owner, request, generation)
+        return app.linux.runs.executeTools(owner, request.copy(expectedIdentity = identity), generation)
     }
     suspend fun probe(owner: String, generation: String, prepared: suspend (String) -> Unit): JsonObject {
         val identity = requireNotNull(app.root.linuxExecution?.identity) { "Reconnect Root for tool mounts" }
@@ -89,7 +89,7 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
         for ((index, argv) in commands.withIndex()) {
             val id = UUID.randomUUID().toString(); prepared(id)
             logs += string("runs/$id")
-            val proof = app.linux.runs.executeTools(owner, LinuxToolRun(argv, StaticReverseTools.bundleId, 60000, id), generation)
+            val proof = app.linux.runs.executeTools(owner, LinuxToolRun(argv, StaticReverseTools.bundleId, 60000, id, identity), generation)
             results += proof
             val passed = staticReverseProbePassed(StaticReverseProbeContext(index, id, generation), proof) &&
                 app.root.linuxExecution?.identity == identity

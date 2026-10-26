@@ -83,7 +83,7 @@ object AndroidBuildRuntime {
         #include <jni.h>
         #include <string>
         extern "C" JNIEXPORT jstring JNICALL Java_io_github_asagnc_aurora_sdkprobe_Owned_nativeMarker(JNIEnv *env, jclass) {
-          std::string value = "owned-" + std::to_string(42); return env->NewStringUTF(env, value.c_str());
+          std::string value = "owned-" + std::to_string(42); return env->NewStringUTF(value.c_str());
         }
         CPP
         /opt/android-host/bin/aurora-gradle "${'$'}base" --quiet assembleRelease

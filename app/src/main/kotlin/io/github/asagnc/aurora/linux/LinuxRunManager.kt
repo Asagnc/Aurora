@@ -12,21 +12,23 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.*
 
 /** Durable execution intent precedes dispatch; only exact stopped proof releases its lease. */
-internal data class LinuxToolRun(val argv: List<String>, val bundle: String, val timeoutMs: Long, val runId: String)
+internal data class LinuxToolRun(val argv: List<String>, val bundle: String, val timeoutMs: Long, val runId: String,
+    val expectedIdentity: LinuxRootIdentity? = null)
 
 internal class LinuxRunManager(private val app: AuroraApplication, private val environments: LinuxEnvironmentManager) {
     private val records = LinuxRunRegistry(app.conversations)
     private data class Dispatch(val owner: String, val argv: List<String>, val timeoutMs: Long,
-        val runId: String, val generation: String?, val toolBundle: String? = null)
+        val runId: String, val generation: String?, val toolBundle: String? = null, val expectedIdentity: LinuxRootIdentity? = null)
     suspend fun execute(owner: String, argv: List<String>, timeoutMs: Long = 60_000,
         runId: String = UUID.randomUUID().toString(), generation: String? = null): JsonObject =
         dispatch(Dispatch(owner, argv.toList(), timeoutMs, runId, generation))
 
     internal suspend fun executeTools(owner: String, request: LinuxToolRun, generation: String? = null): JsonObject =
-        dispatch(Dispatch(owner, request.argv.toList(), request.timeoutMs, request.runId, generation, request.bundle))
+        dispatch(Dispatch(owner, request.argv.toList(), request.timeoutMs, request.runId, generation, request.bundle, request.expectedIdentity))
 
     private suspend fun dispatch(request: Dispatch): JsonObject {
         val connection = requireNotNull(app.root.linuxExecution) { "Reconnect a current Root service for Linux execution" }
+        check(request.expectedIdentity == null || connection.identity == request.expectedIdentity) { "Root identity changed after tool qualification; probe the current connection first" }
         val client = connection.run
         val ticket = reserve(request, connection.identity)
         try {
