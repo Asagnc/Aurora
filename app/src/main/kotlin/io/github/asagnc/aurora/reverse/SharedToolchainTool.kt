@@ -47,8 +47,8 @@ internal class SharedToolchainTool(private val manager: SharedToolchainManager, 
                 val id = if (androidBuild) manager.installAndroid(owner, requireNotNull(args.text("nativeSource")), requireNotNull(args.text("nativePath"))) else manager.install()
                 objectOf("installed" to string(id), "status" to manager.status(environment.selectedGeneration(), androidBuild))
             }
-            "remove" -> objectOf("removed" to JsonPrimitive(manager.remove(requireNotNull(args.text("bundle")))), "status" to manager.status(environment.selectedGeneration()))
-            "cleanup" -> objectOf("stagesRemoved" to JsonPrimitive(manager.cleanup()), "status" to manager.status(environment.selectedGeneration()))
+            "remove" -> objectOf("removed" to JsonPrimitive(manager.remove(requireNotNull(args.text("bundle")))), "status" to manager.status(environment.selectedGeneration(), androidBuild))
+            "cleanup" -> objectOf("stagesRemoved" to JsonPrimitive(manager.cleanup()), "status" to manager.status(environment.selectedGeneration(), androidBuild))
             else -> error("Unknown shared toolchain action")
         }.toString()
     }

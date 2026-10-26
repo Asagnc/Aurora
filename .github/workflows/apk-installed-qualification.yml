@@ -32,7 +32,7 @@ jobs:
       - name: Run the actual production Kotlin preparation on all fixed inputs
         env:
           AURORA_ANDROID_BUILD_INPUTS: ${{ github.workspace }}/app/build/outputs/installed-sdk
-        run: ./gradlew :core:test --tests '*AndroidBuildIntegrationTest' --console=plain
+        run: ./gradlew --configure-on-demand :core:test --tests '*AndroidBuildIntegrationTest' --console=plain
       - name: Execute the production probe against the readonly installed bundle in a private namespace
         run: sudo -n unshare --mount --propagation private python3 scripts/qualify-apk-installed.py --directory app/build/outputs/installed-sdk --probe
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

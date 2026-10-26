@@ -880,3 +880,6 @@ fd10377完整CI40228422302和轮转最终统计专项40228422825均通过。rele
 便携原生SDK资格40282040597通过：180,242,303字节，7项私有动态库解析与迁移后Java/Compose/双ABI JNI真实重建成功。现沿用同一版本目录/原子发布/持久租约/取消清理安装器接入android-build家族；旧静态逆向身份保留。固定元数据、官方SDK/JVM独立输入、ARM64资源/LLVM/CMake、外来ELF拒绝入口、字面Gradle参数、当前Root身份/环境代/bundle资格及Agent apk_build均已实现。安装完成不等于当前设备资格。
 
 317核心304通过/13跳过；Debug/Release/AndroidTest/lint本地219任务通过。生产Kotlin解包＋readonly挂载运行固定Java/Compose/JNI自检的ARM64专项已写，待CI实际执行；270秒既有执行预算不变，无手机/密钥/付费模型操作。原生SDK包暂用精确本地选择，不冒充已发布公共工具资产。
+
+
+APK产品安装专项40286606912在执行安装测试前，因ARM64 runner没有宿主Android SDK、Gradle配置了无关:app模块而失败；固定下载均已校验。改为按需仅配置:core，不安装另一套宿主SDK，继续运行实际Kotlin安装和生产自检；该次不记通过。
