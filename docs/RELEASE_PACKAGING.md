@@ -21,3 +21,8 @@ python scripts/package-release.py --unsigned-review --apk app/build/outputs/apk/
 APK共享构建工具可作为配套审查材料：先运行package-apk-materials.py，传入--resources（固定资源源码目录）、--compiler（LLVM源码目录）、--runtime（SDK私有运行库inputs目录）、--host（CMake/Ninja源码目录）和新的--output ZIP。它逐项验证41份源码输入，附精确git archive HEAD快照，并再次流式校验生成ZIP；不执行上游源码。快照属于打包时可信checkout，改变HEAD后需重新打包再验证。
 
 package-release.py同时传入--android-build-bundle与--android-build-sources，才会复制原生SDK tar.gz及SDK源码ZIP到材料目录并纳入manifest/SHA256SUMS。缺一项拒绝；原生SDK字节、APK assets/apk-build/native-bundle.json、可信源码目录和自有源码快照须全部对应。官方SDK/JDK/Gradle分发仍从已固定官方下载入口获取，不夹入自制SDK原生包。上述验证不等于手机buildReady或完整Android补丁NDK等价。
+
+
+代理离线配套使用package-proxy-materials.py：--upstream为固定mitmproxy提交源码目录，--packages为Python包downloads，--rust为crate downloads，--python为CPython inputs，--gcc为Debian inputs，--crypto为OpenSSL inputs，--output为不存在的ZIP。它校验584项固定输入（含上游自身、候选wheel和Cargo-lock源码超集），附当前git archive HEAD；逐项有界流式摘要检查，不执行归档代码。原始源码和自有快照内的许可/补充notice一并保留，仍不宣称完整静态链接可复现或总体licenseClosureVerified。
+
+package-release.py成对接收--proxy-distribution与--proxy-sources：验证官方独立分发精确字节、编译安装器pin、APK实际八份profiles、固定源码清单和当前源码快照。代理分发和源码ZIP纳入manifest/SHA256SUMS。配套校验不执行下载的程序，不把主机资格写成手机proxyReady。增加4组惰性fixture覆盖完整/篡改/缺失/多余/重复/错源码快照/错APK profile/错分发拒绝。发布stage函数沿用单次临时目录中按顺序复制—审计—重建—发布的责任，新增可选材料仍在同一生命周期内；超过普通函数行数目标的例外保留以避免拆散失败清理范围。

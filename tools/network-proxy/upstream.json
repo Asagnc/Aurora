@@ -2,6 +2,12 @@
   "version": "12.3.0",
   "repository": "https://github.com/mitmproxy/mitmproxy",
   "commit": "ac4f4cf7eab63effeb4b53b6bc09b5143aa42ae4",
+  "source": {
+    "archive": "mitmproxy-ac4f4cf7eab63effeb4b53b6bc09b5143aa42ae4.tar.gz",
+    "url": "https://codeload.github.com/mitmproxy/mitmproxy/tar.gz/ac4f4cf7eab63effeb4b53b6bc09b5143aa42ae4",
+    "bytes": 29977950,
+    "sha256": "84a29789de9a1cea99131f65ad9e715dec550aeb6152850c2ca480a0fe2fdca9"
+  },
   "lockGitBlobSha1": "b96fe2919bdeabda820f343e3ddce46e031939f1",
   "lockSha256": "d9bc0909ce7dd78cf16875805d1083f286dac21ce4fcb7ecbf66a262dab51ba4",
   "lockBytes": 291846,

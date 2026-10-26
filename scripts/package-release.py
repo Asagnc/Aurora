@@ -107,6 +107,12 @@ def stage(args):
             raise ValueError('SDK native bundle and source materials must be supplied together')
         if sdk_bundle:
             selected += [('android-host-arm64.tar.gz', sdk_bundle), ('android-build-source-materials.zip', sdk_sources)]
+        proxy_bundle = getattr(args, 'proxy_distribution', None)
+        proxy_sources = getattr(args, 'proxy_sources', None)
+        if bool(proxy_bundle) != bool(proxy_sources):
+            raise ValueError('Proxy distribution and source materials must be supplied together')
+        if proxy_bundle:
+            selected += [('mitmproxy-linux-aarch64.tar.gz', proxy_bundle), ('network-proxy-source-materials.zip', proxy_sources)]
         for name, source in selected:
             if not source.is_file():
                 raise ValueError('Missing selected release input: ' + name)
@@ -122,6 +128,10 @@ def stage(args):
         if sdk_bundle:
             from apk_release_materials import verify_release
             sdk = verify_release(work / 'Aurora.apk', work / 'android-host-arm64.tar.gz', work / 'android-build-source-materials.zip')
+        proxy = None
+        if proxy_bundle:
+            from proxy_release_materials import verify_release as verify_proxy
+            proxy = verify_proxy(work / 'Aurora.apk', work / 'mitmproxy-linux-aarch64.tar.gz', work / 'network-proxy-source-materials.zip')
         # Rebuild verifiers validate sources against this trusted checkout before executing code.
         subprocess.run([args.python, str(ROOT / 'scripts/verify-frida-source-roundtrip.py'),
             str(work / 'frida-source-materials.zip'), '--reference', str(args.frida_reference.resolve()),
@@ -132,6 +142,7 @@ def stage(args):
         manifest = {'format': 1, 'androidRuntime': 'NOT VERIFIED BY PACKAGING',
             'releaseReady': False, 'signature': signature, **identity, **application,
             'androidBuildTools': sdk,
+            'networkProxyTools': proxy,
             'gitCommit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
             'workTreeDirty': bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT)),
             'files': [{'name': name, 'bytes': (work / name).stat().st_size, 'sha256': sha(work / name)}
@@ -163,4 +174,6 @@ if __name__ == '__main__':
     parser.add_argument('--python', default=sys.executable)
     parser.add_argument('--android-build-bundle', type=Path)
     parser.add_argument('--android-build-sources', type=Path)
+    parser.add_argument('--proxy-distribution', type=Path)
+    parser.add_argument('--proxy-sources', type=Path)
     stage(parser.parse_args())
