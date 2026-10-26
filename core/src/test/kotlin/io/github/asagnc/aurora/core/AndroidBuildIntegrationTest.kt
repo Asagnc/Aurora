@@ -6,12 +6,34 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.*
 import org.junit.jupiter.api.Assumptions.assumeTrue
 import kotlinx.serialization.json.*
+import kotlin.time.Duration.Companion.minutes
 
 class AndroidBuildIntegrationTest {
     private val repository get() = Path.of(requireNotNull(System.getProperty("aurora.repository")))
     private fun metadata() = AndroidBuildTools.metadataSha256.keys.associateWith {
         Files.readAllBytes(repository.resolve("tools/apk-build/sdk-metadata/$it"))
             .toString(Charsets.UTF_8).replace("\r\n", "\n").toByteArray(Charsets.UTF_8)
+    }
+
+    @Test fun productionLargeFixedDownloadWhenExplicitlyQualified() = runTest(timeout = 5.minutes) {
+        assumeTrue(System.getenv("AURORA_ANDROID_BUILD_DOWNLOAD") == "1", "Explicit fixed archive network qualification required")
+        val directory = Files.createTempDirectory("aurora-large-fixed-download-")
+        try {
+            val component = AndroidBuildTools.components.single { it.id == "gradle" }
+            val target = directory.resolve("gradle.archive")
+            SkillNetwork().downloadTool(component, target)
+            assertEquals(component.compressedBytes, Files.size(target))
+        } finally { directory.toFile().deleteRecursively() }
+    }
+
+    @Test fun largerToolBudgetCannotBeUsedForUncompiledInputsOrOrdinarySkills() = runTest {
+        val directory = Files.createTempDirectory("aurora-tool-download-boundary-")
+        try {
+            val component = AndroidBuildTools.components.first().copy(sha256 = "0".repeat(64))
+            assertFailsWith<IllegalArgumentException> { SkillNetwork().downloadTool(component, directory.resolve("untrusted")) }
+            assertFailsWith<IllegalArgumentException> { SkillNetwork().download("https://example.invalid/archive", directory.resolve("ordinary"), 129L * 1024 * 1024) }
+            assertFalse(Files.exists(directory.resolve("untrusted"))); assertFalse(Files.exists(directory.resolve("ordinary")))
+        } finally { directory.toFile().deleteRecursively() }
     }
 
     @Test fun argvRejectsTraversalOptionsAndShellAndKeepsLiteralTasks() {

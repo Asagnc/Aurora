@@ -39,7 +39,7 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
         }
         return store.install(catalog) { component, target ->
             if (component.localOnly) nativeSource.copyVerifiedArchive(nativePath, target, component)
-            else network.download(component.url, target, component.compressedBytes)
+            else network.downloadTool(component, target)
         }
     }
     suspend fun installAndroid(owner: String, source: String, path: String): String {

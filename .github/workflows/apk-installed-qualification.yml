@@ -32,6 +32,7 @@ jobs:
       - name: Run the actual production Kotlin preparation on all fixed inputs
         env:
           AURORA_ANDROID_BUILD_INPUTS: ${{ github.workspace }}/app/build/outputs/installed-sdk
+          AURORA_ANDROID_BUILD_DOWNLOAD: '1'
         run: ./gradlew --configure-on-demand :core:test --tests '*AndroidBuildIntegrationTest' --console=plain
       - name: Verify exact private runtime source and notice correspondence without executing source
         run: python3 scripts/prepare-apk-runtime-materials.py --directory app/build/outputs/sdk-runtime-materials --inputs app/build/outputs/sdk-runtime-inputs --bundle app/build/outputs/portable-input/android-host-arm64.tar.gz

@@ -38,7 +38,18 @@ class SkillNetwork(private val client: OkHttpClient = OkHttpClient.Builder().fol
 
     suspend fun download(url: String, target: Path, maxBytes: Long = 64L * 1024 * 1024) = withTimeout(60_000) {
         require(maxBytes in 1..128L * 1024 * 1024)
-        response(url) { result ->
+        downloadBounded(url, target, maxBytes, 60_000)
+    }
+
+    /** Only fixed compiled tool inputs get the larger transport budget; ordinary Skills keep their original limits. */
+    suspend fun downloadTool(component: StaticReverseComponent, target: Path) = withTimeout(180_000) {
+        require(!component.localOnly && (component in StaticReverseTools.components || component in AndroidBuildTools.components))
+        downloadBounded(component.url, target, component.compressedBytes, 180_000)
+        runInterruptible(Dispatchers.IO) { verifyStaticReverseArchive(component, target) }
+    }
+
+    private suspend fun downloadBounded(url: String, target: Path, maxBytes: Long, timeoutMs: Long) {
+        response(url, timeoutMs) { result ->
             require(result.body.contentLength() <= maxBytes)
             Files.newOutputStream(target, StandardOpenOption.CREATE_NEW, LinkOption.NOFOLLOW_LINKS).use { output ->
                 result.body.byteStream().use { input ->
@@ -61,10 +72,11 @@ class SkillNetwork(private val client: OkHttpClient = OkHttpClient.Builder().fol
         WireJson.parseToJsonElement(text).jsonObject
     }
 
-    private suspend fun <T> response(address: String, block: (Response) -> T): T = withTimeout(60_000) {
+    private suspend fun <T> response(address: String, timeoutMs: Long = 60_000, block: (Response) -> T): T = withTimeout(timeoutMs) {
         var url = checked(address)
         repeat(6) {
             val call = client.newCall(Request.Builder().url(url).header("User-Agent", "Aurora-Skills").build())
+            if (timeoutMs > 60_000) call.timeout().timeout(timeoutMs, TimeUnit.MILLISECONDS)
             val next = coroutineScope {
                 val cancel = launch(start = CoroutineStart.UNDISPATCHED) { try { awaitCancellation() } finally { call.cancel() } }
                 try {
