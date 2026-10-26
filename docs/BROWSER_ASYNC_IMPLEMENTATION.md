@@ -18,7 +18,7 @@
 
 截止/取消只结束等待和结果通道；不能撤销已发出的fetch或副作用，不能强制中断同步死循环。JS清理依赖renderer还能执行；旧文档被销毁或暂时停表时不能声称清理代码已立即执行。Native端口已关闭，迟到数据不接受，下一次恢复或文档销毁处理剩余页面状态。
 
-当前仍保留动作后100ms事件循环观察间隔，防止点击后尚未分派的导航被当成已稳定；这是单次动作收尾，不是持续查询。浏览器上传下载、完整跨站frame操作和renderer实际崩溃矩阵仍未完成。
+当前仍保留动作后100ms事件循环观察间隔，防止点击后尚未分派的导航被当成已稳定；这是单次动作收尾，不是持续查询。上传/下载后续接入见BROWSER_TRANSFER_IMPLEMENTATION；任意跨源frame访问不绕过WebView同源策略，renderer真实死亡仍待设备矩阵。
 
 ## 验证
 
@@ -29,3 +29,6 @@
 - 9517ea9完整CI39909014575已成功，证据evidence/0.1.37/ci-39909014575-passed.txt。随后补mjs测试输入追踪和Android跨域夹具，本地core/testAPK/lint再次通过，后续提交CI另查。批准、主机CI与构建都不代替设备功能/性能验收。
 
 后续继续浏览器文件上传下载和故障矩阵；新传输/持久化选择按既有要求先研究确认。
+
+
+2026-10-26新增BrowserBoundaryTest：确定性自有HTTPS拦截页面实际加载同源/跨源iframe，事件驱动等iframe ready后分别确认可读与SecurityError；新增真实WebView renderer.terminate用例，先要求显式auroraBrowserCrashTest=true且Aurora实际浏览器无打开页面，验证未完成Promise因关页失败、无重放，并只删除本fixture owner。用例仅编译，当前不操作手机/模拟器，不声称renderer死亡或跨站矩阵已通过。该测试会终止当前App使用的renderer，最后集中执行前关闭所有真实页面。依据：https://developer.android.com/reference/android/webkit/WebViewClient#onRenderProcessGone(android.webkit.WebView,%20android.webkit.RenderProcessGoneDetail)。

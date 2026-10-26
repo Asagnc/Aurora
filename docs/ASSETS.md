@@ -15,3 +15,6 @@ The full [Apache-2.0 license](licenses/Material-Symbols-LICENSE.txt) is also pac
 0.1.5 adds independently drawn native outline vectors ic_gauge, ic_database, ic_context, ic_sparkle and ic_thinking. They are Aurora geometry, not copied Lucide paths. The thinking control uses the approved lightbulb silhouette.
 
 0.1.6 removes the unused original ic_lightbulb vector after the approved thinking control switched to the independent ic_thinking outline. Earlier Material attribution records its source history.
+
+
+2026-10-26 Release图标静态审查已接package-release与完整CI：现有aapt2解析实际manifest→adaptive icon→8dp inset/fill bitmap→PNG资源链；已批准原PNG SHA256 274da3ca39c5ea28837a7c44534c6869252c787aa4fca800ab0c60fad1f54226。AAPT重新编码后PNG字节不同，但1254×1254解码RGB SHA256均为f5c4e850ed0d2ecaee4a8b836be794b3375affa5089616564602aaee1838651f，已用独立现有Pillow读取复核。CI检查只用标准库针对该固定RGB8 PNG作有界解码/CRC/filter验证，不新增产品依赖或编辑图像。不将此证明扩展为各手机launcher/mask的实际视觉验收；未新增未经批准的monochrome图标。

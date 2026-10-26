@@ -12,7 +12,7 @@ class SkillNetworkTest {
             .body(body.toResponseBody()).build()
     }.build())
 
-    @Test fun choosesLatestStableReleaseAndPinsItsCommit() = runBlocking {
+    @Test fun choosesLatestStableReleaseAndPinsItsCommit() = runBlocking<Unit> {
         val requests = mutableListOf<String>()
         val sha = "a".repeat(40)
         val client = network { request ->
@@ -26,7 +26,7 @@ class SkillNetworkTest {
         assertEquals(sha, resolved.source.revision)
         assertTrue(resolved.source.label.endsWith("v2.0"))
     }
-    @Test fun repositoryWithoutReleaseUsesDefaultBranchButOtherErrorsDoNotFallback() = runBlocking {
+    @Test fun repositoryWithoutReleaseUsesDefaultBranchButOtherErrorsDoNotFallback() = runBlocking<Unit> {
         val sha = "b".repeat(40)
         val client = network { request -> when {
             request.url.encodedPath.endsWith("latest") -> 404 to "{}"
@@ -38,13 +38,13 @@ class SkillNetworkTest {
         assertTrue(fallback.source.label.contains("分支快照"))
         assertFailsWith<SkillHttpStatus> { network { 403 to "{}" }.resolve(SkillSource("https://github.com/example/workflows")) }
     }
-    @Test fun rejectsCredentialsPlaintextAndFragmentsBeforeNetwork() = runBlocking {
+    @Test fun rejectsCredentialsPlaintextAndFragmentsBeforeNetwork() = runBlocking<Unit> {
         val client = network { error("Network must not be reached") }
         listOf("http://example.com/skill.zip", "https://user:secret@example.com/skill.zip", "https://example.com/skill.zip#fragment").forEach {
             assertFailsWith<IllegalArgumentException> { client.resolve(SkillSource(it)) }
         }
     }
-    @Test fun explicitBranchUsesOneCommitRequestAndSurvivesReResolution() = runBlocking {
+    @Test fun explicitBranchUsesOneCommitRequestAndSurvivesReResolution() = runBlocking<Unit> {
         val requests = mutableListOf<String>()
         val sha = "c".repeat(40)
         val client = network { request ->

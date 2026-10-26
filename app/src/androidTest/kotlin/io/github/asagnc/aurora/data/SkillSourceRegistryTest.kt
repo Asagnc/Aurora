@@ -11,6 +11,23 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class SkillSourceRegistryTest {
+    @Test fun reverifiedIdenticalContentKeepsCurrentEvidenceWhenSelectingThatVersion() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext; val name = "skill-same-hash-${UUID.randomUUID()}.db"
+        try {
+            AuroraDatabase(context, name).use { helper ->
+                val registry = SkillRegistry(ConversationStore(helper))
+                val original = SkillEntry("owned", "a".repeat(64), true, SkillSource("https://github.com/example/skills"), SkillMetadata("owned", "description"), 7)
+                registry.begin("first", listOf(original.hash)); registry.finish("first", listOf(original))
+                val proof = SkillVerification("github:example/skills", "b".repeat(64), 12, "c".repeat(64), "owned inert persistence fixture")
+                val reverified = original.copy(source = original.source.copy(profileId = UUID.randomUUID().toString(), verification = proof))
+                registry.begin("second", listOf(original.hash)); registry.finish("second", listOf(reverified))
+                assertEquals(proof, registry.versions(original.id).single().source.verification)
+                registry.select(original.id, original.hash, reverified.source)
+                assertEquals(proof, registry.entries().single().source.verification)
+                assertNull(original.source.verification)
+            }
+        } finally { context.deleteDatabase(name) }
+    }
     @Test fun platformEd25519AndExistingKeyStoreVaultAreQualifiedIndependently() = runBlocking {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val id = UUID.randomUUID().toString(); val vault = CredentialVault(context)

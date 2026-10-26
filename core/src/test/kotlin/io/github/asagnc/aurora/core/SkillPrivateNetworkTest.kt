@@ -13,7 +13,7 @@ class SkillPrivateNetworkTest {
     private fun response(request: Request, body: String, code: Int = 200, redirect: String? = null) = Response.Builder()
         .request(request).protocol(okhttp3.Protocol.HTTP_1_1).code(code).message("owned fixture").body(body.toResponseBody())
         .apply { redirect?.let { header("Location", it) } }.build()
-    @Test fun authenticatedResolutionAndTemporaryDownloadNeverPersistOrForwardTheSecret() = runBlocking {
+    @Test fun authenticatedResolutionAndTemporaryDownloadNeverPersistOrForwardTheSecret() = runBlocking<Unit> {
         val requests = mutableListOf<Request>()
         val sha = "a".repeat(40)
         val client = network { request ->
@@ -35,7 +35,7 @@ class SkillPrivateNetworkTest {
         assertFalse(resolved.source.toString().contains("temporary-owned"))
         assertFalse(credential.toString().contains("owned-fixture-token"))
     }
-    @Test fun crossHostCrossRepositoryAndNonstandardPortRedirectsAreStoppedBeforeNextRequest() = runBlocking {
+    @Test fun crossHostCrossRepositoryAndNonstandardPortRedirectsAreStoppedBeforeNextRequest() = runBlocking<Unit> {
         val root = Files.createTempDirectory("aurora-private-redirect")
         try {
             for (target in listOf("https://example.com/steal", "https://api.github.com/repos/other/repo/zipball/a",
@@ -47,7 +47,7 @@ class SkillPrivateNetworkTest {
             }
         } finally { removeSkillTree(root) }
     }
-    @Test fun signatureBudgetAuthenticationAndPrivateStatusAreExplicit() = runBlocking {
+    @Test fun signatureBudgetAuthenticationAndPrivateStatusAreExplicit() = runBlocking<Unit> {
         val client = network { request ->
             assertEquals("application/vnd.github.raw+json", request.header("Accept"))
             assertEquals("Bearer owned-fixture-token", request.header("Authorization"))

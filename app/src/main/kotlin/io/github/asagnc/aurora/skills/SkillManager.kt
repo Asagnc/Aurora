@@ -13,7 +13,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-internal data class SkillInstallOptions(val expectedSha256: String? = null, val replaceId: String? = null, val profileId: String? = null)
+internal data class SkillInstallOptions(val expectedSha256: String? = null, val replaceId: String? = null, val profileId: String? = null,
+    val signature: String? = null)
 
 /** A single installer, short catalog transactions, no permanent Skill process. */
 internal class SkillManager(private val app: AuroraApplication, internal val registry: SkillRegistry = SkillRegistry(app.conversations)) {
@@ -48,11 +49,11 @@ internal class SkillManager(private val app: AuroraApplication, internal val reg
         }
     }
 
-    suspend fun import(uri: Uri, replaceId: String? = null, profileId: String? = null): List<SkillEntry> {
+    suspend fun import(uri: Uri, replaceId: String? = null, profileId: String? = null, signature: String? = null): List<SkillEntry> {
         val name = withContext(Dispatchers.IO) { app.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
             ?.use { if (it.moveToFirst()) it.getString(0) else null } ?: "本地 ZIP" }
         val source = SkillSource(uri.toString(), label = name)
-        val options = SkillInstallOptions(replaceId = replaceId, profileId = profileId)
+        val options = SkillInstallOptions(replaceId = replaceId, profileId = profileId, signature = signature)
         return install(source, options, policy(source, options)) { archive ->
             val signal = android.os.CancellationSignal()
             SkillArchiveTransfer.copy(archive, {
@@ -125,6 +126,7 @@ internal class SkillManager(private val app: AuroraApplication, internal val reg
         } }
 
     private suspend fun verifiedSource(archive: Path, source: SkillSource, options: SkillInstallOptions, profile: SkillSourceProfile?): SkillSource {
+        require(options.signature == null || profile?.publicKey?.isNotBlank() == true) { "Select a trusted source key before supplying a signature" }
         options.expectedSha256?.let { expected ->
             require(expected.matches(Regex("[a-fA-F0-9]{64}")))
             val digest = runInterruptible { Files.newInputStream(archive, LinkOption.NOFOLLOW_LINKS).use { input ->
@@ -135,10 +137,21 @@ internal class SkillManager(private val app: AuroraApplication, internal val reg
             require(digest.equals(expected, true)) { "Downloaded archive SHA256 mismatch" }
         }
         val proof = if (profile?.publicKey?.isNotBlank() == true) {
-            val signature = network.signature(profile.signatureUrl, trust.credential(profile))
+            val signature = options.signature ?: run {
+                require(profile.signatureUrl.isNotBlank()) { "Select the signature sidecar" }
+                network.signature(profile.signatureUrl, trust.credential(profile))
+            }
             runInterruptible { SkillSignatures.verify(archive, profile, signature) }
         } else null
         return source.copy(profileId = profile?.id, verification = proof)
+    }
+
+    suspend fun signature(uri: Uri): String {
+        val signal = android.os.CancellationSignal()
+        return SkillSignatureTransfer.read({
+            val descriptor = requireNotNull(app.contentResolver.openAssetFileDescriptor(uri, "r", signal))
+            try { descriptor.createInputStream() } catch (failure: Throwable) { descriptor.close(); throw failure }
+        }, signal::cancel)
     }
 
     private fun prepare(archive: Path, stage: Path, selection: String): List<PreparedSkill> {

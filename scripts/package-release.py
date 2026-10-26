@@ -78,6 +78,8 @@ def android_identity(apk, args):
     result = subprocess.run([str(tools / ('aapt2' + suffix)), 'dump', 'badging', str(apk)],
                             capture_output=True, text=True, check=True)
     identity = manifest_identity(result.stdout)
+    from launcher_assets import verify as verify_launcher
+    identity['launcherArtwork'] = verify_launcher(apk, tools / ('aapt2' + suffix), result.stdout)
     subprocess.run([str(tools / ('zipalign' + suffix)), '-c', '-P', '16', '4', str(apk)],
                    capture_output=True, check=True)
     return identity

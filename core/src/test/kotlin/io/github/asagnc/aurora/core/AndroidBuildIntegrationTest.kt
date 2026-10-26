@@ -11,6 +11,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class AndroidBuildIntegrationTest {
+    @Test fun productionNativeDocumentStreamUsesExactFixedBytesWhenExplicitlyQualified() = runTest {
+        val supplied = System.getenv("AURORA_ANDROID_NATIVE_IMPORT") ?: System.getenv("AURORA_ANDROID_BUILD_INPUTS")?.let { "$it/android-host.archive" }
+        assumeTrue(supplied != null, "Explicit native SDK material required")
+        val source = Path.of(requireNotNull(supplied)); val directory = Files.createTempDirectory("aurora-native-document-")
+        try {
+            val target = directory.resolve("selected")
+            withContext(Dispatchers.IO) { AndroidNativeArchiveTransfer.copy(target, { Files.newInputStream(source) }) }
+            assertEquals(AndroidBuildTools.components.single { it.localOnly }.compressedBytes, Files.size(target))
+            assertFailsWith<IllegalArgumentException> {
+                withContext(Dispatchers.IO) { AndroidNativeArchiveTransfer.copy(directory.resolve("short"), { "not the fixed SDK".byteInputStream() }) }
+            }
+        } finally { removeSkillTree(directory) }
+    }
     private val repository get() = Path.of(requireNotNull(System.getProperty("aurora.repository")))
     private fun metadata() = AndroidBuildTools.metadataSha256.keys.associateWith {
         Files.readAllBytes(repository.resolve("tools/apk-build/sdk-metadata/$it"))

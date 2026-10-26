@@ -34,6 +34,18 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
         return store.install { component, target -> network.download(component.url, target, component.compressedBytes) }
     }
     suspend fun installAndroid(nativeSource: OwnedFiles, nativePath: String): String {
+        return installAndroidBundle { target ->
+            nativeSource.copyVerifiedArchive(nativePath, target, AndroidBuildTools.components.single { it.localOnly })
+        }
+    }
+    suspend fun installAndroidArchive(uri: android.net.Uri): String = installAndroidBundle { target ->
+        val signal = android.os.CancellationSignal()
+        AndroidNativeArchiveTransfer.copy(target, {
+            val descriptor = requireNotNull(app.contentResolver.openAssetFileDescriptor(uri, "r", signal))
+            try { descriptor.createInputStream() } catch (failure: Throwable) { descriptor.close(); throw failure }
+        }, signal::cancel)
+    }
+    private suspend fun installAndroidBundle(native: suspend (java.nio.file.Path) -> Unit): String {
         check(Build.SUPPORTED_ABIS.firstOrNull() == "arm64-v8a") { "Android build runtime requires ARM64" }
         check(app.root.linuxExecution != null) { "Connect Root before installing the Root toolchain" }
         val metadata = AndroidBuildTools.metadataSha256.keys.associateWith { app.assets.open("apk-build/$it").use { input -> input.readBytes() } }
@@ -41,7 +53,7 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
             AndroidBuildPreparation.finish(stage, metadata) { path, mode -> Os.chmod(path.toString(), mode) }
         }
         return store.install(catalog) { component, target ->
-            if (component.localOnly) nativeSource.copyVerifiedArchive(nativePath, target, component)
+            if (component.localOnly) native(target)
             else network.downloadTool(component, target)
         }
     }

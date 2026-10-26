@@ -28,7 +28,7 @@ class RootManagedExecutableTest {
         hash.digest().joinToString("") { "%02x".format(it.toInt() and 255) }
     }
 
-    @Test fun checkedDescriptorStartsThePackagedGuard() = runBlocking { withContext(Dispatchers.IO) {
+    @Test fun checkedDescriptorStartsThePackagedGuard() = runBlocking<Unit> { withContext(Dispatchers.IO) {
         RootManagedExecutable.open(binary, digest()).use { pinned -> pinned.usePath { path ->
             assertTrue(path.startsWith("/proc/${android.os.Process.myPid()}/fd/"))
             val child = ProcessBuilder(path, "--version").redirectErrorStream(true).start()
@@ -41,12 +41,12 @@ class RootManagedExecutableTest {
         } }
     } }
 
-    @Test fun wrongQualifiedDigestIsRejected() = runBlocking {
+    @Test fun wrongQualifiedDigestIsRejected() = runBlocking<Unit> {
         try { RootManagedExecutable.open(binary, "0".repeat(64)).use { fail("Wrong digest admitted") } }
         catch (_: IllegalArgumentException) { }
     }
 
-    @Test fun appOwnedExecutableAndSymbolicLinkAreRejected() = runBlocking {
+    @Test fun appOwnedExecutableAndSymbolicLinkAreRejected() = runBlocking<Unit> {
         val directory = Files.createTempDirectory(context.cacheDir.toPath(), "managed-pin-")
         try {
             val writable = directory.resolve("worker")
@@ -60,14 +60,14 @@ class RootManagedExecutableTest {
         } finally { removeSkillTree(directory) }
     }
 
-    @Test fun closingPinPreventsLaterLaunch() = runBlocking {
+    @Test fun closingPinPreventsLaterLaunch() = runBlocking<Unit> {
         val pin = RootManagedExecutable.open(binary, digest())
         pin.close(); pin.close()
         try { pin.usePath { fail("Closed descriptor admitted") } }
         catch (_: IllegalStateException) { }
     }
 
-    @Test fun sameVersionScopesDoNotSerializeOrCloseEachOthersDescriptors() = runBlocking {
+    @Test fun sameVersionScopesDoNotSerializeOrCloseEachOthersDescriptors() = runBlocking<Unit> {
         val pin = RootManagedExecutable.open(binary, digest())
         val ready = CountDownLatch(2); val finish = CountDownLatch(1)
         val failures = Collections.synchronizedList(mutableListOf<Throwable>())

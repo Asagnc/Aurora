@@ -75,8 +75,8 @@ import kotlinx.coroutines.launch
                 val fingerprint = runCatching { SkillSignatures.fingerprint(publicKey.trim()) }.getOrNull()
                 Text(fingerprint?.let { "请独立核对公钥 SHA256：$it" } ?: "公钥格式尚不正确", style = MaterialTheme.typography.bodySmall)
             }
-            OutlinedTextField(signatureUrl, { signatureUrl = it }, label = { Text("签名旁路文件 HTTPS 地址") }, enabled = !busy)
-            Text("启用签名需同时填写公钥和签名地址。该来源后续安装和更新缺签名或验签失败都会被拒绝。", color = AuroraMuted)
+            OutlinedTextField(signatureUrl, { signatureUrl = it }, label = { Text("旁路签名 HTTPS 地址（自动更新可选）") }, enabled = !busy)
+            Text("填写公钥即要求验签。签名地址留空时，安装需选择旁路文件；缺签名或验签失败都会被拒绝。", color = AuroraMuted)
             FilledTonalButton({ run {
                 val profile = SkillSourceProfile(selected?.id ?: UUID.randomUUID().toString(), repository.trim().lowercase(java.util.Locale.ROOT),
                     selected?.credentialId, publicKey.trim(), signatureUrl.trim())

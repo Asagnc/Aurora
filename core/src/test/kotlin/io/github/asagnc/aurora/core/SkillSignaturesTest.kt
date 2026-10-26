@@ -2,6 +2,7 @@ package io.github.asagnc.aurora.core
 
 import java.nio.file.Files
 import java.util.Base64
+import kotlinx.coroutines.runBlocking
 import kotlin.test.*
 
 class SkillSignaturesTest {
@@ -19,6 +20,7 @@ class SkillSignaturesTest {
     }
     @Test fun independentGoldenDeclarationAndSignatureVerify() = fixture { file ->
         val proof = SkillSignatures.verify(file, profile, sidecar)
+        assertEquals(proof, SkillSignatures.verify(file, profile.copy(signatureUrl = ""), sidecar))
         assertEquals("6f6c357ea242eadbc1bbfb4d213649b11087e151e6b78398acf310457d2efdfd", proof.archiveSha256)
         assertEquals(26, proof.archiveBytes)
         assertEquals("Aurora Skill Archive v1\nsource:github:example/skills\nsha256:${proof.archiveSha256}\nbytes:26\n",
@@ -47,5 +49,20 @@ class SkillSignaturesTest {
         assertFalse(profile.matches(SkillSource("https://github.com/example/skills-other")))
         assertTrue(profile.matches(SkillSource("https://github.com/example/skills/releases/download/v1/skills.zip")))
         assertFails { profile.copy(publicKey = "untrusted").validate() }
+    }
+    @Test fun historicalLocalVersionCannotDropTheCurrentWorkflowSignaturePolicy() = fixture { file ->
+        val current = SkillSource("https://github.com/example/skills", profileId = profile.id,
+            verification = SkillSignatures.verify(file, profile, sidecar))
+        val local = SkillSource("content://owned-fixture/archive")
+        assertFails { skillVersionSource(current, local, listOf(profile)) }
+        assertFails { skillVersionSource(current, current, listOf(profile.copy(revoked = true))) }
+        assertEquals(profile.id, skillVersionSource(current, local.copy(verification = current.verification), listOf(profile)).profileId)
+    }
+    @Test fun selectedSidecarTransportIsBoundedAsciiAndClosesItsOwnedStream() = runBlocking<Unit> {
+        var closed = false
+        val input = object : java.io.ByteArrayInputStream(sidecar.toByteArray()) { override fun close() { closed = true; super.close() } }
+        assertEquals(sidecar, SkillSignatureTransfer.read({ input })); assertTrue(closed)
+        assertFails { SkillSignatureTransfer.read({ ByteArray(1025) { 65 }.inputStream() }) }
+        assertFails { SkillSignatureTransfer.read({ byteArrayOf(-1).inputStream() }) }
     }
 }

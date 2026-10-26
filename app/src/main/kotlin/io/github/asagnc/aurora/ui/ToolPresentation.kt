@@ -17,6 +17,7 @@ internal fun presentTool(event: ToolRun): ToolPresentation {
         "apk_build" -> "构建 Android APK"
         "apk_export" -> "导出构建 APK"
         "network_proxy" -> "网络代理会话"
+        "system_snapshot" -> "读取系统快照"
         "images_publish" -> "发布图片"
         "command_execute" -> "执行原生命令"
         "command_execute_root" -> "执行 Root 命令"

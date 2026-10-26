@@ -28,3 +28,5 @@ C/C++ 必须使用真正的 ARM64 host clang/lld/CMake/Ninja 与固定 Android s
 - [固定资源工具CMake](https://github.com/termux/android-build-tools/blob/c4edf8539a34a8600538e6642c1ecb170452a79e/CMakeLists.txt)、[当前Termux配方](https://github.com/termux/termux-packages/blob/master/packages/aapt/build.sh)。
 - [CoGo固定Gradle设计](https://github.com/appdevforall/CodeOnTheGo/blob/97abdc35381256d6f38bba46650c2f987075187b/docs/adr/0002-on-device-builds-via-gradle-tooling-api.md)与[编辑器工具区别](https://github.com/appdevforall/CodeOnTheGo/blob/97abdc35381256d6f38bba46650c2f987075187b/docs/adr/0003-vendored-forked-desktop-toolchain.md)：文档状态为 Proposed，作为源代码研究参考，不视为其设备验收证明。
 - [Temurin25固定发布](https://github.com/adoptium/temurin25-binaries/releases/tag/jdk-25.0.5%2B8)。
+
+2026-10-26例行接入：Linux环境页可经SAF直接选择审查包中的固定180,242,303字节原生归档，输入流直接进入同一共享安装staging，不先经过64MiB普通附件入口，也不建第二份导入缓存/持久格式。仅该编译pin可使用180秒/精确字节预算和流式SHA；其余工具仍走官方下载，普通附件与Skills原预算保持。取消关闭自有流/提供器打开信号，任意外部提供器不响应关闭的限制仍不隐藏；不生成发布签名或安装APK。

@@ -1,6 +1,8 @@
 package io.github.asagnc.aurora.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -37,6 +39,12 @@ import kotlinx.coroutines.*
             finally { busy = false }
         }
     }
+    val nativePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) run {
+            app.sharedToolchain.installAndroidArchive(uri)
+            notice = "APK 构建工具已校验安装；Agent 须在当前 Root 环境实际自检通过后才能构建。"
+        }
+    }
     LaunchedEffect(revision) {
         try { app.ready.await(); versions = manager.registry.versions(); current = manager.registry.current(); pendingRuns = manager.runs.pendingCount() }
         catch (cancel: CancellationException) { throw cancel }
@@ -46,6 +54,10 @@ import kotlinx.coroutines.*
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
             Text("Ubuntu Base 26.10", style = MaterialTheme.typography.headlineSmall)
             Text("共享基础环境与已发布版本；会话文件和输出独立保存。基础包不包含完整编译及逆向工具。", color = AuroraMuted)
+            TextButton({ nativePicker.launch(arrayOf("application/gzip", "application/x-gzip", "application/octet-stream")) }, enabled = !busy) {
+                Text("安装 APK 构建工具（选择审查包中的原生归档）")
+            }
+            Text("只接受固定审查版 android-host-arm64.tar.gz，并下载其余官方固定工具。可取消；不会安装 APK 或授予运行资格。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
             Text(status, style = MaterialTheme.typography.titleMedium)
             Text(if (app.root.rootImagesAvailable && rootState.phase == io.github.asagnc.aurora.root.RootPhase.READY)
                 "默认准备共享 Root 环境并保留 Linux 原始属主；清理需要 Root。普通环境只在需要时另备。"

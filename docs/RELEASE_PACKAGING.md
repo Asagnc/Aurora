@@ -26,3 +26,5 @@ package-release.py同时传入--android-build-bundle与--android-build-sources�
 代理离线配套使用package-proxy-materials.py：--upstream为固定mitmproxy提交源码目录，--packages为Python包downloads，--rust为crate downloads，--python为CPython inputs，--gcc为Debian inputs，--crypto为OpenSSL inputs，--output为不存在的ZIP。它校验584项固定输入（含上游自身、候选wheel和Cargo-lock源码超集），附当前git archive HEAD；逐项有界流式摘要检查，不执行归档代码。原始源码和自有快照内的许可/补充notice一并保留，仍不宣称完整静态链接可复现或总体licenseClosureVerified。
 
 package-release.py成对接收--proxy-distribution与--proxy-sources：验证官方独立分发精确字节、编译安装器pin、APK实际八份profiles、固定源码清单和当前源码快照。代理分发和源码ZIP纳入manifest/SHA256SUMS。配套校验不执行下载的程序，不把主机资格写成手机proxyReady。增加4组惰性fixture覆盖完整/篡改/缺失/多余/重复/错源码快照/错APK profile/错分发拒绝。发布stage函数沿用单次临时目录中按顺序复制—审计—重建—发布的责任，新增可选材料仍在同一生命周期内；超过普通函数行数目标的例外保留以避免拆散失败清理范围。
+
+发布审查现在额外解析实际启动图标引用链和解码像素，绑定已批准原图；结果纳入manifest.launcherArtwork。此静态检查与机型launcher/mask视觉验收分别记录。

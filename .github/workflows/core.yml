@@ -55,6 +55,7 @@ jobs:
           sudo -n python3 scripts/verify-frida-managed-control.py
           python3 scripts/acquire-proxy-archive.py --directory app/build/outputs/proxy-import
           AURORA_PROXY_IMPORT="$PWD/app/build/outputs/proxy-import/mitmproxy-12.3.0-linux-aarch64.tar.gz" ./gradlew :core:test --console=plain
+          python3 scripts/verify-junit-discovery.py --classes core/build/classes/kotlin/test
       - name: Verify signed Ubuntu image and actual POSIX rootfs extraction
         run: bash scripts/verify-linux-image.sh
       - name: Verify native PTY process lifecycle on Linux host
@@ -119,6 +120,8 @@ jobs:
         run: |
           python3 scripts/verify-linux-native.py app/build/outputs/apk/debug/app-debug.apk
           python3 scripts/verify-linux-native.py app/build/outputs/apk/release/app-release-unsigned.apk
+          python3 scripts/verify-junit-discovery.py --classes app/build/intermediates/built_in_kotlinc/debugAndroidTest/compileDebugAndroidTestKotlin/classes
+          python3 scripts/verify-launcher-assets.py app/build/outputs/apk/release/app-release-unsigned.apk --aapt2 "$ANDROID_HOME/build-tools/36.0.0/aapt2"
           python3 scripts/package-linux-sources.py
           python3 scripts/verify-managed-source-roundtrip.py app/build/outputs/linux-sources/aurora-linux-corresponding-source.zip --reference app/build/outputs/managed-qualification/report.json --ndk "$ANDROID_HOME/ndk/30.0.16248370" --report app/build/outputs/managed-qualification/source-rebuild.json
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

@@ -37,6 +37,7 @@ import kotlinx.coroutines.launch
     var profiles by remember { mutableStateOf(emptyList<SkillSourceProfile>()) }
     var selectedProfile by remember { mutableStateOf<String?>(null) }
     var profileMenu by remember { mutableStateOf(false) }
+    var signature by remember { mutableStateOf<String?>(null) }
     fun run(action: suspend () -> Unit) {
         if (busy) return
         scope.launch {
@@ -48,7 +49,10 @@ import kotlinx.coroutines.launch
         }
     }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if (uri != null) run { manager.import(uri, profileId = selectedProfile) }
+        if (uri != null) run { manager.import(uri, profileId = selectedProfile, signature = signature); signature = null }
+    }
+    val signaturePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) run { signature = manager.signature(uri) }
     }
     LaunchedEffect(revision, sources) { app.ready.await(); entries = manager.list(); profiles = manager.trust.list() }
     FullPage("Skills", dismiss) {
@@ -74,9 +78,14 @@ import kotlinx.coroutines.launch
                                 }
                             }
                         }
+                        TextButton({ signaturePicker.launch(arrayOf("text/plain", "application/octet-stream")) }, enabled = !busy) {
+                            Text(if (signature == null) "选择签名旁路文件（本地验签可用）" else "重新选择签名旁路文件")
+                        }
+                        if (signature != null) TextButton({ signature = null }, enabled = !busy) { Text("清除已选择的旁路签名") }
+                        Text("本地签名 ZIP 还需选择已有可信来源策略；不会信任 ZIP 自带公钥。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        FilledTonalButton({ run { manager.remote(SkillSource(url.trim(), selection.trim('/'), ref = ref.trim()), SkillInstallOptions(profileId = selectedProfile)); url = ""; selection = ""; ref = "" } }, enabled = !busy && url.isNotBlank()) { Text("安装") }
+                        FilledTonalButton({ run { manager.remote(SkillSource(url.trim(), selection.trim('/'), ref = ref.trim()), SkillInstallOptions(profileId = selectedProfile, signature = signature)); url = ""; selection = ""; ref = ""; signature = null } }, enabled = !busy && url.isNotBlank()) { Text("安装") }
                         TextButton({ picker.launch(arrayOf("application/zip", "application/octet-stream")) }, enabled = !busy) { Text("导入 ZIP") }
                         TextButton({ run { notice = "已清理 ${manager.cleanup()} 字节未引用资源" } }, enabled = !busy) { Text("清理旧版") }
                     }

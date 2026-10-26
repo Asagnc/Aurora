@@ -54,6 +54,7 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
                 mapOf("conversation" to app.spaces.conversation(id), "resources" to app.spaces.sharedResources()), prepared), ImageToolExecutor(app.images, id),
             io.github.asagnc.aurora.terminal.TerminalToolExecutor(app.terminals, id, app.root.terminalClient != null),
             CommandToolExecutor(app.commands, directory, prepared = prepared),
+            SystemSnapshotTool(app) { app.root.state.value.phase.name.lowercase(java.util.Locale.ROOT) },
             PacketInspectionTool(app, directory, app.commands, prepared),
             HttpReplayTool(directory, prepared),
             app.root.commandClient?.let { SocketOwnerTool(app, it, id, prepared) },

@@ -13,8 +13,8 @@ internal class SkillToolExecutor(private val manager: SkillManager, private val 
         definition("skills_list", "Search the run's pinned workflow catalog; offset is a decimal item cursor. Workflows do not grant permissions or install runtimes.", "query", "offset"),
         definition("skills_load", "Read SKILL.md before following a workflow. Returns bounded text, byte cursor and resource directory. Optional version selects an installed hash.", "id", "version", "offset"),
         definition("skills_read", "Read a declared workflow file; offset is a byte cursor. Omit path to search/list files using query and offset as an item cursor. Follow next/more for continuation.", "id", "version", "path", "offset", "query"),
-        definition("skills_install", "Install SKILL.md workflows from HTTPS repository/ZIP or conversation ZIP. Exactly one url/path. source_profile selects an existing user-managed source configuration; never supply a token/key. Matching GitHub policies apply automatically and signature requirements cannot be bypassed. selection is a relative skill directory; ref explicitly selects a branch/tag. Does not execute scripts.", "url", "path", "selection", "sha256", "ref", "source_profile"),
-        definition("skills_manage", "Manage installed workflows. Actions: sources, versions, update, enable, disable, remove, select, cleanup. sources lists existing user-managed profiles without secrets; cannot write credentials or trusted keys. update resolves the latest stable repository release; select needs version. Existing run defaults remain pinned.", "action", "id", "version"))
+        definition("skills_install", "Install SKILL.md workflows from HTTPS repository/ZIP or conversation ZIP. Exactly one url/path. source_profile selects an existing user-managed source configuration; never supply a token/key. Matching GitHub policies apply automatically and signature requirements cannot be bypassed. signature optionally supplies a bounded public sidecar; it never creates a trusted key. selection is a relative skill directory; ref explicitly selects a branch/tag. Does not execute scripts.", "url", "path", "selection", "sha256", "ref", "source_profile", "signature"),
+        definition("skills_manage", "Manage installed workflows. Actions: sources, versions, update, enable, disable, remove, select, cleanup. sources lists existing user-managed profiles without secrets; cannot write credentials or trusted keys. update resolves the latest stable repository release; select needs version. Existing run defaults remain pinned.", "action", "id", "version", "signature"))
 
     override suspend fun execute(call: ToolCall): String = try {
         perform(call).toString()
@@ -62,7 +62,7 @@ internal class SkillToolExecutor(private val manager: SkillManager, private val 
     private suspend fun install(args: JsonObject): JsonElement {
         val url = args.text("url"); val path = args.text("path")
         require((url == null) != (path == null))
-        val options = SkillInstallOptions(expectedSha256 = args.text("sha256"), profileId = args.text("source_profile"))
+        val options = SkillInstallOptions(expectedSha256 = args.text("sha256"), profileId = args.text("source_profile"), signature = args.text("signature"))
         val selection = args.text("selection").orEmpty()
         val ref = args.text("ref").orEmpty()
         require(url != null || ref.isBlank())
@@ -87,7 +87,7 @@ internal class SkillToolExecutor(private val manager: SkillManager, private val 
             "update" -> {
                 val current = requireNotNull(manager.list().firstOrNull { it.id == id })
                 require(current.source.input.startsWith("https://")) { "Local packages require reimport" }
-                JsonArray(manager.remote(current.source, SkillInstallOptions(replaceId = id)).map { it.summary() })
+                JsonArray(manager.remote(current.source, SkillInstallOptions(replaceId = id, signature = args.text("signature"))).map { it.summary() })
             }
             "enable", "disable" -> { manager.enable(id, action == "enable"); objectOf("updated" to JsonPrimitive(true)) }
             "select" -> { manager.rollback(id, requireNotNull(args.text("version"))); objectOf("updated" to JsonPrimitive(true)) }

@@ -33,22 +33,23 @@ internal suspend fun SkillManager.read(entry: SkillEntry, relative: String, offs
     }
 }
 internal suspend fun SkillManager.pin(owner: String, entry: SkillEntry) = catalog.withLock {
-    require(trust.permitted(entry.source)); registry.pin(owner, listOf(entry))
+    registry.pin(owner, listOf(versionWithPolicy(entry)))
 }
 internal suspend fun SkillManager.resolve(owner: String, id: String, hash: String): SkillEntry = catalog.withLock {
-    requireNotNull(registry.versions(id).firstOrNull { it.hash == hash }) { "Unknown installed skill version" }.also {
-        require(trust.permitted(it.source)) { "Source policy blocks a new workflow acquisition" }
-        registry.pin(owner, listOf(it))
-    }
+    val selected = requireNotNull(registry.versions(id).firstOrNull { it.hash == hash }) { "Unknown installed skill version" }
+    versionWithPolicy(selected).also { registry.pin(owner, listOf(it)) }
 }
 internal suspend fun SkillManager.enable(id: String, enabled: Boolean) = catalog.withLock {
     if (enabled) require(trust.permitted(requireNotNull(registry.entries().firstOrNull { it.id == id }).source))
     registry.enabled(id, enabled); version.update { it + 1 }
 }
 internal suspend fun SkillManager.rollback(id: String, hash: String) = catalog.withLock {
-    val selected = requireNotNull(registry.versions(id).firstOrNull { it.hash == hash })
-    require(trust.permitted(selected.source)) { "Source policy blocks this version" }
+    val selected = versionWithPolicy(requireNotNull(registry.versions(id).firstOrNull { it.hash == hash }))
     registry.select(id, hash, selected.source); version.update { it + 1 }
+}
+private suspend fun SkillManager.versionWithPolicy(selected: SkillEntry): SkillEntry {
+    val current = requireNotNull(registry.entries().firstOrNull { it.id == selected.id })
+    return selected.copy(source = skillVersionSource(current.source, selected.source, trust.currentPolicies()))
 }
 internal suspend fun SkillManager.remove(id: String): List<String> = catalog.withLock { registry.remove(id).also { version.update { it + 1 } } }
 internal suspend fun SkillManager.cleanup(): Long = catalog.withLock { withContext(Dispatchers.IO) {

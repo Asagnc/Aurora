@@ -18,9 +18,9 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
         require(UUID.fromString(id).toString() == id)
         require(repository.matches(Regex("[a-z0-9_.-]+/[a-z0-9_.-]+")) && repository.length <= 200)
         credentialId?.let { require(UUID.fromString(it).toString() == it) }
-        require(publicKey.isBlank() == signatureUrl.isBlank())
-        if (publicKey.isNotBlank()) {
-            SkillSignatures.key(publicKey)
+        require(publicKey.isNotBlank() || signatureUrl.isBlank())
+        if (publicKey.isNotBlank()) SkillSignatures.key(publicKey)
+        if (signatureUrl.isNotBlank()) {
             val url = signatureUrl.toHttpUrl()
             require(url.isHttps && url.port == 443 && url.username.isEmpty() && url.password.isEmpty() && url.fragment == null && url.query == null)
             require(signatureUrl.length <= 4096)
@@ -48,6 +48,14 @@ fun skillSourcePermitted(source: SkillSource, profiles: List<SkillSourceProfile>
     if (profile.publicKey.isBlank()) return true
     val proof = source.verification ?: return false
     return proof.scope == profile.scope && proof.keySha256 == SkillSignatures.fingerprint(profile.publicKey)
+}
+
+/** A historical local/unsigned version cannot shed the workflow's current source binding. */
+fun skillVersionSource(current: SkillSource, selected: SkillSource, profiles: List<SkillSourceProfile>): SkillSource {
+    val bound = current.profileId ?: profiles.firstOrNull { runCatching { it.matches(current) }.getOrDefault(false) }?.id
+    val source = selected.copy(profileId = bound ?: selected.profileId)
+    require(skillSourcePermitted(source, profiles)) { "Source policy blocks this workflow version" }
+    return source
 }
 
 /** Format v1 signs the bounded canonical declaration, not implementation-specific serialized JSON. */
