@@ -46,14 +46,14 @@ object AndroidBuildPreparation {
         rejectForeignExecutables(buildTools, mode)
         for (name in listOf("aapt2", "aidl", "zipalign")) {
             val source = host.resolve("resources/$name")
-            requireArm64(source)
+            requireSharedArm64Tool(source)
             Files.copy(source, buildTools.resolve(name), StandardCopyOption.REPLACE_EXISTING)
             mode(buildTools.resolve(name), 493)
         }
         writeMetadata(sdk, metadata)
-        requireArm64(stage.resolve("jdk/jdk-25.0.5+8/bin/java"))
-        requireArm64(sdk.resolve("cmake/4.1.2/bin/cmake"))
-        requireArm64(sdk.resolve("ndk/30.0.16248370/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"))
+        requireSharedArm64Tool(stage.resolve("jdk/jdk-25.0.5+8/bin/java"))
+        requireSharedArm64Tool(sdk.resolve("cmake/4.1.2/bin/cmake"))
+        requireSharedArm64Tool(sdk.resolve("ndk/30.0.16248370/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"))
         require(Files.isRegularFile(sdk.resolve("platforms/android-37.0/android.jar"), LinkOption.NOFOLLOW_LINKS))
         require(Files.isRegularFile(buildTools.resolve("lib/apksigner.jar"), LinkOption.NOFOLLOW_LINKS))
         val bin = Files.createDirectory(host.resolve("bin"))
@@ -90,13 +90,6 @@ object AndroidBuildPreparation {
             val header = Files.newInputStream(path, LinkOption.NOFOLLOW_LINKS).use { it.readNBytes(20) }
             if (isElf(header)) writeExecutable(path, AndroidBuildRuntime.rejection, mode)
         } }
-    }
-
-    internal fun requireArm64(path: Path) {
-        require(Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) { "Missing native SDK executable" }
-        val header = Files.newInputStream(path, LinkOption.NOFOLLOW_LINKS).use { it.readNBytes(20) }
-        require(isElf(header) && header[4] == 2.toByte() && header[5] == 1.toByte() &&
-            header[18] == 183.toByte() && header[19] == 0.toByte()) { "SDK executable must be ELF64 little-endian AArch64" }
     }
 
     private fun isElf(header: ByteArray) = header.size == 20 && header.take(4) == listOf(127, 69, 76, 70).map(Int::toByte)

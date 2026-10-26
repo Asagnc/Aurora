@@ -922,3 +922,6 @@ APK专项40287316316：实际生产安装/readonly布局/Java＋Compose＋双ABI
 
 
 真实固定大归档下载＋生产Kotlin安装7项测试无跳过，完整ARM64自检与源码审计在40289722586整体成功。新增SDK源码材料打包（41份固定输入＋精确自有git源码快照）、APK原生SDK选择资产绑定和可选发布配套核验；CMake/Ninja对应固定源码及许可已采集。4组材料完整/篡改/遗漏/重复/错checkout/APK配错拒绝回归与既有发布4项本地通过，完整Debug/Release/AndroidTest/lint本地219任务成功。新发布审查包继续，不授予设备或正式签名资格。
+
+
+release-review-25bcbc5-sdk成功：APK44,907,522字节、配套原生SDK180,242,303字节、41份输入SDK源码ZIP377,457,034字节，全部SHA256SUMS独立复核；workTreeDirty=false/releaseReady=false。25bcbc5完整CI40290353305通过。继续代理固定仅mitmdump导入、结构化字面规则和不可变生产profiles：公有CA/私有密钥分区、HTTP/WS修改、预算产物/离线读取、固定自有HTTP/HTTPS/未信任CA/WS自检。329核心314通过/15跳过，产品ARM64专项待执行，尚未完成PTY/Agent接入。SDK自检目录调整为既有Linux文件API允许的project/.aurora-apk-probes，避免生成无法经既有文件桥访问的产物；该目录变更需重跑产品安装专项。无设备/签名/付费模型操作。

@@ -1,0 +1,24 @@
+#!/bin/sh
+set -eu
+[ "$#" -eq 3 ] || exit 64
+identity=$1
+port=$2
+case "$identity" in ''|*[!a-f0-9-]*) exit 64 ;; esac
+[ "${#identity}" -eq 36 ] || exit 64
+case "$port" in ''|*[!0-9]*) exit 64 ;; esac
+[ "$port" -ge 1024 ] && [ "$port" -le 65535 ] || exit 64
+umask 077
+private=/mnt/.aurora-proxy-private/$identity
+output=/mnt/project/.aurora-proxy/$identity
+for parent in /mnt /mnt/project /mnt/.aurora-proxy-private /mnt/project/.aurora-proxy; do
+  [ ! -L "$parent" ] || exit 65
+done
+mkdir -p /mnt/.aurora-proxy-private /mnt/project/.aurora-proxy
+mkdir "$private" "$output"
+mkdir "$private/tmp" "$private/ca"
+export TMPDIR="$private/tmp"
+exec /opt/mitmdump/mitmdump --quiet --mode regular --listen-host 127.0.0.1 --listen-port "$port" \
+  --set "confdir=$private/ca" --set ssl_insecure=false --set connection_strategy=lazy \
+  --set body_size_limit=1048576 --set flow_detail=0 --set "aurora_id=$identity" \
+  --set "aurora_config=$3" --set "aurora_output=$output" --set "aurora_probe=${AURORA_PROXY_PROBE:-false}" \
+  -s /opt/mitmdump/aurora_proxy.py

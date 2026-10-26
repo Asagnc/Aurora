@@ -11,7 +11,9 @@ data class StaticReverseComponent(val id: String, val version: String, val url: 
         if (localOnly) require(id == "android-host" && url.isEmpty())
         else {
             val address = runCatching { java.net.URI(url) }.getOrElse { throw IllegalArgumentException("Invalid tool archive address") }
-            require(address.scheme == "https" && address.host in setOf("github.com", "dl.google.com") &&
+            val trustedHost = address.host in setOf("github.com", "dl.google.com") ||
+                (id == "mitmdump" && address.host == "downloads.mitmproxy.org")
+            require(address.scheme == "https" && trustedHost &&
                 address.userInfo == null && address.rawQuery == null && address.fragment == null && address.port in setOf(-1, 443))
         }
         require(sha256.matches(Regex("[0-9a-f]{64}")))

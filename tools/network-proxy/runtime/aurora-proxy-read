@@ -1,0 +1,17 @@
+#!/bin/sh
+set -eu
+[ "$#" -eq 4 ] || exit 64
+identity=$1
+case "$identity" in ''|*[!a-f0-9-]*) exit 64 ;; esac
+[ "${#identity}" -eq 36 ] || exit 64
+umask 077
+for parent in /mnt /mnt/.aurora-proxy-read-private; do
+  [ ! -L "$parent" ] || exit 65
+done
+mkdir -p /mnt/.aurora-proxy-read-private
+private=/mnt/.aurora-proxy-read-private/$identity
+mkdir "$private"
+mkdir "$private/tmp" "$private/ca"
+export TMPDIR="$private/tmp"
+exec /opt/mitmdump/mitmdump --quiet -n --set "confdir=$private/ca" --set "aurora_read_id=$2" \
+  --set "aurora_read_offset=$3" --set "aurora_read_limit=$4" -s /opt/mitmdump/aurora_proxy_read.py

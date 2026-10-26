@@ -39,3 +39,12 @@ object SharedToolLayout {
         return required.getValue(family).all { Files.isDirectory(directory.resolve(it), LinkOption.NOFOLLOW_LINKS) }
     }
 }
+
+internal fun requireSharedArm64Tool(path: Path) {
+    require(Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) { "Missing native shared-tool executable" }
+    val header = Files.newInputStream(path, LinkOption.NOFOLLOW_LINKS).use { it.readNBytes(20) }
+    require(header.size == 20 && header.take(4) == listOf(127, 69, 76, 70).map(Int::toByte) &&
+        header[4] == 2.toByte() && header[5] == 1.toByte() && header[18] == 183.toByte() && header[19] == 0.toByte()) {
+        "Shared tool must be ELF64 little-endian AArch64"
+    }
+}

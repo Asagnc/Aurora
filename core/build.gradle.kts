@@ -24,6 +24,10 @@ tasks.test {
     val androidInputs = providers.environmentVariable("AURORA_ANDROID_BUILD_INPUTS").orNull
     inputs.property("androidBuildInputs", androidInputs ?: "not-supplied")
     inputs.property("androidBuildDownload", providers.environmentVariable("AURORA_ANDROID_BUILD_DOWNLOAD").orElse("disabled"))
+    val proxyImport = providers.environmentVariable("AURORA_PROXY_IMPORT").orNull
+    inputs.property("proxyImport", proxyImport ?: "not-supplied")
+    if (proxyImport != null) inputs.file(file(proxyImport))
+    inputs.file(rootProject.file("tools/network-proxy/catalog.json"))
     if (androidInputs != null) inputs.files(listOf("jdk", "gradle", "platform", "build-tools", "android-host").map { file("$androidInputs/$it.archive") })
     val reverseSamples = providers.environmentVariable("AURORA_REVERSE_SAMPLES").orNull
     inputs.property("reverseSamples", reverseSamples ?: "not-supplied")

@@ -62,7 +62,7 @@ def probe(directory):
         result.check_returncode()
         if result.stdout.splitlines()[-1] != 'aurora-apk-probe-ok':
             raise ValueError('Missing fixed production probe completion marker')
-        apk = workspace / 'runs' / run_id / 'apk-probe/build/outputs/apk/release/aurora-sdk-probe-release-unsigned.apk'
+        apk = workspace / 'project/.aurora-apk-probes' / run_id / 'build/outputs/apk/release/aurora-sdk-probe-release-unsigned.apk'
         with zipfile.ZipFile(apk) as archive:
             report['ownedDex'] = verify_dex(archive, True, {b'Lio/github/asagnc/aurora/sdkprobe/Owned;',
                 b'Lio/github/asagnc/aurora/sdkprobe/ScreenKt;'})

@@ -1,0 +1,24 @@
+name: Production ARM64 proxy profiles qualification
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  product:
+    runs-on: ubuntu-26.04-arm
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Obtain the reviewed fixed standalone input without executing source
+        run: python3 scripts/acquire-proxy-archive.py --directory app/build/outputs/proxy-product
+      - name: Verify actual readonly production loopback/TLS/WebSocket rules and offline inspection
+        run: sudo -n unshare --mount --net --propagation private python3 scripts/qualify-proxy-product.py --directory app/build/outputs/proxy-product
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: proxy-production-qualification
+          path: |
+            app/build/outputs/proxy-product/product-*.txt
+            app/build/outputs/proxy-product/product-report.json
+            app/build/outputs/proxy-product/public-artifacts/*
+          retention-days: 14

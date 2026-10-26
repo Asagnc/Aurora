@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+export AURORA_PROXY_PROBE=true
+exec /opt/mitmdump/aurora-proxy "$@"
