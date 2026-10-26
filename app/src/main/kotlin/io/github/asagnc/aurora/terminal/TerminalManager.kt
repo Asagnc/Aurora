@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.*
+import io.github.asagnc.aurora.linux.LinuxTerminalRun
+import io.github.asagnc.aurora.linux.LinuxToolTerminal
 
 /** Application-owned PTYs, independent of visible pages and individual model turns. */
 internal class TerminalManager(private val app: AuroraApplication) {
@@ -47,7 +49,14 @@ internal class TerminalManager(private val app: AuroraApplication) {
     internal suspend fun startLinux(owner: String, request: PtyRequest = PtyRequest(argv = listOf("/bin/sh"), timeoutMs = 270_000),
         generation: String? = null): TerminalRecord = startBackend(owner, request, "linux-root", generation)
 
-    private suspend fun startBackend(owner: String, supplied: PtyRequest, backend: String, generation: String? = null): TerminalRecord = withContext(Dispatchers.IO) {
+    internal suspend fun startLinuxTools(owner: String, tool: LinuxToolTerminal): TerminalRecord {
+        require(tool.run.toolBundle?.matches(Regex("[a-f0-9]{64}")) == true && tool.run.expectedIdentity != null && tool.run.generation != null)
+        require(UUID.fromString(tool.id).toString() == tool.id)
+        return startBackend(owner, tool.run.request, "linux-root", tool.run.generation, tool)
+    }
+
+    private suspend fun startBackend(owner: String, supplied: PtyRequest, backend: String, generation: String? = null,
+        tool: LinuxToolTerminal? = null): TerminalRecord = withContext(Dispatchers.IO) {
         val request = supplied.copy(argv = supplied.argv.toList(), environment = supplied.environment.toMap())
         request.validate()
         if (backend == "linux-root") {
@@ -57,31 +66,12 @@ internal class TerminalManager(private val app: AuroraApplication) {
         val session = admission.withLock {
             check(sessions.values.count { it.job.isActive } < 8) { "Eight active terminals is the global budget" }
             check(sessions.values.count { it.initial.owner == owner && it.job.isActive } < 4) { "Four active terminals per conversation" }
-            val id = UUID.randomUUID().toString()
+            val id = tool?.id ?: UUID.randomUUID().toString()
+            check(!sessions.containsKey(id) && !java.nio.file.Files.exists(records.directory(owner, id), java.nio.file.LinkOption.NOFOLLOW_LINKS)) { "Terminal id already exists; inspect its outcome without replaying" }
             val remote = if (backend == "android-root") requireNotNull(app.root.terminalClient) { "Root is not connected" } else null
             val initial = TerminalRecord(id, owner, backend, "starting", System.currentTimeMillis())
             val next = TerminalSession(initial, request, records) { version.update { it + 1 } }
-            next.job = scope.launch(start = CoroutineStart.LAZY) {
-                try {
-                    app.tasks.run(owner) {
-                        val directory = app.spaces.commandRoot(owner)
-                        var lease: io.github.asagnc.aurora.runtime.CommandWakeLock.Lease? = null
-                        try {
-                            suspend fun consume(open: suspend () -> PtyEndpoint) = next.run {
-                                if (request.awakeMs > 0) lease = awake.acquire(request.awakeMs)
-                                open()
-                            }
-                            if (backend == "linux-root") app.linux.runs.terminal(owner, id, request, ::consume, generation)
-                            else consume { remote?.open(id, owner, request) ?: process.open(directory, request) }
-                        } finally { lease?.let { if (it.held) it.close() } }
-                    }
-                } catch (cancel: CancellationException) { throw cancel }
-                catch (failure: Exception) { next.failStart(failure) }
-                finally {
-                    if (!next.opened.isCompleted) next.opened.completeExceptionally(IllegalStateException("Conversation closing"))
-                    version.update { it + 1 }
-                }
-            }
+            next.job = scope.launch(start = CoroutineStart.LAZY) { runTerminalTask(next, backend, generation, tool, remote) }
             // At most twelve resident emulators, including up to eight active sessions.
             sessions.values.filter { !it.job.isActive }.sortedBy { it.initial.started }
                 .take((sessions.size - 11).coerceAtLeast(0)).forEach { sessions.remove(it.initial.id, it) }
@@ -105,6 +95,31 @@ internal class TerminalManager(private val app: AuroraApplication) {
             session.endpoint?.stop(); session.job.cancel()
             withContext(NonCancellable) { session.job.join() }
             throw failure
+        }
+    }
+
+    private suspend fun runTerminalTask(next: TerminalSession, backend: String, generation: String?,
+        tool: LinuxToolTerminal?, remote: io.github.asagnc.aurora.root.RootTerminalClient?) {
+        val request = next.request
+        try {
+            app.tasks.run(next.initial.owner) {
+                val directory = app.spaces.commandRoot(next.initial.owner)
+                var lease: io.github.asagnc.aurora.runtime.CommandWakeLock.Lease? = null
+                try {
+                    suspend fun consume(open: suspend () -> PtyEndpoint) = next.run {
+                        if (request.awakeMs > 0) lease = awake.acquire(request.awakeMs)
+                        open()
+                    }
+                    if (backend == "linux-root") app.linux.runs.terminal(next.initial.owner, next.initial.id,
+                        LinuxTerminalRun(request, generation, tool?.run?.toolBundle, tool?.run?.expectedIdentity), ::consume)
+                    else consume { remote?.open(next.initial.id, next.initial.owner, request) ?: process.open(directory, request) }
+                } finally { lease?.let { if (it.held) it.close() } }
+            }
+        } catch (cancel: CancellationException) { throw cancel }
+        catch (failure: Exception) { next.failStart(failure) }
+        finally {
+            if (!next.opened.isCompleted) next.opened.completeExceptionally(IllegalStateException("Conversation closing"))
+            version.update { it + 1 }
         }
     }
 

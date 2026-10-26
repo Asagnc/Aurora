@@ -16,9 +16,12 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
         inUse = { app.linux.runs.usesToolBundle(it) }) { component, archive, target ->
         if (component in AndroidBuildTools.components)
             AndroidBuildPreparation.prepare(component, archive, target) { path, mode -> Os.chmod(path.toString(), mode) }
+        else if (component == NetworkProxyPreparation.component)
+            NetworkProxyPreparation.prepare(component, archive, target) { path, mode -> Os.chmod(path.toString(), mode) }
         else StaticReversePreparation.prepare(component, archive, target) { path, mode -> Os.chmod(path.toString(), mode) }
     }
     private val qualifications = StaticReverseQualifications()
+    val proxy by lazy { NetworkProxyManager(app, store, qualifications) }
     @Volatile private var cleanupPending = false
     suspend fun recover() {
         try { store.cleanup(); cleanupPending = false }
@@ -60,7 +63,8 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
             AndroidBuildTools.bundleId, 270000, id, identity), generation)
         val passed = androidBuildProbePassed(StaticReverseProbeContext(0, id, generation), result) && app.root.linuxExecution?.identity == identity
         val ready = passed && qualifications.complete(attempt)
-        return objectOf("qualified" to JsonPrimitive(ready), "result" to result, "logDirectory" to string("runs/$id"))
+        return objectOf("qualified" to JsonPrimitive(ready), "result" to result, "logDirectory" to string("runs/$id"),
+            "linuxProject" to string("linux:project/.aurora-apk-probes/$id"))
     }
     suspend fun buildAndroid(owner: String, generation: String, request: AndroidBuildRequest, id: String): JsonObject {
         val identity = requireNotNull(app.root.linuxExecution?.identity) { "Connect Root before building" }
@@ -104,23 +108,29 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
         try { return store.cleanup().also { cleanupPending = false } }
         catch (failure: Exception) { cleanupPending = true; throw failure }
     }
-    suspend fun status(generation: String?, androidBuild: Boolean = false): JsonObject {
+    suspend fun status(generation: String?, family: String = "static-reverse"): JsonObject {
         val installed = store.installed()
-        val bundle = if (androidBuild) AndroidBuildTools.bundleId else StaticReverseTools.bundleId
-        val components = if (androidBuild) AndroidBuildTools.components else StaticReverseTools.components
+        val catalog = when (family) {
+            "static-reverse" -> StaticReverseTools.catalog
+            "android-build" -> AndroidBuildTools.catalog {}
+            "network-proxy" -> NetworkProxyRuntime.catalog
+            else -> error("Unknown shared tool family")
+        }
+        val bundle = catalog.bundleId
+        val components = catalog.components
         val identity = app.root.linuxExecution?.identity
         val ready = generation != null && identity != null && bundle in installed &&
             qualifications.ready(StaticReverseQualifications.Scope(generation, identity, bundle))
         return objectOf(
         "catalogBundle" to string(bundle),
-        "family" to string(if (androidBuild) "android-build" else "static-reverse"),
-        "nativeArchiveRequired" to JsonPrimitive(androidBuild),
+        "family" to string(family),
+        "nativeArchiveRequired" to JsonPrimitive(family == "android-build"),
         "generation" to (generation?.let(::string) ?: JsonNull),
         "installed" to JsonArray(installed.map(::string)),
         "components" to JsonArray(components.map { objectOf("id" to string(it.id), "version" to string(it.version)) }),
         "runtimeReady" to JsonPrimitive(ready),
         "cleanupPending" to JsonPrimitive(cleanupPending || store.cleanupFailed),
-        "reason" to string(if (ready) "CLI startup qualified for the current Root identity, Linux generation and tool bundle"
+        "reason" to string(if (ready) "Tool runtime qualified for the current Root identity, Linux generation and tool bundle"
             else "Install tools and run probe; startup qualification is required for each Root/environment identity"),
         "updatePolicy" to string("install/update selects the current compiled trusted catalogue; no unverified latest URL"))
     }

@@ -26,3 +26,4 @@ tools/network-proxy/licenses/** -text
 tools/network-proxy/crypto-recipes/** -text
 tools/apk-build/host-notices/** -text
 tools/network-proxy/runtime/** text eol=lf
+core/src/test/resources/proxy-owned-ca.pem -text

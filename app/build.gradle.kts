@@ -160,6 +160,9 @@ abstract class StageApkBuildMetadata : DefaultTask() {
     @get:InputDirectory @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val metadata: DirectoryProperty
     @get:InputFile abstract val nativeBundlePin: RegularFileProperty
+    @get:InputDirectory @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val proxyProfiles: DirectoryProperty
+    @get:InputFile abstract val proxyLicense: RegularFileProperty
     @get:OutputDirectory abstract val outputDirectory: DirectoryProperty
     @TaskAction fun stage() {
         val output = outputDirectory.get().asFile.resolve("apk-build")
@@ -169,12 +172,21 @@ abstract class StageApkBuildMetadata : DefaultTask() {
             output.resolve(name).writeText(text, Charsets.UTF_8)
         }
         output.resolve("native-bundle.json").writeText(nativeBundlePin.get().asFile.readText(Charsets.UTF_8).replace("\r\n", "\n"), Charsets.UTF_8)
+        val proxy = outputDirectory.get().asFile.resolve("network-proxy")
+        proxy.mkdirs()
+        for (name in listOf("aurora-proxy", "aurora-proxy-probe", "aurora-proxy-read", "aurora_proxy.py",
+            "aurora_proxy_rules.py", "aurora_proxy_probe.py", "aurora_proxy_read.py")) {
+            proxy.resolve(name).writeText(proxyProfiles.get().asFile.resolve(name).readText(Charsets.UTF_8).replace("\r\n", "\n"), Charsets.UTF_8)
+        }
+        proxy.resolve("mitmproxy-LICENSE").writeBytes(proxyLicense.get().asFile.readBytes())
     }
 }
 
 val apkBuildMetadata = tasks.register<StageApkBuildMetadata>("stageApkBuildMetadata") {
     metadata.set(rootProject.layout.projectDirectory.dir("tools/apk-build/sdk-metadata"))
     nativeBundlePin.set(rootProject.layout.projectDirectory.file("tools/apk-build/native-bundle.json"))
+    proxyProfiles.set(rootProject.layout.projectDirectory.dir("tools/network-proxy/runtime"))
+    proxyLicense.set(rootProject.layout.projectDirectory.file("tools/network-proxy/mitmproxy-LICENSE"))
     outputDirectory.set(layout.buildDirectory.dir("generated/apk-build-metadata"))
 }
 

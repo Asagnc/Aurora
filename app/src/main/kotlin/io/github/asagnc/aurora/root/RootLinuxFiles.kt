@@ -2,7 +2,6 @@ package io.github.asagnc.aurora.root
 
 import android.content.Context
 import android.system.Os
-import android.system.OsConstants
 import io.github.asagnc.aurora.core.*
 import io.github.asagnc.aurora.linux.LinuxDurability
 import java.nio.file.*
@@ -21,7 +20,7 @@ internal class RootLinuxFiles(private val context: Context) {
         val root = files.workspace(owner, allowRetired = operation == "remove")
         val result = when (operation) {
             "remove" -> { require(!Files.exists(root.resolve(".active-run"))); files.retire(owner); remove(root); tools.remove(owner); objectOf("removed" to JsonPrimitive(true)) }
-            "export" -> export(owner, root, requireNotNull(arguments.text("path")))
+            "export" -> export(owner, root, arguments)
             "files_read_batch" -> RootLinuxFileReads.batch(root, arguments.array("files"))
             "files_list" -> {
                 val path = arguments.text("path").orEmpty()
@@ -47,8 +46,8 @@ internal class RootLinuxFiles(private val context: Context) {
         result.toString().also { require(it.length <= 262144) }
         }
     }
-    private suspend fun export(owner: String, root: Path, name: String): JsonObject {
-        val source = RootLinuxFileReads.resolve(root, name)
+    private suspend fun export(owner: String, root: Path, arguments: JsonObject): JsonObject {
+        val source = RootLinuxFileReads.resolve(root, requireNotNull(arguments.text("path")))
         val targetRoot = files.conversation(owner).resolve("exports")
         require(!Files.isSymbolicLink(targetRoot)); Files.createDirectories(targetRoot)
         Os.chown(targetRoot.toString(), context.applicationInfo.uid, context.applicationInfo.uid)
@@ -57,25 +56,12 @@ internal class RootLinuxFiles(private val context: Context) {
         val target = targetRoot.resolve("root-$id.bin")
         val partial = targetRoot.resolve("root-$id.partial")
         try {
-            val input = Os.open(source.toString(), OsConstants.O_RDONLY or OsConstants.O_NONBLOCK or OsConstants.O_NOFOLLOW or OsConstants.O_CLOEXEC, 0)
-            try {
-                val info = Os.fstat(input)
-                require(OsConstants.S_ISREG(info.st_mode) && info.st_size in 1..32L * 1024 * 1024)
-                Files.newOutputStream(partial, StandardOpenOption.CREATE_NEW).use { output ->
-                    val buffer = ByteArray(65536); var total = 0L
-                    while (true) {
-                        currentCoroutineContext().ensureActive()
-                        val count = Os.read(input, buffer, 0, buffer.size); if (count == 0) break
-                        total += count; require(total <= 32L * 1024 * 1024); output.write(buffer, 0, count)
-                    }
-                    val after = Os.fstat(input)
-                    require(total == info.st_size && after.st_size == info.st_size && after.st_mtime == info.st_mtime && after.st_ctime == info.st_ctime && after.st_mtim.tv_nsec == info.st_mtim.tv_nsec && after.st_ctim.tv_nsec == info.st_ctim.tv_nsec)
-                }
-            } finally { Os.close(input) }
+            val digest = RootLinuxExport.copy(source, partial, arguments.number("maxBytes") ?: 32L * 1024 * 1024, arguments.text("sha256"))
             Os.chown(partial.toString(), context.applicationInfo.uid, context.applicationInfo.uid)
             Os.chmod(partial.toString(), 384)
             Files.move(partial, target, StandardCopyOption.ATOMIC_MOVE)
-            return objectOf("path" to string("exports/${target.fileName}"))
+            LinuxDurability.directory(targetRoot)
+            return objectOf("path" to string("exports/${target.fileName}"), "sha256" to string(digest))
         } finally { Files.deleteIfExists(partial) }
     }
     private suspend fun remove(root: Path) {

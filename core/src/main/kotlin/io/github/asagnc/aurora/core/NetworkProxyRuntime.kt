@@ -45,13 +45,16 @@ object NetworkProxyRuntime {
             bodyBase64 = Base64.getEncoder().encodeToString("owned-ws-modified".toByteArray(Charsets.UTF_8)))), durationSeconds = 180, maxFlows = 8)
 
     fun probePassed(context: StaticReverseProbeContext, proof: JsonObject): Boolean {
-        val done = proof["completion"] as? JsonObject ?: return false
         val result = proof["result"] as? JsonObject ?: return false
         val output = (result["stdout"] as? JsonObject)?.text("text").orEmpty()
+        return closedToolPassed(context, proof) && output.lineSequence().count { it.trimEnd() == probeMarker } == 1
+    }
+
+    fun closedToolPassed(context: StaticReverseProbeContext, proof: JsonObject): Boolean {
+        val done = proof["completion"] as? JsonObject ?: return false
         return proof.number("protocol") == 1L && proof.text("runId") == context.runId && proof.text("generation") == context.generation &&
             proof.text("toolBundle") == bundleId && proof["stopped"] == JsonPrimitive(true) && done.number("exitCode") == 0L &&
-            done["scopeRemoved"] == JsonPrimitive(true) && done["interrupted"] == JsonPrimitive(false) && done["timedOut"] == JsonPrimitive(false) &&
-            output.lineSequence().count { it.trimEnd() == probeMarker } == 1
+            done["scopeRemoved"] == JsonPrimitive(true) && done["interrupted"] == JsonPrimitive(false) && done["timedOut"] == JsonPrimitive(false)
     }
 
     fun finalProbePassed(id: String, options: NetworkProxyOptions, value: JsonObject): Boolean {

@@ -133,7 +133,7 @@ def stage(args):
             'releaseReady': False, 'signature': signature, **identity, **application,
             'androidBuildTools': sdk,
             'gitCommit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
-            'workTreeDirty': bool(subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=no'], cwd=ROOT)),
+            'workTreeDirty': bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT)),
             'files': [{'name': name, 'bytes': (work / name).stat().st_size, 'sha256': sha(work / name)}
                       for name in sorted(path.name for path in work.iterdir())]}
         (work / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')

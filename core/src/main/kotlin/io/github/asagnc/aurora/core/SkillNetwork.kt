@@ -43,7 +43,7 @@ class SkillNetwork(private val client: OkHttpClient = OkHttpClient.Builder().fol
 
     /** Only fixed compiled tool inputs get the larger transport budget; ordinary Skills keep their original limits. */
     suspend fun downloadTool(component: StaticReverseComponent, target: Path) = withTimeout(180_000) {
-        require(!component.localOnly && (component in StaticReverseTools.components || component in AndroidBuildTools.components))
+        require(!component.localOnly && (component in StaticReverseTools.components || component in AndroidBuildTools.components || component == NetworkProxyPreparation.component))
         downloadBounded(component.url, target, component.compressedBytes, 180_000)
         runInterruptible(Dispatchers.IO) { verifyStaticReverseArchive(component, target) }
     }

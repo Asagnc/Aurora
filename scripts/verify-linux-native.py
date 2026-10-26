@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Inspect actual APK ELF payloads; this is packaging evidence, not execution."""
+"""Inspect actual APK ELF payloads and pinned shared-tool assets; packaging evidence, not execution."""
 import argparse
 import hashlib
 import json
 from pathlib import Path
 import struct
 import zipfile
+from shared_tool_assets import verify as verify_shared_tool_assets
 
 MACHINES = {'arm64-v8a': 183, 'x86_64': 62}
 FILES = ['libaurora_proot.so', 'libaurora_proot_loader.so', 'libaurora_talloc.so', 'libaurora_linux_namespace.so', 'libaurora_linux_scope.so', 'libaurora_tcpdump.so', 'libaurora_packet_worker.so', 'libaurora_packet_inject.so', 'libaurora_socket_diag.so', 'libaurora_packet_rotate.so', 'libaurora_managed_guard.so']
@@ -57,6 +58,7 @@ def inspect(data, machine, loader, executable=False):
 
 
 def verify(apk):
+    verify_shared_tool_assets(apk)
     with zipfile.ZipFile(apk) as archive:
         for abi, machine in MACHINES.items():
             for name in FILES + (['libaurora_frida.so'] if abi == 'arm64-v8a' else []):

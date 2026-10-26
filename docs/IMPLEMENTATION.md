@@ -901,3 +901,6 @@ APK专项40287316316：实际生产安装/readonly布局/Java＋Compose＋双ABI
 
 
 release-review-25bcbc5-sdk成功：APK44,907,522字节、配套原生SDK180,242,303字节、41份输入SDK源码ZIP377,457,034字节，全部SHA256SUMS独立复核；workTreeDirty=false/releaseReady=false。25bcbc5完整CI40290353305通过。继续代理固定仅mitmdump导入、结构化字面规则和不可变生产profiles：公有CA/私有密钥分区、HTTP/WS修改、预算产物/离线读取、固定自有HTTP/HTTPS/未信任CA/WS自检。329核心314通过/15跳过，产品ARM64专项待执行，尚未完成PTY/Agent接入。SDK自检目录调整为既有Linux文件API允许的project/.aurora-apk-probes，避免生成无法经既有文件桥访问的产物；该目录变更需重跑产品安装专项。无设备/签名/付费模型操作。
+
+
+代理产品profiles ARM64专项40294444272通过：真实readonly /opt、HTTP/HTTPS修改/未信任CA拒绝/WebSocket修改与分文件校验、离线读取全部成功。SDK project产物目录变更后的产品安装专项40294449390通过，同提交完整CI40294443817通过。现接同一共享安装器和资格缓存、PTY持久Linux工具租约/Root身份绑定、Agent network_proxy、精确单run停止恢复与公有CA SHA绑定导出。未新增daemon或任务表，旧PTY路径保持。334核心319通过/15跳过、完整Debug/Release/AndroidTest/lint本地220任务成功；新普通UID导出FD用例和显式Root/Linux/proxy设备用例仅编译，未操作手机或自动下载设备工具。
