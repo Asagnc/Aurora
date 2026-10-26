@@ -59,6 +59,13 @@ class ReleaseMaterials(unittest.TestCase):
     def test_complete_fixed_inventory_and_same_own_snapshot(self):
         self.assertEqual(5, len(materials.verify_sources(self.archive())['inputs']))
 
+    def test_source_catalogue_uses_the_existing_id_commit_archive_convention(self):
+        path = self.root / 'tools/apk-build/llvm-sources.json'
+        row = dict(id='owned-clang', commit='a' * 40, archiveBytes=1, archiveSha256='b' * 64)
+        path.write_text(json.dumps({'repositories': [row]}))
+        selected = next(entry for entry in materials.entries() if entry['group'] == 'compiler')
+        self.assertEqual('owned-clang-' + 'a' * 40 + '.tar.gz', selected['archive'])
+
     def test_tamper_missing_extra_and_wrong_pin_are_rejected(self):
         def tamper(_, payloads):
             name = next(iter(payloads)); payloads[name] = b'x' * len(payloads[name])

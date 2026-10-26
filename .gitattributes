@@ -24,3 +24,4 @@ tools/network-proxy/upstream-uv.lock -text
 tools/network-proxy/mitmproxy-LICENSE -text
 tools/network-proxy/licenses/** -text
 tools/network-proxy/crypto-recipes/** -text
+tools/apk-build/host-notices/** -text

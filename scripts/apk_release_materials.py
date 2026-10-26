@@ -17,7 +17,8 @@ def entries():
     rows = []
     for filename, group in [('sources.json', 'resources'), ('llvm-sources.json', 'compiler')]:
         for row in json.loads((ROOT / 'tools/apk-build' / filename).read_text())['repositories']:
-            rows.append((group, row['archive'], row['archiveSha256'], row['archiveBytes']))
+            name = row['archive'] if 'archive' in row else row['id'] + '-' + row['commit'] + '.tar.gz'
+            rows.append((group, name, row['archiveSha256'], row['archiveBytes']))
     for row in json.loads((ROOT / 'tools/apk-build/runtime-materials.json').read_text())['packages']:
         for item in [row['descriptor'], *row['sources']]:
             rows.append(('runtime', item['archive'], item['sha256'], item['bytes']))
