@@ -1,6 +1,6 @@
 {
   "scope": "Production Kotlin installer and fixed probe on a real ARM64 Linux host; no Android runtime proof",
-  "runId": "68f4ae92-2f05-43a6-a0b1-058ab317c106",
+  "runId": "4bacda01-a043-43ae-8174-db764f17d4ed",
   "probeSha256": "477a2f1234fb90d2859856333b9f0c42874ea453adc21cf8a68bd977d066db86",
   "phoneRuntimeQualified": false,
   "qualified": true,
@@ -9,5 +9,5 @@
     "Lio/github/asagnc/aurora/sdkprobe/ScreenKt;": "classes.dex",
     "Lio/github/asagnc/aurora/sdkprobe/Owned;": "classes2.dex"
   },
-  "apkSha256": "16949423fb94b57dd8be25ef160cdd3f912395421e3eaac67ff57178fc250d13"
+  "apkSha256": "76a4c243eaba51ed6df5094f7411a03ef6923310ddbfcdc997896bcacef6157b"
 }

@@ -67,6 +67,9 @@ class AndroidBuildIntegrationTest {
     }
 
     @Test fun fixedMetadataAndRuntimeScriptsHaveStableIdentity() {
+        val native = WireJson.parseToJsonElement(Files.readAllBytes(repository.resolve("tools/apk-build/native-bundle.json")).toString(Charsets.UTF_8)).jsonObject
+        val component = AndroidBuildTools.components.single { it.localOnly }
+        assertEquals(component.sha256, native.text("sha256")); assertEquals(component.compressedBytes, native.number("bytes"))
         for ((name, bytes) in metadata()) {
             val hash = MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it.toInt() and 255) }
             assertEquals(AndroidBuildTools.metadataSha256.getValue(name), hash)

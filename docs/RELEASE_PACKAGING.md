@@ -16,3 +16,8 @@ python scripts/package-release.py --unsigned-review --apk app/build/outputs/apk/
 官方依据：[apksigner 签名与验证](https://developer.android.com/tools/apksigner)。zipalign 应在签名前执行，签名后修改 APK 会使签名失效；此工具完整复制输入 APK，不重压缩 APK 条目。
 
 新增aapt2包名/版本/minSdk36/target37与非debuggable检查，zipalign -c -P 16 4验证，以及工作树dirty标记。签名器可用SDK的lib/apksigner.jar配合--java，密码仍不进入此工具。用户已说明长期签名密钥位于手机公共下载目录，明确留到集中验收时处理；当前不读取手机、不生成替代密钥。
+
+
+APK共享构建工具可作为配套审查材料：先运行package-apk-materials.py，传入--resources（固定资源源码目录）、--compiler（LLVM源码目录）、--runtime（SDK私有运行库inputs目录）、--host（CMake/Ninja源码目录）和新的--output ZIP。它逐项验证41份源码输入，附精确git archive HEAD快照，并再次流式校验生成ZIP；不执行上游源码。快照属于打包时可信checkout，改变HEAD后需重新打包再验证。
+
+package-release.py同时传入--android-build-bundle与--android-build-sources，才会复制原生SDK tar.gz及SDK源码ZIP到材料目录并纳入manifest/SHA256SUMS。缺一项拒绝；原生SDK字节、APK assets/apk-build/native-bundle.json、可信源码目录和自有源码快照须全部对应。官方SDK/JDK/Gradle分发仍从已固定官方下载入口获取，不夹入自制SDK原生包。上述验证不等于手机buildReady或完整Android补丁NDK等价。

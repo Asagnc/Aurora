@@ -40,7 +40,7 @@
 - CI40210689697已完整通过真实ARM64 Java/Compose/双ABI JNI构建：验证所有DEX的真实类定义、4/6个JNI库、Compose graphics-path固定AAR逐字节对应、NDK目标运行库和16KiB对齐；CI40206934943通过原生strip -o与ranlib索引。上述早期失败均保留，已修复。
 - 便携SDK实验CI40282040597通过：SDK自动发现CMake/NDK，迁移后再构建Java/Compose/双ABI JNI；7个非系统动态库实际从包内加载。原生包180,242,303字节/SHA256 f899eda7aee47fe3edc11546f26d7853aa6f8962f08bb2225f59a327b2327042，不含另行直接下载的官方SDK/JDK/Gradle分发。
 - 同一共享安装器已接android-build家族、固定输入/元数据/ARM64校验、外来SDK ELF拒绝入口和readonly SDK布局；保留旧静态逆向bundle身份/租约/清理。Agent shared_toolchain family=android-build install/probe和apk_build已接，只有当前Root身份/环境代/bundle实际自检通过才开放构建。原生包当前使用所有者命名空间内显式选择的精确本地归档，未虚构公开下载URL；不另建安装服务。
-- 本地319核心305通过/14跳过，Debug/Release/AndroidTest/lint共219任务成功；产品Kotlin安装器/readonly SDK/实际Java＋Compose＋双ABI JNI/16KiB/真实DEX类定义和源码对应专项CI40287903059已全部通过；同提交完整CI40287902114通过。7项私有ELF与6组Ubuntu源码包/18份119,568,016字节材料及13份许可本地采集校验成功，专项同步审计；不冒充完整NDK或全部目标可复现重建。每次构建仍受现有270秒Linux任务预算和真实退出/清理证明约束，不扩大普通命令时限。新增固定目录工具专用下载覆盖JDK/Gradle超过128MiB的归档，普通Skills原上限保留；拒绝非编译目录输入，大文件真实下载专项继续。手机运行未验证，不显示buildReady。
+- 本地319核心305通过/14跳过，Debug/Release/AndroidTest/lint共219任务成功；产品Kotlin安装器/readonly SDK/实际Java＋Compose＋双ABI JNI/16KiB/真实DEX类定义和源码对应专项CI40287903059已全部通过；同提交完整CI40287902114通过。7项私有ELF与6组Ubuntu源码包/18份119,568,016字节材料及13份许可本地采集校验成功，专项同步审计；不冒充完整NDK或全部目标可复现重建。每次构建仍受现有270秒Linux任务预算和真实退出/清理证明约束，不扩大普通命令时限。新增固定目录工具专用下载覆盖JDK/Gradle超过128MiB的归档，普通Skills原上限保留；拒绝非编译目录输入，大文件真实下载和全部7项产品安装测试CI40289722586已通过，含生产自检和源码审计。SDK发布配套41份固定源码/自有源码快照打包、APK选择摘要匹配检查及4组错配拒绝回归已接，审查包待刷新。手机运行未验证，不显示buildReady。
 
 ## 正在推进：网络进阶
 

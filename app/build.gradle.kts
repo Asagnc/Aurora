@@ -159,6 +159,7 @@ androidComponents.onVariants { variant ->
 abstract class StageApkBuildMetadata : DefaultTask() {
     @get:InputDirectory @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val metadata: DirectoryProperty
+    @get:InputFile abstract val nativeBundlePin: RegularFileProperty
     @get:OutputDirectory abstract val outputDirectory: DirectoryProperty
     @TaskAction fun stage() {
         val output = outputDirectory.get().asFile.resolve("apk-build")
@@ -167,11 +168,13 @@ abstract class StageApkBuildMetadata : DefaultTask() {
             val text = metadata.get().asFile.resolve(name).readText(Charsets.UTF_8).replace("\r\n", "\n")
             output.resolve(name).writeText(text, Charsets.UTF_8)
         }
+        output.resolve("native-bundle.json").writeText(nativeBundlePin.get().asFile.readText(Charsets.UTF_8).replace("\r\n", "\n"), Charsets.UTF_8)
     }
 }
 
 val apkBuildMetadata = tasks.register<StageApkBuildMetadata>("stageApkBuildMetadata") {
     metadata.set(rootProject.layout.projectDirectory.dir("tools/apk-build/sdk-metadata"))
+    nativeBundlePin.set(rootProject.layout.projectDirectory.file("tools/apk-build/native-bundle.json"))
     outputDirectory.set(layout.buildDirectory.dir("generated/apk-build-metadata"))
 }
 

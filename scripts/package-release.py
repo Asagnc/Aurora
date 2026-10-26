@@ -101,6 +101,12 @@ def stage(args):
         work = Path(temporary)
         selected = [('Aurora.apk', args.apk), ('frida-source-materials.zip', args.frida_sources),
                     ('native-corresponding-source.zip', args.native_sources)]
+        sdk_bundle = getattr(args, 'android_build_bundle', None)
+        sdk_sources = getattr(args, 'android_build_sources', None)
+        if bool(sdk_bundle) != bool(sdk_sources):
+            raise ValueError('SDK native bundle and source materials must be supplied together')
+        if sdk_bundle:
+            selected += [('android-host-arm64.tar.gz', sdk_bundle), ('android-build-source-materials.zip', sdk_sources)]
         for name, source in selected:
             if not source.is_file():
                 raise ValueError('Missing selected release input: ' + name)
@@ -112,6 +118,10 @@ def stage(args):
         if identity['workerSha256'] != reference['workerSha256']:
             raise ValueError('APK worker differs from trusted build reference')
         signature = verify_signature(work / 'Aurora.apk', args)
+        sdk = None
+        if sdk_bundle:
+            from apk_release_materials import verify_release
+            sdk = verify_release(work / 'Aurora.apk', work / 'android-host-arm64.tar.gz', work / 'android-build-source-materials.zip')
         # Rebuild verifiers validate sources against this trusted checkout before executing code.
         subprocess.run([args.python, str(ROOT / 'scripts/verify-frida-source-roundtrip.py'),
             str(work / 'frida-source-materials.zip'), '--reference', str(args.frida_reference.resolve()),
@@ -121,6 +131,7 @@ def stage(args):
             '--ndk', str(args.ndk.resolve()), '--report', str(work / 'native-rebuild.json')], check=True)
         manifest = {'format': 1, 'androidRuntime': 'NOT VERIFIED BY PACKAGING',
             'releaseReady': False, 'signature': signature, **identity, **application,
+            'androidBuildTools': sdk,
             'gitCommit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
             'workTreeDirty': bool(subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=no'], cwd=ROOT)),
             'files': [{'name': name, 'bytes': (work / name).stat().st_size, 'sha256': sha(work / name)}
@@ -150,4 +161,6 @@ if __name__ == '__main__':
     parser.add_argument('--java', type=Path, default=Path(shutil.which('java') or 'java'))
     parser.add_argument('--certificate-sha256')
     parser.add_argument('--python', default=sys.executable)
+    parser.add_argument('--android-build-bundle', type=Path)
+    parser.add_argument('--android-build-sources', type=Path)
     stage(parser.parse_args())
