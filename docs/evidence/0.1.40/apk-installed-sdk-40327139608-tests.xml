@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="io.github.asagnc.aurora.core.AndroidBuildIntegrationTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-26T13:03:35.680Z" hostname="runnervmxo6b5" time="11.544">
+  <properties/>
+  <testcase name="productionLargeFixedDownloadWhenExplicitlyQualified()" classname="io.github.asagnc.aurora.core.AndroidBuildIntegrationTest" time="1.434"/>
+  <testcase name="productionInstallerPreparesActualQualifiedInputsWhenExplicitlySupplied()" classname="io.github.asagnc.aurora.core.AndroidBuildIntegrationTest" time="9.825"/>
+  <testcase name="streamedFixedInputRejectsTamperingAndNeverOverwrites()" classname="io.github.asagnc.aurora.core.AndroidBuildIntegrationTest" time="0.017"/>
+  <testcase name="fixedMetadataAndRuntimeScriptsHaveStableIdentity()" classname="io.github.asagnc.aurora.core.AndroidBuildIntegrationTest" time="0.024"/>
+  <testcase name="largerToolBudgetCannotBeUsedForUncompiledInputsOrOrdinarySkills()" classname="io.github.asagnc.aurora.core.AndroidBuildIntegrationTest" time="0.005"/>
+  <testcase name="qualificationRequiresCurrentBundleAndCompleteExitProof()" classname="io.github.asagnc.aurora.core.AndroidBuildIntegrationTest" time="0.003"/>
+  <testcase name="productionNativeDocumentStreamUsesExactFixedBytesWhenExplicitlyQualified()" classname="io.github.asagnc.aurora.core.AndroidBuildIntegrationTest" time="0.214"/>
+  <testcase name="argvRejectsTraversalOptionsAndShellAndKeepsLiteralTasks()" classname="io.github.asagnc.aurora.core.AndroidBuildIntegrationTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

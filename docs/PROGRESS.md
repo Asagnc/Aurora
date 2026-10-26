@@ -944,3 +944,6 @@ eb2c64f完整CI40301812330通过。继续收尾：代理缓存/私钥仅在既�
 新增system_snapshot普通结构化API与明确unknown/近似/缓存状态，不触发Root。新增同源/跨源iframe事件驱动边界和显式门控的真实renderer终止用例，仅编译。Release实际图标链和解码像素匹配批准原图（独立Pillow复核），校验进入发布与CI。
 
 检查实际JVM测试签名发现2个新用例和2个既有用例推断返回Throwable/Void（核心3个、Android1个），可能忽略或拒绝发现；已显式Unit，补编译后JUnit签名检查。现在351核心336通过/15跳过，实际351核心/228 Android @Test均void；220任务完整构建通过。新增实际SQLite DDL3组与原有发布材料13组检查通过；Android、真实私仓、性能/签名仍无新增设备证据。当前刷新完整离线审查材料，保持unsigned，不安装手机或调用付费模型。
+
+
+f561e10完整CI40327134461及ARM64 SDK产品专项40327139608全部成功，产品8项零跳过。完整release-review-f561e10-complete已生成，9项载荷/重建报告1,690,661,029字节，APK45,018,519字节；所有checksums独立复核，SDK41/代理584输入及精确自有源码快照绑定本提交，离线Frida重链接/guard重建成功。workTreeDirty=false（打包时）、unsigned-review/releaseReady=false。实际报告、材料摘要和最后集中验收顺序已归档；没有手机、正式密钥、真实私仓或付费模型操作。

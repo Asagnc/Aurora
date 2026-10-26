@@ -29,10 +29,10 @@
 
 ## 发布及最新验证
 
-- 完整代码CI成功基线18f63ef/40322623537；本轮后续变更需以最新core.yml和APK产品专项实际完成状态为准，取消不算成功。
+- 完整实现提交f561e10：完整CI40327134461通过；实际ARM64 SDK产品专项40327139608通过，8项零跳过，包含真实固定归档下载/180MiB导入/生产安装/readonly Java＋Compose＋双ABI JNI探针及源码审计。后续纯文档提交单独跟踪，不把取消记成功。
 - 本地实际351核心336通过/15跳过（含显式180MiB原生归档输入）；Debug/Release/R8/AndroidTest/lint220任务通过。新增编译后JUnit签名检查覆盖351核心和228 Android @Test，无非void方法；不会再把返回Throwable/Nothing的用例默默忽略。Android用例仍未执行。
 - 发布材料已接SDK原生包＋41份固定源码输入、代理官方分发＋584份固定源码/候选wheel/Cargo超集、精确自有git源码快照、Frida/原生源码重链接及重建、实际APK资产/16KiB/身份/图标链与批准像素校验，全部纳入manifest/SHA256SUMS。
-- 正在刷新当前完整审查包；旧release-review-25bcbc5-sdk不代表最新代理/Skills接入。保持unsigned-review/releaseReady=false，设备和正式签名未验收。
+- 完整审查包release-review-f561e10-complete已生成并独立复核全部SHA256SUMS：APK45,018,519字节，9项载荷/重建报告共1,690,661,029字节，另有manifest与checksums；工作树当时clean。SDK41项/代理584项输入及源码快照全部对应f561e10，离线Frida重链接/guard重建通过，图标链/像素通过。见RELEASE_REVIEW_20261026；保持unsigned-review/releaseReady=false，设备和正式签名未验收。
 
 ## 最后集中验收与明确边界
 

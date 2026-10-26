@@ -1,0 +1,130 @@
+{
+  "format": 1,
+  "androidRuntime": "NOT VERIFIED BY PACKAGING",
+  "releaseReady": false,
+  "signature": {
+    "verified": false,
+    "reason": "unsigned-review-only"
+  },
+  "workerSha256": "396b31f9205598b66409584f7f843ee17633a3f9cf6c7dccfce081b828673dbb",
+  "bridge": {
+    "version": "frida-java-bridge-7.0.13",
+    "sha256": "9fde013172495e7bd083e93090e14f503cae98151f4a974e3e63555900be47d3",
+    "bytes": 235970
+  },
+  "applicationId": "io.github.asagnc.aurora",
+  "versionCode": 41,
+  "versionName": "0.1.40",
+  "launcherArtwork": {
+    "approvedPngSha256": "274da3ca39c5ea28837a7c44534c6869252c787aa4fca800ab0c60fad1f54226",
+    "width": 1254,
+    "height": 1254,
+    "rgbSha256": "f5c4e850ed0d2ecaee4a8b836be794b3375affa5089616564602aaee1838651f",
+    "adaptiveIcon": "res/E4.xml",
+    "foreground": "res/jU.xml",
+    "artwork": "res/ku.png",
+    "launcherDeviceVisualAcceptance": false
+  },
+  "androidBuildTools": {
+    "bundle": {
+      "archive": "android-host-arm64.tar.gz",
+      "bytes": 180242303,
+      "sha256": "f899eda7aee47fe3edc11546f26d7853aa6f8962f08bb2225f59a327b2327042",
+      "sourceCommit": "3d42f73f089ae8edfcde466cfe3c5903de8f3e04",
+      "qualificationRun": 40282040597,
+      "distribution": "review-local-import",
+      "phoneRuntimeQualified": false
+    },
+    "sourceInputs": 41,
+    "phoneRuntimeQualified": false,
+    "scope": "Fixed native SDK bytes and corresponding source materials; not Android runtime or full NDK equivalence proof"
+  },
+  "networkProxyTools": {
+    "distribution": {
+      "version": "12.3.0",
+      "scope": "Approved standalone ARM64 candidate; source/license/runtime closure and Android qualification pending",
+      "archive": "mitmproxy-12.3.0-linux-aarch64.tar.gz",
+      "url": "https://downloads.mitmproxy.org/12.3.0/mitmproxy-12.3.0-linux-aarch64.tar.gz",
+      "bytes": 98927179,
+      "sha256": "f8756fa831c4abe431dd922ae7291b158b465285562b35d12e5669cbfc29d1f3",
+      "selected": "mitmdump",
+      "members": {
+        "mitmproxy": {
+          "bytes": 33648424,
+          "sha256": "f8f9472b2185bdd208d6e8ec9a92570984f123f0e4434a69016de0749956539f"
+        },
+        "mitmdump": {
+          "bytes": 32495056,
+          "sha256": "3adf33868f5477ff65d954b3fbe5dc5eca9703b5f02692500e880b8789caccb1"
+        },
+        "mitmweb": {
+          "bytes": 33732336,
+          "sha256": "e797500b738ba029191ab54c20e9d13e45c2b549670260e436a5ca1d4e6477f2"
+        }
+      }
+    },
+    "profiles": {
+      "aurora-proxy": "c63d27ae75b5dd51d230a83a02e1400b23ed1558eedda38bb79c80c22122890b",
+      "aurora-proxy-probe": "8828bb80292cbbfd15d11c0bbf9ed42257835c3ed6d5d69a4a2282905a5f5aab",
+      "aurora-proxy-read": "0a47d9077df8a992a77e82c4d8317bb2699503f0e9110d3e744f4f626a49aecc",
+      "aurora_proxy.py": "c03e3e9416195fff3862fd951a8d27508cb177d864f477874346fa304edb2f71",
+      "aurora_proxy_probe.py": "f72cc52cc9ef4091c035dc3e463702129db58cf86f783869f9c6879e2b232165",
+      "aurora_proxy_read.py": "3c7dc315305525c50a265cbe7f9fe5fc3153b7a171ae559ba984428b3bf2cb44",
+      "aurora_proxy_rules.py": "cee883fc014a823baf8d6729361d8ee9c032ef4b3c81f75afb165781471f9db1",
+      "mitmproxy-LICENSE": "cc4ab04ed7180af6c0ede7147f9ec2aa05212c088d7b3c8e38bbffe91c9c8f82"
+    },
+    "sourceInputs": 584,
+    "phoneRuntimeQualified": false,
+    "licenseClosureVerified": false,
+    "scope": "Fixed upstream and dependency sources, candidate wheels, and own profiles; not full rebuild or static-link reproducibility proof"
+  },
+  "gitCommit": "f561e1007557465ad9ad7272123416c0e618ff97",
+  "workTreeDirty": false,
+  "files": [
+    {
+      "name": "Aurora.apk",
+      "bytes": 45018519,
+      "sha256": "a9dcb548bdbbca5cfc1cc3170d759ee38f6ff2b7f7d6950a7de861afda8bca41"
+    },
+    {
+      "name": "android-build-source-materials.zip",
+      "bytes": 377568841,
+      "sha256": "960427a3c316ff486f5fd3d9069c3fc4adc9901f3509609504a28cf548682443"
+    },
+    {
+      "name": "android-host-arm64.tar.gz",
+      "bytes": 180242303,
+      "sha256": "f899eda7aee47fe3edc11546f26d7853aa6f8962f08bb2225f59a327b2327042"
+    },
+    {
+      "name": "frida-relink.json",
+      "bytes": 338,
+      "sha256": "aa62a706accc84463e3989c8ae134d80aef62f2b1b5145ce98f87e5183a1c6aa"
+    },
+    {
+      "name": "frida-source-materials.zip",
+      "bytes": 349809636,
+      "sha256": "fbb79455b4557b25b69801416e16d925473eaa88108e2d16c7c80bad43cb43e5"
+    },
+    {
+      "name": "mitmproxy-linux-aarch64.tar.gz",
+      "bytes": 98927179,
+      "sha256": "f8756fa831c4abe431dd922ae7291b158b465285562b35d12e5669cbfc29d1f3"
+    },
+    {
+      "name": "native-corresponding-source.zip",
+      "bytes": 5522944,
+      "sha256": "587cda3638239be2eb35c536536009e8c81fcd0746d637ca6d19aa8cf7a3b229"
+    },
+    {
+      "name": "native-rebuild.json",
+      "bytes": 304,
+      "sha256": "8117555446bb245da4c7e87408f6ca8cef5e042240979a549083e3d0e842df11"
+    },
+    {
+      "name": "network-proxy-source-materials.zip",
+      "bytes": 633570965,
+      "sha256": "63748e097860da0b2ffd9409e48beb476ddb769e1c0111398203cd95019ee588"
+    }
+  ]
+}

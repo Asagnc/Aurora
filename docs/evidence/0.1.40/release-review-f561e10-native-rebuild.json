@@ -1,0 +1,8 @@
+{
+  "matchedSha256": "e1ff849b3667dfd15e5f6a4624921b35ec0c91e7976070120b9884b4093004e0",
+  "sourceArchiveSha256": "587cda3638239be2eb35c536536009e8c81fcd0746d637ca6d19aa8cf7a3b229",
+  "strippedBytes": 49696,
+  "sourceHeaderCount": 48,
+  "offlineRebuild": true,
+  "androidRuntime": "NOT TESTED"
+}
