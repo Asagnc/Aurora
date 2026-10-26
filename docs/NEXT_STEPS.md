@@ -40,7 +40,7 @@
 - CI40210689697已完整通过真实ARM64 Java/Compose/双ABI JNI构建：验证所有DEX的真实类定义、4/6个JNI库、Compose graphics-path固定AAR逐字节对应、NDK目标运行库和16KiB对齐；CI40206934943通过原生strip -o与ranlib索引。上述早期失败均保留，已修复。
 - 便携SDK实验CI40282040597通过：SDK自动发现CMake/NDK，迁移后再构建Java/Compose/双ABI JNI；7个非系统动态库实际从包内加载。原生包180,242,303字节/SHA256 f899eda7aee47fe3edc11546f26d7853aa6f8962f08bb2225f59a327b2327042，不含另行直接下载的官方SDK/JDK/Gradle分发。
 - 同一共享安装器已接android-build家族、固定输入/元数据/ARM64校验、外来SDK ELF拒绝入口和readonly SDK布局；保留旧静态逆向bundle身份/租约/清理。Agent shared_toolchain family=android-build install/probe和apk_build已接，只有当前Root身份/环境代/bundle实际自检通过才开放构建。原生包当前使用所有者命名空间内显式选择的精确本地归档，未虚构公开下载URL；不另建安装服务。
-- 本地317核心304通过/13跳过，Debug/Release/AndroidTest/lint共219任务成功；新增产品Kotlin安装器＋真实ARM64固定自检专项工作流，尚待实际执行。每次构建仍受现有270秒Linux任务预算和真实退出/清理证明约束，不扩大普通命令时限。手机运行未验证，不显示buildReady。
+- 本地317核心304通过/13跳过，Debug/Release/AndroidTest/lint共219任务成功；生产Kotlin安装器已在ARM64实际解包完成并从readonly布局构建通过，自检JNI调用/完成行格式问题已修复，严格最终专项继续40287316316之后的最新运行；旧失败不记通过。7项私有ELF与6组Ubuntu源码包/18份119,568,016字节材料及13份许可本地采集校验成功，专项同步审计；不冒充完整NDK或全部目标可复现重建。每次构建仍受现有270秒Linux任务预算和真实退出/清理证明约束，不扩大普通命令时限。手机运行未验证，不显示buildReady。
 
 ## 正在推进：网络进阶
 
@@ -65,9 +65,3 @@
 Root/ART/自有spawn、静态逆向/JVM、APK构建、网络代理、抓包、浏览器WebView/SAF、管理器撤权、未知恢复、取消/删除/服务死亡、熄屏/后台/Thanox与长时压力；镜像真实联网/提供器/崩溃边界均需实际设备证据。正式签名在手机密钥可用时进行，验证覆盖安装与数据保留。当前不因看到此清单就请求连接手机。
 
 最新完整代码CI成功基线：fd10377的40228422302；后续main实验脚本变更跟踪最新core.yml，取消不记通过。历史精确结果和失败日志保留在PROGRESS/IMPLEMENTATION和evidence，不在本文件重复展开。
-
-
-APK产品安装专项40286606912在执行安装测试前，因ARM64 runner没有宿主Android SDK、Gradle配置了无关:app模块而失败；固定下载均已校验。改为按需仅配置:core，不安装另一套宿主SDK，继续运行实际Kotlin安装和生产自检；该次不记通过。
-
-
-APK安装专项40286923028已实际通过生产Kotlin的五份固定归档解包/SDK布置，并在readonly /opt真实发现SDK/CMake/NDK后进入双ABI JNI编译；生产自检夹具误将C的JNI调用参数用于C++成员函数，编译按预期失败，未置qualified。已修正NewStringUTF调用并继续。另将静态逆向/APK工具派发绑定刚通过资格检查的Root身份，避免期间重连后误用新连接。

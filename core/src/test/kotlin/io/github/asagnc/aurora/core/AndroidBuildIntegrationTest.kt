@@ -60,6 +60,8 @@ class AndroidBuildIntegrationTest {
             "toolBundle" to string(AndroidBuildTools.bundleId), "stopped" to JsonPrimitive(true), "completion" to completion,
             "result" to objectOf("stdout" to objectOf("text" to string("build output\n${AndroidBuildRuntime.probeMarker}\n"))))
         assertTrue(androidBuildProbePassed(context, proof))
+        val noNewline = objectOf("stdout" to objectOf("text" to string("SDK progress...${AndroidBuildRuntime.probeMarker}\n")))
+        assertFalse(androidBuildProbePassed(context, JsonObject(proof + ("result" to noNewline))))
         for ((key, value) in listOf("runId" to string("other"), "toolBundle" to string(StaticReverseTools.bundleId),
             "stopped" to JsonPrimitive(false), "generation" to string("old"), "result" to JsonNull))
             assertFalse(androidBuildProbePassed(context, JsonObject(proof + (key to value))))

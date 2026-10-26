@@ -103,7 +103,7 @@ object AndroidBuildRuntime {
           esac
           awk '/Type:/ { load = (${ '$' }2 == "PT_LOAD") } /Alignment:/ && load { count++; if (${ '$' }2 < 16384 || ${ '$' }2 % 16384 != 0) bad=1 } END { exit (bad || count == 0) }' "${'$'}base/${'$'}abi-elf.txt"
         done
-        printf '%s\n' aurora-apk-probe-ok
+        printf '\n%s\n' aurora-apk-probe-ok
     """.trimIndent() + "\n"
 
     val revision: String get() = "sdk1-" + MessageDigest.getInstance("SHA-256")

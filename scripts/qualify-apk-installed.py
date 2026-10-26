@@ -54,7 +54,7 @@ def probe(directory):
     run_id = str(uuid.uuid4())
     script = Path('/opt/android-host/bin/aurora-apk-probe')
     report = {'scope': 'Production Kotlin installer and fixed probe on a real ARM64 Linux host; no Android runtime proof',
-        'runId': run_id, 'probeSha256': hashlib.sha256(script.read_bytes()).hexdigest(), 'phoneRuntimeQualified': False}
+        'runId': run_id, 'probeSha256': hashlib.sha256(script.read_bytes()).hexdigest(), 'phoneRuntimeQualified': False, 'qualified': False}
     try:
         result = subprocess.run([str(script), run_id], capture_output=True, text=True, timeout=270)
         (directory / 'installed-probe.txt').write_text(result.stdout + result.stderr)
