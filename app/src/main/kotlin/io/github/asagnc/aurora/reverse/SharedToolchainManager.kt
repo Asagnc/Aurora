@@ -73,6 +73,15 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
         }
         return app.linux.runs.executeTools(owner, LinuxToolRun(request.argv, AndroidBuildTools.bundleId, 270000, id, identity), generation)
     }
+    suspend fun exportAndroid(owner: String, path: String): JsonObject {
+        val selected = LinuxFileExport(path.removePrefix("linux:"), apk = true)
+        val result = requireNotNull(app.root.linuxFileClient) { "Connect Root to export the selected APK" }.invoke(owner, "export_apk",
+            objectOf("path" to string(selected.path), "maxBytes" to JsonPrimitive(selected.maxBytes)))
+        require(result.text("sha256")?.matches(Regex("[a-f0-9]{64}")) == true)
+        val name = selected.path.substringAfterLast('/').take(100).replace(Regex("[^\\p{L}\\p{N}._-]"), "_")
+        return JsonObject(result + mapOf("mime" to string("application/vnd.android.package-archive"), "suggestedName" to string(name),
+            "installed" to JsonPrimitive(false), "signatureVerified" to JsonPrimitive(false)))
+    }
     suspend fun <T> reserve(id: String, record: suspend () -> T): T = store.reserve(id, record)
     suspend fun remove(id: String): Boolean {
         // Invalidate before suspension: cancellation/cleanup failure must not retain old evidence.

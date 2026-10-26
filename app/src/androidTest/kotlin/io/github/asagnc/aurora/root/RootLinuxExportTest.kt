@@ -48,4 +48,20 @@ class RootLinuxExportTest {
         try { RootLinuxExport.copy(link, root.resolve("target"), 4096, null); fail("Symlink accepted") } catch (_: android.system.ErrnoException) { }
         assertFalse(Files.exists(root.resolve("target")))
     } }
+
+    @Test fun theInstalledOwnedApkCanBeStreamedBeyondTheOrdinaryReadBudget() = runBlocking { fixture { root ->
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val source = Path.of(context.applicationInfo.sourceDir)
+        val size = Files.size(source)
+        org.junit.Assume.assumeTrue(size > 32L * 1024 * 1024)
+        val hash = MessageDigest.getInstance("SHA-256")
+        Files.newInputStream(source).use { stream ->
+            val bytes = ByteArray(65536)
+            while (true) { val count = stream.read(bytes); if (count < 0) break; hash.update(bytes, 0, count) }
+        }
+        val expected = hash.digest().joinToString("") { "%02x".format(it.toInt() and 255) }
+        val target = root.resolve("owned-export.apk")
+        assertEquals(expected, RootLinuxExport.copy(source, target, 512L * 1024 * 1024, expected))
+        assertEquals(size, Files.size(target))
+    } }
 }

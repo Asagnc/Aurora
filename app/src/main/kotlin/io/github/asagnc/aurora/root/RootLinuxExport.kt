@@ -12,7 +12,7 @@ import kotlinx.coroutines.ensureActive
 /** Stable source descriptor plus an optional selected digest; a replaced source cannot change the published export. */
 internal object RootLinuxExport {
     suspend fun copy(source: Path, target: Path, maxBytes: Long, expectedSha256: String?): String {
-        require(maxBytes in 1..32L * 1024 * 1024)
+        require(maxBytes in 1..512L * 1024 * 1024)
         require(expectedSha256 == null || expectedSha256.matches(Regex("[a-f0-9]{64}")))
         val input = Os.open(source.toString(), OsConstants.O_RDONLY or OsConstants.O_NONBLOCK or OsConstants.O_NOFOLLOW or OsConstants.O_CLOEXEC, 0)
         try {

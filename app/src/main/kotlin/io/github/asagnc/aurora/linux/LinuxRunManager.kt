@@ -16,7 +16,7 @@ internal data class LinuxToolRun(val argv: List<String>, val bundle: String, val
     val expectedIdentity: LinuxRootIdentity? = null)
 internal data class LinuxTerminalRun(val request: PtyRequest, val generation: String? = null,
     val toolBundle: String? = null, val expectedIdentity: LinuxRootIdentity? = null)
-internal data class LinuxToolTerminal(val id: String, val run: LinuxTerminalRun)
+internal data class LinuxToolTerminal(val id: String, val run: LinuxTerminalRun, val maintenance: (suspend () -> String?)? = null)
 
 internal class LinuxRunManager(private val app: AuroraApplication, private val environments: LinuxEnvironmentManager) {
     private val records = LinuxRunRegistry(app.conversations)

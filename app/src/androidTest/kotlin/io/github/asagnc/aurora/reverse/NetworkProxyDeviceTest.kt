@@ -22,6 +22,7 @@ class NetworkProxyDeviceTest {
             arguments.getString("auroraProxyTest") == "true")
         val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as AuroraApplication
         app.ready.await(); check(!withContext(Dispatchers.Main) { app.agentTasks.busy })
+        check(!app.terminals.hasActive) { "Finish existing terminal tasks before the exclusive fixture" }
         app.root.connect(); check(app.root.linuxExecution != null)
         check(app.linux.runs.pendingCount() == 0) { "Recover existing tasks before the exclusive proxy qualification" }
         val installed = app.sharedToolchain.status(app.linux.registry.current(), "network-proxy")
@@ -40,8 +41,10 @@ class NetworkProxyDeviceTest {
                 val port = arguments.getString("auroraProxyPort")?.toInt() ?: 18080
                 val probe = invoke("shared_toolchain", objectOf("action" to string("probe"), "family" to string("network-proxy"), "probePort" to JsonPrimitive(port)))
                 assertEquals(probe.toString(), JsonPrimitive(true), probe["qualified"])
+                assertEquals(JsonPrimitive(false), probe.getValue("cleanup").jsonObject["pending"])
                 val started = invoke("network_proxy", objectOf("action" to string("start"), "options" to objectOf("port" to JsonPrimitive(port), "durationSeconds" to JsonPrimitive(30))))
                 assertEquals(started.toString(), JsonPrimitive(true), started["running"])
+                assertTrue(app.terminals.hasActive)
                 val session = requireNotNull(started.text("session"))
                 assertTrue(app.linux.runs.usesToolBundle(NetworkProxyRuntime.bundleId))
                 val exported = invoke("network_proxy", objectOf("action" to string("export_ca"), "session" to string(session)))
@@ -50,7 +53,9 @@ class NetworkProxyDeviceTest {
                 assertEquals(exported.text("sha256"), publicProxyCaSha256(bytes))
                 val stopped = invoke("network_proxy", objectOf("action" to string("stop"), "session" to string(session)))
                 assertEquals(stopped.toString(), JsonPrimitive(false), stopped.getValue("linuxRecovery").jsonObject["pending"])
+                assertEquals(stopped.toString(), JsonPrimitive(false), stopped.getValue("cleanup").jsonObject["pending"])
                 assertEquals(0, app.linux.runs.pendingCount(owner)); assertFalse(app.linux.runs.usesToolBundle(NetworkProxyRuntime.bundleId))
+                assertFalse(app.terminals.hasActive)
                 assertNotNull(app.toolRuns.list(owner).single { it.tool == "network_proxy" && it.artifactDirectory != null }.artifactDirectory)
             }
         } catch (caught: Throwable) { failure = caught; throw caught }

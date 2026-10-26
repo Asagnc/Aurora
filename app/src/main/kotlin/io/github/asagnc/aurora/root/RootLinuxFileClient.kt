@@ -18,12 +18,13 @@ internal class RootLinuxFileClient(private val remote: IRootControl, context: Co
         val result = CompletableDeferred<String>()
         val binder = remote.asBinder()
         val death = IBinder.DeathRecipient { result.completeExceptionally(IllegalStateException("Root file service exited")) }
-        val lease = awake.acquire(40_000)
+        val deadline = if (operation == "export_apk") 120_000L else 30_000L
+        val lease = awake.acquire(deadline + 10_000)
         try {
             binder.linkToDeath(death, 0)
             remote.linuxFiles(id, owner, Bundle().apply { putString("operation", operation); putString("arguments", encoded) },
                 object : IRootResult.Stub() { override fun complete(value: String) { result.complete(value) } })
-            val response = withTimeout(30_000) { result.await() }.also { require(it.length <= 262144) }
+            val response = withTimeout(deadline) { result.await() }.also { require(it.length <= 262144) }
             WireJson.parseToJsonElement(response).jsonObject.also { require(it["error"] == null) { "Root file operation was not confirmed" } }
         } finally {
             try {

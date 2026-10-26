@@ -9,7 +9,8 @@ internal class NetworkProxyTool(private val manager: SharedToolchainManager, pri
     override val definitions = listOf(ToolDefinition("network_proxy",
         "Manage a bounded explicit regular HTTP/HTTPS/WebSocket loopback proxy in the current conversation's Root Linux workspace. " +
         "First shared_toolchain family=network-proxy install and probe for the current Root identity/generation/bundle. " +
-        "action=status/start/stop/inspect/export_ca. start requires options.port and returns a supervised terminal session with its actual bound address. " +
+        "action=status/start/stop/inspect/export_ca/cleanup. start requires options.port and returns a supervised terminal session with its actual bound address. " +
+        "cleanup retries only this session's private runtime cache after existing Root stopped-ticket proof; unknown ownership/exit is retained. " +
         "Rules use exact lowercase ASCII host, literal pathPrefix and optional method, headers, Base64 body or directional WebSocket replacement. " +
         "Header edits are {name,value} or {name,remove:true}; framing/routing headers cannot be changed. " +
         "Replacement <=16KiB, combined configuration <=32KiB, duration <=240s, flows <=512, stored artifacts <=32MiB. " +
@@ -35,6 +36,7 @@ internal class NetworkProxyTool(private val manager: SharedToolchainManager, pri
             "inspect" -> manager.proxy.inspect(owner, environment.generation(), NetworkProxyRead(requireNotNull(args.text("session")),
                 Math.toIntExact(args.number("offset") ?: 0), Math.toIntExact(args.number("limit") ?: 5)), attach)
             "export_ca" -> manager.proxy.exportCa(owner, requireNotNull(args.text("session")))
+            "cleanup" -> manager.proxy.cleanup(owner, requireNotNull(args.text("session")))
             else -> error("Unknown proxy action")
         }.toString()
     }
@@ -53,7 +55,7 @@ internal class NetworkProxyTool(private val manager: SharedToolchainManager, pri
             "durationSeconds" to number(1, 240), "maxFlows" to number(1, 512), "maxStoredBytes" to number(4096, 32L * 1024 * 1024),
             "maxBodyBytes" to number(1, 1024 * 1024), "rules" to objectOf("type" to string("array"), "maxItems" to JsonPrimitive(32), "items" to rule)),
             "required" to JsonArray(listOf(string("port"))), "additionalProperties" to JsonPrimitive(false))
-        private val schema = objectOf("type" to string("object"), "properties" to objectOf("action" to choice("status", "start", "stop", "inspect", "export_ca"),
+        private val schema = objectOf("type" to string("object"), "properties" to objectOf("action" to choice("status", "start", "stop", "inspect", "export_ca", "cleanup"),
             "options" to options, "session" to text(), "offset" to number(0, 512), "limit" to number(1, 10)),
             "required" to JsonArray(listOf(string("action"))), "additionalProperties" to JsonPrimitive(false))
     }

@@ -27,9 +27,7 @@ internal class RootLinuxVersionFiles(private val context: Context) {
         require(Files.isRegularFile(metadata, LinkOption.NOFOLLOW_LINKS) && Files.size(metadata) in 1..4096)
         val manifest = WireJson.decodeFromString<LinuxRootfsManifest>(String(Files.readAllBytes(metadata), Charsets.UTF_8))
         require(manifest.backend == LinuxBackend.CHROOT && manifest.generationId() == id)
-        val mounted = Files.readAllLines(Path.of("/proc/self/mountinfo")).mapNotNull { it.split(' ').getOrNull(4) }
-        val canonical = directory.toRealPath()
-        require(mounted.none { Path.of(it.replace("\\040", " ").replace("\\011", "\t").replace("\\134", "\\")).startsWith(canonical) })
+        RootLinuxMountSafety.requireUnmounted(directory)
         // Keep the manifest until all privileged contents are removed. An
         // interrupted deletion remains identifiable and safe to retry.
         Files.newDirectoryStream(directory).use { children -> children.forEach { path ->

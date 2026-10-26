@@ -36,9 +36,10 @@ internal class NetworkProxyManager(private val app: AuroraApplication, private v
         val closed = NetworkProxyRuntime.probePassed(StaticReverseProbeContext(0, id, generation), result)
         val final = if (closed) readFinal(owner, id) else null
         val passed = closed && final != null && NetworkProxyRuntime.finalProbePassed(id, options, final) && app.root.linuxExecution?.identity == current.identity
-        val ready = passed && qualifications.complete(attempt)
+        val cleanup = if (result["stopped"] == JsonPrimitive(true)) cleanup(owner, id) else objectOf("pending" to JsonPrimitive(true))
+        val ready = passed && cleanup["pending"] == JsonPrimitive(false) && app.root.linuxExecution?.identity == current.identity && qualifications.complete(attempt)
         return objectOf("qualified" to JsonPrimitive(ready), "result" to result, "final" to (final ?: JsonNull),
-            "logDirectory" to string("runs/$id"), "linuxArtifacts" to string("linux:${networkProxyDirectory(id)}"))
+            "logDirectory" to string("runs/$id"), "cleanup" to cleanup, "linuxArtifacts" to string("linux:${networkProxyDirectory(id)}"))
     }
 
     private suspend fun readFinal(owner: String, id: String): JsonObject? {
@@ -64,7 +65,9 @@ internal class NetworkProxyManager(private val app: AuroraApplication, private v
         val timeout = options.durationSeconds * 1000L + 30000
         val request = PtyRequest(argv = listOf(NetworkProxyRuntime.launcherPath, id, options.port.toString(), encoded), timeoutMs = timeout, awakeMs = timeout)
         try {
-            app.terminals.startLinuxTools(owner, LinuxToolTerminal(id, LinuxTerminalRun(request, generation, current.bundle, current.identity)))
+            app.terminals.startLinuxTools(owner, LinuxToolTerminal(id, LinuxTerminalRun(request, generation, current.bundle, current.identity)) {
+                if (cleanup(owner, id)["pending"] == JsonPrimitive(true)) "Proxy private cache cleanup remains pending for $id" else null
+            })
             val ready = awaitReady(owner, id, options.port)
             check(app.root.linuxExecution?.identity == current.identity) { "Root identity changed during proxy startup" }
             return objectOf("session" to string(id), "running" to JsonPrimitive(true), "address" to string("127.0.0.1:${options.port}"),
@@ -83,6 +86,7 @@ internal class NetworkProxyManager(private val app: AuroraApplication, private v
         while (true) {
             val update = app.terminals.read(owner, id, TerminalRead(cursor, 8192, 1000))
             tail = (tail + update.text("text").orEmpty()).takeLast(8192)
+            check(update["stopping"] != JsonPrimitive(true)) { "Proxy startup was cancelled" }
             check(update.text("state") in setOf("starting", "running")) { "Proxy stopped before confirming its bound loopback address" }
             if (tail.lineSequence().any { it.trimEnd() == marker }) {
                 check(update.text("state") == "running")
@@ -97,8 +101,9 @@ internal class NetworkProxyManager(private val app: AuroraApplication, private v
         networkProxyDirectory(id)
         val terminal = app.terminals.stop(owner, id)
         val recovery = app.linux.runs.recoverRun(owner, id)
-        return objectOf("session" to string(id), "terminal" to terminal.json(), "linuxRecovery" to recovery,
-            "error" to if (recovery["pending"] == JsonPrimitive(true)) string("proxy_cleanup_unconfirmed") else JsonNull)
+        val cleanup = if (recovery["pending"] == JsonPrimitive(false)) cleanup(owner, id) else objectOf("pending" to JsonPrimitive(true))
+        return objectOf("session" to string(id), "terminal" to terminal.json(), "linuxRecovery" to recovery, "cleanup" to cleanup,
+            "error" to if (recovery["pending"] == JsonPrimitive(true) || cleanup["pending"] == JsonPrimitive(true)) string("proxy_cleanup_unconfirmed") else JsonNull)
     }
 
     suspend fun inspect(owner: String, generation: String, request: NetworkProxyRead, prepared: suspend (String) -> Unit): JsonObject {
@@ -109,8 +114,18 @@ internal class NetworkProxyManager(private val app: AuroraApplication, private v
         val frames = stdout.lineSequence().filter { it.startsWith("aurora-proxy-read:") }.toList()
         val complete = NetworkProxyRuntime.closedToolPassed(StaticReverseProbeContext(0, id, generation), result)
         val inspection = if (complete && frames.size == 1) WireJson.parseToJsonElement(frames.single().removePrefix("aurora-proxy-read:")) as? JsonObject else null
+        val cleanup = if (result["stopped"] == JsonPrimitive(true)) cleanup(owner, id) else objectOf("pending" to JsonPrimitive(true))
         return objectOf("result" to result, "inspection" to (inspection ?: JsonNull), "logDirectory" to string("runs/$id"),
+            "cleanup" to cleanup,
             "error" to if (inspection == null || inspection["error"] != null || inspection["parseError"] == JsonPrimitive(true)) string("proxy_inspection_incomplete") else JsonNull)
+    }
+
+    suspend fun cleanup(owner: String, id: String): JsonObject {
+        networkProxyDirectory(id)
+        return try {
+            requireNotNull(app.root.linuxFileClient).invoke(owner, "proxy_cleanup", objectOf("session" to string(id)))
+        } catch (cancel: CancellationException) { throw cancel }
+        catch (_: Exception) { objectOf("pending" to JsonPrimitive(true), "session" to string(id), "reason" to string("Root cache cleanup is unconfirmed; original files are retained")) }
     }
 
     suspend fun exportCa(owner: String, id: String): JsonObject {
@@ -122,7 +137,7 @@ internal class NetworkProxyManager(private val app: AuroraApplication, private v
         require(file["error"] == JsonNull && file["next"] == JsonNull && size in 1L..16384L)
         val hash = publicProxyCaSha256(requireNotNull(file.text("text")).toByteArray(Charsets.UTF_8))
         require(hash == file.text("version"))
-        val exported = client.invoke(owner, "export", objectOf("path" to string(path), "maxBytes" to JsonPrimitive(16384), "sha256" to string(hash)))
+        val exported = client.invoke(owner, "export", objectOf("path" to string(path), "maxBytes" to JsonPrimitive(16384), "sha256" to string(hash), "extension" to string("pem")))
         require(exported.text("sha256") == hash) { "Root did not confirm the selected public certificate bytes" }
         return JsonObject(exported + mapOf("publicOnly" to JsonPrimitive(true), "mime" to string("application/x-pem-file"), "suggestedName" to string("aurora-proxy-ca.pem")))
     }

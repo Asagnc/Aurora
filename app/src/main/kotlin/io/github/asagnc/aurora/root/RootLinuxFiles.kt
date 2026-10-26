@@ -13,6 +13,7 @@ import kotlinx.serialization.json.*
 
 internal class RootLinuxFiles(private val context: Context) {
     private val files = RootLinuxRunFiles(context)
+    private val proxyCache = RootProxyCacheCleanup(context, files)
     private val tools = ConcurrentHashMap<String, FileToolExecutor>()
     suspend fun execute(owner: String, operation: String, arguments: JsonObject): String = withContext(Dispatchers.IO) {
         require(UUID.fromString(owner).toString() == owner)
@@ -21,6 +22,8 @@ internal class RootLinuxFiles(private val context: Context) {
         val result = when (operation) {
             "remove" -> { require(!Files.exists(root.resolve(".active-run"))); files.retire(owner); remove(root); tools.remove(owner); objectOf("removed" to JsonPrimitive(true)) }
             "export" -> export(owner, root, arguments)
+            "export_apk" -> export(owner, root, arguments, apk = true)
+            "proxy_cleanup" -> proxyCache.execute(owner, root, requireNotNull(arguments.text("session")))
             "files_read_batch" -> RootLinuxFileReads.batch(root, arguments.array("files"))
             "files_list" -> {
                 val path = arguments.text("path").orEmpty()
@@ -46,17 +49,27 @@ internal class RootLinuxFiles(private val context: Context) {
         result.toString().also { require(it.length <= 262144) }
         }
     }
-    private suspend fun export(owner: String, root: Path, arguments: JsonObject): JsonObject {
-        val source = RootLinuxFileReads.resolve(root, requireNotNull(arguments.text("path")))
+    private suspend fun export(owner: String, root: Path, arguments: JsonObject, apk: Boolean = false): JsonObject {
+        val selected = LinuxFileExport(requireNotNull(arguments.text("path")), apk,
+            arguments.number("maxBytes") ?: (if (apk) 512L else 32L) * 1024 * 1024, arguments.text("sha256"))
+        val source = RootLinuxFileReads.resolve(root, selected.path)
         val targetRoot = files.conversation(owner).resolve("exports")
         require(!Files.isSymbolicLink(targetRoot)); Files.createDirectories(targetRoot)
         Os.chown(targetRoot.toString(), context.applicationInfo.uid, context.applicationInfo.uid)
         Os.chmod(targetRoot.toString(), 448)
         val id = UUID.randomUUID().toString()
-        val target = targetRoot.resolve("root-$id.bin")
+        val extension = when {
+            apk -> "apk"
+            arguments.text("extension") == null -> "bin"
+            arguments.text("extension") == "pem" -> {
+                require(selected.maxBytes <= 16384 && selected.sha256 != null); "pem"
+            }
+            else -> error("Unsupported export extension")
+        }
+        val target = targetRoot.resolve("root-$id.$extension")
         val partial = targetRoot.resolve("root-$id.partial")
         try {
-            val digest = RootLinuxExport.copy(source, partial, arguments.number("maxBytes") ?: 32L * 1024 * 1024, arguments.text("sha256"))
+            val digest = RootLinuxExport.copy(source, partial, selected.maxBytes, selected.sha256)
             Os.chown(partial.toString(), context.applicationInfo.uid, context.applicationInfo.uid)
             Os.chmod(partial.toString(), 384)
             Files.move(partial, target, StandardCopyOption.ATOMIC_MOVE)
@@ -65,8 +78,7 @@ internal class RootLinuxFiles(private val context: Context) {
         } finally { Files.deleteIfExists(partial) }
     }
     private suspend fun remove(root: Path) {
-        val mounts = Files.readAllLines(Path.of("/proc/self/mountinfo")).mapNotNull { it.split(' ').getOrNull(4) }
-        require(mounts.none { Path.of(it.replace("\\040", " ").replace("\\011", "\t").replace("\\134", "\\")).startsWith(root) })
+        RootLinuxMountSafety.requireUnmounted(root)
         val lifetime = currentCoroutineContext()
         Files.newDirectoryStream(root).use { children -> children.forEach { child ->
             if (child.fileName.toString() != ".workspace-owner") Files.walkFileTree(child, object : SimpleFileVisitor<Path>() {

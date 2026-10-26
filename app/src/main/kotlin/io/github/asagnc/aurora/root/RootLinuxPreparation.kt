@@ -72,9 +72,7 @@ internal class RootLinuxPreparation(private val context: Context) {
             }
             require(gone) { "Previous Root process is still alive; preparation retained" }
         }
-        val canonical = stage.toRealPath()
-        val mounted = Files.readAllLines(Path.of("/proc/self/mountinfo")).mapNotNull { it.split(' ').getOrNull(4) }
-        require(mounted.none { Path.of(it.replace("\\040", " ").replace("\\011", "\t").replace("\\134", "\\")).startsWith(canonical) })
+        RootLinuxMountSafety.requireUnmounted(stage)
         Files.newDirectoryStream(stage).use { children -> children.forEach { path ->
             if (path.fileName.toString() != ".root-preparation.json") removeSkillTree(path)
         } }

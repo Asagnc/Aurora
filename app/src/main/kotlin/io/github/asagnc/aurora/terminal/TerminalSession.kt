@@ -33,6 +33,13 @@ internal class TerminalSession(val initial: TerminalRecord, val request: PtyRequ
         announce()
     }
 
+    suspend fun noteMaintenance(message: String) {
+        record = record.copy(reason = listOfNotNull(record.reason, message).joinToString("; ").take(2048))
+        try { records.directory(initial.owner, initial.id, true); records.save(record) }
+        catch (_: Exception) { record = record.copy(reason = "Maintenance state persistence failed; inspect the Linux ledger") }
+        announce()
+    }
+
     suspend fun run(open: suspend () -> PtyEndpoint) {
         var final = "interrupted"
         var code: Int? = null

@@ -24,7 +24,7 @@ internal class TerminalManager(private val app: AuroraApplication) {
     private val awake = io.github.asagnc.aurora.runtime.CommandWakeLock(app, "TerminalWork")
     val version = MutableStateFlow(0L)
     val available get() = process.available
-    private fun active(session: TerminalSession) = session.job.isActive && session.record.state in setOf("starting", "running")
+    private fun active(session: TerminalSession) = !session.job.isCompleted
     val hasActive get() = sessions.values.any(::active)
     val activeOwner get() = sessions.values.firstOrNull(::active)?.initial?.owner
     internal fun session(owner: String, id: String) = sessions[id]?.takeIf { it.initial.owner == owner }
@@ -64,8 +64,8 @@ internal class TerminalManager(private val app: AuroraApplication) {
             check(app.root.linuxTerminalClient != null) { "Reconnect a current Root service for Linux PTY" }
         }
         val session = admission.withLock {
-            check(sessions.values.count { it.job.isActive } < 8) { "Eight active terminals is the global budget" }
-            check(sessions.values.count { it.initial.owner == owner && it.job.isActive } < 4) { "Four active terminals per conversation" }
+            check(sessions.values.count { !it.job.isCompleted } < 8) { "Eight active terminals is the global budget" }
+            check(sessions.values.count { it.initial.owner == owner && !it.job.isCompleted } < 4) { "Four active terminals per conversation" }
             val id = tool?.id ?: UUID.randomUUID().toString()
             check(!sessions.containsKey(id) && !java.nio.file.Files.exists(records.directory(owner, id), java.nio.file.LinkOption.NOFOLLOW_LINKS)) { "Terminal id already exists; inspect its outcome without replaying" }
             val remote = if (backend == "android-root") requireNotNull(app.root.terminalClient) { "Root is not connected" } else null
@@ -73,7 +73,7 @@ internal class TerminalManager(private val app: AuroraApplication) {
             val next = TerminalSession(initial, request, records) { version.update { it + 1 } }
             next.job = scope.launch(start = CoroutineStart.LAZY) { runTerminalTask(next, backend, generation, tool, remote) }
             // At most twelve resident emulators, including up to eight active sessions.
-            sessions.values.filter { !it.job.isActive }.sortedBy { it.initial.started }
+            sessions.values.filter { it.job.isCompleted }.sortedBy { it.initial.started }
                 .take((sessions.size - 11).coerceAtLeast(0)).forEach { sessions.remove(it.initial.id, it) }
             sessions[id] = next
             next.job.invokeOnCompletion {
@@ -118,6 +118,10 @@ internal class TerminalManager(private val app: AuroraApplication) {
         } catch (cancel: CancellationException) { throw cancel }
         catch (failure: Exception) { next.failStart(failure) }
         finally {
+            withContext(NonCancellable) {
+                val warning = try { tool?.maintenance?.invoke() } catch (failure: Exception) { "Tool maintenance remains pending: ${failure.javaClass.simpleName}" }
+                if (warning != null) next.noteMaintenance(warning)
+            }
             if (!next.opened.isCompleted) next.opened.completeExceptionally(IllegalStateException("Conversation closing"))
             version.update { it + 1 }
         }
@@ -157,6 +161,7 @@ internal class TerminalManager(private val app: AuroraApplication) {
         JsonObject(record.json() + mapOf("start" to JsonPrimitive(slice.start), "next" to JsonPrimitive(slice.next),
             "end" to JsonPrimitive(slice.end), "cursorDropped" to JsonPrimitive(slice.dropped),
             "source" to string(if (live != null) "live-ring" else "persisted-log"),
+            "stopping" to JsonPrimitive(live != null && !live.job.isActive && !live.job.isCompleted),
             "text" to if (view == "screen") JsonNull else string(String(slice.bytes, Charsets.UTF_8)),
             "base64" to if (includeBase64) string(java.util.Base64.getEncoder().encodeToString(slice.bytes)) else JsonNull,
             "screen" to (screen?.let(::string) ?: JsonNull), "encoding" to string("raw UTF-8 preview; use base64 for byte-exact split sequences")))

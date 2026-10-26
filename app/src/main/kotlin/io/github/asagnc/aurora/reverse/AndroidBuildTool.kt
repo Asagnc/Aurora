@@ -18,9 +18,18 @@ internal class AndroidBuildTool(private val manager: SharedToolchainManager, pri
             "project" to objectOf("type" to string("string")),
             "tasks" to objectOf("type" to string("array"), "minItems" to JsonPrimitive(1), "maxItems" to JsonPrimitive(8),
                 "items" to objectOf("type" to string("string")))),
-            "required" to JsonArray(listOf(string("project"))), "additionalProperties" to JsonPrimitive(false))))
+            "required" to JsonArray(listOf(string("project"))), "additionalProperties" to JsonPrimitive(false))),
+        ToolDefinition("apk_export", "Stream a selected .apk from this conversation's Root Linux home/tmp/project namespace into App-owned exports. " +
+            "path may use the linux: prefix. Up to 512 MiB, bounded streaming and whole-file SHA; ordinary file/inline limits are unchanged. " +
+            "This transports the selected file without installing, executing, signing or claiming its signature is valid.",
+            objectOf("type" to string("object"), "properties" to objectOf("path" to objectOf("type" to string("string"))),
+                "required" to JsonArray(listOf(string("path"))), "additionalProperties" to JsonPrimitive(false))))
 
     override suspend fun execute(call: ToolCall): String {
+        if (call.name == "apk_export") {
+            require(call.arguments.keys == setOf("path"))
+            return manager.exportAndroid(owner, requireNotNull(call.arguments.text("path"))).toString()
+        }
         require(call.name == "apk_build" && call.arguments.keys.all { it in setOf("project", "tasks") })
         val supplied = call.arguments["tasks"]
         val tasks = if (supplied == null) listOf("assembleDebug") else {

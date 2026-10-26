@@ -904,3 +904,6 @@ release-review-25bcbc5-sdk成功：APK44,907,522字节、配套原生SDK180,242,
 
 
 代理产品profiles ARM64专项40294444272通过：真实readonly /opt、HTTP/HTTPS修改/未信任CA拒绝/WebSocket修改与分文件校验、离线读取全部成功。SDK project产物目录变更后的产品安装专项40294449390通过，同提交完整CI40294443817通过。现接同一共享安装器和资格缓存、PTY持久Linux工具租约/Root身份绑定、Agent network_proxy、精确单run停止恢复与公有CA SHA绑定导出。未新增daemon或任务表，旧PTY路径保持。334核心319通过/15跳过、完整Debug/Release/AndroidTest/lint本地220任务成功；新普通UID导出FD用例和显式Root/Linux/proxy设备用例仅编译，未操作手机或自动下载设备工具。
+
+
+eb2c64f完整CI40301812330通过。继续收尾：代理缓存/私钥仅在既有Root ticket/stopped/completed.scopeRemoved和owner/AppUID/固定入口均相符后清理，无新持久格式；未知/挂载保留并可重试。取消/维护中的终端继续占宿主和并发预算，维护失败不覆盖进程退出事实。统一mountinfo转义解析，补newline/单次反转义/坏快照拒绝。新增apk_export独立512MiB/120秒流式传输，普通文件32MiB/30秒及inline预算保持；不安装、不签名、不宣称APK签名有效。341核心326通过/15跳过，完整220任务本地成功，新增普通UID大APK导出/Root缓存联调用例仅编译。

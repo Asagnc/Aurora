@@ -6,7 +6,7 @@
 - 生产profile来自APK资产，8项固定SHA包含7份自有脚本与上游LICENSE；改动产生不同bundle。与JADX/SDK共用单一安装器、原子发布、暂存清理和持久Linux任务租约，没有第二个daemon或任务表。
 - `shared_toolchain family=network-proxy install/probe/status`；probe仅自有loopback HTTP、HTTPS、未信任CA拒绝和WebSocket，随后检查真实worker/domain结束与绑定session/config摘要的Root产物。资格仅属于当前Root身份、Linux代和bundle；host CI不预置手机资格。
 - `network_proxy action=start` 复用现有PTY宿主/前台任务服务。记录持久Linux意图及工具bundle后派发，Root身份须与资格检查相同。实际监听确认来自固定profile的session/port标记和仍运行的会话快照。返回异步会话，不冒充任务已经结束。
-- `stop`仅停止所选终端及恢复同一run，不恢复或停止其他会话。Root未知退出/未确认清理继续保留原意图和版本租约。对话删除仍先停终端、取得Linux关闭事实，再删除Root文件。
+- `stop`仅停止所选终端及恢复同一run，不恢复或停止其他会话。终端取消/维护未完成前仍占宿主与并发预算，避免前台服务提前结束或清理中的会话被驱逐。Root未知退出/未确认清理继续保留原意图和版本租约。对话删除仍先停终端、取得Linux关闭事实，再删除Root文件。
 
 ## 规则与预算
 
@@ -18,18 +18,20 @@
 
 ## 产物、CA与读取
 
-每会话CA和PyInstaller私有运行目录位于Root工作区的`.aurora-proxy-private/<session>`；标准Linux文件API仅允许home/tmp/project，不能从此私有位置导出密钥。公有证书和产物在`project/.aurora-proxy/<session>`；没有自动信任安装。
+每会话CA和PyInstaller私有运行目录位于Root工作区的`.aurora-proxy-private/<session>`；标准Linux文件API仅允许home/tmp/project，不能从此私有位置导出密钥。公有证书和产物在`project/.aurora-proxy/<session>`；没有自动信任安装。退出后私有缓存/私钥清理依据既有Root-owned ticket/stopped与原生completed.scopeRemoved，校验owner/AppUID/run/固定入口后才删除同一UUID私有目录，不增新账本/标记；active、未知、外来所有权或挂载保留。正常结束/停止/探测/离线读取会尝试收尾，失败写入会话提示，cleanup动作可重试。
 
 `flows.mitm`保存有界完成HTTP流；`index.jsonl`保存索引；已接受WS消息逐个保存及SHA，避免在内存保留无限历史。流文件中的WS历史只保留末条，完整已保存消息来自独立索引/文件。取消/崩溃可能只留下完成前缀，缺最终记录不冒充完整会话。
 
 `inspect`须先停止/恢复同一工作区任务，使用固定只读脚本和有界FlowReader；返回最多10个流及有界原始正文预览，敏感头/query隐藏。用户数据仍可能存在于正文预览。文件大小/物理属性变化、解析错误/截断明确报告，不重放任何请求。
 
-`export_ca`先严格验证单个X.509公有PEM，拒绝私钥、多块、非ASCII/超预算数据，再将选定SHA和16KiB预算交给Root流式导出。源FD不跟随链接，检查前后物理大小/时间，最终副本须摘要一致并fsync后交接；普通文件32MiB上限保持。
+`export_ca`先严格验证单个X.509公有PEM，拒绝私钥、多块、非ASCII/超预算数据，再将选定SHA和16KiB预算交给Root流式导出。源FD不跟随链接，检查前后物理大小/时间，最终副本须摘要一致并fsync后交接；普通文件32MiB上限保持；公有证书实际导出为.pem。APK另有显式apk_export的512MiB流式类型，不能扩大普通或公有CA接口预算。
 
 ## 实际证据与设备待验
 
 生产profile ARM64专项40294444272全部通过，实际Root私有mount/network namespace、readonly `/opt`、HTTP/严格HTTPS/未信任CA/WS修改、公有证书与消息字节/离线回读。此证明不等于Android Binder/PTY/cgroup运行资格。固定源码/14内嵌ELF对应及静态OpenSSL来源见现有materials文件和专项；不扩大成全部目标可复现构建或整体法律结论。
 
-本地334核心319通过/15跳过；Debug/Release/AndroidTest/lint共220任务通过。新增普通UID FD导出用例和Root/Linux/proxy联调用例仅编译。Root设备用例要求预先明确安装固定bundle与Root Linux，并同时设置auroraRootTest/auroraLinuxImageTest/auroraProxyTest，使用自有临时对话及loopback，不自动下载，不触及其他对话或签名密钥。单个有序设备场景保留探测/PTY/公有CA/停止步骤，以验证同一持久租约的完整生命周期。
+本地341核心326通过/15跳过；Debug/Release/AndroidTest/lint共220任务通过。新增普通UID FD导出用例和Root/Linux/proxy联调用例仅编译。Root设备用例要求预先明确安装固定bundle与Root Linux，并同时设置auroraRootTest/auroraLinuxImageTest/auroraProxyTest，使用自有临时对话及loopback，不自动下载，不触及其他对话或签名密钥。单个有序设备场景保留探测/PTY/公有CA/停止步骤，以验证同一持久租约的完整生命周期。
+
+新增挂载快照统一解码space/tab/newline/backslash并拒绝坏/超预算快照，避免遗漏转义挂载而跨边界删除。依据Linux proc_pid_mountinfo(5)与内核fs/proc_namespace.c，未改变全局mount设置。
 
 后续集中验证Android真实CA行为、PTY/撤权/进程死亡/后台/取消与删除矩阵、丢失最终产物及私有运行目录清理；不操作手机来代替当前主机开发。
