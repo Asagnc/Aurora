@@ -7,6 +7,8 @@ import kotlin.test.*
 import org.junit.jupiter.api.Assumptions.assumeTrue
 import kotlinx.serialization.json.*
 import kotlin.time.Duration.Companion.minutes
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class AndroidBuildIntegrationTest {
     private val repository get() = Path.of(requireNotNull(System.getProperty("aurora.repository")))
@@ -21,7 +23,7 @@ class AndroidBuildIntegrationTest {
         try {
             val component = AndroidBuildTools.components.single { it.id == "gradle" }
             val target = directory.resolve("gradle.archive")
-            SkillNetwork().downloadTool(component, target)
+            withContext(Dispatchers.IO) { SkillNetwork().downloadTool(component, target) }
             assertEquals(component.compressedBytes, Files.size(target))
         } finally { directory.toFile().deleteRecursively() }
     }
