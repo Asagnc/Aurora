@@ -28,7 +28,7 @@ class SkillSourceRegistryTest {
             }
         } finally { context.deleteDatabase(name) }
     }
-    @Test fun platformEd25519AndExistingKeyStoreVaultAreQualifiedIndependently() = runBlocking {
+    @Test fun softwareEd25519AndExistingKeyStoreVaultAreQualifiedIndependently() = runBlocking {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val id = UUID.randomUUID().toString(); val vault = CredentialVault(context)
         val directory = java.nio.file.Files.createTempDirectory(context.cacheDir.toPath(), "skill-signature-")

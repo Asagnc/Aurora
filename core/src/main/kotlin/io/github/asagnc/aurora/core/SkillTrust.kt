@@ -1,10 +1,8 @@
 package io.github.asagnc.aurora.core
 
 import java.nio.file.*
-import java.security.KeyFactory
 import java.security.MessageDigest
-import java.security.Signature
-import java.security.spec.X509EncodedKeySpec
+import org.bouncycastle.math.ec.rfc8032.Ed25519
 import java.util.Base64
 import java.util.UUID
 import kotlinx.serialization.Serializable
@@ -61,10 +59,12 @@ fun skillVersionSource(current: SkillSource, selected: SkillSource, profiles: Li
 /** Format v1 signs the bounded canonical declaration, not implementation-specific serialized JSON. */
 object SkillSignatures {
     private val spkiPrefix = byteArrayOf(0x30, 0x2a, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x03, 0x21, 0x00)
-    fun key(encoded: String): java.security.PublicKey {
+    fun key(encoded: String): ByteArray {
         val bytes = decode(encoded, 44)
         require(bytes.copyOfRange(0, 12).contentEquals(spkiPrefix)) { "Expected Ed25519 SPKI" }
-        return KeyFactory.getInstance("Ed25519").generatePublic(X509EncodedKeySpec(bytes))
+        val point = bytes.copyOfRange(12, 44)
+        require(Ed25519.validatePublicKeyFull(point, 0)) { "Invalid Ed25519 public key" }
+        return point
     }
     fun fingerprint(encoded: String): String { key(encoded); return skillDigest(decode(encoded, 44)) }
     fun declaration(scope: String, digest: String, bytes: Long): ByteArray {
@@ -77,9 +77,10 @@ object SkillSignatures {
         require(sidecar.length <= 1024 && sidecar.startsWith("aurora-skill-ed25519-v1\n") && sidecar.endsWith("\n"))
         val signature = sidecar.removePrefix("aurora-skill-ed25519-v1\n").removeSuffix("\n")
         val (digest, size) = digest(archive)
-        val verifier = Signature.getInstance("Ed25519"); verifier.initVerify(key(profile.publicKey))
-        verifier.update(declaration(profile.scope, digest, size))
-        require(verifier.verify(decode(signature, 64))) { "Skill signature rejected" }
+        val message = declaration(profile.scope, digest, size)
+        require(Ed25519.verify(decode(signature, 64), 0, key(profile.publicKey), 0, message, 0, message.size)) {
+            "Skill signature rejected"
+        }
         return SkillVerification(profile.scope, digest, size, fingerprint(profile.publicKey), signature)
     }
     private fun digest(archive: Path): Pair<String, Long> {

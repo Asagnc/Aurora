@@ -10,6 +10,9 @@ plugins {
 }
 android {
     namespace = "io.github.asagnc.aurora"
+    testBuildType = providers.gradleProperty("auroraTestBuildType").orElse("debug").get().also {
+        require(it in setOf("debug", "release")) { "Unsupported instrumentation build type" }
+    }
     compileSdk = 37
     ndkVersion = "30.0.16248370"
     externalNativeBuild { cmake { path = file("src/main/cpp/CMakeLists.txt"); version = "4.1.2" } }
@@ -21,7 +24,9 @@ android {
         targetSdk = 37
         versionCode = 41
         versionName = "0.1.40"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = if (testBuildType == "release")
+            "io.github.asagnc.aurora.data.R8SkillInstrumentation" else "androidx.test.runner.AndroidJUnitRunner"
+        testProguardFiles("proguard-android-test.pro")
         testInstrumentationRunnerArguments["notAnnotation"] = "io.github.asagnc.aurora.root.RootRequired,io.github.asagnc.aurora.linux.LinuxImageRequired"
     }
     buildFeatures { compose = true; aidl = true }
@@ -32,6 +37,7 @@ android {
     }
     buildTypes {
         release {
+            if (testBuildType == "release") proguardFiles("proguard-instrumented-release.pro")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

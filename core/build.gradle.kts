@@ -4,6 +4,7 @@ plugins {
 }
 kotlin { jvmToolchain(25) }
 dependencies {
+    implementation("org.bouncycastle:bcprov-jdk18on:1.86")
     implementation("org.snakeyaml:snakeyaml-engine:3.2")
     implementation("org.apache.commons:commons-compress:1.28.0")
     constraints {

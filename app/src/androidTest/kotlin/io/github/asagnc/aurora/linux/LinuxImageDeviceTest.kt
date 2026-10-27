@@ -35,7 +35,12 @@ class LinuxImageDeviceTest {
         check(InstrumentationRegistry.getArguments().getString("auroraLinuxImageTest") == "true")
         val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as AuroraApplication
         app.ready.await()
-        app.linux.install()
+        val previous = app.linux.registry.current()
+        try { app.linux.install() }
+        catch (unsupported: LinuxInstallCapabilityException) {
+            assertEquals(previous, app.linux.registry.current())
+            org.junit.Assume.assumeNoException("Ordinary hardlink capability unavailable; existing generation retained", unsupported)
+        }
         val result = app.linux.probe()
         assertEquals(result.toString(), JsonPrimitive(true), result["workloadPassed"])
         assertEquals(JsonPrimitive(false), result["executionReady"])

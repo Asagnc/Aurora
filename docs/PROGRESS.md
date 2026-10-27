@@ -950,3 +950,6 @@ f561e10完整CI40327134461及ARM64 SDK产品专项40327139608全部成功，产�
 
 
 2026-10-27：用户授权集中真机验收，保留安装由0.1.32同调试签名覆盖0.1.40。实际发现并修复WebView异步导航/下载恢复、普通UID离线tcpdump seccomp、Root清理缺proc children及PID复用、ART bootstrap探针、当前socket初始user namespace资格与IPv4-mapped IPv6解析、工具安装空间查询/固定下载路径。离线Linux/PTY/Agent有实际设备复测通过；Frida spawn及工具完整安装/运行仍未通过，unknown保留。Skills外部Ed25519导入平台不支持，BC依赖仍待用户确认。当前主机352核心336通过/16跳过、Debug/Release/AndroidTest/lint223任务通过，352/231编译JUnit签名均void。精确批次、失败和后续边界见DEVICE_ACCEPTANCE_20261027；不调用付费模型，不读取正式密钥，不把编译/历史CI当当前设备通过。
+
+
+2026-10-27续：按用户要求核对Claude官方Skills/插件可信来源、git SHA/归档SHA256、内容审查及企业扫描后取优，选择BC1.86轻量Ed25519；不强制普通Skill签名，不改现有KeyStore/TLS或注册全局provider。354核心含非法点/非规范S新增回归按本轮XML登记；5项Skills真机、普通/浏览器172项、独立启动清理1项、Agent死亡恢复2阶段均通过。opt-in R8专用Java入口验证黄金签名/篡改拒绝/provider不变通过；有两类公共测试边界保留规则，不冒充默认发布APK逐字节验收，随后同调试签名恢复Debug/数据并重建默认发布。工具下载仍超时，Frida spawn/熄屏/完整长时等未通过；4382fc5 CI的Linux spawn标准流回归已修复待新CI。见DEVICE_ACCEPTANCE_20261027与SKILLS_CRYPTO_PROVIDER_PROPOSAL。

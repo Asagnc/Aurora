@@ -17,16 +17,20 @@
 
 ## 待完成及阻塞
 
-- Skills发布者签名：平台Ed25519 KeyFactory只有KeyStore入口，无法导入外部SPKI；EdDSA别名不存在。已撤回失败的别名尝试，BC1.86方案待用户确认。既有AES-GCM凭据库可用，与模型密钥配置无关。
+- Skills发布者签名：按用户“检索Claude等主流做法后取最优”的新授权，选固定BC1.86轻量API，保持可选签名和来源/摘要固定，不注册provider。外部SPKI黄金向量、凭据库、v9迁移及恢复5项真机通过；普通+浏览器172项零失败、独立启动清理1项通过。JDK增加非法/小阶/非规范公开点及S=L签名标量拒绝回归。
+- R8实际运行：opt-in `-PauroraTestBuildType=release` 生成压缩App和专用测试APK；两份调试签名临时副本核对与既有签名相同后覆盖安装，独立Java Instrumentation实际黄金验签、篡改拒绝、provider列表不变全部通过（R8_SKILL_SIGNATURE_SMOKE_PASS）。为跨APK测试保留SkillSignatures/SkillSourceProfile公共调用契约，方法体及BC仍允许优化；这份instrumented Release有测试保留规则，不能冒充默认发布APK的逐字节验收。普通AndroidX runner因被压缩的Trace/Kotlin facade引用先后启动失败，未算验签失败或通过。原始unsigned APK未签名，未读取正式密钥，结束后同签名恢复Debug且保留数据；默认发布已重新构建。
 - Frida spawn、服务/App死亡和捕获/resume故障矩阵尚未通过。失败任务unknown保留，严禁猜PID回收。两个捕获前失败的自有夹具owner：bba8cd10-a465-4282-bf69-4bd707ef2346、89cde311-80cb-4ba5-8f4a-3700081e5e4c。后续接续必须核实当前记录，不因worker已退出直接删账本。
 - Linux/PTY/元数据/离线Agent首批16项15通过、1失败；交互Agent夹具改为先读ready再送输入，并沿next游标增量读取，5项离线Agent复测全部通过。未使用真实模型。
 - 正式共享工具安装发现Android NIO getFileStore抛SecurityException，改用File.usableSpace，同样空间门槛且零值拒绝；静态逆向下载切到已限定编译目录的downloadTool，沿用180秒预算。首批传输因超时/冻结连接中止失败，暂存按既有安装器清理，未发布或授予资格；当前前台重试。代理/静态逆向实际运行和APK手机构建仍待验收。
-- SAF、长时完整预算、后台/Thanox/撤权、Release性能与正式签名继续验收。
+- Root镜像安装和精确Linux恢复各1项、后台亮屏Root任务1项通过；普通PRoot实机缺硬链接资格，既有Root代保留。原无条件PRoot成功夹具现仅在实际资格满足时执行，不添加替代后端或宣称普通PRoot可运行。
+- Agent进程死亡prepare/verify两阶段各1项通过，旧命令只执行一次，重启标记interrupted/uncertain，不重放。熄屏Root任务曾超时；独立复查实际观察到Aurora命令PARTIAL_WAKE_LOCK、Dozing及App cgroup frozen=1。宿主在40秒后唤醒/打开Aurora，runner最后OK（42秒）；因宿主干预，不算独立熄屏完成资格，不声称已确定具体冻结控制器。SAF、长时完整预算、Thanox/撤权、Release性能与正式签名继续验收。
 - 不调用付费模型，不读取正式发布密钥，不改全局SELinux/网络/冻结策略。遇到App被冻结或测试进程退出时记录中断，不把未完成批次算通过。
 
 ## 本轮主机检查
 
-352核心测试：336通过、16跳过、零失败；本轮未注入大型原生归档输入，故不冒充此前显式归档传输的主机证据。Debug/Release/R8/AndroidTest/lint完整223任务通过。编译后的352核心及231 Android @Test全部void；新增Android安装夹具仅编译不授予运行资格。两份原生清理夹具已在手机执行通过，Linux版本在Windows显式跳过，已加入Linux CI。CI及新的完整源码发布审查包尚待刷新；历史f561e10包保持历史证据。
+接BC后默认Debug/Release/R8/AndroidTest/lint完整224任务通过。实际XML为354核心：338通过、16跳过、零失败；编译后354核心/231 Android @Test全部void。本轮未注入大型原生归档输入，故不冒充此前显式归档传输的主机证据。新增Java Release smoke不是JUnit、不混入计数。两份原生清理夹具已在手机执行通过，Linux版本在Windows显式跳过，已加入Linux CI。
+
+4382fc5完整CI40519975449的socket、managed-supervision、capture通过，整体因Linux spawn继承目标stdout导致JSON污染/pipe持有而失败；已将inherit限制为Android，Linux恢复PIPE，须新CI复验。新的完整源码发布审查包尚待刷新，历史f561e10包保持历史证据。
 
 ## 实现依据
 

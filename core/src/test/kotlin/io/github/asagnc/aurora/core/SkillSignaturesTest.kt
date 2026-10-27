@@ -6,12 +6,27 @@ import kotlinx.coroutines.runBlocking
 import kotlin.test.*
 
 class SkillSignaturesTest {
+    @Test fun invalidSmallOrderAndNoncanonicalPublisherPointsAreRejected() {
+        val prefix = hex("302a300506032b6570032100")
+        val invalid = listOf(ByteArray(32), byteArrayOf(1) + ByteArray(31),
+            hex("edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"), ByteArray(32) { -1 })
+        for (point in invalid) {
+            assertFails { SkillSignatures.key(Base64.getEncoder().encodeToString(prefix + point)) }
+        }
+        assertEquals(32, SkillSignatures.key(publicKey).size)
+    }
     // RFC8032 test-key public half. Signature independently generated with Python cryptography, never a release key.
     private val publicKey = Base64.getEncoder().encodeToString(hex("302a300506032b6570032100d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"))
     private val profile get() = SkillSourceProfile("00000000-0000-0000-0000-000000000001", "example/skills",
         publicKey = publicKey, signatureUrl = "https://example.com/owned.sig")
     private val signature = "wDk1GqajP3hQJLkOrjdoIXCZMoj1/PELFtiF/oYsGQhFHXNxR6AF1EpruW+QGxbj/B3VUyyQ0iQI5mWb8iRHCQ=="
     private val sidecar get() = "aurora-skill-ed25519-v1\n$signature\n"
+    @Test fun noncanonicalSignatureScalarIsRejected() = fixture { file ->
+        val forged = Base64.getDecoder().decode(signature)
+        hex("edd3f55c1a631258d69cf7a2def9de1400000000000000000000000000000010").copyInto(forged, 32)
+        val encoded = Base64.getEncoder().encodeToString(forged)
+        assertFails { SkillSignatures.verify(file, profile, "aurora-skill-ed25519-v1\n$encoded\n") }
+    }
     private fun hex(value: String) = value.chunked(2).map { it.toInt(16).toByte() }.toByteArray()
     private fun fixture(block: (java.nio.file.Path) -> Unit) {
         val root = Files.createTempDirectory("aurora-skill-signature")

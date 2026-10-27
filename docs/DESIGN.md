@@ -8,6 +8,8 @@ Research date: 2026-10-12.
 
 ## Approved architecture
 
+- 2026-10-27 user requested comparison with mainstream Claude Skills practices and delegated the best choice after research. Select pinned BC1.86 lightweight Ed25519 validation to replace unavailable Android16 external-SPKI platform import. Preserve optional publisher trust, existing source/hash/version policies and v1 format; no global provider registration or credential/TLS backend change. See SKILLS_CRYPTO_PROVIDER_PROPOSAL.md for official comparisons and actual device evidence.
+
 - 2026-10-26 confirmed Skills private GitHub repository API/PAT in existing KeyStore vault, repository-scoped credentials, pinned Ed25519 public-key verification, and source policy/evidence in the existing SQLite WAL. See SKILLS_TRUST_PROPOSAL.md and SKILLS_TRUST_FORMAT.md; device qualification remains separate.
 
 - 2026-10-24 confirmed Root managed native tasks: independent SQLite active intents (schema8), sealed memfd snapshots and authenticated one-shot FD handoff, existing cgroup supervision with a Frida cleanup window, exact injection/worker/domain exit facts. No Linux image requirement or existing-target migration into Aurora cgroups. See ROOT_MANAGED_TASKS_PROPOSAL.md; implementation/qualification are separate.
