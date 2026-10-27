@@ -30,7 +30,7 @@ class CaptureRotationDeviceTest {
             }
             withTimeout(120_000) {
                 val probe = invoke(objectOf("action" to string("probe")))
-                assertEquals(true, probe["probeObserved"]?.jsonPrimitive?.boolean)
+                assertEquals(probe.toString(), true, probe["probeObserved"]?.jsonPrimitive?.boolean)
                 assertEquals(true, invoke(objectOf("action" to string("status")))["serviceProbePassed"]?.jsonPrimitive?.boolean)
                 val capture = invoke(objectOf("action" to string("start"), "interface" to string("lo"), "filter" to string("less 1"),
                     "seconds" to JsonPrimitive(1), "segmentBytes" to JsonPrimitive(4096), "bytes" to JsonPrimitive(4096)))

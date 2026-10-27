@@ -69,7 +69,15 @@ internal class RootManagedProcessRunner(private val identity: () -> LinuxRootIde
             val process = ProcessBuilder(arguments).directory(state.toFile())
                 .redirectInput(File("/dev/null")).redirectErrorStream(true)
                 .redirectOutput(File("/proc/${Process.myPid()}/fd/${pinned.fd}"))
-                .apply { environment().apply { clear(); put("PATH", "/system/bin"); put("HOME", state.toString()); put("TMPDIR", state.toString()) } }
+                .apply { environment().apply {
+                    clear(); put("PATH", "/system/bin"); put("HOME", state.toString()); put("TMPDIR", state.toString())
+                    // Frida's Android spawn helper creates ART. Retain only the
+                    // platform runtime paths from this already running Root VM.
+                    for (name in listOf("BOOTCLASSPATH", "DEX2OATBOOTCLASSPATH", "ANDROID_ROOT", "ANDROID_DATA",
+                        "ANDROID_ART_ROOT", "ANDROID_I18N_ROOT", "ANDROID_TZDATA_ROOT")) {
+                        System.getenv(name)?.takeIf { it.isNotEmpty() && it.length <= 65536 && '\u0000' !in it }?.let { put(name, it) }
+                    }
+                } }
                 .start()
             try { RootManagedProcessWait.await(process, budgetMs) }
             catch (failure: Throwable) {

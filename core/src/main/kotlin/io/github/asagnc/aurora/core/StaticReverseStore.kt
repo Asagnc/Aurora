@@ -50,7 +50,9 @@ class StaticReverseStore(private val root: Path,
         if (complete(published)) return@withLock id
         require(!Files.exists(published, LinkOption.NOFOLLOW_LINKS)) { "Incomplete published bundle: remove the catalogBundle id before reinstalling" }
         // Includes compressed, conservative expanded maxima and per-file metadata headroom before any download.
-        require(Files.getFileStore(root).usableSpace >= selected.compressedBytes + selected.headroomBytes) { "Insufficient tool installation space" }
+        // Android's NIO provider rejects getFileStore; File delegates this
+        // filesystem-space query to statvfs. Zero/unavailable still fails closed.
+        require(root.toFile().usableSpace >= selected.compressedBytes + selected.headroomBytes) { "Insufficient tool installation space" }
         val stage = Files.createDirectory(staging.resolve(UUID.randomUUID().toString()))
         var original: Throwable? = null
         try {

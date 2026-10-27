@@ -151,6 +151,7 @@ class AuroraRootService : RootService() {
             return Bundle().apply {
                 putInt("protocol", 1)
                 putInt("commandProtocol", 2)
+                putBoolean("initialUserNamespaceOnly", RootSocketNamespace.initialOnly)
                 putInt("packetCaptureProtocol", 1)
                 putInt("terminalProtocol", 1)
                 putInt("linuxRunProtocol", 3)

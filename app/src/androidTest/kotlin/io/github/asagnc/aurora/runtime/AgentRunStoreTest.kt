@@ -22,6 +22,7 @@ class AgentRunStoreTest {
             oldStore.appendMessage(owner, ChatMessage(role = "user", text = "saved history"))
             initial.writableDatabase.apply {
                 execSQL("DROP TABLE agent_runs")
+                execSQL("DROP INDEX IF EXISTS browser_download_pending")
                 execSQL("ALTER TABLE tool_runs DROP COLUMN artifact_directory")
                 execSQL("ALTER TABLE tool_runs DROP COLUMN presentation")
                 version = 1

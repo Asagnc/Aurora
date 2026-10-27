@@ -16,7 +16,9 @@ gboolean aurora_spawn_prepare(struct aurora_frida_session *run, GError **error) 
     memcpy(run->spawned.ticket, run->input->ticket, 32);
     if (aurora_spawn_store(run->spawn_directory, 1, &run->spawned)) return FALSE;
     FridaSpawnOptions *options = frida_spawn_options_new();
-    frida_spawn_options_set_stdio(options, FRIDA_STDIO_PIPE);
+    /* Android package spawning uses the platform launcher, which cannot
+     * redirect app stdio. Script events retain the managed FD log channel. */
+    frida_spawn_options_set_stdio(options, FRIDA_STDIO_INHERIT);
     guint pid = frida_device_spawn_sync(run->device, run->input->spawn_program, options, run->operation, error);
     g_object_unref(options);
     if (!pid || *error) return FALSE; /* A failed call does not prove that no process was created. */

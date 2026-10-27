@@ -57,7 +57,7 @@ class RootScriptChannelTest {
             val transfer = async(Dispatchers.IO) { channel.handoff(worker()) }
             withContext(Dispatchers.IO) {
                 LocalSocket().use { socket ->
-                    socket.soTimeout = 2_000; socket.connect(LocalSocketAddress(channel.name))
+                    socket.connect(LocalSocketAddress(channel.name)); socket.soTimeout = 2_000
                     val codec = RootFdFrame(channel.nonce, ticket.digest(), 1)
                     codec.encode(1).toList().chunked(7).forEach { socket.outputStream.write(it.toByteArray()) }
                     val (frame, descriptors) = receive(socket)
@@ -79,7 +79,7 @@ class RootScriptChannelTest {
             val transfer = async(Dispatchers.IO) { channel.handoff(worker()) }
             withContext(Dispatchers.IO) {
                 LocalSocket().use { socket ->
-                    socket.soTimeout = 2_000; socket.connect(LocalSocketAddress(channel.name))
+                    socket.connect(LocalSocketAddress(channel.name)); socket.soTimeout = 2_000
                     val frame = RootFdFrame(channel.nonce, ticket.digest(), 1).encode(1)
                     if (extra) socket.setFileDescriptorsForSend(arrayOf(source.fileDescriptor)) else frame[8] = (frame[8].toInt() xor 1).toByte()
                     socket.outputStream.write(frame); socket.setFileDescriptorsForSend(emptyArray())
@@ -117,7 +117,7 @@ class RootScriptChannelTest {
         val transfer = async(Dispatchers.IO) { channel.handoff(RootTargetIdentity(Process.myPid() + 1, 1)) }
         withContext(Dispatchers.IO) {
             LocalSocket().use { socket ->
-                socket.soTimeout = 2_000; socket.connect(LocalSocketAddress(channel.name))
+                socket.connect(LocalSocketAddress(channel.name)); socket.soTimeout = 2_000
                 assertEquals(-1, socket.inputStream.read())
             }
         }

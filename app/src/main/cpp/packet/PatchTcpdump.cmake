@@ -12,6 +12,10 @@ function(replace_checked needle replacement expected)
     string(REPLACE "${needle}" "${replacement}" patched "${source}")
     set(source "${patched}" PARENT_SCOPE)
 endfunction()
+# APK executables run under Android's app seccomp policy: even no-op setgid/setuid is forbidden.
+# Only skip the offline reset for an already unprivileged app identity; preserve set-ID/Root handling.
+replace_checked("if (setgid(getgid()) != 0 || setuid(getuid()) != 0 )"
+    "#if defined(__ANDROID__)\n\t\tif (getuid() < 10000 || getuid() != geteuid() || getgid() != getegid())\n#endif\n\t\tif (setgid(getgid()) != 0 || setuid(getuid()) != 0 )" 1)
 replace_checked("static pcap_dumper_t *pdd = NULL;"
     "static pcap_dumper_t *pdd = NULL;\n#include \"aurora-dump-write.h\"" 1)
 replace_checked("exit_tcpdump(int status)\n{\n\tnd_cleanup();"

@@ -28,7 +28,10 @@ class SpaceStore(private val context: Context, private val conversations: Conver
     suspend fun conversation(id: String): OwnedFiles = open(path(id), true)
     internal suspend fun commandRoot(id: String): Path { conversation(id); return path(id) }
     internal suspend fun recoverBrowserDownload(id: String, directory: String): String = withContext(Dispatchers.IO) {
-        io.github.asagnc.aurora.core.recoverBrowserDownload(path(id),directory)
+        // Android may alias the platform-provided private base (e.g. /data/data); child links remain forbidden.
+        val base = context.filesDir.toPath()
+        val selected = base.toRealPath().resolve(base.relativize(path(id)))
+        io.github.asagnc.aurora.core.recoverBrowserDownload(selected,directory)
     }
     suspend fun sharedResources(): OwnedFiles = open(root.resolve("resources"), false)
     suspend fun sharedWorkspace(): OwnedFiles = open(root.resolve("workspace"), true)

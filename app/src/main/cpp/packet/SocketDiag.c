@@ -16,7 +16,7 @@
 #include <time.h>
 #include <unistd.h>
 
-struct query { int family, protocol; struct inet_diag_sockid id; };
+struct query { int family, protocol, initial_user_namespace; struct inet_diag_sockid id; };
 struct snapshot { struct inet_diag_msg matches[32]; size_t count, scanned; int done; };
 struct observation { int64_t times[3]; unsigned overflow_uid; };
 
@@ -32,7 +32,11 @@ static int port(const char *text, __be16 *value) {
 }
 
 static int arguments(int argc, char **argv, struct query *q) {
-    if (argc != 7) return -1;
+    if (argc != 7 && argc != 8) return -1;
+    if (argc == 8) {
+        if (strcmp(argv[7], "--initial-user-namespace")) return -1;
+        q->initial_user_namespace = 1;
+    }
     q->family = !strcmp(argv[1], "ipv4") ? AF_INET : !strcmp(argv[1], "ipv6") ? AF_INET6 : 0;
     q->protocol = !strcmp(argv[2], "tcp") ? IPPROTO_TCP : !strcmp(argv[2], "udp") ? IPPROTO_UDP : 0;
     return !q->family || !q->protocol || inet_pton(q->family, argv[3], q->id.idiag_src) != 1 ||
@@ -120,6 +124,16 @@ static int collect(int fd, const struct query *q, struct snapshot *out, int64_t 
 
 static int identity(const char *path, struct stat *result) { return stat(path, result) || !result->st_ino ? -1 : 0; }
 
+/* The private Root caller qualifies CONFIG_USER_NS=n from the live kernel.
+ * Never infer it from missing files, or publish a synthetic namespace inode. */
+static int user_namespace(const struct query *q, struct stat *result) {
+    if (!q->initial_user_namespace) return identity("/proc/self/ns/user", result);
+    struct stat checked;
+    if (!stat("/proc/self/ns/user", &checked) || errno != ENOENT) return -1;
+    if (!stat("/proc/self/uid_map", &checked) || errno != ENOENT) return -1;
+    memset(result, 0, sizeof(*result)); return 0;
+}
+
 static int boot_id(char *text) {
     int fd = open("/proc/sys/kernel/random/boot_id", O_RDONLY | O_CLOEXEC);
     if (fd < 0) return -1;
@@ -137,6 +151,10 @@ static void publish(const struct query *q, const struct snapshot *out, const str
                     const char *boot, const struct observation *observed) {
     const int64_t *times = observed->times;
     char local[INET6_ADDRSTRLEN], remote[INET6_ADDRSTRLEN];
+    char user[96];
+    if (q->initial_user_namespace) strcpy(user, "null");
+    else snprintf(user, sizeof(user), "\"%llu:%llu\"", (unsigned long long)namespaces[1].st_dev,
+        (unsigned long long)namespaces[1].st_ino);
     inet_ntop(q->family, q->id.idiag_src, local, sizeof(local)); inet_ntop(q->family, q->id.idiag_dst, remote, sizeof(remote));
     const char *status = out->count > 1 ? "multiple" : "unknown";
     if (out->count == 1) {
@@ -146,12 +164,12 @@ static void publish(const struct query *q, const struct snapshot *out, const str
     }
     printf("{\"protocol\":1,\"scope\":\"current_socket_snapshot\",\"status\":\"%s\",\"bootId\":\"%s\","
         "\"startedBootMs\":%lld,\"finishedBootMs\":%lld,\"observedUnixMs\":%lld,"
-        "\"netNamespace\":\"%llu:%llu\",\"userNamespace\":\"%llu:%llu\","
+        "\"netNamespace\":\"%llu:%llu\",\"userNamespace\":%s,\"uidScope\":\"%s\","
         "\"overflowUid\":%u,\"family\":\"%s\",\"transport\":\"%s\",\"localAddress\":\"%s\",\"localPort\":%u,"
         "\"remoteAddress\":\"%s\",\"remotePort\":%u,\"matches\":[", status, boot,
         (long long)times[0], (long long)times[1], (long long)times[2],
         (unsigned long long)namespaces[0].st_dev, (unsigned long long)namespaces[0].st_ino,
-        (unsigned long long)namespaces[1].st_dev, (unsigned long long)namespaces[1].st_ino,
+        user, q->initial_user_namespace ? "initial_user_namespace" : "recorded_user_namespace",
         observed->overflow_uid, q->family == AF_INET ? "ipv4" : "ipv6", q->protocol == IPPROTO_TCP ? "tcp" : "udp", local,
         ntohs(q->id.idiag_sport), remote, ntohs(q->id.idiag_dport));
     for (size_t i = 0; i < out->count; i++) {
@@ -174,7 +192,7 @@ int main(int argc, char **argv) {
     if (parsed != 1) goto failed;
     struct observation observed = {.times = {millis(CLOCK_BOOTTIME), 0, 0}, .overflow_uid = overflow_uid};
     int64_t *times = observed.times;
-    if (times[0] < 0 || identity("/proc/self/ns/net", &namespaces[0]) || identity("/proc/self/ns/user", &namespaces[1]) || boot_id(boot)) goto failed;
+    if (times[0] < 0 || identity("/proc/self/ns/net", &namespaces[0]) || user_namespace(&q, &namespaces[1]) || boot_id(boot)) goto failed;
     int fd = socket(AF_NETLINK, SOCK_RAW | SOCK_CLOEXEC | SOCK_NONBLOCK, NETLINK_SOCK_DIAG);
     if (fd < 0) goto failed;
     struct sockaddr_nl kernel = {.nl_family = AF_NETLINK};
@@ -189,7 +207,7 @@ int main(int argc, char **argv) {
     close(fd);
     times[1] = millis(CLOCK_BOOTTIME); times[2] = millis(CLOCK_REALTIME);
     if (result || times[1] < times[0] || times[1] > times[0] + 3000 || times[2] < 0 ||
-        identity("/proc/self/ns/net", &after[0]) || identity("/proc/self/ns/user", &after[1])) goto failed;
+        identity("/proc/self/ns/net", &after[0]) || user_namespace(&q, &after[1])) goto failed;
     for (int i = 0; i < 2; i++) if (namespaces[i].st_dev != after[i].st_dev || namespaces[i].st_ino != after[i].st_ino) goto failed;
     publish(&q, &out, namespaces, boot, &observed); return ferror(stdout) ? 1 : 0;
 failed:

@@ -121,6 +121,7 @@ class CommandLogDeviceTest {
             val store = ToolRunStore(conversations)
             store.finish(store.start(owner, ToolCall("old", "command_execute", objectOf())), "{\"exitCode\":0}")
             database.writableDatabase.apply {
+                execSQL("DROP INDEX IF EXISTS browser_download_pending")
                 execSQL("ALTER TABLE tool_runs DROP COLUMN artifact_directory")
                 execSQL("ALTER TABLE tool_runs DROP COLUMN presentation")
                 version = 2

@@ -36,6 +36,8 @@ internal class BrowserController(private val context: Context, private val saveP
     val tabs = mutableStateListOf<BrowserTab>()
     internal val uploads = BrowserUploadManager(context)
     internal val transferSlots = kotlinx.coroutines.sync.Semaphore(2)
+    private val navigationHandler = Handler(context.mainLooper)
+    private val navigationDeadlines = mutableMapOf<String, Runnable>()
     internal val transfers = mutableStateMapOf<String, BrowserTransferProgress>()
     var error by mutableStateOf<String?>(null)
     var proxy by mutableStateOf("")
@@ -75,8 +77,10 @@ internal class BrowserController(private val context: Context, private val saveP
         val client = object : WebViewClient() {
             override fun shouldInterceptRequest(web: WebView, request: WebResourceRequest): WebResourceResponse? = intercept?.invoke(request)
             override fun onPageStarted(web: WebView, url: String, favicon: android.graphics.Bitmap?) {
+                navigationDeadlines.remove(tab.id)?.let(navigationHandler::removeCallbacks)
                 if(uploads.pending?.tab == tab)uploads.cancelPending(tab.owner)
                 tab.loading = true; tab.failure = null; tab.address = url; tab.revision++; tab.changed()
+                pauseIdle(tab.owner)
             }
             override fun shouldOverrideUrlLoading(web: WebView, request: WebResourceRequest): Boolean {
                 if (request.url.scheme != "https") { error = "仅支持 HTTPS 网页；外部应用和本地文件链接未打开"; return true }
@@ -87,6 +91,7 @@ internal class BrowserController(private val context: Context, private val saveP
             }
             override fun onPageFinished(web: WebView, url: String) {
                 tab.loading = false; tab.address = url; tab.title = web.title?.take(80) ?: "网页"; tab.changed()
+                pauseIdle(tab.owner)
             }
             override fun onReceivedError(web: WebView, request: WebResourceRequest, failure: WebResourceError) {
                 if (request.isForMainFrame) {
@@ -126,6 +131,7 @@ internal class BrowserController(private val context: Context, private val saveP
 
     fun close(tab: BrowserTab) {
         if (!tabs.remove(tab)) return
+        navigationDeadlines.remove(tab.id)?.let(navigationHandler::removeCallbacks)
         uploads.releasePage(tab)
         tab.markClosed()
         (tab.view.parent as? ViewGroup)?.removeView(tab.view)
@@ -142,10 +148,25 @@ internal class BrowserController(private val context: Context, private val saveP
     private fun pauseIdle(owner: String) {
         if (owner in agents) return
         tabs.filter { it.owner == owner }.forEach {
-            if (it.loading) { it.failure = "Navigation stopped before completion"; it.loading = false }
-            it.changed(); it.view.stopLoading(); it.view.onPause()
+            if (it.loading) retainNavigation(it) else {
+                navigationDeadlines.remove(it.id)?.let(navigationHandler::removeCallbacks)
+                it.view.onPause()
+            }
         }
-        if (agents.isEmpty() && viewers.isEmpty()) tabs.firstOrNull()?.view?.pauseTimers()
+        if (agents.isEmpty() && viewers.isEmpty() && tabs.none { it.loading }) tabs.firstOrNull()?.view?.pauseTimers()
+    }
+    private fun retainNavigation(tab: BrowserTab) {
+        if (tab.id in navigationDeadlines) return
+        val revision = tab.revision
+        val deadline = Runnable {
+            navigationDeadlines.remove(tab.id)
+            if (tab in tabs && tab.loading && tab.revision == revision && tab.owner !in agents && tab.owner !in viewers) {
+                tab.view.stopLoading(); tab.loading = false; tab.failure = "Unobserved navigation exceeded deadline"; tab.changed()
+                pauseIdle(tab.owner)
+            }
+        }
+        navigationDeadlines[tab.id] = deadline
+        navigationHandler.postDelayed(deadline, 30_000)
     }
     fun beginAgent(owner: String) {
         check(owner !in retired) { "Conversation browser is being deleted" }

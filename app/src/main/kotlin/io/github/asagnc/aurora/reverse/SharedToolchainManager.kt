@@ -31,7 +31,7 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
     suspend fun install(): String {
         check(Build.SUPPORTED_ABIS.firstOrNull() == "arm64-v8a") { "Static reverse runtime requires ARM64" }
         check(app.root.linuxExecution != null) { "Connect Root before installing the Root toolchain" }
-        return store.install { component, target -> network.download(component.url, target, component.compressedBytes) }
+        return store.install { component, target -> network.downloadTool(component, target) }
     }
     suspend fun installAndroid(nativeSource: OwnedFiles, nativePath: String): String {
         return installAndroidBundle { target ->

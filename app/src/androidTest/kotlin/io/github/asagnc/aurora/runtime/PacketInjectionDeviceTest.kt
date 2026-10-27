@@ -24,6 +24,7 @@ class PacketInjectionDeviceTest {
         app.ready.await(); check(!withContext(Dispatchers.Main) { app.agentTasks.busy })
         app.root.connect(); check(app.root.state.value.phase == RootPhase.READY)
         val owner = app.conversations.create("Owned loopback injection qualification")
+        app.spaces.conversation(owner)
         var confirmed = false
         try {
             val frame = ByteArray(60)

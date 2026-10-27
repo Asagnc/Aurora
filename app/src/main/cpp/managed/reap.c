@@ -77,6 +77,24 @@ static int stop_child(pid_t child, int64_t deadline, int *status) {
     }
 }
 
+/* Return zero only for ECHILD, one for live children, or -1 for uncertainty.
+ * A single-threaded subreaper is the sole reaper of these direct children. */
+static int drain_exited(pid_t worker, int64_t deadline, int *worker_exit) {
+    for (unsigned count = 0; count <= MAX_CHILDREN; count++) {
+        siginfo_t exited = {0};
+        int waited;
+        do { waited = waitid(P_ALL, 0, &exited, WEXITED | WNOHANG | WNOWAIT); }
+        while (waited < 0 && errno == EINTR);
+        if (waited < 0) return errno == ECHILD ? 0 : -1;
+        if (!exited.si_pid) return 1;
+        if (count == MAX_CHILDREN) { errno = E2BIG; return -1; }
+        int status;
+        if (stop_child(exited.si_pid, deadline, &status)) return -1;
+        if (exited.si_pid == worker) *worker_exit = WIFEXITED(status) ? WEXITSTATUS(status) : 128 + WTERMSIG(status);
+    }
+    errno = E2BIG; return -1;
+}
+
 int managed_reap_children(pid_t worker, int64_t deadline_ms, int *worker_exit) {
     int subreaper = 0; struct sigaction action;
     if (getpid() != (pid_t)syscall(SYS_gettid) || prctl(PR_GET_CHILD_SUBREAPER, &subreaper) ||
@@ -84,9 +102,13 @@ int managed_reap_children(pid_t worker, int64_t deadline_ms, int *worker_exit) {
         errno = EINVAL; return -1;
     }
     for (unsigned round = 0; round < 64; round++) {
+        /* Android kernels need not expose CONFIG_PROC_CHILDREN. Even when
+         * present, an empty proc snapshot is not kernel proof of no children. */
+        int pending = drain_exited(worker, deadline_ms, worker_exit);
+        if (pending <= 0) return pending;
         pid_t found[MAX_CHILDREN]; int count = children(found);
         if (count < 0) return -1;
-        if (!count) return 0;
+        if (!count) { errno = EBUSY; return -1; }
         for (int index = 0; index < count; index++) {
             int status;
             if (stop_child(found[index], deadline_ms, &status)) return -1;

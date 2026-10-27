@@ -31,7 +31,7 @@ class PacketNativePackageTest {
         val result = NativeCommandRunner(context).execute(root, CommandRequest(listOf(binary, "--version")))
         assertEquals(result.toString(), 0L, result.number("exitCode"))
         val text = result["stdout"]!!.jsonObject.text("text").orEmpty()
-        assertTrue(text, text.contains("tcpdump version 4.99.7"))
+        assertTrue(text, Regex("(?:tcpdump|libaurora_tcpdump\\.so) version 4\\.99\\.7").containsMatchIn(text))
         assertTrue(text, text.contains("libpcap version 1.10.7"))
     } }
 

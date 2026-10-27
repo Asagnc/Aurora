@@ -1,12 +1,12 @@
-# 当前接续清单（2026-10-26，0.1.40）
+# 当前接续清单（2026-10-27，0.1.40 真机验收中）
 
 只记录当前状态；历史实验/失败/修复见PROGRESS、IMPLEMENTATION和docs/evidence，不把早期缺失当成当前待建设。
 
 ## 工作约定
 
 - 在现有main连续实现、验证并推送；例行修复直接做。新底层/依赖/持久化选型先比较确认；已批准方案不重复问。
-- 当前不连接、更新或操作手机/模拟器，不重装Android Studio/WSL，不调用真实付费模型。
-- 最后集中真机验收，保留安装/数据。手机已验收版本0.1.32，代码0.1.40；FolkPatch已授权，不等待Magisk式弹窗。
+- 用户已明确“开始测试吧”，随后要求先测试全部既有能力，再细说UI问题，UI处理后由用户配置模型密钥再测付费模型，最后拓展。当前允许真机测试；不重装Android Studio/WSL，不调用真实付费模型。
+- 真机保留安装/数据，由0.1.32同调试签名覆盖到0.1.40；FolkPatch已授权，不等待Magisk式弹窗。当前设备失败、修复与复测见DEVICE_ACCEPTANCE_20261027，不把历史主机通过当设备通过。
 - 长期发布密钥在手机公共Downloads，留到最终验收；现在仅unsigned-review，不生成替代正式密钥。
 - 只有实际当前Root身份/服务代/环境代/工具版本资格通过才开放执行；安装、编译或主机CI不授予手机资格。
 - 失败/取消只清理自己的暂存；未知占用、退出或清理失败保留恢复记录并阻断相应删除。
@@ -34,9 +34,10 @@
 - 发布材料已接SDK原生包＋41份固定源码输入、代理官方分发＋584份固定源码/候选wheel/Cargo超集、精确自有git源码快照、Frida/原生源码重链接及重建、实际APK资产/16KiB/身份/图标链与批准像素校验，全部纳入manifest/SHA256SUMS。
 - 完整审查包release-review-f561e10-complete已生成并独立复核全部SHA256SUMS：APK45,018,519字节，9项载荷/重建报告共1,690,661,029字节，另有manifest与checksums；工作树当时clean。SDK41项/代理584项输入及源码快照全部对应f561e10，离线Frida重链接/guard重建通过，图标链/像素通过。见RELEASE_REVIEW_20261026；保持unsigned-review/releaseReady=false，设备和正式签名未验收。
 
-## 最后集中验收与明确边界
+## 真机集中验收与明确边界
 
-- 集中执行Root/ART/自有spawn、静态逆向、APK构建/JNI/签名覆盖更新、代理、采集轮转、WebView/SAF、管理器撤权、未知恢复、取消/删除/服务死亡、熄屏/后台/Thanox和长时压力。当前不因看到清单就请求手机。
+- 继续执行Root/ART/自有spawn、静态逆向、APK构建/JNI、代理、采集轮转、WebView/SAF、管理器撤权、未知恢复、取消/删除/服务死亡、熄屏/后台/Thanox和长时压力。正式签名仍留待用户提供安排，不读取Downloads密钥。
+- Android16平台Ed25519工厂无法导入外部发布者公钥，EdDSA别名亦不可用。BC1.86轻量验签方案已比较并解释用途，但用户尚未确认，不接入新密码依赖，不把Skills验签记通过；见SKILLS_CRYPTO_PROVIDER_PROPOSAL。
 - 固定Release性能工作负载尚未实测：正确率、TTFT/整轮/工具时间、CPU/RSS/耗电、采集吞吐/内核丢包；真实模型调用继续遵守禁止付费调用约定。
 - 普通PRoot在该Android16硬链接资格不足时executionReady=false；不加入link2symlink/QEMU冒充成功。
 - 历史逐包UID关联需后续独立eBPF资格；当前只做真实socket快照。任意跨源frame访问、私有GitHub release asset API、Sigstore/插件市场及任意系统写API未声明支持，不能用已有命令/公共下载能力冒充完成。

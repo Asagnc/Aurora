@@ -16,7 +16,9 @@ internal class SocketOwnerTool(context: Context, private val client: RootCommand
             "All six fields required; localPort 1..65535, remotePort 0..65535. No DNS or zone suffix. " +
             "Returns all exact matches (max 32), kernel UID/inode/cookie/interface/state, boot and network/user namespace identity and observation interval. " +
             "Scan is not atomic; sockets can change during/after observation. Multiple matches remain multiple; unconnected UDP/TIME_WAIT/missing inode are unknown. " +
-            "UIDs are interpreted in the recorded user namespace; UID 0 does not identify an application. No package-name guesses, historical PCAP or per-packet attribution, routing changes or polling. " +
+            "UIDs use the recorded user namespace, or explicit initial_user_namespace when the live kernel has USER_NS disabled (namespace inode is then null). " +
+            "Use the actual socket family: Java dual-stack IPv4 connections can be IPv4-mapped IPv6. UID 0 does not identify an application. " +
+            "No package-name guesses, historical PCAP or per-packet attribution, routing changes or polling. " +
             "Interrupted, denied, oversized or incomplete dumps are unavailable, never a partial unique UID.",
         objectOf("type" to string("object"), "properties" to objectOf(
             "family" to choice("ipv4", "ipv6"), "transport" to choice("tcp", "udp"),
@@ -28,10 +30,11 @@ internal class SocketOwnerTool(context: Context, private val client: RootCommand
     override suspend fun execute(call: ToolCall): String {
         require(call.name == "socket_owner_root")
         val request = SocketOwnerRequest.parse(call.arguments)
+        val initialOnly = client.initialUserNamespaceOnly()
         val id = UUID.randomUUID().toString(); prepared(call.id, "runs/$id")
-        val command = WireJson.parseToJsonElement(client.execute(owner, CommandRequest(request.argv(binary),
+        val command = WireJson.parseToJsonElement(client.execute(owner, CommandRequest(request.argv(binary, initialOnly),
             timeoutMs = 5000, outputLimit = 8192, environment = mapOf("LC_ALL" to "C")), id)).jsonObject
-        return try { JsonObject(command + ("socketSnapshot" to socketOwnerCompletion(command, request))).toString() }
+        return try { JsonObject(command + ("socketSnapshot" to socketOwnerCompletion(command, request, initialOnly))).toString() }
         catch (cancel: CancellationException) { throw cancel }
         catch (_: Exception) { JsonObject(command + ("error" to (command["error"] ?: string("socket_snapshot_unavailable")))).toString() }
     }

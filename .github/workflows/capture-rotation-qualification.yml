@@ -27,4 +27,5 @@ jobs:
           python3 scripts/verify-frida-managed-observe.py
           sudo -n python3 scripts/verify-managed-journal.py
           sudo -n python3 scripts/verify-managed-launch.py
+          python3 scripts/verify-managed-reap.py
           sudo -n python3 scripts/verify-managed-guard.py

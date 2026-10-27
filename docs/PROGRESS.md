@@ -947,3 +947,6 @@ eb2c64f完整CI40301812330通过。继续收尾：代理缓存/私钥仅在既�
 
 
 f561e10完整CI40327134461及ARM64 SDK产品专项40327139608全部成功，产品8项零跳过。完整release-review-f561e10-complete已生成，9项载荷/重建报告1,690,661,029字节，APK45,018,519字节；所有checksums独立复核，SDK41/代理584输入及精确自有源码快照绑定本提交，离线Frida重链接/guard重建成功。workTreeDirty=false（打包时）、unsigned-review/releaseReady=false。实际报告、材料摘要和最后集中验收顺序已归档；没有手机、正式密钥、真实私仓或付费模型操作。
+
+
+2026-10-27：用户授权集中真机验收，保留安装由0.1.32同调试签名覆盖0.1.40。实际发现并修复WebView异步导航/下载恢复、普通UID离线tcpdump seccomp、Root清理缺proc children及PID复用、ART bootstrap探针、当前socket初始user namespace资格与IPv4-mapped IPv6解析、工具安装空间查询/固定下载路径。离线Linux/PTY/Agent有实际设备复测通过；Frida spawn及工具完整安装/运行仍未通过，unknown保留。Skills外部Ed25519导入平台不支持，BC依赖仍待用户确认。当前主机352核心336通过/16跳过、Debug/Release/AndroidTest/lint223任务通过，352/231编译JUnit签名均void。精确批次、失败和后续边界见DEVICE_ACCEPTANCE_20261027；不调用付费模型，不读取正式密钥，不把编译/历史CI当当前设备通过。

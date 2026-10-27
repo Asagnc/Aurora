@@ -10,6 +10,9 @@ import kotlinx.coroutines.*
 
 internal class RootCommandClient(private val remote: IRootControl, context: Context) {
     private val awake = CommandWakeLock(context, "RootCommand")
+    suspend fun initialUserNamespaceOnly(): Boolean = withContext(Dispatchers.IO) {
+        remote.snapshot().getBoolean("initialUserNamespaceOnly", false)
+    }
     suspend fun execute(conversation: String, request: CommandRequest, id: String = UUID.randomUUID().toString()): String = withContext(Dispatchers.IO) {
         require(UUID.fromString(id).toString() == id)
         val wire = RootCommandWire.encode(request)

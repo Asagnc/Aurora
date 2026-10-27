@@ -34,7 +34,9 @@ object FridaManagedProbe {
     fun bytes(java: Boolean): ByteArray = (nativeSource + if (java) """
 
         if (!Java.available) throw new Error('aurora_probe_java_unavailable');
-        Java.performNow(() => {
+        // The libsu app_process service has ART but no ordinary package data
+        // directory. This bootstrap-class probe needs only a VM attachment.
+        Java.vm.perform(() => {
           const value = Java.use('java.lang.String').${'$'}new('aurora');
           try { if (value.length() !== 6) throw new Error('aurora_probe_java_call_failed'); }
           finally { value.${'$'}dispose(); }
@@ -43,7 +45,7 @@ object FridaManagedProbe {
     """.trimIndent() else "").toByteArray(Charsets.UTF_8)
     fun snapshot(java: Boolean): RootScriptSnapshot {
         val bytes = bytes(java)
-        return RootScriptSnapshot(if (java) "aurora-self-probe-java-v1" else "aurora-self-probe-native-v1",
+        return RootScriptSnapshot(if (java) "aurora-self-probe-java-v2" else "aurora-self-probe-native-v1",
             MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it.toInt() and 255) }, bytes.size.toLong())
     }
 

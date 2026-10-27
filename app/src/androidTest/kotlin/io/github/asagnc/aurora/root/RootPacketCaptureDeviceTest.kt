@@ -41,7 +41,7 @@ class RootPacketCaptureDeviceTest {
     } }
 
     @RootRequired @Test fun idleDeadlineDoesNotDependOnReceivingPackets() = runBlocking { fixture { owner ->
-        DatagramSocket(0, InetAddress.getLoopbackAddress()).use { socket ->
+        DatagramSocket(0, InetAddress.getByName("127.0.0.1")).use { socket ->
             val request = PacketCaptureRequest.parse(objectOf("interface" to string("lo"), "seconds" to JsonPrimitive(1),
                 "filter" to string("udp dst port ${socket.localPort}")))
             val reply = withTimeout(15000) { invoke(owner, UUID.randomUUID().toString(), request) }
@@ -149,6 +149,7 @@ class RootPacketCaptureDeviceTest {
         app.ready.await(); app.root.connect()
         check(app.root.packetClient != null)
         val owner = app.conversations.create("Root packet qualification")
+        app.spaces.conversation(owner)
         try { block(owner) } finally {
             withContext(NonCancellable) {
                 try { if (app.conversations.header(owner) != null) app.spaces.delete(owner, app.tasks::quiesce) } finally { app.root.disconnect() }

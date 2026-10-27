@@ -61,6 +61,7 @@ ExternalProject_Add(aurora_pcap_build
     INSTALL_COMMAND "${CMAKE_COMMAND}" --install <BINARY_DIR>
     BUILD_BYPRODUCTS "${capture_prefix}/lib/libpcap.a")
 ExternalProject_Add(aurora_tcpdump_build
+    BUILD_ALWAYS TRUE
     SOURCE_DIR "${tcpdump_source}" BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/packet-program"
     DOWNLOAD_COMMAND "" UPDATE_COMMAND "" DEPENDS aurora_pcap_build
     CONFIGURE_COMMAND ${capture_env} "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}"

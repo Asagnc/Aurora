@@ -30,6 +30,9 @@ class AgentLinuxDeviceTest {
         fixture { owner, connection ->
             var turn = 0
             var terminal = ""
+            var cursor = 0L
+            var inputSent = false
+            val terminalOutput = StringBuilder()
             var definitions: List<ToolDefinition>? = null
             val transport = object : ModelTransport {
                 override suspend fun generate(request: ModelRequest, onText: suspend (String) -> Unit): ModelTurn {
@@ -48,21 +51,26 @@ class AgentLinuxDeviceTest {
                         }
                         2 -> {
                             terminal = requireNotNull(output(request).text("id"))
-                            call(step, "terminal_write", objectOf("id" to string(terminal), "text" to string("极光😀\n")))
+                            call(step, "terminal_read", objectOf("id" to string(terminal), "waitMs" to JsonPrimitive(1000)))
                         }
                         else -> {
                             if (step > 3) {
                                 val result = output(request)
                                 assertNull(result["error"])
+                                result.number("next")?.let { cursor = it; terminalOutput.append(result.text("text").orEmpty()) }
                                 if (result.text("state") == "exited") {
                                     assertEquals(23L, result.number("exitCode"))
-                                    assertTrue(result.text("text").orEmpty().contains("<极光😀>"))
+                                    assertTrue(terminalOutput.contains("<极光😀>"))
                                     return done()
+                                }
+                                if (!inputSent && terminalOutput.contains("ready")) {
+                                    inputSent = true
+                                    return call(step, "terminal_write", objectOf("id" to string(terminal), "text" to string("极光😀\n")))
                                 }
                             }
                             check(step < 100) { "Guest did not finish" }
                             delay(50)
-                            call(step, "terminal_read", objectOf("id" to string(terminal), "waitMs" to JsonPrimitive(1000)))
+                            call(step, "terminal_read", objectOf("id" to string(terminal), "cursor" to JsonPrimitive(cursor), "waitMs" to JsonPrimitive(1000)))
                         }
                     }
                 }

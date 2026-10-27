@@ -227,7 +227,8 @@ class RootManagedRunRegistryTest {
                         execSQL("DROP INDEX browser_download_pending")
                         if (version < 2) execSQL("DROP TABLE agent_runs")
                         if (version < 3) {
-                            execSQL("ALTER TABLE tool_runs DROP COLUMN artifact_directory")
+                            execSQL("DROP INDEX IF EXISTS browser_download_pending")
+                execSQL("ALTER TABLE tool_runs DROP COLUMN artifact_directory")
                             execSQL("ALTER TABLE tool_runs DROP COLUMN presentation")
                         }
                         if (version < 6) listOf("linux_runs", "linux_leases", "linux_settings", "linux_versions", "linux_operations",

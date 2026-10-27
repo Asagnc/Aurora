@@ -4,6 +4,19 @@ import kotlinx.serialization.json.*
 import kotlin.test.*
 
 class SocketOwnerTest {
+    @Test fun initialNamespaceNeedsLiveKernelQualificationAndExplicitScope() {
+        assertTrue(initialUserNamespaceConfiguration("# CONFIG_USER_NS is not set\n".toByteArray()))
+        for (text in listOf("", "CONFIG_USER_NS=y\n", "# CONFIG_USER_NS is not set\nCONFIG_USER_NS=y\n",
+            "# CONFIG_USER_NS is not set\n# CONFIG_USER_NS is not set\n")) {
+            assertFalse(initialUserNamespaceConfiguration(text.toByteArray()))
+        }
+        val request = SocketOwnerRequest.parse(args())
+        val initial = JsonObject(record() + mapOf("userNamespace" to JsonNull, "uidScope" to string("initial_user_namespace")))
+        assertFails { socketOwnerCompletion(command(initial), request) }
+        assertEquals("exact_socket_uid", socketOwnerCompletion(command(initial), request, true).text("status"))
+        assertFails { socketOwnerCompletion(command(JsonObject(initial - "uidScope")), request, true) }
+        assertEquals("--initial-user-namespace", request.argv("/worker", true).last())
+    }
     private fun args() = objectOf("family" to string("ipv4"), "transport" to string("tcp"),
         "localAddress" to string("127.0.0.1"), "localPort" to JsonPrimitive(12345),
         "remoteAddress" to string("127.0.0.1"), "remotePort" to JsonPrimitive(54321))
@@ -25,6 +38,8 @@ class SocketOwnerTest {
         }
         val ipv6 = JsonObject(args() + mapOf("family" to string("ipv6"), "localAddress" to string("::1"), "remoteAddress" to string("2001:db8::1")))
         assertEquals(7, SocketOwnerRequest.parse(ipv6).argv("/worker").size)
+        val mapped = SocketOwnerRequest.parse(JsonObject(ipv6 + ("localAddress" to string("::ffff:127.0.0.1"))))
+        assertEquals("0:0:0:0:0:ffff:7f00:1", mapped.localAddress)
         assertFails { SocketOwnerRequest.parse(JsonObject(ipv6 + ("localAddress" to string("fe80::1%lo")))) }
     }
 

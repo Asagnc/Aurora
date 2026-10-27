@@ -7,10 +7,17 @@
 #include <limits.h>
 #include <poll.h>
 #include <signal.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/syscall.h>
 #include <unistd.h>
 int managed_spawn_recover(const struct managed_journal *, const struct managed_key *, const struct managed_admission *, unsigned);
+
+static int recovery_failure(const char *stage) {
+    int saved = errno;
+    fprintf(stderr, "{\"error\":\"managed_recovery_unconfirmed\",\"stage\":\"%s\",\"errno\":%d}\n", stage, saved);
+    errno = saved; return -1;
+}
 
 static int wait_pidfd(int descriptor, int64_t deadline) {
     for (;;) {
@@ -27,9 +34,13 @@ static int wait_pidfd(int descriptor, int64_t deadline) {
 }
 
 static int stop_worker(const struct managed_admission *admission, int64_t deadline) {
+    uint64_t ticks;
+    /* A reused PID can now identify a non-leader thread, for which pidfd_open
+     * returns EINVAL. Check replacement before opening, then check again on
+     * the pinned identity before ever signalling it. */
+    if (!scope_process_start((pid_t)admission->worker_pid, &ticks) && ticks != admission->worker_ticks) return 0;
     int descriptor = (int)syscall(SYS_pidfd_open, (pid_t)admission->worker_pid, 0);
     if (descriptor < 0) return errno == ESRCH ? 0 : -1;
-    uint64_t ticks;
     if (scope_process_start((pid_t)admission->worker_pid, &ticks)) {
         int saved = errno, exited = wait_pidfd(descriptor, task_scope_now());
         close(descriptor); errno = saved; return exited == 1 ? 0 : -1;
@@ -61,21 +72,23 @@ static int recover_worker(unsigned phase, const struct managed_admission *admiss
 }
 
 int managed_guard_recover(const struct managed_journal *journal, const struct managed_key *key, int64_t deadline_ms) {
-    if (managed_journal_retire(journal, key)) return -1;
+    if (managed_journal_retire(journal, key)) return recovery_failure("retire");
     struct managed_admission admission;
     int phase = managed_journal_status(journal, key, &admission);
-    if (phase < 0 || recover_worker((unsigned)phase, &admission, deadline_ms)) return -1;
-    if (scope_state_recover(journal->directory) || managed_scope_plan_recover(journal, key)) return -1;
-    if (managed_spawn_recover(journal, key, &admission, (unsigned)phase)) return -1;
+    if (phase < 0) return recovery_failure("journal");
+    if (recover_worker((unsigned)phase, &admission, deadline_ms)) return recovery_failure("worker");
+    if (scope_state_recover(journal->directory)) return recovery_failure("scope");
+    if (managed_scope_plan_recover(journal, key)) return recovery_failure("scope_plan");
+    if (managed_spawn_recover(journal, key, &admission, (unsigned)phase)) return recovery_failure("spawn");
     int ignored = -1;
-    if (managed_reap_children(0, deadline_ms, &ignored)) return -1;
+    if (managed_reap_children(0, deadline_ms, &ignored)) return recovery_failure("children");
     struct managed_stopped existing;
     int read = managed_stopped_read(journal, key, &existing);
-    if (read < 0) return -1;
+    if (read < 0) return recovery_failure("stopped_read");
     if (read == 1) return 0;
     struct managed_stopped stopped = {.phase = (unsigned)phase,
         .worker_state = phase & MANAGED_READY ? MANAGED_CLEAR : phase & MANAGED_INTENT ? MANAGED_UNKNOWN : MANAGED_NOT_CREATED,
         .domain_state = phase & MANAGED_INTENT ? MANAGED_CLEAR : MANAGED_NOT_CREATED,
         .exit_code = -1, .reason = MANAGED_RECOVERED};
-    return managed_stopped_store(journal, key, &stopped);
+    return managed_stopped_store(journal, key, &stopped) ? recovery_failure("stopped_store") : 0;
 }

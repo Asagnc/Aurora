@@ -19,7 +19,7 @@ class BrowserDownloadRecoveryTest {
     @Test fun uncertainResultStaysUncertainWhilePublishedArtifactIsRetained()=runBlocking{fixture{app,owner,root->
         val directory=record(app,owner,true);val path=root.resolve(directory)
         withContext(Dispatchers.IO){Files.write(path.resolve("download.bin"),"published".toByteArray(Charsets.UTF_8));Files.write(path.resolve("keep"),"sibling".toByteArray(Charsets.UTF_8))}
-        assertEquals(1,app.browserDownloads.recover(owner))
+        assertEquals(1, app.browserDownloads.recover(owner))
         val row=app.toolRuns.list(owner).single()
         assertEquals("uncertain",row.state)
         val note=WireJson.parseToJsonElement(requireNotNull(row.result)).jsonObject
