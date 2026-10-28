@@ -32,7 +32,7 @@ def describe(flow):
 def inspect(identity, offset, limit):
     if str(uuid.UUID(identity)) != identity or not 0 <= offset <= 512 or not 1 <= limit <= 10:
         raise ValueError('Invalid owned proxy inspection selection')
-    path = Path('/mnt/project/.aurora-proxy') / identity / 'flows.mitm'
+    path = Path('/mnt/.aurora-proxy') / identity / 'flows.mitm'
     current = Path('/')
     for part in path.parts[1:]:
         current /= part

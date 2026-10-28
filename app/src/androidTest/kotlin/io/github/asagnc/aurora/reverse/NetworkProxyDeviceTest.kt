@@ -41,6 +41,7 @@ class NetworkProxyDeviceTest {
                 val port = arguments.getString("auroraProxyPort")?.toInt() ?: 18080
                 val probe = invoke("shared_toolchain", objectOf("action" to string("probe"), "family" to string("network-proxy"), "probePort" to JsonPrimitive(port)))
                 assertEquals(probe.toString(), JsonPrimitive(true), probe["qualified"])
+                assertEquals(probe.toString(), JsonPrimitive(true), probe["cleanup"]?.jsonObject?.get("removed"))
                 assertEquals(JsonPrimitive(false), probe.getValue("cleanup").jsonObject["pending"])
                 val started = invoke("network_proxy", objectOf("action" to string("start"), "options" to objectOf("port" to JsonPrimitive(port), "durationSeconds" to JsonPrimitive(30))))
                 assertEquals(started.toString(), JsonPrimitive(true), started["running"])

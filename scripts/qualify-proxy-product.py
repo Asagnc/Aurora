@@ -121,10 +121,11 @@ def qualify(directory):
         raise ValueError('Select a new owned qualification directory')
     stage, pin, selected = prepare(directory)
     workspace = directory / 'workspace'; workspace.mkdir()
+    project = workspace / 'project'; project.mkdir()
     subprocess.run(['ip', 'link', 'set', 'lo', 'up'], check=True)
     subprocess.run(['mount', '--bind', str(stage), '/opt'], check=True)
     subprocess.run(['mount', '-o', 'remount,bind,ro', '/opt'], check=True)
-    subprocess.run(['mount', '--bind', str(workspace), '/mnt'], check=True)
+    subprocess.run(['mount', '--bind', str(project), '/mnt'], check=True)
     with socket.socket() as reserved:
         reserved.bind(('127.0.0.1', 0)); port = reserved.getsockname()[1]
     identity = str(uuid.uuid4()); config = fixed_config(port)

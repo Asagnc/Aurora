@@ -66,7 +66,7 @@ class AuroraProxy:
     def running(self):
         identity = ctx.options.aurora_id
         self.output = Path(ctx.options.aurora_output)
-        if self.config is None or str(uuid.UUID(identity)) != identity or self.output != Path('/mnt/project/.aurora-proxy') / identity:
+        if self.config is None or str(uuid.UUID(identity)) != identity or self.output != Path('/mnt/.aurora-proxy') / identity:
             raise ValueError('Proxy output does not belong to the fixed owned session')
         if ctx.options.listen_host != '127.0.0.1' or ctx.options.listen_port != self.config['port'] or ctx.options.ssl_insecure:
             raise ValueError('Proxy must use strict upstream TLS and explicit loopback regular mode')

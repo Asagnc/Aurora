@@ -14,7 +14,7 @@ import kotlinx.serialization.json.*
 
 /** Uses the existing installer, qualification cache, terminal host and durable Linux leases. */
 internal class NetworkProxyManager(private val app: AuroraApplication, private val store: StaticReverseStore,
-    private val qualifications: StaticReverseQualifications) {
+    private val qualifications: StaticReverseQualifications, private val network: SkillNetwork = SkillNetwork()) {
     private fun scope(generation: String) = StaticReverseQualifications.Scope(generation,
         requireNotNull(app.root.linuxExecution?.identity) { "Connect Root for the proxy runtime" }, NetworkProxyRuntime.bundleId)
 
@@ -25,7 +25,7 @@ internal class NetworkProxyManager(private val app: AuroraApplication, private v
         val selected = NetworkProxyRuntime.catalog.copy(finish = { stage ->
             NetworkProxyRuntime.publishProfiles(stage, profiles) { path, bits -> Os.chmod(path.toString(), bits) }
         })
-        return store.install(selected) { component, target -> SkillNetwork().downloadTool(component, target) }
+        return store.install(selected) { component, target -> network.downloadTool(component, target) }
     }
 
     suspend fun probe(owner: String, generation: String, port: Int, prepared: suspend (String) -> Unit): JsonObject {

@@ -45,12 +45,13 @@ def probe(directory):
         raise ValueError('Requires a real ARM64 private Root mount namespace')
     stage = directory / 'prepared'
     workspace = directory / 'workspace'; workspace.mkdir()
+    project = workspace / 'project'; project.mkdir()
     for target in ['/opt', '/mnt']:
         if not Path(target).is_dir():
             raise ValueError('Expected host mount directory is absent')
     subprocess.run(['mount', '--bind', str(stage), '/opt'], check=True)
     subprocess.run(['mount', '-o', 'remount,bind,ro', '/opt'], check=True)
-    subprocess.run(['mount', '--bind', str(workspace), '/mnt'], check=True)
+    subprocess.run(['mount', '--bind', str(project), '/mnt'], check=True)
     run_id = str(uuid.uuid4())
     script = Path('/opt/android-host/bin/aurora-apk-probe')
     report = {'scope': 'Production Kotlin installer and fixed probe on a real ARM64 Linux host; no Android runtime proof',

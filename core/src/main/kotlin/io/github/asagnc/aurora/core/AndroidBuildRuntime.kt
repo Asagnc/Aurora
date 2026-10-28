@@ -31,7 +31,7 @@ object AndroidBuildRuntime {
     val probe = "#!/bin/sh\nset -eu\n$environment\n" + """
         [ "${'$'}#" -eq 1 ] || exit 64
         case "${'$'}1" in ''|*[!a-f0-9-]*) exit 64 ;; esac
-        base=/mnt/project/.aurora-apk-probes/${'$'}1
+        base=/mnt/.aurora-apk-probes/${'$'}1
         mkdir -p "${'$'}base/src/main/java/io/github/asagnc/aurora/sdkprobe"
         cat > "${'$'}base/settings.gradle" <<'SETTINGS'
         pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }

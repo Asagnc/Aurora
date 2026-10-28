@@ -17,12 +17,16 @@ internal class RootProxyCacheCleanup(private val context: Context, private val f
     suspend fun execute(owner: String, root: Path, id: String): JsonObject {
         require(UUID.fromString(id).toString() == id)
         check(!Files.exists(root.resolve(".active-run"), LinkOption.NOFOLLOW_LINKS)) { "An active or unconfirmed guest retains its private cache" }
+        // Native Linux mounts workspace/project at /mnt; private paths written
+        // under /mnt therefore belong to this anchored project, not workspace.
+        val project = root.resolve("project"); directory(project)
+        RootLinuxMountSafety.requireUnmounted(project)
         val prefixes = listOf(".aurora-proxy-private", ".aurora-proxy-read-private")
         for (prefix in prefixes) {
-            val parent = root.resolve(prefix)
+            val parent = project.resolve(prefix)
             if (Files.exists(parent, LinkOption.NOFOLLOW_LINKS)) directory(parent)
         }
-        if (prefixes.none { Files.exists(root.resolve(it).resolve(id), LinkOption.NOFOLLOW_LINKS) })
+        if (prefixes.none { Files.exists(project.resolve(it).resolve(id), LinkOption.NOFOLLOW_LINKS) })
             return objectOf("removed" to JsonPrimitive(false), "pending" to JsonPrimitive(false), "session" to string(id))
         val runtime = files.resources().resolve("linux-runtime"); directory(runtime)
         val state = runtime.resolve(id); directory(state)
@@ -35,10 +39,10 @@ internal class RootProxyCacheCleanup(private val context: Context, private val f
         val ticket = WireJson.decodeFromString<LinuxRunTicket>(files.text(state.resolve("ticket.json"), 262144))
         require(ticket.runId == id)
         val prefix = networkProxyPrivatePrefix(ticket, owner, context.applicationInfo.uid)
-        val target = root.resolve(prefix).resolve(id)
+        val target = project.resolve(prefix).resolve(id)
         directory(target); RootLinuxMountSafety.requireUnmounted(target)
         remove(target)
-        val unexpected = prefixes.filter { it != prefix }.any { Files.exists(root.resolve(it).resolve(id), LinkOption.NOFOLLOW_LINKS) }
+        val unexpected = prefixes.filter { it != prefix }.any { Files.exists(project.resolve(it).resolve(id), LinkOption.NOFOLLOW_LINKS) }
         return objectOf("removed" to JsonPrimitive(true), "pending" to JsonPrimitive(unexpected), "session" to string(id))
     }
 

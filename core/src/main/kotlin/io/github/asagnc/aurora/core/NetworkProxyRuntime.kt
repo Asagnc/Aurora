@@ -12,12 +12,12 @@ object NetworkProxyRuntime {
     const val readPath = "/opt/mitmdump/aurora-proxy-read"
     const val probeMarker = "aurora-proxy-probe-ok"
     val profileSha256 = mapOf(
-        "aurora-proxy" to "c63d27ae75b5dd51d230a83a02e1400b23ed1558eedda38bb79c80c22122890b",
+        "aurora-proxy" to "6529b1c5384fd1d370873730862d61fd8dc99426e461418e631374501deea0dd",
         "aurora-proxy-probe" to "8828bb80292cbbfd15d11c0bbf9ed42257835c3ed6d5d69a4a2282905a5f5aab",
         "aurora-proxy-read" to "0a47d9077df8a992a77e82c4d8317bb2699503f0e9110d3e744f4f626a49aecc",
-        "aurora_proxy.py" to "c03e3e9416195fff3862fd951a8d27508cb177d864f477874346fa304edb2f71",
+        "aurora_proxy.py" to "f083322c81a43a76e23aeb85e45632dd5e11014905b7f52723dbccc13d3d8c1f",
         "aurora_proxy_probe.py" to "f72cc52cc9ef4091c035dc3e463702129db58cf86f783869f9c6879e2b232165",
-        "aurora_proxy_read.py" to "3c7dc315305525c50a265cbe7f9fe5fc3153b7a171ae559ba984428b3bf2cb44",
+        "aurora_proxy_read.py" to "54b09f4fd7096712096dbbe52c3791974afaa0f0a99ed1cd53a2cf1ea5131e89",
         "aurora_proxy_rules.py" to "cee883fc014a823baf8d6729361d8ee9c032ef4b3c81f75afb165781471f9db1",
         "mitmproxy-LICENSE" to "cc4ab04ed7180af6c0ede7147f9ec2aa05212c088d7b3c8e38bbffe91c9c8f82")
     private val revision get() = "proxy1-" + digest(profileSha256.toSortedMap().toString().toByteArray(Charsets.UTF_8))

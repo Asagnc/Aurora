@@ -9,11 +9,11 @@ case "$port" in ''|*[!0-9]*) exit 64 ;; esac
 [ "$port" -ge 1024 ] && [ "$port" -le 65535 ] || exit 64
 umask 077
 private=/mnt/.aurora-proxy-private/$identity
-output=/mnt/project/.aurora-proxy/$identity
-for parent in /mnt /mnt/project /mnt/.aurora-proxy-private /mnt/project/.aurora-proxy; do
+output=/mnt/.aurora-proxy/$identity
+for parent in /mnt /mnt/.aurora-proxy-private /mnt/.aurora-proxy; do
   [ ! -L "$parent" ] || exit 65
 done
-mkdir -p /mnt/.aurora-proxy-private /mnt/project/.aurora-proxy
+mkdir -p /mnt/.aurora-proxy-private /mnt/.aurora-proxy
 mkdir "$private" "$output"
 mkdir "$private/tmp" "$private/ca"
 export TMPDIR="$private/tmp"

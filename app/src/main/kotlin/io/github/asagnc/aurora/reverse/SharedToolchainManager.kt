@@ -10,8 +10,7 @@ import java.util.UUID
 import io.github.asagnc.aurora.linux.LinuxToolRun
 
 /** Manages shared installed bytes; runtime readiness is separate from installation completion. */
-internal class SharedToolchainManager(private val app: AuroraApplication) {
-    private val network = SkillNetwork()
+internal class SharedToolchainManager(private val app: AuroraApplication, private val network: SkillNetwork = SkillNetwork()) {
     private val store = StaticReverseStore(app.filesDir.toPath().toRealPath().resolve("spaces/resources/static-reverse"),
         inUse = { app.linux.runs.usesToolBundle(it) }) { component, archive, target ->
         if (component in AndroidBuildTools.components)
@@ -21,7 +20,7 @@ internal class SharedToolchainManager(private val app: AuroraApplication) {
         else StaticReversePreparation.prepare(component, archive, target) { path, mode -> Os.chmod(path.toString(), mode) }
     }
     private val qualifications = StaticReverseQualifications()
-    val proxy by lazy { NetworkProxyManager(app, store, qualifications) }
+    val proxy by lazy { NetworkProxyManager(app, store, qualifications, network) }
     @Volatile private var cleanupPending = false
     suspend fun recover() {
         try { store.cleanup(); cleanupPending = false }

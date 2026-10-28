@@ -29,14 +29,15 @@ class SharedToolInstallDeviceTest {
         app.root.connect()
         try {
             check(app.root.linuxExecution != null && app.linux.runs.pendingCount() == 0)
-            val before = app.sharedToolchain.status(app.linux.registry.current(), family)
+            val manager = toolInstallationFixture(app, arguments)
+            val before = manager.status(app.linux.registry.current(), family)
             if (!before.array("installed").contains(string(expected))) {
                 val actual = withTimeout(600_000) {
-                    if (family == "network-proxy") app.sharedToolchain.proxy.install() else app.sharedToolchain.install()
+                    if (family == "network-proxy") manager.proxy.install() else manager.install()
                 }
                 assertEquals(expected, actual)
             }
-            assertTrue(app.sharedToolchain.status(app.linux.registry.current(), family).array("installed").contains(string(expected)))
+            assertTrue(manager.status(app.linux.registry.current(), family).array("installed").contains(string(expected)))
         } finally { app.root.disconnect() }
     }
 }

@@ -929,3 +929,6 @@ f561e10完整CI40327134461及ARM64 SDK产品专项40327139608全部成功，产�
 
 
 2026-10-27续：按用户要求核对Claude官方Skills/插件可信来源、git SHA/归档SHA256、内容审查及企业扫描后取优，选择BC1.86轻量Ed25519；不强制普通Skill签名，不改现有KeyStore/TLS或注册全局provider。354核心含非法点/非规范S新增回归按本轮XML登记；5项Skills真机、普通/浏览器172项、独立启动清理1项、Agent死亡恢复2阶段均通过。opt-in R8专用Java入口验证黄金签名/篡改拒绝/provider不变通过；有两类公共测试边界保留规则，不冒充默认发布APK逐字节验收，随后同调试签名恢复Debug/数据并重建默认发布。工具下载仍超时，Frida spawn/熄屏/完整长时等未通过；4382fc5 CI的Linux spawn标准流回归已修复待新CI。见DEVICE_ACCEPTANCE_20261027与SKILLS_CRYPTO_PROVIDER_PROPOSAL。
+
+
+2026-10-28：真实Root/chroot静态逆向5项及代理2项通过；核实原生workspace/project挂载于guest /mnt，修正代理公私有产物、受票据约束的清理及SDK探针路径，ARM64产品脚本同步实际挂载。固定180MiB输入安装通过，APK手机构建/JNI尚未通过；断连批次明确exit1/scopeRemoved并保留自有缓存继续。当前默认224任务构建/lint通过，354核心/232 Android编译JUnit签名检查通过；dbb5a0a CI40524669781成功。精确证据见DEVICE_ACCEPTANCE_20261027的10月28日接续，不调用付费模型或读取正式密钥。

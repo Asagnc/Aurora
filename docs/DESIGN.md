@@ -258,3 +258,6 @@ The latest calm chat concept and colors-only appearance layout are approved and 
 2026-10-16 composer amendment: the user approved placing speed, cache and context in a separate row below the rounded composer, following their supplied reference. This supersedes the earlier inside-composer placement. Keep details locally anchored and metrics based on actual provider observations.
 
 2026-10-16 approved interactive revision: compact single-surface composer without a nested model field, lightbulb reasoning control, external icon metrics with inline expansion, quieter left-aligned empty state, neutral message surfaces, step-line execution details and bottom-sheet conversation tools. See CHAT_REFINEMENT_2026-10-16.md. Model icons and actual IDs remain; demo tasks and numbers are not production data.
+
+
+2026-10-28：真实Root/chroot静态逆向5项及代理2项通过；核实原生workspace/project挂载于guest /mnt，修正代理公私有产物、受票据约束的清理及SDK探针路径，ARM64产品脚本同步实际挂载。固定180MiB输入安装通过，APK手机构建/JNI尚未通过；断连批次明确exit1/scopeRemoved并保留自有缓存继续。当前默认224任务构建/lint通过，354核心/232 Android编译JUnit签名检查通过；dbb5a0a CI40524669781成功。精确证据见DEVICE_ACCEPTANCE_20261027的10月28日接续，不调用付费模型或读取正式密钥。

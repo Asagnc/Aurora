@@ -32,6 +32,15 @@
 
 4382fc5完整CI40519975449的socket、managed-supervision、capture通过，整体因Linux spawn继承目标stdout导致JSON污染/pipe持有而失败；已将inherit限制为Android，Linux恢复PIPE，须新CI复验。新的完整源码发布审查包尚待刷新，历史f561e10包保持历史证据。
 
-## 实现依据
+## 2026-10-28 接续
+
+- dbb5a0a完整CI40524669781成功，包含修复后的Linux Frida标准流及socket/managed-supervision/capture专项。
+- 静态逆向实际Root/chroot工具运行5项通过；代理安装和实际HTTP/HTTPS/未信任CA/WebSocket/离线读取及缓存清理2项通过。原实现把guest `/mnt`误认作workspace而非workspace/project，导致代理公有产物、私有缓存及APK探针路径多了一层project；现统一实际挂载路径，缓存仍需原有精确票据、停止和scopeRemoved证明，新增project挂载屏障。ARM64产品资格脚本同步生产挂载，需新工作流重跑。
+- 手机共享SDK安装通过，包括固定180MiB原生归档经FileProvider输入；不是可视SAF chooser验收。安装测试显式离线输入只服务编译目录中固定URL/长度的归档，生产安装器仍验证SHA；不算手机官方网络下载资格。
+- 首次手机构建探针270秒超时，作用域确认清理，不能计JNI通过。新诊断用例保持测试Activity亮屏，并可保留已确认退出的自有会话缓存；复测已进入实际Gradle依赖解析。其间USB调试重新开关令ADB中断，任务最终exit1/scopeRemoved=true，日志明确为测试专用loopback下载连接拒绝；复用原会话继续，不重放未知任务。
+- Windows原生ADB后端看不到已存在的WinUSB接口，使用官方支持的LIBUSB后端后恢复连接；未装驱动/IDE、撤销授权或清除App数据。临时CONNECT只允许固定官方主机，TLS端到端，不改设备全局代理/CA，结束移除自己的reverse。
+- 当前路径修复后默认Debug/Release/R8/AndroidTest/lint完整224任务通过；编译后354核心、232 Android @Test均void。新增APK/JNI设备用例尚未通过，不混入此前通过计数。正式密钥、付费模型仍未使用。
+
+## 实现依据（延续）
 
 现有guard/cgroup/journal与NETLINK路线保持，不新增daemon或任务持久格式。Linux内核/proc children受CONFIG_PROC_CHILDREN控制，且退出并发下空列表不构成无子进程证明：[Linux手册](https://man7.org/linux/man-pages/man5/proc_tid_children.5.html)、[waitid语义](https://man7.org/linux/man-pages/man2/waitpid.2.html)。NETLINK UID按查询socket的user namespace映射：[Linux inet_diag实现](https://github.com/torvalds/linux/blob/master/net/ipv4/inet_diag.c)；USER_NS配置：[Android内核源码](https://android.googlesource.com/kernel/common/+/refs/heads/android-mainline/init/Kconfig)。Frida采用固定17.24.3/Java bridge7.0.13，已核对其打包源和[固定Linux后端源码](https://github.com/frida/frida-core/blob/17.24.3/src/linux/linux-host-session.vala)。
