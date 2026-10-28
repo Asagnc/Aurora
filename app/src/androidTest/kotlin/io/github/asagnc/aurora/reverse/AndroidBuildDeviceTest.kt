@@ -14,6 +14,7 @@ import io.github.asagnc.aurora.AuroraApplication
 import io.github.asagnc.aurora.MainActivity
 import io.github.asagnc.aurora.core.*
 import io.github.asagnc.aurora.linux.LinuxAgentEnvironment
+import io.github.asagnc.aurora.linux.LinuxToolRun
 import io.github.asagnc.aurora.root.RootRequired
 import java.nio.file.Files
 import java.nio.file.LinkOption
@@ -63,6 +64,21 @@ class AndroidBuildDeviceTest {
         } }
     }
 
+    /** Reuses only this fixture's generated project; never grants runtime qualification. */
+    private suspend fun diagnostic(app: AuroraApplication, owner: String, project: String): Nothing {
+        require(java.util.UUID.fromString(project).toString() == project)
+        val environment = LinuxAgentEnvironment(app.linux, owner)
+        try {
+            val generation = environment.generation()
+            val identity = requireNotNull(app.root.linuxExecution?.identity)
+            val id = java.util.UUID.randomUUID().toString()
+            val result = app.linux.runs.executeTools(owner, LinuxToolRun(listOf(AndroidBuildRuntime.launcherPath,
+                "/mnt/.aurora-apk-probes/$project", "--info", "assembleRelease"), AndroidBuildTools.bundleId,
+                270_000, id, identity), generation)
+            error("Diagnostic only; runtime qualification not granted. logs=runs/$id completion=${result["completion"]}")
+        } finally { environment.close() }
+    }
+
     private suspend fun install(app: AuroraApplication, owner: String, args: Bundle) {
         if (app.sharedToolchain.status(app.linux.registry.current(), "android-build").array("installed").contains(string(AndroidBuildTools.bundleId))) {
             InstrumentationRegistry.getInstrumentation().sendStatus(2, Bundle().apply { putString("stream", "AURORA_APK_INSTALLED_BUNDLE_REUSED\n") })
@@ -90,6 +106,7 @@ class AndroidBuildDeviceTest {
                 assertEquals(setup.toString(), JsonPrimitive(true), setup["stopped"])
                 assertEquals(0L, setup["completion"]?.jsonObject?.number("exitCode"))
             }
+            args.getString("auroraBuildDiagnosticProject")?.let { diagnostic(app, owner, it) }
             val result = app.sharedToolchain.probeAndroid(owner, generation) { }
             assertEquals(result.toString(), JsonPrimitive(true), result["qualified"])
             assertEquals(JsonPrimitive(true), app.sharedToolchain.status(generation, "android-build")["runtimeReady"])

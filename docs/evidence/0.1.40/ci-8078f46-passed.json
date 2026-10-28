@@ -1,0 +1,1 @@
+{"conclusion":"success","headSha":"8078f46e6409a707a7b6b6700c0f64655a6bd899","jobs":[{"conclusion":"success","name":"managed-supervision"},{"conclusion":"success","name":"capture-primitives"},{"conclusion":"success","name":"frida-session"},{"conclusion":"success","name":"socket-diag"},{"conclusion":"success","name":"test"}],"runId":40685540287}

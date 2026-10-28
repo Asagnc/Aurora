@@ -41,6 +41,14 @@
 - Windows原生ADB后端看不到已存在的WinUSB接口，使用官方支持的LIBUSB后端后恢复连接；未装驱动/IDE、撤销授权或清除App数据。临时CONNECT只允许固定官方主机，TLS端到端，不改设备全局代理/CA，结束移除自己的reverse。
 - 当前路径修复后默认Debug/Release/R8/AndroidTest/lint完整224任务通过；编译后354核心、232 Android @Test均void。新增APK/JNI设备用例尚未通过，不混入此前通过计数。正式密钥、付费模型仍未使用。
 
+- 最新标准手机SDK探针1项通过，41.816秒：同一不可变只读工具包，真实Java/Compose/双ABI JNI构建、zipalign 16KiB/ELF检查、Root文件桥导出，普通App UID的DexClassLoader实际nativeMarker返回owned-42，会话正常删除。依赖缓存已预热，不算冷缓存首跑通过；此前270秒超时仍保留。详细诊断复用旧项目assembleRelease成功（99秒，53任务16执行/37缓存），仅诊断不授予资格。实际标准探针最终通过才登记当前Root/环境/工具资格。见evidence/0.1.40/android-build-device-20261028.json。
+- 8078f46完整CI40685540287、ARM64代理40685566575、ARM64 SDK安装/readonly产品探针40685573229全部成功，实际报告已归档；各自范围不相互冒充手机/正式签名资格。
+
+- APK诊断入口仅显式auroraBuildDiagnosticProject使用已生成的自有UUID项目与同一270秒/工具租约，--info记录实际任务；始终以“诊断、未授予资格”结束，不伪装测试通过。Frida新增显式保留失败夹具选项，只在恢复确认后保留自有会话供诊断，unknown仍阻断清理。两项诊断夹具编译及lint共108任务成功。
+
+- 30分钟采集首次在启动阶段失败，真实定位RootManagedProcessWait硬编码275秒；现增加采集专用1,825,000毫秒入口，保留Frida/普通命令上限和原取消/强退未知语义。Root命令级错误现在映射为managed_outcome_uncertain、无exit/cleanup事实，仍保留intent。两项核心回归及完整224任务通过；356核心340通过/16跳过，356/233编译JUnit均void。修复后30分钟亮屏loopback夹具正在运行，未计通过。
+- Frida自有包spawn复测仍在attach阶段Agent connection closed unexpectedly，已确认退休/resourcesClear；显式保留诊断owner 6b5fe7fd-ba7f-447a-b09a-01e5eb495982。近期自有目标日志/内核环形日志没有取得直接AVC证据，不据此断言SELinux根因。上游17.24.3 server/server-glue.c会调用修改全局策略的frida_selinux_patch_policy，当前未调用，不把该操作当例行修复。
+
 ## 实现依据（延续）
 
 现有guard/cgroup/journal与NETLINK路线保持，不新增daemon或任务持久格式。Linux内核/proc children受CONFIG_PROC_CHILDREN控制，且退出并发下空列表不构成无子进程证明：[Linux手册](https://man7.org/linux/man-pages/man5/proc_tid_children.5.html)、[waitid语义](https://man7.org/linux/man-pages/man2/waitpid.2.html)。NETLINK UID按查询socket的user namespace映射：[Linux inet_diag实现](https://github.com/torvalds/linux/blob/master/net/ipv4/inet_diag.c)；USER_NS配置：[Android内核源码](https://android.googlesource.com/kernel/common/+/refs/heads/android-mainline/init/Kconfig)。Frida采用固定17.24.3/Java bridge7.0.13，已核对其打包源和[固定Linux后端源码](https://github.com/frida/frida-core/blob/17.24.3/src/linux/linux-host-session.vala)。

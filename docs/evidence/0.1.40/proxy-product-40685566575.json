@@ -1,0 +1,199 @@
+{
+  "productionProfiles": {
+    "aurora-proxy": "6529b1c5384fd1d370873730862d61fd8dc99426e461418e631374501deea0dd",
+    "aurora-proxy-probe": "8828bb80292cbbfd15d11c0bbf9ed42257835c3ed6d5d69a4a2282905a5f5aab",
+    "aurora-proxy-read": "0a47d9077df8a992a77e82c4d8317bb2699503f0e9110d3e744f4f626a49aecc",
+    "aurora_proxy.py": "f083322c81a43a76e23aeb85e45632dd5e11014905b7f52723dbccc13d3d8c1f",
+    "aurora_proxy_probe.py": "f72cc52cc9ef4091c035dc3e463702129db58cf86f783869f9c6879e2b232165",
+    "aurora_proxy_read.py": "54b09f4fd7096712096dbbe52c3791974afaa0f0a99ed1cd53a2cf1ea5131e89",
+    "aurora_proxy_rules.py": "cee883fc014a823baf8d6729361d8ee9c032ef4b3c81f75afb165781471f9db1",
+    "mitmproxy-LICENSE": "cc4ab04ed7180af6c0ede7147f9ec2aa05212c088d7b3c8e38bbffe91c9c8f82"
+  },
+  "archiveSha256": "f8756fa831c4abe431dd922ae7291b158b465285562b35d12e5669cbfc29d1f3",
+  "final": {
+    "protocol": 1,
+    "id": "f9304eda-5f3d-4bdd-ba73-bc201a4388dc",
+    "port": 56075,
+    "probe": true,
+    "configSha256": "7c8804b8adaaf6f31e699dba3fa6c2a89d001d90424580c3c45a5aaf13b824f7",
+    "reason": "probe_complete",
+    "seenFlows": 3,
+    "completedFlows": 3,
+    "events": 4,
+    "storedBytes": 9075,
+    "elapsedSeconds": 1.116,
+    "storedBytesExcludesFinalRecord": true,
+    "scope": "Bounded stored HTTP flows and separate accepted WebSocket messages; upstream transient parser buffers are not a hard heap quota"
+  },
+  "inspection": {
+    "session": "f9304eda-5f3d-4bdd-ba73-bc201a4388dc",
+    "flows": [
+      {
+        "id": "b5efb543-aa37-4041-94ca-fd61cfd9c7f6",
+        "method": "GET",
+        "scheme": "http",
+        "host": "127.0.0.1",
+        "port": 38441,
+        "path": "/owned-http",
+        "requestHeaders": [
+          [
+            "Host",
+            "127.0.0.1:38441"
+          ],
+          [
+            "Accept-Encoding",
+            "identity"
+          ],
+          [
+            "X-Aurora-Fixture",
+            "modified"
+          ]
+        ],
+        "responseHeaders": [
+          [
+            "Server",
+            "BaseHTTP/0.6 Python/3.14.0"
+          ],
+          [
+            "Date",
+            "Wed, 28 Oct 2026 12:09:59 GMT"
+          ],
+          [
+            "Content-Length",
+            "14"
+          ],
+          [
+            "X-Aurora-Response",
+            "modified"
+          ]
+        ],
+        "status": 200,
+        "requestRawBytes": 0,
+        "responseRawBytes": 14,
+        "requestRawPreviewBase64": "",
+        "responseRawPreviewBase64": "b3duZWQtbW9kaWZpZWQ=",
+        "error": false,
+        "websocket": false
+      },
+      {
+        "id": "e009f278-81d8-44de-8ca2-62db4de7dc35",
+        "method": "GET",
+        "scheme": "https",
+        "host": "127.0.0.1",
+        "port": 41713,
+        "path": "/owned-http",
+        "requestHeaders": [
+          [
+            "Host",
+            "127.0.0.1:41713"
+          ],
+          [
+            "Accept-Encoding",
+            "identity"
+          ],
+          [
+            "X-Aurora-Fixture",
+            "modified"
+          ]
+        ],
+        "responseHeaders": [
+          [
+            "Server",
+            "BaseHTTP/0.6 Python/3.14.0"
+          ],
+          [
+            "Date",
+            "Wed, 28 Oct 2026 12:09:59 GMT"
+          ],
+          [
+            "Content-Length",
+            "14"
+          ],
+          [
+            "X-Aurora-Response",
+            "modified"
+          ]
+        ],
+        "status": 200,
+        "requestRawBytes": 0,
+        "responseRawBytes": 14,
+        "requestRawPreviewBase64": "",
+        "responseRawPreviewBase64": "b3duZWQtbW9kaWZpZWQ=",
+        "error": false,
+        "websocket": false
+      },
+      {
+        "id": "8f7abcb3-907d-471e-a2a7-5dfbaa337ded",
+        "method": "GET",
+        "scheme": "http",
+        "host": "127.0.0.1",
+        "port": 38441,
+        "path": "/owned-ws",
+        "requestHeaders": [
+          [
+            "Host",
+            "127.0.0.1:38441"
+          ],
+          [
+            "Upgrade",
+            "websocket"
+          ],
+          [
+            "Connection",
+            "Upgrade"
+          ],
+          [
+            "Sec-WebSocket-Key",
+            "PoRlnDKQ8cFvhSQq+77KjA=="
+          ],
+          [
+            "Sec-WebSocket-Version",
+            "13"
+          ],
+          [
+            "X-Aurora-Fixture",
+            "modified"
+          ]
+        ],
+        "responseHeaders": [
+          [
+            "Server",
+            "BaseHTTP/0.6 Python/3.14.0"
+          ],
+          [
+            "Date",
+            "Wed, 28 Oct 2026 12:09:59 GMT"
+          ],
+          [
+            "Upgrade",
+            "websocket"
+          ],
+          [
+            "Connection",
+            "Upgrade"
+          ],
+          [
+            "Sec-WebSocket-Accept",
+            "QvY3fji0lH+LDiI/vkvtJ4cAJPI="
+          ]
+        ],
+        "status": 101,
+        "requestRawBytes": 0,
+        "responseRawBytes": 0,
+        "requestRawPreviewBase64": "",
+        "responseRawPreviewBase64": "",
+        "error": false,
+        "websocket": true
+      }
+    ],
+    "next": null,
+    "complete": true,
+    "parseError": false,
+    "scope": "Stored HTTP flows; full accepted WebSocket messages are separate indexed artifacts. Sensitive headers and query strings are omitted; body previews may still contain application data."
+  },
+  "ownedHttpHttpsWebsocketQualified": true,
+  "untrustedCaRejected": true,
+  "publicCaOnly": true,
+  "androidRuntimeQualified": false,
+  "scope": "Actual immutable production profiles and selected pinned standalone binary in a readonly private ARM64 Linux namespace; not Android Binder/PTY/cgroup qualification"
+}

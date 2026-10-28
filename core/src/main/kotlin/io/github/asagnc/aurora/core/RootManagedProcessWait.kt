@@ -12,6 +12,16 @@ object RootManagedProcessWait {
 
     fun await(process: Process, budgetMs: Long): RootManagedProcessExit {
         require(budgetMs in 1..275_000)
+        return wait(process, budgetMs)
+    }
+
+    /** Capture keeps its approved 30-minute duration plus native cleanup allowance. */
+    fun awaitCapture(process: Process, budgetMs: Long): RootManagedProcessExit {
+        require(budgetMs in 1..1_825_000)
+        return wait(process, budgetMs)
+    }
+
+    private fun wait(process: Process, budgetMs: Long): RootManagedProcessExit {
         var deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(budgetMs)
         var interrupted = Thread.interrupted()
         var cancelled = false

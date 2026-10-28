@@ -3,6 +3,18 @@ package io.github.asagnc.aurora.core
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.json.*
+
+/** A Binder command failure has no managed exit facts and must retain the immutable intent. */
+fun decodeRootManagedResponse(encoded: String, ticket: RootManagedRunTicket): RootManagedResult {
+    require(encoded.length <= 8192)
+    val response = WireJson.parseToJsonElement(encoded).jsonObject
+    val result = if (response.text("error") == "command_outcome_uncertain") {
+        require(response.keys == setOf("error", "reason") && response.text("reason")?.length in 1..256)
+        RootManagedResult(ticket.runId, ticket.digest(), error = "managed_outcome_uncertain")
+    } else WireJson.decodeFromString<RootManagedResult>(encoded)
+    return result.also { it.validate(ticket) }
+}
 
 /** Small authenticated Binder result. Transport completion never substitutes for a cleanup proof. */
 @Serializable

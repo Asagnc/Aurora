@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-28",
+  "sourceCommit": "8078f46e6409a707a7b6b6700c0f64655a6bd899",
+  "device": "RMX3850 ARM64 Android 16 API36",
+  "application": "0.1.40 code41 existing debug signer, data retained",
+  "test": "AndroidBuildDeviceTest.fixedNativeArchiveThroughProviderThenRealReadonlyBuildProbe",
+  "passed": 1,
+  "failed": 0,
+  "elapsedSeconds": 41.816,
+  "installedBundle": "80d9f127aa5a8e7731b4c5294c8a9d7200e31325e2a52e9a5b5ef031306e6dd7",
+  "scope": [
+    "existing fixed archive installation via FileProvider, not visual SAF",
+    "same immutable readonly production SDK probe with warmed dependency cache",
+    "real Compose Java and dual-ABI JNI APK build",
+    "zipalign 16KiB and ELF machine/export checks",
+    "Root file bridge APK export",
+    "ordinary Android UID DexClassLoader and nativeMarker returned owned-42",
+    "known fixture conversation deleted after no pending tasks"
+  ],
+  "coldCacheQualified": false,
+  "formalSigningQualified": false,
+  "paidModelsUsed": false,
+  "priorFailures": [
+    "270s cold/incomplete-cache timeouts with scopeRemoved=true",
+    "USB debug reconnection interrupted temporary dependency tunnel; exit1/scopeRemoved=true"
+  ],
+  "diagnosticBuild": {
+    "elapsedSeconds": 99,
+    "exitCode": 0,
+    "tasks": 53,
+    "executed": 16,
+    "upToDate": 37,
+    "runtimeQualificationGranted": false
+  }
+}

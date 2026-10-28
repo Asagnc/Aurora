@@ -55,7 +55,7 @@ internal class RootManagedClient(private val remote: IRootControl, context: Cont
                 finally { RootManagedWire.close(owned) }
             }
             val encoded = withTimeout(budget) { result.await() }.also { require(it.length <= 8192) }
-            WireJson.decodeFromString<RootManagedResult>(encoded).also { it.validate(ticket) }
+            decodeRootManagedResponse(encoded, ticket)
         } finally {
             try {
                 withContext(NonCancellable + Dispatchers.IO) { runCatching { remote.cancelAndWait(ticket.runId) } }

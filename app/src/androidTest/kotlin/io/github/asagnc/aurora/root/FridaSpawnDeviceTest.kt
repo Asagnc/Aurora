@@ -7,6 +7,7 @@ import io.github.asagnc.aurora.core.*
 import java.nio.file.Files
 import java.security.MessageDigest
 import java.util.UUID
+import android.os.Bundle
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.*
 import org.junit.Assert.*
@@ -29,6 +30,7 @@ class FridaSpawnDeviceTest {
         app.root.connect()
         check(app.root.state.value.phase == RootPhase.READY)
         val owner = app.conversations.create("Aurora owned spawn qualification")
+        instrumentation.sendStatus(2, Bundle().apply { putString("stream", "AURORA_FRIDA_FIXTURE_OWNER=$owner\n") })
         var failure: Throwable? = null
         try {
             withTimeout(240_000) { qualify(app, owner) }
@@ -42,7 +44,8 @@ class FridaSpawnDeviceTest {
                 }.exceptionOrNull()
                 try {
                     check(app.managedRuns.recover(owner) == 0) { "Unconfirmed spawn fixture retained: $owner" }
-                    app.spaces.delete(owner, app.tasks::quiesce)
+                    if (failure == null || arguments.getString("auroraRetainFridaFailure") != "true")
+                        app.spaces.delete(owner, app.tasks::quiesce)
                 } catch (cleanup: Throwable) {
                     if (cleanupFailure != null) cleanupFailure.addSuppressed(cleanup) else cleanupFailure = cleanup
                 }

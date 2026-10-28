@@ -932,3 +932,9 @@ f561e10完整CI40327134461及ARM64 SDK产品专项40327139608全部成功，产�
 
 
 2026-10-28：真实Root/chroot静态逆向5项及代理2项通过；核实原生workspace/project挂载于guest /mnt，修正代理公私有产物、受票据约束的清理及SDK探针路径，ARM64产品脚本同步实际挂载。固定180MiB输入安装通过，APK手机构建/JNI尚未通过；断连批次明确exit1/scopeRemoved并保留自有缓存继续。当前默认224任务构建/lint通过，354核心/232 Android编译JUnit签名检查通过；dbb5a0a CI40524669781成功。精确证据见DEVICE_ACCEPTANCE_20261027的10月28日接续，不调用付费模型或读取正式密钥。
+
+
+2026-10-28续：8078f46完整CI40685540287、代理ARM64产品40685566575、SDK ARM64产品40685573229全部成功，报告归档。手机标准SDK探针经预热依赖缓存41.816秒通过，真实Compose/双ABI JNI构建、16KiB/ELF检查、Root导出及普通UID实际nativeMarker=owned-42，随后精确删除自有测试会话。此前冷缓存270秒超时仍失败，不冒充首跑资格。诊断旧项目assembleRelease99秒成功；诊断不授予运行资格，不扩大270秒预算。新增详细诊断/失败夹具保留、编译和lint108任务通过。
+
+
+2026-10-28长时采集接续：实际1800秒入口发现RootManagedProcessWait仍限275秒，启动后立即抛参量异常。增加采集专用awaitCapture上限1,825,000毫秒（已批准1800秒＋25秒现有退出预算），Frida/default await仍275秒；不改普通命令、票据、持久格式或取消证明。Binder命令级不确定响应转成无exit/cleanup事实的managed_outcome_uncertain，保留intent，不再误解为缺少runId的序列化异常。两项核心回归通过；356核心340通过/16跳过，完整Debug/Release/R8/AndroidTest/lint224任务成功，356/233编译JUnit均void。已同签名覆盖并开始实际30分钟亮屏自有loopback测试，目前运行中，尚未通过。

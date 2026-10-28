@@ -8,6 +8,14 @@ import javax.tools.ToolProvider
 import kotlin.test.*
 
 class RootManagedProcessWaitTest {
+    @Test fun captureAcceptsItsFullBudgetWhileFridaStillRejectsIt() = fixture { directory ->
+        child(directory, 20).useChild { process ->
+            assertFailsWith<IllegalArgumentException> { RootManagedProcessWait.await(process, 1_825_000) }
+            assertFailsWith<IllegalArgumentException> { RootManagedProcessWait.awaitCapture(process, 1_825_001) }
+            assertEquals(RootManagedProcessExit(7, false, false), RootManagedProcessWait.awaitCapture(process, 1_825_000))
+        }
+    }
+
     @Test fun normalCoordinatorExitKeepsItsCode() = fixture { directory ->
         child(directory, 20).useChild { process ->
             assertEquals(RootManagedProcessExit(7, false, false), RootManagedProcessWait.await(process, 5_000))

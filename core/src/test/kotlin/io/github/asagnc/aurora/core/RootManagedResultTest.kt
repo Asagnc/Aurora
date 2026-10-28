@@ -10,6 +10,14 @@ class RootManagedResultTest {
         10000, "test", "a".repeat(64), RootTargetIdentity(90, 900), RootScriptSnapshot("test", "b".repeat(64), 1))
     private val proof = RootManagedExitProof(ticket.runId, ticket.identity, ticket.digest(), true, true, true, true, true)
 
+    @Test fun binderCommandFailureRetainsIntentWithoutInventingExitFacts() {
+        val result = decodeRootManagedResponse("""{"error":"command_outcome_uncertain","reason":"IllegalArgumentException"}""", ticket)
+        assertEquals("managed_outcome_uncertain", result.error)
+        assertFalse(result.confirmed); assertFalse(result.successful)
+        assertNull(result.exitCode); assertNull(result.workerStatus)
+        assertFails { decodeRootManagedResponse("""{"error":"command_outcome_uncertain","reason":"failure","cleanup":{}}""", ticket) }
+    }
+
     @Test fun successfulTransportWithoutCleanupDoesNotReleaseIntent() {
         val result = RootManagedResult(ticket.runId, ticket.digest(), exitCode = 0, workerStatus = 0)
         result.validate(ticket)
@@ -20,7 +28,7 @@ class RootManagedResultTest {
     @Test fun failedExecutionCanHaveConfirmedCleanupWithoutClaimingSuccess() {
         val result = RootManagedResult(ticket.runId, ticket.digest(), cleanup = proof, exitCode = 1, workerStatus = 1,
             error = "managed_execution_failed")
-        val decoded = WireJson.decodeFromString<RootManagedResult>(WireJson.encodeToString(result))
+        val decoded = decodeRootManagedResponse(WireJson.encodeToString(result), ticket)
         decoded.validate(ticket); assertTrue(decoded.confirmed); assertFalse(decoded.successful)
         assertTrue(result.copy(exitCode = 0, workerStatus = 0, error = null).successful)
     }

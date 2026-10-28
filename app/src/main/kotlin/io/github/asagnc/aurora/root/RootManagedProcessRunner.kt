@@ -31,7 +31,7 @@ internal class RootManagedProcessRunner(private val identity: () -> LinuxRootIde
         guard.usePath { helper -> worker.usePath { executable ->
             launch(state, listOf(helper, "run") + key(ticket, state) + listOf("--observe-ms", ticket.observeMs.toString()) +
                 (if (ticket.kind == "capture") listOf("--kind", "capture") else emptyList()) +
-                listOf("--cooperative-cancel", "--", executable) + arguments, ticket.timeoutMs + 5_000, "worker-events.log")
+                listOf("--cooperative-cancel", "--", executable) + arguments, ticket.timeoutMs + 5_000, "worker-events.log", ticket.kind == "capture")
         } }
     }
 
@@ -46,7 +46,7 @@ internal class RootManagedProcessRunner(private val identity: () -> LinuxRootIde
         "--state-dir", state.toString(), "--run-id", ticket.runId, "--ticket-sha", ticket.digest())
 
     private fun launch(state: Path, arguments: List<String>, budgetMs: Long,
-        logName: String = "coordinator-${UUID.randomUUID()}.log"): RootManagedProcessExit {
+        logName: String = "coordinator-${UUID.randomUUID()}.log", capture: Boolean = false): RootManagedProcessExit {
         check(Process.myUid() == 0) { "Managed native tasks require Root" }
         require(state.isAbsolute && state.normalize() == state)
         if (Thread.currentThread().isInterrupted) throw InterruptedException()
@@ -59,12 +59,12 @@ internal class RootManagedProcessRunner(private val identity: () -> LinuxRootIde
             ParcelFileDescriptor.dup(directory).use { pinned ->
                 val log = Os.open("/proc/self/fd/${pinned.fd}/$logName",
                     O_WRONLY or O_CREAT or O_EXCL or O_NOFOLLOW or O_CLOEXEC, 384)
-                try { return execute(state, arguments, log, budgetMs) } finally { Os.close(log) }
+                try { return execute(state, arguments, log, budgetMs, capture) } finally { Os.close(log) }
             }
         } finally { Os.close(directory) }
     }
 
-    private fun execute(state: Path, arguments: List<String>, log: java.io.FileDescriptor, budgetMs: Long): RootManagedProcessExit =
+    private fun execute(state: Path, arguments: List<String>, log: java.io.FileDescriptor, budgetMs: Long, capture: Boolean): RootManagedProcessExit =
         ParcelFileDescriptor.dup(log).use { pinned ->
             val process = ProcessBuilder(arguments).directory(state.toFile())
                 .redirectInput(File("/dev/null")).redirectErrorStream(true)
@@ -79,7 +79,7 @@ internal class RootManagedProcessRunner(private val identity: () -> LinuxRootIde
                     }
                 } }
                 .start()
-            try { RootManagedProcessWait.await(process, budgetMs) }
+            try { if (capture) RootManagedProcessWait.awaitCapture(process, budgetMs) else RootManagedProcessWait.await(process, budgetMs) }
             catch (failure: Throwable) {
                 if (process.isAlive) {
                     try { process.destroy(); RootManagedProcessWait.await(process, 26_000) }
