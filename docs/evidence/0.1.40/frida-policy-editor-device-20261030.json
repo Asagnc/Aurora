@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-30",
+  "scope": "Pure policy editor in packaged Frida worker; no production activation or policy qualification granted",
+  "workerSha256": "1546b5f6ab3c0bd2333e0cf27372313182ee90dfd9c49d22a65b50d896d0ca68",
+  "kernelHashUnchanged": true,
+  "kernelWritten": false,
+  "policyQualified": false,
+  "casesPassed": 17,
+  "cases": {
+    "prepare": 0,
+    "verifyCandidate": 0,
+    "verifyKernel": 0,
+    "existingOutput": 1,
+    "malformed": 1,
+    "symlink": 1,
+    "attributeSource": 1,
+    "sameSource": 1,
+    "alreadyAdapted": 1,
+    "existingKernelLoad": 1,
+    "audit_none": 0,
+    "audit_extra_attribute": 0,
+    "audit_missing_attribute": 0,
+    "audit_extra_permission": 0,
+    "audit_broader_source": 0,
+    "audit_permissive_type": 0,
+    "audit_bounds": 0
+  },
+  "offlineRelink": {
+    "offlineWorkerRelink": true,
+    "upstreamSdkRebuilt": false,
+    "androidRuntime": "NOT TESTED",
+    "sourceArchiveSha256": "ceb8cc2a26cc786950fc3339266fccc6fc507b933ca4b9009c3078db5ae62ef3",
+    "workerSha256": "1546b5f6ab3c0bd2333e0cf27372313182ee90dfd9c49d22a65b50d896d0ca68",
+    "workerBytes": 89341216,
+    "sourceArchives": 65
+  },
+  "build": {
+    "tasks": 224,
+    "result": "success"
+  },
+  "limitations": [
+    "No explicit Binder/UI activation yet",
+    "No new boot, Root revocation, screen-off or background qualification",
+    "No formal signing or paid model calls"
+  ],
+  "fridaDeviceRegression": {
+    "passed": 5,
+    "seconds": 111.947,
+    "hostWakeIntervention": false,
+    "cases": [
+      "Root native/selected attach/ART/status",
+      "ordinary owned App attach",
+      "early owned ART spawn hook",
+      "script error before resume retires captured target",
+      "cancel after injection preserves original App process"
+    ]
+  }
+}

@@ -1001,3 +1001,8 @@ App进程死亡两阶段专项通过：prepare仅在自有fixture已捕获/注�
 2026-10-30 worker实际SIGKILL专项1项通过17.373秒。仅自有fixture持久resume确认且已真实注入后，从绑定票据/boot的Root READY记录取worker PID/startTicks；宿主pidfd校验并拒绝错误ticks再发SIGKILL。原目标同PID/ticks仍存活时，恢复保持unknown、pending1，删除被阻断，资源退出不冒充脚本卸载；只在显式停止该固定fixture后，以真实targetExit证明清账，cleanup仍null，pending归零并删除本次自有会话。没有强制清未知记录或重放，两个历史捕获前unknown保持。复用测试调用辅助类，不改产品协议/持久格式。
 
 更新完整审查包release-review-16abd22-complete绑定16abd2246873591b7df9f49ed4c88e39cecad82c且打包时clean；9项载荷/重建报告1,690,959,613字节，APK45,074,402字节，10条校验独立复核，worker离线重链接及guard重建通过，unsigned-review/releaseReady=false。参见RELEASE_REVIEW_20261030。当前主线继续接续策略显式启用及身份/boot门控，不把本次临时全局策略资格当已有产品入口。
+
+
+2026-10-30策略编辑器接续：将已批准最小策略的纯内存编辑、精确类型/属性/约束与两条allow差异审计移入现有Frida worker，复用固定SDK内libsepol及固定源码49份头文件；无新增动态库，不写selinuxfs/load，不授予policyQualified。独立正向复核实际发现固定avtab读取会反转同key的xperm序列，现只允许与原始策略派生的两个完整序列化字节像之一相等，不按字段忽略差异。最终worker 1546b5f6ab3c0bd2333e0cf27372313182ee90dfd9c49d22a65b50d896d0ca68：手机10项命令边界及正向/6项越权变体共17项通过，内核策略摘要前后不变；拒绝已有输出、坏格式、链接、属性域、相同源域、已有专用类型及向已存在load路径写候选。5项构建输入/归档守卫通过，完整224任务通过，65份来源源码包完全离线重链接得到同worker。显式启用/Binder/UI与boot/身份门控仍待，不把本次纯编辑器验证记成生产策略启用；详见evidence/0.1.40/frida-policy-editor-device-20261030.json。af451ab完整CI40910882424已成功。
+
+同最终worker覆盖安装后，无宿主中途唤醒的Frida亮屏5项回归全部通过111.947秒（Root native/selected attach/ART/status、普通App attach、早期ART spawn、resume前脚本异常及注入后取消保活）；未扩成后台/撤权/新boot资格。

@@ -135,7 +135,8 @@ val fridaWorker = tasks.register<BuildFridaWorker>("buildFridaWorker") {
     ndk.set(androidComponents.sdkComponents.ndkDirectory)
     toolchainVersion.set(android.ndkVersion)
     sources.from(rootProject.fileTree("app/src/main/cpp/frida") { include("*.c", "*.h") },
-        rootProject.files("scripts/build-frida-probe.py", "scripts/audit-frida-resources.py", "scripts/verify-static-reverse-sources.py"))
+        rootProject.files("scripts/build-frida-probe.py", "scripts/audit-frida-resources.py", "scripts/verify-static-reverse-sources.py",
+            "scripts/frida-policy-inputs.py", "tools/frida-sources/catalog.json"))
     outputDirectory.set(layout.buildDirectory.dir("frida-worker"))
 }
 

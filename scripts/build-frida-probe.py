@@ -23,12 +23,19 @@ URL = "https://github.com/frida/frida/releases/download/17.24.3/" + NAME
 def source_manifest():
     paths = sorted((ROOT / 'app/src/main/cpp/frida').glob('*.[ch]'))
     paths += [ROOT / 'scripts' / name for name in
-              ['build-frida-probe.py', 'audit-frida-resources.py', 'verify-static-reverse-sources.py']]
+              ['build-frida-probe.py', 'audit-frida-resources.py', 'verify-static-reverse-sources.py', 'frida-policy-inputs.py']]
     return {str(path.relative_to(ROOT)).replace('\\', '/'): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
 
 
 def source_helpers():
     spec = importlib.util.spec_from_file_location("pinned_sources", ROOT / "scripts/verify-static-reverse-sources.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def policy_inputs():
+    spec = importlib.util.spec_from_file_location('policy_inputs', ROOT / 'scripts/frida-policy-inputs.py')
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -80,11 +87,15 @@ def build(args, archive, output):
     with tempfile.TemporaryDirectory(prefix=".frida-build-", dir=output) as temporary:
         work = Path(temporary)
         extract(archive, work)
+        policy = policy_inputs()
+        policy_archive = policy.acquire(output, ROOT, source_helpers(), getattr(args, 'download', False))
+        header_count = policy.headers(policy_archive, work)
+        policy.symbols(tools / ('llvm-nm' + suffix), work / 'libfrida-core.a', work)
         binary = work / "worker"
         link_map = work / "worker.map"
         argv = [str(compiler), "-DANDROID", "-Wall", "-Wextra", "-Werror", "-Os",
-                "-ffunction-sections", "-fdata-sections", "-fstack-protector-strong", "-I" + str(work),
-                *[str(ROOT / "app/src/main/cpp/frida" / name) for name in ["worker.c", "input.c", "channel_input.c", "fd_channel.c", "fd_io.c", "managed_control.c", "managed_protocol.c", "managed_watch.c", "events.c", "session.c", "spawn_record.c", "spawn_session.c"]],
+                "-ffunction-sections", "-fdata-sections", "-fstack-protector-strong", "-I" + str(work), "-I" + str(work / 'policy-include'),
+                *[str(ROOT / "app/src/main/cpp/frida" / name) for name in ["worker.c", "input.c", "channel_input.c", "fd_channel.c", "fd_io.c", "managed_control.c", "managed_protocol.c", "managed_watch.c", "events.c", "session.c", "spawn_record.c", "spawn_session.c", "policy_types.c", "policy_edit.c", "policy_command.c"]],
                 "-o", str(binary), "-L" + str(work),
                 "-lfrida-core", "-llog", "-ldl", "-lm", "-latomic", "-pthread", "-Wl,--export-dynamic",
                 "-Wl,--gc-sections", "-Wl,-Map," + str(link_map),
@@ -104,6 +115,7 @@ def build(args, archive, output):
                   "workerSha256": worker_digest,
                   "needed": needed, "androidRuntime": "NOT TESTED", "packagedInApk": False,
                   "alignmentScope": "Outer worker only; not injected agents or loader/SELinux qualification",
+                  "selinuxSourceSha256": policy.DIGEST, "selinuxHeaderCount": header_count,
                   "sources": source_manifest()}
         # This is the final link's retained section provenance, not the entire devkit inventory.
         map_text = link_map.read_text(encoding="utf-8")

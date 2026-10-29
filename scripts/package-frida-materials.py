@@ -90,6 +90,7 @@ def package(args):
                     'extraSources': extra, 'repositories': [entry for _, entry in entries]}, indent=2) + '\n')
                 archive.writestr('REBUILD.txt', 'Use the existing NDK30; no Android installation is performed.\n'
                     'Copy inputs/frida-core-devkit-17.24.3-android-arm64.tar.xz into an empty output directory.\n'
+                    'Also copy sources/selinux-507985d931eb1f0227218d5d845634e602426c20.tar.gz into that output directory.\n'
                     'Run: python scripts/build-frida-probe.py --directory OUTPUT --ndk PATH_TO_NDK30\n'
                     'No --download option is needed. The official devkit contains the linkable static archive.\n'
                     'Source archives preserve their original repository layout and notices; nested gitlinks are listed in source-materials.json.\n'

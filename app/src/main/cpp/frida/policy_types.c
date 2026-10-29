@@ -1,10 +1,11 @@
+#if defined(__ANDROID__)
 /* Type/constraint mechanics follow Frida 17.24.3 lib/selinux/patch.c.
- * This qualification fixture uses its already pinned libsepol, without the
+ * This editor uses its already pinned libsepol, without the
  * server's permissive fallback or broad domain rules. Corresponding upstream
  * sources and licenses are in tools/frida-sources/catalog.json.
  */
 #include "frida-policy-symbols.h"
-#include "frida-policy-types.h"
+#include "policy_types.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -74,3 +75,5 @@ int aurora_policy_remove_type(policydb_t *db) {
     db->p_types.nprim--;
     return policydb_index_others(NULL, db, 0);
 }
+
+#endif

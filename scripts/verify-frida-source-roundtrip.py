@@ -75,6 +75,12 @@ def verify(args):
                     actual = hashlib.file_digest(incoming, 'sha256').hexdigest()
                 if actual != entry['archiveSha256']:
                     raise ValueError('Source archive digest mismatch')
+                if entry['id'] == 'selinux':
+                    policy = builder.policy_inputs()
+                    if entry['archive'] != policy.NAME or actual != policy.DIGEST:
+                        raise ValueError('Wrong fixed libsepol relink input')
+                    with archive.open(name) as incoming, (output / policy.NAME).open('xb') as outgoing:
+                        shutil.copyfileobj(incoming, outgoing, 65536)
                 if 'contentSha256' in pins[entry['id']]:
                     packed = work / 'source-input.tar.gz'
                     with archive.open(name) as incoming, packed.open('wb') as outgoing:

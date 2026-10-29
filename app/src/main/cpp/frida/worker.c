@@ -1,6 +1,7 @@
 /* Packaged Root worker. Managed FD/ticket control owns every attach/spawn run. */
 #include "session.h"
 #include "fd_channel.h"
+#include "policy_edit.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -80,6 +81,7 @@ static int attach(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
+    if (argc >= 2 && !strncmp(argv[1], "policy-", 7)) return aurora_policy_command(argc, argv);
     if (argc == 2 && strcmp(argv[1], "--version") == 0) {
         puts(frida_version_string());
         return 0;
