@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-28",
+  "device": "RMX3850 ARM64 Android16 API36",
+  "test": "CaptureRotationLongDeviceTest",
+  "passed": 1,
+  "failed": 0,
+  "junitElapsedSeconds": 1804.511,
+  "captureDurationSeconds": 1800.018,
+  "segments": 16,
+  "packets": 3571,
+  "bytes": 2035854,
+  "finalReason": "duration",
+  "finalStatus": 0,
+  "kernelCounters": {
+    "received": 7142,
+    "dropped": 0,
+    "interfaceDropped": 0
+  },
+  "scope": "awake low-rate owned IPv4 loopback UDP, exact port BPF; each segment SHA256/PCAP checked; final record independently checked; no pending managed task; own conversation deleted",
+  "limits": [
+    "not screen-off qualification",
+    "not 512MiB/64-segment maximum throughput qualification",
+    "raw loopback kernel counters are not interchangeable with saved packet count",
+    "stricter final-result assertions added after run; corresponding final facts independently validated"
+  ],
+  "paidModelsUsed": false
+}

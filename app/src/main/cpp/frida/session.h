@@ -10,7 +10,7 @@ struct aurora_frida_session {
     FridaDevice *device;
     struct aurora_spawn_record spawned;
     int spawn_directory;
-    gboolean resume_requested;
+    gboolean resume_requested, payload_evaluated;
     GMainLoop *loop;
     GCancellable *operation, *cleanup;
     GThread *thread;

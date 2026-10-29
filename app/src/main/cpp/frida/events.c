@@ -62,6 +62,12 @@ void aurora_frida_message(FridaScript *script, const gchar *message, GBytes *dat
     JsonNode *type = object ? json_object_get_member(object, "type") : NULL;
     gboolean error = type && JSON_NODE_HOLDS_VALUE(type) && json_node_get_value_type(type) == G_TYPE_STRING &&
         g_strcmp0(json_node_get_string(type), "error") == 0;
+    JsonNode *payload = object ? json_object_get_member(object, "payload") : NULL;
+    JsonObject *body = payload && JSON_NODE_HOLDS_OBJECT(payload) ? json_node_get_object(payload) : NULL;
+    JsonNode *marker = body ? json_object_get_member(body, "aurora") : NULL;
+    gboolean evaluated = type && JSON_NODE_HOLDS_VALUE(type) && json_node_get_value_type(type) == G_TYPE_STRING &&
+        g_strcmp0(json_node_get_string(type), "send") == 0 && marker && JSON_NODE_HOLDS_VALUE(marker) &&
+        json_node_get_value_type(marker) == G_TYPE_STRING && g_strcmp0(json_node_get_string(marker), "user_script_evaluated") == 0;
     JsonBuilder *builder = aurora_frida_event("message");
     aurora_frida_text(builder, "message", message);
     if (binary_size) {
@@ -70,6 +76,12 @@ void aurora_frida_message(FridaScript *script, const gchar *message, GBytes *dat
         g_free(encoded);
     }
     aurora_frida_emit(run, builder, FALSE);
+    if (evaluated) {
+        g_mutex_lock(&run->lock);
+        run->payload_evaluated = TRUE;
+        g_cond_broadcast(&run->changed);
+        g_mutex_unlock(&run->lock);
+    }
     g_object_unref(parser);
     if (error) { g_atomic_int_set(&run->failed, 1); aurora_frida_stop(run, "script_error"); }
 }

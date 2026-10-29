@@ -50,12 +50,14 @@ int frida_input_read(int argc, char **argv, struct frida_attach_input *input) {
     uint64_t pid, ticks, duration;
     memset(input, 0, sizeof(*input));
     /* Owned host fixture only. Product dispatch accepts sealed protocol2 package tickets. */
-    if (argc == 5 && !strcmp(argv[1], "spawn-file")) {
+    if ((argc == 5 || argc == 6) && !strcmp(argv[1], "spawn-file")) {
         if (argv[2][0] != '/' || strlen(argv[2]) > 4096 || integer(argv[4], 250000, &duration)) return -1;
         input->script = read_script(argv[3]);
         if (!input->script) return -1;
+        input->payload = argc == 6 ? read_script(argv[5]) : NULL;
+        if (argc == 6 && !input->payload) { free(input->script); input->script = NULL; return -1; }
         input->spawn_program = strdup(argv[2]); input->duration_ms = (unsigned)duration;
-        if (!input->spawn_program) { free(input->script); input->script = NULL; return -1; }
+        if (!input->spawn_program) { free(input->script); free(input->payload); input->script = NULL; input->payload = NULL; return -1; }
         return 0;
     }
     if ((argc != 6 && argc != 7) || strcmp(argv[1], "attach") || integer(argv[2], INT_MAX, &pid) ||

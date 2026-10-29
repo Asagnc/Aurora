@@ -962,3 +962,15 @@ f561e10完整CI40327134461及ARM64 SDK产品专项40327139608全部成功，产�
 
 
 2026-10-28长时采集接续：实际1800秒入口发现RootManagedProcessWait仍限275秒，启动后立即抛参量异常。增加采集专用awaitCapture上限1,825,000毫秒（已批准1800秒＋25秒现有退出预算），Frida/default await仍275秒；不改普通命令、票据、持久格式或取消证明。Binder命令级不确定响应转成无exit/cleanup事实的managed_outcome_uncertain，保留intent，不再误解为缺少runId的序列化异常。两项核心回归通过；356核心340通过/16跳过，完整Debug/Release/R8/AndroidTest/lint224任务成功，356/233编译JUnit均void。已同签名覆盖并开始实际30分钟亮屏自有loopback测试，目前运行中，尚未通过。
+
+
+2026-10-29 接续：30分钟亮屏自有loopback采集实际1项通过，1800.018秒/16段/3571包/2,035,854字节，最终duration/status0，raw kernel received7142/dropped0/interfaceDropped0，逐段SHA/PCAP、pending0与自有会话删除通过；不冒充熄屏/512MiB/64段吞吐资格。新增final字段断言在运行后按同一Root最终记录独立核实，未声称改后用例重新跑满30分钟。真实原生OpenDocument取消/自有小ZIP导入/快照/清理1项通过85.293秒，实际OEM picker为com.coloros.filemanager，host只选本次自有ZIP；不是SDK180MiB可视导入资格。两项摘要见evidence/0.1.40的capture-long-device-20261028和native-saf-device-20261028。
+
+用户明确批准最小SELinux先资格再开放。已确认固定Frida17.24.3 devkit包含其命名空间sepol符号，复用既有固定507985d源码头，未引入新库。scripts/frida-policy-*为显式资格夹具，未打包/自动启用：当前boot仅加frida_memfd、file_type/mlstrustedobject及untrusted_app的open/read/write/getattr/execute/map和实际Root域magisk的同组＋relabelto，两条allow键。重新解析后撤销新增项，与同等往返的原策略序列化完全相等。内核接受2,007,921字节，保持Enforcing=1；读回字节摘要不同，首次严格摘要检查明确返回失败，未假报通过。另行读取内核策略并验证仅有批准增量，专用memfd重标记/权限及通用tmpfs execute仍EACCES通过。没有permissive、通用tmpfs执行、全域execmem、持久模块或旧整份策略回写。
+
+同一普通Aurora App只读native attach实测1项通过15.085秒，自有会话清理；旧两个spawn捕获前unknown仍保留。自有包spawn已由attach失败推进到workerSucceeded/卸载/分离/资源退休成功，但早期ART hook未观察到，整项仍失败。核实post用户脚本与resume之间存在异步竞态；正在补固定bridge既有evaluation确认的有界顺序等待，确认不作为脚本业务成功/清理证明，不改变protocol2恢复/目标身份/取消语义。frida-compile输出为分段bundle，简单追加JS的试验未生效且已撤回，不把此失败计成功。
+
+367f840 CI40691904960仅在API守卫发现新增Files.readString需36.1，现改有界InputStream，Android36 API守卫351源通过、DebugAndroidTest/lint108任务通过。新的Frida产品代码仍须完整CI；历史c26b701审查包不自动代表新worker。无付费模型/正式签名密钥操作。
+
+
+后续实测：spawn增加等待固定bridge既有user_script_evaluated的预算内屏障，失败/取消会在resume之前退出并沿用精确自有目标回收；确认只作顺序信号，不是业务成功/清理证明。修复后自有包早期Java方法hook实际1项通过33.759秒，包含真实hook事件及原卸载/分离/资源退休/会话删除。新增Linux宿主“延迟bridge仍捕获main首次调用”和“求值异常不resume”两项回归，待Linux CI；Android新增resume前异常用例正在设备复测。默认核心/Debug/Release/R8/AndroidTest/lint224任务通过，356核心/236 Android编译JUnit均void，API36守卫通过；不能据此宣称所有Frida故障矩阵或自动策略入口完成。资格摘要见evidence/0.1.40/frida-minimal-policy-device-20261029.json。

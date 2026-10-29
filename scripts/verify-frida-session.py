@@ -57,7 +57,7 @@ class FridaSessionTests(SpawnCases, GuardCases, ManagedCases, unittest.TestCase)
         target = cls.root / "target.c"
         target.write_text('#include <unistd.h>\n#include <stdio.h>\n'
                           '__attribute__((noinline,visibility("default"))) int aurora_marker(int value) { return value + 1; }\n'
-                          'int main(void) { puts("ready"); fflush(stdout); while (1) { aurora_marker(7); usleep(100000); } }\n')
+                          'int main(void) { aurora_marker(42); puts("ready"); fflush(stdout); while (1) { aurora_marker(7); usleep(100000); } }\n')
         cls.target = cls.root / "owned-target"
         subprocess.run(["cc", "-O0", "-rdynamic", str(target), "-o", str(cls.target)], check=True)
 

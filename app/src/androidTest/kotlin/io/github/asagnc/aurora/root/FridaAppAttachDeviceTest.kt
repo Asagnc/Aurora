@@ -60,7 +60,9 @@ class FridaAppAttachDeviceTest {
             "scriptSha256" to string(sha), "observeMs" to JsonPrimitive(2000)))
         assertEquals(result.toString(), JsonPrimitive(true), result["workerSucceeded"])
         val log = app.spaces.commandRoot(owner).resolve(requireNotNull(result.text("artifact")))
-        assertTrue(Files.readString(log).contains("owned_ordinary_app_attach"))
+        val data = Files.newInputStream(log).use { it.readNBytes(65537) }
+        require(data.size <= 65536)
+        assertTrue(data.toString(Charsets.UTF_8).contains("owned_ordinary_app_attach"))
         assertEquals(0L, app.managedRuns.pendingCount(owner))
     }
 }

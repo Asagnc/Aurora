@@ -1,0 +1,123 @@
+{
+  "date": "2026-10-29",
+  "device": "RMX3850 ARM64 Android16 API36",
+  "authorization": "user approved minimal per-boot adaptation, qualify before enabling",
+  "scope": "explicit qualification fixture; not packaged or automatically enabled",
+  "fixedInputs": {
+    "frida": "17.24.3",
+    "selinuxCommit": "507985d931eb1f0227218d5d845634e602426c20",
+    "newDependency": false
+  },
+  "delta": {
+    "type": "frida_memfd",
+    "attributes": [
+      "file_type",
+      "mlstrustedobject"
+    ],
+    "allow": [
+      {
+        "source": "untrusted_app",
+        "target": "frida_memfd",
+        "class": "file",
+        "permissions": [
+          "open",
+          "read",
+          "write",
+          "getattr",
+          "execute",
+          "map"
+        ]
+      },
+      {
+        "source": "magisk",
+        "target": "frida_memfd",
+        "class": "file",
+        "permissions": [
+          "open",
+          "read",
+          "write",
+          "getattr",
+          "execute",
+          "map",
+          "relabelto"
+        ]
+      }
+    ]
+  },
+  "policy": {
+    "beforeSha256": "1ff62aa20244cd77e1c7b193ec06443e21de95ee6ec30b107c6467dde04d30a4",
+    "candidateSha256": "4ead555dab4c140a535f52f99af78a03667d53eaa2a9ebcb4d1002912f1581d5",
+    "kernelAfterSha256": "fee2646fc9f97e9d112434a8c11ee3dc74298c9513de8a222846bd75e92278cf"
+  },
+  "offlineInverseEquality": true,
+  "kernelReadbackInverseEquality": true,
+  "enforcingAfter": 1,
+  "dedicatedMemfdRelabel": true,
+  "dedicatedAppPermissions": true,
+  "genericTmpfsExecuteDenied": true,
+  "persistentModuleInstalled": false,
+  "broadExecmemAdded": false,
+  "wholePolicyRollback": false,
+  "qualificationBinaryBuild": {
+    "scope": "qualification only; not packaged or production-enabled",
+    "devkitSha256": "0c688824a24949e7be77109fd2c7306bba60cb47f608789e141bb24cd23b1005",
+    "selinuxSourceSha256": "97cc89bd26d623232233b1ad86fc9322fc00e663f1e80b577ee0cbdd32321090",
+    "headerCount": 49,
+    "binaries": {
+      "policy-fixture": {
+        "sha256": "c934f0dd9a19c09eb34e86fb229cc41f53b92a5dbaeb5febcc44a2ea57b88d75",
+        "bytes": 857944,
+        "needed": [
+          "libc.so",
+          "libdl.so",
+          "liblog.so",
+          "libm.so"
+        ]
+      },
+      "policy-load-fixture": {
+        "sha256": "d89c8a7b24976d3bd33ec396696ba6ea7e35dd34b867c1b9f4a619bdbb3d5fbe",
+        "bytes": 3062560,
+        "needed": [
+          "libc.so",
+          "libdl.so",
+          "liblog.so",
+          "libm.so"
+        ]
+      }
+    },
+    "sources": {
+      "scripts/frida-policy-fixture.c": "cd5305342b4a15c8d76059dc8a106c22a897bb2dde34b7fe1ce6a8051c0e69d3",
+      "scripts/frida-policy-types.c": "6c8c2692554d48a36c0c7d51ad69789943fa6f83dee58eb4eb15f1bbe62dc5f8",
+      "scripts/frida-policy-load-fixture.c": "d6c2bab3abe8aa92643d4956bb1e536e1db3c9cfa7d562d66ba15936a49fb99d",
+      "scripts/frida-policy-types.h": "ef51efcf154f119717edbf8873184de701c88aaeefdc4bd53c2d31043d04fd91",
+      "scripts/build-frida-policy-qualification.py": "288768868a66b4b3b8a4df2908e6fb985ac8741550b4a900ccd8a63817f78f60"
+    }
+  },
+  "preliminaryApplyCheck": {
+    "writeBytes": 2007921,
+    "exitStatus": 8,
+    "reason": "kernel serialized readback differs from submitted bytes; separate inverse semantic verification subsequently passed"
+  },
+  "negativeDeviceCases": [
+    "malformed input rejected66",
+    "existing output rejected7",
+    "already present dedicated type rejected3",
+    "missing approved delta rejected68"
+  ],
+  "ordinaryAppAttach": {
+    "passed": 1,
+    "elapsedSeconds": 15.085,
+    "ownConversationDeleted": true
+  },
+  "spawnEarlyArtHook": {
+    "passed": 1,
+    "elapsedSeconds": 33.759,
+    "scope": "worker evaluation barrier then resume; real owned Java method hook; unload/detach/retire; own conversation deleted"
+  },
+  "pending": [
+    "production explicit enable and current identity/boot gating",
+    "cancel/death/Root withdrawal full matrix",
+    "new full CI and refreshed release review package"
+  ],
+  "paidModelsUsed": false
+}

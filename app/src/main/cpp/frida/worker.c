@@ -1,4 +1,4 @@
-/* Build/ABI qualification only: not yet packaged or registered as an Agent tool. */
+/* Packaged Root worker. Managed FD/ticket control owns every attach/spawn run. */
 #include "session.h"
 #include "fd_channel.h"
 #include <stdlib.h>

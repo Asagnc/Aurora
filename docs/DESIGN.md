@@ -267,3 +267,6 @@ The latest calm chat concept and colors-only appearance layout are approved and 
 
 
 2026-10-28长时采集接续：实际1800秒入口发现RootManagedProcessWait仍限275秒，启动后立即抛参量异常。增加采集专用awaitCapture上限1,825,000毫秒（已批准1800秒＋25秒现有退出预算），Frida/default await仍275秒；不改普通命令、票据、持久格式或取消证明。Binder命令级不确定响应转成无exit/cleanup事实的managed_outcome_uncertain，保留intent，不再误解为缺少runId的序列化异常。两项核心回归通过；356核心340通过/16跳过，完整Debug/Release/R8/AndroidTest/lint224任务成功，356/233编译JUnit均void。已同签名覆盖并开始实际30分钟亮屏自有loopback测试，目前运行中，尚未通过。
+
+
+2026-10-29 approved Frida policy qualification: the user explicitly approved the minimal per-boot route in FRIDA_ANDROID_POLICY_PROPOSAL.md. Reuse already pinned SDK/libsepol; keep Enforcing, dedicated object types/rules only, no broad tmpfs execute/domain execmem, persistent module or automatic whole-policy restoration. Implementation/qualification are tracked separately; a successful host build does not enable adaptation. Actual kernel readback needs semantic delta verification as its serialized bytes differ from the submitted image. The bridge evaluation acknowledgment may order spawn resume, but is not a cleanup or user-script business-success proof.

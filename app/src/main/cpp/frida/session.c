@@ -66,7 +66,7 @@ static gboolean identity_matches(struct aurora_frida_session *run) {
 }
 
 static void post_payload(struct aurora_frida_session *run, FridaScript *script) {
-    if (!run->input->payload || g_cancellable_is_cancelled(run->operation)) return;
+    if (!run->input->payload || run->posted || g_cancellable_is_cancelled(run->operation)) return;
     if (!identity_matches(run)) { GError *error = NULL; failure(run, "target_identity", &error); return; }
     JsonBuilder *builder = json_builder_new();
     json_builder_begin_object(builder);
@@ -82,6 +82,18 @@ static void post_payload(struct aurora_frida_session *run, FridaScript *script) 
     g_free(message); g_object_unref(generator); json_node_free(root); g_object_unref(builder);
 }
 
+static gboolean payload_ready_before_resume(struct aurora_frida_session *run) {
+    if (!run->input->spawn_program || !run->input->payload) return TRUE;
+    /* The fixed bridge acknowledges top-level evaluation after Java.perform
+     * registers its deferred callback. This is ordering, never a cleanup or
+     * business-success proof; arbitrary selected scripts may send messages. */
+    g_mutex_lock(&run->lock);
+    while (!run->payload_evaluated && !run->reason) g_cond_wait(&run->changed, &run->lock);
+    gboolean ready = run->payload_evaluated && !run->reason;
+    g_mutex_unlock(&run->lock);
+    return ready;
+}
+
 static void execute_script(struct aurora_frida_session *run, FridaSession *session, FridaScript **script, GError **error) {
     if (!identity_matches(run)) { failure(run, "target_identity", error); return; }
     FridaScriptOptions *options = frida_script_options_new();
@@ -95,6 +107,7 @@ static void execute_script(struct aurora_frida_session *run, FridaSession *sessi
     if (*error) { failure(run, "load_script", error); return; }
     run->loaded = TRUE;
     post_payload(run, *script);
+    if (!payload_ready_before_resume(run)) return;
     if (!aurora_spawn_resume(run, error)) { failure(run, "resume", error); return; }
     aurora_frida_emit(run, aurora_frida_event("loaded"), FALSE);
     g_mutex_lock(&run->lock);

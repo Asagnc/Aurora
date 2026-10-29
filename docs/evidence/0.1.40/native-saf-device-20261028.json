@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-28",
+  "device": "RMX3850 ARM64 Android16 API36",
+  "test": "NativeSafImportDeviceTest",
+  "passed": 1,
+  "failed": 0,
+  "elapsedSeconds": 85.293,
+  "pickerPackage": "com.coloros.filemanager",
+  "scope": [
+    "production MainActivity Skills ZIP import entry",
+    "real OpenDocument picker cancellation preserves existing Skill IDs",
+    "host selects only unique owned small ZIP in actual OEM picker",
+    "returned content URI imports selected SKILL.md",
+    "deleting source ZIP does not invalidate imported snapshot",
+    "only own public ZIP/import entry/version cleaned through existing removal journal"
+  ],
+  "priorHarnessFailures": [
+    "shell commands required explicit sh stdin",
+    "OEM picker package differs from default resolver"
+  ],
+  "largeSdkSafQualified": false,
+  "privateDirectoriesRead": false,
+  "paidModelsUsed": false
+}

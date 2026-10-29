@@ -22,7 +22,8 @@ class FixtureRecoveryDeviceTest {
         require(owners.size in 1..16 && owners.all { UUID.fromString(it).toString() == it })
         val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as AuroraApplication
         app.ready.await(); app.root.connect(); check(app.root.state.value.phase == RootPhase.READY)
-        val names = setOf("Owned socket snapshot qualification", "Owned loopback injection qualification", "Aurora capture rotation qualification fixture")
+        val names = setOf("Owned socket snapshot qualification", "Owned loopback injection qualification", "Aurora capture rotation qualification fixture",
+            "Aurora long capture qualification fixture", "Aurora ordinary App attach qualification fixture", "Aurora owned spawn qualification")
         try {
             for (owner in owners) {
                 val header = app.conversations.header(owner) ?: continue

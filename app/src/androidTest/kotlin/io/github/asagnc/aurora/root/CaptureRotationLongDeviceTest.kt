@@ -94,11 +94,17 @@ class CaptureRotationLongDeviceTest {
     }
 
     private suspend fun verify(app: AuroraApplication, owner: String, result: JsonObject) {
+        assertEquals(result.toString(), JsonPrimitive(true), result["workerSucceeded"])
         val artifact = requireNotNull(result.text("captureArtifact")) { result.toString() }
         val files = app.spaces.conversation(owner)
         val manifest = WireJson.decodeFromString<RootCaptureManifest>(files.readBinary(artifact, 65536).toString(Charsets.UTF_8))
         assertTrue("No segment rotation occurred", manifest.segments.size >= 2)
         assertTrue(manifest.segments.sumOf { it.packets } > 0)
+        val final = requireNotNull(manifest.finalRecord)
+        assertEquals("duration", final.reason); assertEquals(0, final.status)
+        assertEquals(manifest.segments.size, final.segments)
+        assertEquals(manifest.segments.sumOf { it.packets }, final.packets)
+        assertEquals(manifest.segments.sumOf { it.bytes }, final.bytes)
         for (segment in manifest.segments) {
             val data = files.readBinary(artifact.substringBeforeLast('/') + "/" + segment.fileName, 262144)
             CaptureSealedPcap.verify(data.inputStream(), segment, CaptureRotationOptions(segmentBytes = 131072, bytes = 8388608))
