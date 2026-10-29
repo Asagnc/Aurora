@@ -25,20 +25,22 @@ class FridaAppAttachDeviceTest {
         check(args.getString("auroraRootTest") == "true" && args.getString("auroraFridaAppAttachTest") == "true")
         val app = instrumentation.targetContext.applicationContext as AuroraApplication
         app.ready.await(); check(!withContext(Dispatchers.Main) { app.agentTasks.busy })
-        app.root.connect(); check(app.root.state.value.phase == RootPhase.READY)
-        val owner = app.conversations.create("Aurora ordinary App attach qualification fixture")
-        instrumentation.sendStatus(2, Bundle().apply { putString("stream", "AURORA_APP_ATTACH_OWNER=$owner\n") })
-        var original: Throwable? = null
-        try { withTimeout(120_000) { qualify(app, owner) } }
-        catch (failure: Throwable) { original = failure; throw failure }
-        finally { withContext(NonCancellable) {
-            try {
-                check(app.managedRuns.recover(owner) == 0) { "Unconfirmed ordinary App attach retained: $owner" }
-                if (original == null || args.getString("auroraRetainFridaFailure") != "true")
-                    app.spaces.delete(owner, app.tasks::quiesce)
-            } catch (cleanup: Throwable) { if (original != null) original.addSuppressed(cleanup) else throw cleanup }
-            finally { app.root.disconnect() }
-        } }
+        FridaDeviceForeground(app).use {
+            app.root.connect(); check(app.root.state.value.phase == RootPhase.READY)
+            val owner = app.conversations.create("Aurora ordinary App attach qualification fixture")
+            instrumentation.sendStatus(2, Bundle().apply { putString("stream", "AURORA_APP_ATTACH_OWNER=$owner\n") })
+            var original: Throwable? = null
+            try { withTimeout(120_000) { qualify(app, owner) } }
+            catch (failure: Throwable) { original = failure; throw failure }
+            finally { withContext(NonCancellable) {
+                try {
+                    check(app.managedRuns.recover(owner) == 0) { "Unconfirmed ordinary App attach retained: $owner" }
+                    if (original == null || args.getString("auroraRetainFridaFailure") != "true")
+                        app.spaces.delete(owner, app.tasks::quiesce)
+                } catch (cleanup: Throwable) { if (original != null) original.addSuppressed(cleanup) else throw cleanup }
+                finally { app.root.disconnect() }
+            } }
+        }
     }
 
     private suspend fun qualify(app: AuroraApplication, owner: String) {

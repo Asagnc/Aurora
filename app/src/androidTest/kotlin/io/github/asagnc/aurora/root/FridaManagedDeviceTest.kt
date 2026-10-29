@@ -1,6 +1,7 @@
 package io.github.asagnc.aurora.root
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
 import io.github.asagnc.aurora.AuroraApplication
 import io.github.asagnc.aurora.core.*
@@ -22,19 +23,24 @@ class FridaManagedDeviceTest {
         val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as AuroraApplication
         app.ready.await()
         check(!withContext(Dispatchers.Main) { app.agentTasks.busy }) { "Stop active Agent work before device qualification" }
-        app.root.connect()
-        assertEquals(app.root.state.value.detail, RootPhase.READY, app.root.state.value.phase)
-        val owner = app.conversations.create("Aurora Frida qualification fixture")
-        var failure: Throwable? = null
-        try {
-            withTimeout(240_000) { qualify(app, owner) }
-        } catch (caught: Throwable) { failure = caught; throw caught }
-        finally {
-            withContext(NonCancellable) {
-                try {
-                    check(app.managedRuns.recover(owner) == 0) { "Unconfirmed fixture retained: $owner" }
-                    app.spaces.delete(owner, app.tasks::quiesce)
-                } catch (cleanup: Throwable) { if (failure != null) failure.addSuppressed(cleanup) else throw cleanup }
+        FridaDeviceForeground(app).use {
+            app.root.connect()
+            assertEquals(app.root.state.value.detail, RootPhase.READY, app.root.state.value.phase)
+            val owner = app.conversations.create("Aurora Frida qualification fixture")
+            InstrumentationRegistry.getInstrumentation().sendStatus(2, Bundle().apply { putString("stream", "AURORA_FRIDA_OWNER=$owner\n") })
+            var failure: Throwable? = null
+            try {
+                withTimeout(240_000) { qualify(app, owner) }
+            } catch (caught: Throwable) { failure = caught; throw caught }
+            finally {
+                withContext(NonCancellable) {
+                    try {
+                        check(app.managedRuns.recover(owner) == 0) { "Unconfirmed fixture retained: $owner" }
+                        if (failure == null || InstrumentationRegistry.getArguments().getString("auroraRetainFridaFailure") != "true")
+                            app.spaces.delete(owner, app.tasks::quiesce)
+                    } catch (cleanup: Throwable) { if (failure != null) failure.addSuppressed(cleanup) else throw cleanup }
+                    finally { app.root.disconnect() }
+                }
             }
         }
     }
@@ -42,6 +48,9 @@ class FridaManagedDeviceTest {
     private suspend fun qualify(app: AuroraApplication, owner: String) {
         val tool = FridaTool(app, owner) { call, path -> app.toolRuns.attachArtifact(owner, call, path); Unit }
         suspend fun invoke(args: JsonObject): JsonObject = app.tasks.run(owner) {
+            InstrumentationRegistry.getInstrumentation().sendStatus(2, Bundle().apply {
+                putString("stream", "AURORA_FRIDA_STAGE=${args.text("action")} java=${args["java"]}\n")
+            })
             val call = ToolCall(UUID.randomUUID().toString(), "frida", args)
             WireJson.parseToJsonElement(app.toolRuns.recording(owner, tool).execute(call)).jsonObject
         }

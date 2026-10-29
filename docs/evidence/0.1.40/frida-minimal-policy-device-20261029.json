@@ -116,8 +116,68 @@
   },
   "pending": [
     "production explicit enable and current identity/boot gating",
-    "cancel/death/Root withdrawal full matrix",
-    "new full CI and refreshed release review package"
+    "App/worker/Root service death and Root withdrawal full matrix",
+    "background/Thanox freeze qualification"
   ],
-  "paidModelsUsed": false
+  "paidModelsUsed": false,
+  "regressionBatch": {
+    "tests": 4,
+    "passed": 3,
+    "failed": 1,
+    "elapsedSeconds": 261.704,
+    "passedCases": [
+      "owned early ART hook",
+      "script exception before resume with captured target retired",
+      "owned ordinary App attach"
+    ],
+    "failure": "Root self combined probe timed out after 70000ms; overall batch failed"
+  },
+  "isolatedRootSelfRegression": {
+    "passed": 1,
+    "failed": 0,
+    "elapsedSeconds": 33.603,
+    "stages": [
+      "native probe",
+      "selected Root attach",
+      "ART probe",
+      "qualification status"
+    ],
+    "scope": "new isolated instrumentation; explicit Root disconnect in fixture finally; does not erase preceding batch failure"
+  },
+  "failedOwnedFixturesRecovery": {
+    "passed": 1,
+    "elapsedSeconds": 1.245,
+    "owners": 2,
+    "scope": "only explicitly recorded owned failed fixture UUIDs, production recovery/deletion; old unknown spawns untouched"
+  },
+  "releaseReview": {
+    "commit": "9ceed074a5fad9fa10f176561eefbecd7f7bad0d",
+    "payloadBytes": 1690890277,
+    "apkBytes": 45070914,
+    "checksumEntriesVerified": 10,
+    "releaseReady": false
+  },
+  "awakeRegressionBatch": {
+    "tests": 5,
+    "passed": 5,
+    "failed": 0,
+    "elapsedSeconds": 111.298,
+    "hostWakeIntervention": false,
+    "cases": [
+      "owned early ART hook",
+      "script exception before resume with captured target retired",
+      "Root native probe/selected attach/ART/status",
+      "owned ordinary App native attach",
+      "cancel only after real injected event, unload/detach/worker and domain exit, original App PID/start ticks survive"
+    ],
+    "fixture": "each case opens its own Activity/temporary KEEP_SCREEN_ON and restores original flag, disconnects Root after recovery",
+    "backgroundQualified": false
+  },
+  "observedFreeze": {
+    "uidParentCgroupFrozen": true,
+    "processInheritedFrozen": true,
+    "deviceAwake": true,
+    "earlierBatchWakeIntervention": true,
+    "systemFreezePolicyChanged": false
+  }
 }

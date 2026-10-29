@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-29",
+  "device": "RMX3850 ARM64 Android16 API36",
+  "test": "CaptureRotationBudgetDeviceTest",
+  "passed": 1,
+  "failed": 0,
+  "elapsedSeconds": 44.798,
+  "captureDurationSeconds": 37.253,
+  "configuredBudget": {
+    "segments": 64,
+    "bytes": 536870912,
+    "segmentBytes": 8388608,
+    "seconds": 120
+  },
+  "segments": 64,
+  "bytes": 534277504,
+  "packets": 8896,
+  "finalReason": "storage_budget",
+  "finalStatus": 0,
+  "kernelCounters": {
+    "received": 24534,
+    "dropped": 6678,
+    "interfaceDropped": 0
+  },
+  "scope": [
+    "owned IPv4 loopback UDP 60000-byte payloads, numeric exact port BPF",
+    "64 published sealed segments independently verified SHA256/PCAP/counts",
+    "whole-packet segment limits stop before the configured byte ceiling",
+    "pending managed tasks zero, own conversation removed",
+    "Root final record independently matched after cleanup"
+  ],
+  "zeroLossQualified": false,
+  "limits": [
+    "kernel dropped6678 at this workload; not zero-loss throughput qualification",
+    "raw loopback counters and saved packet counts are not interchangeable",
+    "not screen-off/background/disk-failure qualification"
+  ],
+  "paidModelsUsed": false
+}

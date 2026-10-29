@@ -31,29 +31,32 @@ class FridaSpawnDeviceTest {
         val fixture = android.os.ParcelFileDescriptor.AutoCloseInputStream(instrumentation.uiAutomation.executeShellCommand(
             "pm path io.github.asagnc.aurora.fridafixture")).use { String(it.readNBytes(4096), Charsets.UTF_8) }
         check(fixture.startsWith("package:")) { "Install the owned fixture APK during final device acceptance first" }
-        app.root.connect()
-        check(app.root.state.value.phase == RootPhase.READY)
-        val owner = app.conversations.create("Aurora owned spawn qualification")
-        instrumentation.sendStatus(2, Bundle().apply { putString("stream", "AURORA_FRIDA_FIXTURE_OWNER=$owner\n") })
-        var failure: Throwable? = null
-        try {
-            withTimeout(240_000) { block(app, owner) }
-        } catch (caught: Throwable) { failure = caught; throw caught }
-        finally {
-            withContext(NonCancellable) {
-                // Explicit fixture-only stop is test cleanup, never an exit proof for an unknown spawn.
-                var cleanupFailure = runCatching {
-                    android.os.ParcelFileDescriptor.AutoCloseInputStream(instrumentation.uiAutomation.executeShellCommand(
-                        "am force-stop io.github.asagnc.aurora.fridafixture")).use { it.readNBytes(4096) }
-                }.exceptionOrNull()
-                try {
-                    check(app.managedRuns.recover(owner) == 0) { "Unconfirmed spawn fixture retained: $owner" }
-                    if (failure == null || arguments.getString("auroraRetainFridaFailure") != "true")
-                        app.spaces.delete(owner, app.tasks::quiesce)
-                } catch (cleanup: Throwable) {
-                    if (cleanupFailure != null) cleanupFailure.addSuppressed(cleanup) else cleanupFailure = cleanup
+        FridaDeviceForeground(app).use {
+            app.root.connect()
+            check(app.root.state.value.phase == RootPhase.READY)
+            val owner = app.conversations.create("Aurora owned spawn qualification")
+            instrumentation.sendStatus(2, Bundle().apply { putString("stream", "AURORA_FRIDA_FIXTURE_OWNER=$owner\n") })
+            var failure: Throwable? = null
+            try {
+                withTimeout(240_000) { block(app, owner) }
+            } catch (caught: Throwable) { failure = caught; throw caught }
+            finally {
+                withContext(NonCancellable) {
+                    // Explicit fixture-only stop is test cleanup, never an exit proof for an unknown spawn.
+                    var cleanupFailure = runCatching {
+                        android.os.ParcelFileDescriptor.AutoCloseInputStream(instrumentation.uiAutomation.executeShellCommand(
+                            "am force-stop io.github.asagnc.aurora.fridafixture")).use { it.readNBytes(4096) }
+                    }.exceptionOrNull()
+                    try {
+                        check(app.managedRuns.recover(owner) == 0) { "Unconfirmed spawn fixture retained: $owner" }
+                        if (failure == null || arguments.getString("auroraRetainFridaFailure") != "true")
+                            app.spaces.delete(owner, app.tasks::quiesce)
+                    } catch (cleanup: Throwable) {
+                        if (cleanupFailure != null) cleanupFailure.addSuppressed(cleanup) else cleanupFailure = cleanup
+                    }
+                    try { cleanupFailure?.let { if (failure != null) failure.addSuppressed(it) else throw it } }
+                    finally { app.root.disconnect() }
                 }
-                cleanupFailure?.let { if (failure != null) failure.addSuppressed(it) else throw it }
             }
         }
     }

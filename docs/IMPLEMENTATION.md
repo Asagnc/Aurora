@@ -950,3 +950,17 @@ f561e10完整CI40327134461及ARM64 SDK产品专项40327139608全部成功，产�
 
 
 后续实测：spawn增加等待固定bridge既有user_script_evaluated的预算内屏障，失败/取消会在resume之前退出并沿用精确自有目标回收；确认只作顺序信号，不是业务成功/清理证明。修复后自有包早期Java方法hook实际1项通过33.759秒，包含真实hook事件及原卸载/分离/资源退休/会话删除。新增Linux宿主“延迟bridge仍捕获main首次调用”和“求值异常不resume”两项回归，待Linux CI；Android新增resume前异常用例正在设备复测。默认核心/Debug/Release/R8/AndroidTest/lint224任务通过，356核心/236 Android编译JUnit均void，API36守卫通过；不能据此宣称所有Frida故障矩阵或自动策略入口完成。资格摘要见evidence/0.1.40/frida-minimal-policy-device-20261029.json。
+
+
+Frida四项组合复测：3通过/1失败，261.704秒。resume前用户脚本异常回收、早期ART hook及普通App native attach均通过；Root自检组合遇70秒超时，整批不算通过。增加阶段诊断/独立断连后，单独Root native＋选定attach＋ART＋status实测1项通过33.603秒，不能抹掉批次失败。两个已确认退出的自有失败owner经精确既有恢复/删除1项通过1.245秒，旧两个捕获前unknown保持。继续统一夹具Root连接的finally断连并复测同批次，不先断言已确定超时根因。
+
+更新完整审查包release-review-9ceed07-complete已生成：精确9ceed074a5fad9fa10f176561eefbecd7f7bad0d、打包时clean，9项载荷/重建报告1,690,890,277字节、APK45,070,914字节，10条校验独立复核，当前worker离线重链接/guard重建通过。仍unsigned-review/releaseReady=false，资格程序未作为App策略入口打包；详见RELEASE_REVIEW_20261029。
+
+
+9ceed07完整CI40863121380成功，五个job均成功，包含真实Frida/Linux30项（新增延迟payload首次调用和求值异常不resume）。组合超时后续直接观测：App所在/apps/uid_10429父cgroup.freeze=1、events frozen=1，进程自身freeze=0但events frozen=1，设备仍Awake；Root原生worker日志已有native_hook_observed及成功卸载/分离/退休。宿主仅启动Aurora MainActivity恢复前台后，App继续收到结果；不改cgroup/Thanox/系统策略。此受干预批次不作为独立后台或亮屏完整通过证据。FridaManaged亮屏夹具增加显式自身Activity及原flag恢复，继续无干预复测；背景冻结能力仍未通过。
+
+
+2026-10-29最新：所有Frida验收夹具各自持有临时MainActivity/KEEP_SCREEN_ON并恢复原flag、Root在finally断连后，无宿主中途唤醒干预的5项亮屏批次全部通过111.298秒：早期ART spawn hook、resume前脚本异常精确回收、Root native/selected attach/ART/status、普通App native attach、观察到实际注入事件后取消并确认卸载/分离/worker及任务域退出，原App PID/start ticks存活。原失败/受干预批次保留，不把结果扩成后台/Thanox或App/worker/Root死亡完整矩阵。另一个冻结失败自有App owner经精确恢复/删除1项通过1.285秒，两个早期spawn捕获前unknown仍保留。当前产品worker仍绑定9ceed07及其成功完整CI/审查包；最新改动仅测试夹具/验收记录。新增显式64段/512MiB配置预算设备夹具已实测通过；高负载内核丢包另记如下。
+
+
+64段/512MiB配置预算真机1项通过44.798秒：实际捕获37.253秒、64段、8896包、534,277,504字节，以storage_budget/status0按整包段边界结束；每段PCAP/摘要与总数、pending0、自有会话删除均通过，最终Root记录独立匹配。高流量raw kernel received24534/dropped6678/interfaceDropped0，明确有内核丢包，不宣称零丢包或线速资格。此项验证预算/封口/发布/回收，与先前低流量30分钟dropped0分开记录；熄屏/后台/故障矩阵仍待。证据capture-budget-device-20261029.json。

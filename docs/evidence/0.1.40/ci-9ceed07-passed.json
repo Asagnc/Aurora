@@ -1,0 +1,29 @@
+{
+  "runId": 40863121380,
+  "headSha": "9ceed074a5fad9fa10f176561eefbecd7f7bad0d",
+  "url": "https://github.com/Asagnc/Aurora/actions/runs/40863121380",
+  "status": "completed",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "name": "capture-primitives",
+      "conclusion": "success"
+    },
+    {
+      "name": "socket-diag",
+      "conclusion": "success"
+    },
+    {
+      "name": "managed-supervision",
+      "conclusion": "success"
+    },
+    {
+      "name": "frida-session",
+      "conclusion": "success"
+    },
+    {
+      "name": "test",
+      "conclusion": "success"
+    }
+  ]
+}
