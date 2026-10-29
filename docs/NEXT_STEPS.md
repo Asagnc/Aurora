@@ -15,7 +15,7 @@
 
 | 范围 | 当前实现及主机证据 | 尚未手机验收 |
 | --- | --- | --- |
-| Frida Root Binder/活动账本/Agent | schema8不可变票据、sealed memfd/FD、独立guard/cgroup/journal、恢复/删除屏障；protocol2 spawn两阶段记录；Agent status/recover/probe/attach/spawn。真实Frida28组及spawn记录5组CI40158211528成功。 | 当前Root/ART、普通App attach、自有spawn早期hook、取消、Root服务死亡及App死亡恢复通过；worker死亡、撤权/boot、后台冻结及适配原生启用入口仍待。 |
+| Frida Root Binder/活动账本/Agent | schema8不可变票据、sealed memfd/FD、独立guard/cgroup/journal、恢复/删除屏障；protocol2 spawn两阶段记录；Agent status/recover/probe/attach/spawn。真实Frida28组及spawn记录5组CI40158211528成功。 | 当前Root/ART、普通App attach、自有spawn早期hook、取消、Root服务死亡及App死亡恢复通过；worker死亡/未知删除屏障亦已通过；撤权/boot、后台冻结及适配原生启用入口仍待。 |
 | 网络底层/轮转 | libpcap worker、tcpdump离线；http_request；原始发包/PCAP精确回放；socket_owner_root为真实NETLINK当前socket快照；capture protocol3/schema9同表轮转、BOOTTIME、封口/副本持久后回收。网络/guard/capture专项与完整CI均已通过，见各实现记录。 | Root采集/UID、30分钟低流量与64段/512MiB配置预算已通过；高负载dropped6678明确非零丢包，熄屏/后台及故障完整矩阵仍待。 |
 | 代理 | mitmdump12.3.0 fixed ARM64、不可变regular loopback profiles、HTTP/WS字面修改、严格TLS、自有HTTP/HTTPS/未信任CA/WS自检、产物/离线读；同共享安装器/PTY/Linux租约/Agent、公有CA SHA导出；私钥缓存只凭既有Root ticket/stopped/completed.scopeRemoved清理。ARM64产品专项40294444272成功。 | 实际Binder/PTY/chroot、HTTP/HTTPS/WS/未信任CA、CA导出和私有缓存清理2项通过；故障完整矩阵仍待，不自动安装系统CA/改路由。 |
 | 静态逆向 | 固定JADX/Apktool/JRE，共享只读版本/持久租约/当前Root资格与Agent分析。 | 实际JRE27/JADX/Apktool/自有DEX/APK/只读工具5项通过；故障完整矩阵仍待。 |
@@ -72,3 +72,8 @@ Root服务实际死亡专项1项通过15.566秒：已观察真实注入后，宿
 App进程死亡两阶段专项通过：prepare仅在自有fixture已捕获/注入/持久resume确认后自杀，预期Process crashed，不计JUnit通过；重启verify 1项通过3.061秒。启动未自动重连/重放，原票据保留，Root旧任务卸载/分离/worker与域退出证明成立，已resume的目标PID/startTicks仍存活，脚本事件仅1次，pending归零，自有会话/checkpoint清理。首次实际发现Root日志已发布但O_EXCL导致恢复不返回artifact；现仅对完整同字节的既有副本复用，检查regular/nlink1/0600/允许UID与GID、流式逐字节和前后stat/目录条目身份，同步后交付；拒绝不完整/篡改/链接/宽权限，不删改现存不匹配文件，诊断失败不编造清理事实。新建副本也补handoff目录条目身份检查。6项真机文件检查通过1.934秒，含实际Root创建硬链接拒绝；cache特殊GID/普通UID禁硬链的初始夹具失败已明确修正，未放松产品检查。
 
 本地主机完整核心/Debug/Release/R8/AndroidTest/lint224任务通过，356核心340通过/16跳过，356核心/247 Android编译JUnit均void，Android36 API守卫357源通过。一次构建重试过早与未退出旧构建重叠导致lint临时输出冲突，已串行重跑通过；不将失败记录算通过。0c057b4完整CI40866353580成功；新的日志恢复产品修复还需新CI和新精确源码审查包。
+
+
+2026-10-30 worker实际SIGKILL专项1项通过17.373秒。仅自有fixture持久resume确认且已真实注入后，从绑定票据/boot的Root READY记录取worker PID/startTicks；宿主pidfd校验并拒绝错误ticks再发SIGKILL。原目标同PID/ticks仍存活时，恢复保持unknown、pending1，删除被阻断，资源退出不冒充脚本卸载；只在显式停止该固定fixture后，以真实targetExit证明清账，cleanup仍null，pending归零并删除本次自有会话。没有强制清未知记录或重放，两个历史捕获前unknown保持。复用测试调用辅助类，不改产品协议/持久格式。
+
+更新完整审查包release-review-16abd22-complete绑定16abd2246873591b7df9f49ed4c88e39cecad82c且打包时clean；9项载荷/重建报告1,690,959,613字节，APK45,074,402字节，10条校验独立复核，worker离线重链接及guard重建通过，unsigned-review/releaseReady=false。参见RELEASE_REVIEW_20261030。当前主线继续接续策略显式启用及身份/boot门控，不把本次临时全局策略资格当已有产品入口。

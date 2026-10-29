@@ -116,7 +116,7 @@
   },
   "pending": [
     "production explicit enable and current identity/boot gating",
-    "App/worker/Root service death and Root withdrawal full matrix",
+    "Root withdrawal and boot invalidation full device matrix",
     "background/Thanox freeze qualification"
   ],
   "paidModelsUsed": false,
@@ -225,5 +225,22 @@
       "cache files inherit Android cache GID, unlike production published data GID; fixture moved to owned filesDir",
       "ordinary UID cannot create a hard link on this device; exact owned Root fixture creates it instead"
     ]
+  },
+  "workerProcessDeath": {
+    "date": "2026-10-30",
+    "passed": 1,
+    "failed": 0,
+    "elapsedSeconds": 17.373,
+    "capturedResumeConfirmedBeforeFault": true,
+    "admissionBoundToTicketAndBoot": true,
+    "wrongStartTicksRefused": true,
+    "exactWorkerPidfdSignal": true,
+    "targetStillAliveWithSameStartTicks": true,
+    "cleanupNotInvented": true,
+    "unknownRetained": true,
+    "deletionBlockedWhileUnknown": true,
+    "afterExplicitOwnedTargetStop": "targetExit proof matches original ticket; no unload proof invented",
+    "pendingAfterRecovery": 0,
+    "ownConversationDeleted": true
   }
 }

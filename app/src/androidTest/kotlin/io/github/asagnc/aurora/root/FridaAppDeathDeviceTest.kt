@@ -8,12 +8,10 @@ import androidx.test.platform.app.InstrumentationRegistry
 import io.github.asagnc.aurora.AuroraApplication
 import io.github.asagnc.aurora.core.*
 import io.github.asagnc.aurora.data.RootManagedRunRegistry
-import io.github.asagnc.aurora.runtime.CommandRequest
 import java.nio.file.Files
 import java.nio.file.LinkOption
 import java.nio.file.StandardOpenOption
 import java.security.MessageDigest
-import java.util.UUID
 import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
@@ -38,7 +36,7 @@ class FridaAppDeathDeviceTest {
         FridaDeviceForeground(app).use { supervisorScope {
             app.root.connect(); check(app.root.state.value.phase == RootPhase.READY)
             val owner = app.conversations.create(title)
-            val tools = OwnedTools(app, owner)
+            val tools = FridaDeviceTools(app, owner)
             val probe = tools.frida(objectOf("action" to string("probe")))
             assertEquals(probe.toString(), JsonPrimitive(true), probe["probeSucceeded"])
             val source = "send({aurora:'owned_app_death_fixture',pid:Process.id});setInterval(()=>{},1000);"
@@ -77,7 +75,7 @@ class FridaAppDeathDeviceTest {
             val proof = requireNotNull(result.cleanup) { result.toString() }
             assertTrue(ticket.confirms(proof))
             val target = requireNotNull(proof.spawnTarget)
-            val stat = OwnedTools(app, ticket.owner).root(listOf("/system/bin/cat", "/proc/${target.pid}/stat"))
+            val stat = FridaDeviceTools(app, ticket.owner).root(listOf("/system/bin/cat", "/proc/${target.pid}/stat"))
             assertEquals(stat.toString(), 0L, stat.number("exitCode"))
             assertEquals(target.startTicks, linuxProcessStartTicks(requireNotNull(stat["stdout"]?.jsonObject?.text("text"))))
             val log = app.spaces.commandRoot(ticket.owner).resolve(requireNotNull(result.artifact))
@@ -103,7 +101,7 @@ class FridaAppDeathDeviceTest {
         check(args.getString("auroraRootTest") == "true" && args.getString("auroraFridaAppDeathPhase") == phase)
     }
 
-    private suspend fun awaitResumedInjection(owner: String, tools: OwnedTools): RootManagedRunTicket = withTimeout(20_000) {
+    private suspend fun awaitResumedInjection(owner: String, tools: FridaDeviceTools): RootManagedRunTicket = withTimeout(20_000) {
         while (true) {
             val ticket = RootManagedRunRegistry(app.conversations).pending(owner).singleOrNull()
             if (ticket != null) {
@@ -120,13 +118,4 @@ class FridaAppDeathDeviceTest {
         @Suppress("UNREACHABLE_CODE") error("No resumed owned target")
     }
 
-    private class OwnedTools(private val app: AuroraApplication, private val owner: String) {
-        private val tool = FridaTool(app, owner) { call, path -> app.toolRuns.attachArtifact(owner, call, path); Unit }
-        suspend fun frida(args: JsonObject): JsonObject = app.tasks.run(owner) {
-            val call = ToolCall(UUID.randomUUID().toString(), "frida", args)
-            WireJson.parseToJsonElement(app.toolRuns.recording(owner, tool).execute(call)).jsonObject
-        }
-        suspend fun root(argv: List<String>): JsonObject = WireJson.parseToJsonElement(
-            requireNotNull(app.root.commandClient).execute(owner, CommandRequest(argv, timeoutMs = 1500))).jsonObject
-    }
 }
