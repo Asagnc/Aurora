@@ -179,5 +179,51 @@
     "deviceAwake": true,
     "earlierBatchWakeIntervention": true,
     "systemFreezePolicyChanged": false
+  },
+  "rootServiceDeath": {
+    "passed": 1,
+    "failed": 0,
+    "elapsedSeconds": 15.566,
+    "actualInjectedEventBeforeFault": true,
+    "exactPidfdSignal": true,
+    "wrongStartTicksRefused": true,
+    "normalSuccessfulDispatchForbidden": true,
+    "newRootIdentity": true,
+    "nativeAndArtQualificationReset": true,
+    "oldTicketRecoveredWithoutReplay": true,
+    "scriptUnloadedAndResourcesClear": true,
+    "originalAppPidAndTicksSurvive": true,
+    "ownConversationDeleted": true,
+    "priorHarnessFailure": "first harness required an exception; production legitimately preserves structured uncertainty. Assertion fixed to reject worker success and require independent recovery proof. Failed owned fixture subsequently recovered/deleted normally in 2s."
+  },
+  "appProcessDeath": {
+    "prepare": "intentional process crash after confirmed resumed owned spawn and durable App ledger intent; not counted as a passed test",
+    "verifyPassed": 1,
+    "verifyFailed": 0,
+    "verifyElapsedSeconds": 3.061,
+    "startupAutoReconnect": false,
+    "oldTicketPreserved": true,
+    "scriptEventOccurrences": 1,
+    "scriptUnloadedAndResourcesClear": true,
+    "resumedOwnedTargetStillAliveBeforeTestCleanup": true,
+    "pendingAfterRecovery": 0,
+    "ownConversationAndCheckpointRemoved": true,
+    "priorFailure": "old O_EXCL diagnostic publisher refused an already complete log after process death; fixed with bounded exact-content and stable identity verification"
+  },
+  "publicationChecks": {
+    "passed": 6,
+    "elapsedSeconds": 1.934,
+    "cases": [
+      "complete App-owned copy reuse",
+      "same-length changed content rejected and retained",
+      "truncation rejected and retained",
+      "symlink not followed",
+      "Root-created real hard link rejected",
+      "broader mode rejected without chmod"
+    ],
+    "initialHarnessFailures": [
+      "cache files inherit Android cache GID, unlike production published data GID; fixture moved to owned filesDir",
+      "ordinary UID cannot create a hard link on this device; exact owned Root fixture creates it instead"
+    ]
   }
 }

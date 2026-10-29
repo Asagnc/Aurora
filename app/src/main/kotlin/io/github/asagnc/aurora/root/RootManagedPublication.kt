@@ -19,8 +19,13 @@ internal class RootManagedPublication(private val context: Context) {
             require(S_ISREG(before.st_mode) && before.st_uid == 0 && before.st_nlink == 1L &&
                 before.st_mode and 63 == 0 && before.st_size in 0..4_259_840)
             return ownerDirectory(ticket).use { run ->
-                val destination = Os.open("/proc/self/fd/${run.fd}/frida.log",
-                    O_WRONLY or O_CREAT or O_EXCL or O_NOFOLLOW or O_CLOEXEC, 384)
+                val destination = try {
+                    Os.open("/proc/self/fd/${run.fd}/frida.log", O_WRONLY or O_CREAT or O_EXCL or O_NOFOLLOW or O_CLOEXEC, 384)
+                } catch (existing: ErrnoException) {
+                    if (existing.errno != EEXIST) throw existing
+                    RootManagedExistingArtifact.verify(source, before, run, uid)
+                    return@use "runs/${ticket.runId}/frida.log"
+                }
                 try {
                     val bytes = ByteArray(65536); var remaining = before.st_size
                     while (remaining > 0) {
@@ -35,9 +40,8 @@ internal class RootManagedPublication(private val context: Context) {
                     }
                     val after = Os.fstat(source)
                     require(before.st_size == after.st_size && before.st_mtim == after.st_mtim && before.st_ctim == after.st_ctim)
-                    Os.fsync(destination)
                     // The App cannot read incomplete Root-owned bytes before this handoff.
-                    Os.fchown(destination, uid, uid); Os.fsync(destination); Os.fsync(run.fileDescriptor)
+                    RootManagedExistingArtifact.handoff(destination, run, uid, before.st_size)
                     "runs/${ticket.runId}/frida.log"
                 } finally { Os.close(destination) }
             }

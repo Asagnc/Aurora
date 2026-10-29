@@ -15,8 +15,8 @@
 
 | 范围 | 当前实现及主机证据 | 尚未手机验收 |
 | --- | --- | --- |
-| Frida Root Binder/活动账本/Agent | schema8不可变票据、sealed memfd/FD、独立guard/cgroup/journal、恢复/删除屏障；protocol2 spawn两阶段记录；Agent status/recover/probe/attach/spawn。真实Frida28组及spawn记录5组CI40158211528成功。 | Root/ART、真实自有包spawn、服务死亡/撤权/取消完整矩阵。 |
-| 网络底层/轮转 | libpcap worker、tcpdump离线；http_request；原始发包/PCAP精确回放；socket_owner_root为真实NETLINK当前socket快照；capture protocol3/schema9同表轮转、BOOTTIME、封口/副本持久后回收。网络/guard/capture专项与完整CI均已通过，见各实现记录。 | Root采集、UID查询、长时/丢包/熄屏、恢复/删除/发布失败矩阵。 |
+| Frida Root Binder/活动账本/Agent | schema8不可变票据、sealed memfd/FD、独立guard/cgroup/journal、恢复/删除屏障；protocol2 spawn两阶段记录；Agent status/recover/probe/attach/spawn。真实Frida28组及spawn记录5组CI40158211528成功。 | 当前Root/ART、普通App attach、自有spawn早期hook、取消、Root服务死亡及App死亡恢复通过；worker死亡、撤权/boot、后台冻结及适配原生启用入口仍待。 |
+| 网络底层/轮转 | libpcap worker、tcpdump离线；http_request；原始发包/PCAP精确回放；socket_owner_root为真实NETLINK当前socket快照；capture protocol3/schema9同表轮转、BOOTTIME、封口/副本持久后回收。网络/guard/capture专项与完整CI均已通过，见各实现记录。 | Root采集/UID、30分钟低流量与64段/512MiB配置预算已通过；高负载dropped6678明确非零丢包，熄屏/后台及故障完整矩阵仍待。 |
 | 代理 | mitmdump12.3.0 fixed ARM64、不可变regular loopback profiles、HTTP/WS字面修改、严格TLS、自有HTTP/HTTPS/未信任CA/WS自检、产物/离线读；同共享安装器/PTY/Linux租约/Agent、公有CA SHA导出；私钥缓存只凭既有Root ticket/stopped/completed.scopeRemoved清理。ARM64产品专项40294444272成功。 | 实际Binder/PTY/chroot、HTTP/HTTPS/WS/未信任CA、CA导出和私有缓存清理2项通过；故障完整矩阵仍待，不自动安装系统CA/改路由。 |
 | 静态逆向 | 固定JADX/Apktool/JRE，共享只读版本/持久租约/当前Root资格与Agent分析。 | 实际JRE27/JADX/Apktool/自有DEX/APK/只读工具5项通过；故障完整矩阵仍待。 |
 | APK构建 | 同共享安装器android-build，JDK25/Gradle9.8.2/AGP9.4.1/SDK与ARM64原生host，外来SDK ELF拒绝入口；实际Java/Compose/双ABI JNI/DEX/16KiB/readonly布局在40294449390通过。Agent apk_build/apk_export（512MiB/120秒）已接。Linux环境页直接SAF选择固定180MiB原生归档，复用同一staging，不走64MiB普通附件、不新建导入缓存；实际固定字节流式导入本地已通过。 | 手机标准只读Compose/双ABI JNI构建、导出及普通UID JNI加载通过；小ZIP可视SAF已通过，SDK大归档可视SAF、冷缓存预算、故障和正式签名仍待；候选不冒充完整Android补丁NDK等价。 |
@@ -64,3 +64,11 @@ Frida四项组合复测：3通过/1失败，261.704秒。resume前用户脚本�
 
 
 64段/512MiB配置预算真机1项通过44.798秒：实际捕获37.253秒、64段、8896包、534,277,504字节，以storage_budget/status0按整包段边界结束；每段PCAP/摘要与总数、pending0、自有会话删除均通过，最终Root记录独立匹配。高流量raw kernel received24534/dropped6678/interfaceDropped0，明确有内核丢包，不宣称零丢包或线速资格。此项验证预算/封口/发布/回收，与先前低流量30分钟dropped0分开记录；熄屏/后台/故障矩阵仍待。证据capture-budget-device-20261029.json。
+
+
+Root服务实际死亡专项1项通过15.566秒：已观察真实注入后，宿主使用本次测试明确提供的Root PID/startTicks、Root UID校验及pidfd_send_signal终止该确切进程，先验证错误ticks拒绝且不发信号；不按猜测PID发kill。新Root身份不同、native/ART资格均归零，旧票据只恢复不重放，实际卸载/分离/worker与任务域退出、原App PID/start ticks存活及自有会话删除通过。scripts/owned-root-signal-fixture.c仅显式测试临时二进制，不打包。首轮夹具误要求必须抛异常，生产实际也可保留结构化不确定结果；改为拒绝正常worker成功并独立要求恢复证明后通过，失败自有owner经既有恢复/删除2秒通过。App进程死亡专项继续；此项不冒充Root管理器撤权或boot变化资格。
+
+
+App进程死亡两阶段专项通过：prepare仅在自有fixture已捕获/注入/持久resume确认后自杀，预期Process crashed，不计JUnit通过；重启verify 1项通过3.061秒。启动未自动重连/重放，原票据保留，Root旧任务卸载/分离/worker与域退出证明成立，已resume的目标PID/startTicks仍存活，脚本事件仅1次，pending归零，自有会话/checkpoint清理。首次实际发现Root日志已发布但O_EXCL导致恢复不返回artifact；现仅对完整同字节的既有副本复用，检查regular/nlink1/0600/允许UID与GID、流式逐字节和前后stat/目录条目身份，同步后交付；拒绝不完整/篡改/链接/宽权限，不删改现存不匹配文件，诊断失败不编造清理事实。新建副本也补handoff目录条目身份检查。6项真机文件检查通过1.934秒，含实际Root创建硬链接拒绝；cache特殊GID/普通UID禁硬链的初始夹具失败已明确修正，未放松产品检查。
+
+本地主机完整核心/Debug/Release/R8/AndroidTest/lint224任务通过，356核心340通过/16跳过，356核心/247 Android编译JUnit均void，Android36 API守卫357源通过。一次构建重试过早与未退出旧构建重叠导致lint临时输出冲突，已串行重跑通过；不将失败记录算通过。0c057b4完整CI40866353580成功；新的日志恢复产品修复还需新CI和新精确源码审查包。

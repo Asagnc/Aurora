@@ -1,5 +1,6 @@
 package io.github.asagnc.aurora.root
 
+import android.os.Bundle
 import android.os.Process
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -20,17 +21,23 @@ import org.junit.runner.RunWith
 /** Cancels only after the owned ordinary App emitted a real injection event. */
 @RunWith(AndroidJUnit4::class)
 class FridaCancellationDeviceTest {
-    @RootRequired @Test fun cancelLoadedOwnAppScriptUnloadsWithoutKillingTheTarget() = runBlocking<Unit> {
+    @RootRequired @Test fun cancelLoadedOwnAppScriptUnloadsWithoutKillingTheTarget() = runOwnedCase(false)
+
+    @RootRequired @Test fun rootServiceDeathRetiresTheLoadedWorkerAndResetsQualification() = runOwnedCase(true)
+
+    private fun runOwnedCase(rootDeath: Boolean) = runBlocking<Unit> {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val args = InstrumentationRegistry.getArguments()
-        check(args.getString("auroraRootTest") == "true" && args.getString("auroraFridaCancelTest") == "true")
+        val flag = if (rootDeath) "auroraFridaRootDeathTest" else "auroraFridaCancelTest"
+        check(args.getString("auroraRootTest") == "true" && args.getString(flag) == "true")
         val app = instrumentation.targetContext.applicationContext as AuroraApplication
         app.ready.await(); check(!withContext(Dispatchers.Main) { app.agentTasks.busy })
         FridaDeviceForeground(app).use {
             app.root.connect(); check(app.root.state.value.phase == RootPhase.READY)
             val owner = app.conversations.create("Aurora Frida cancellation qualification fixture")
+            instrumentation.sendStatus(2, Bundle().apply { putString("stream", "AURORA_FRIDA_CANCEL_OWNER=$owner\n") })
             var failure: Throwable? = null
-            try { withTimeout(120_000) { qualify(app, owner) } }
+            try { withTimeout(120_000) { qualify(app, owner, rootDeath) } }
             catch (caught: Throwable) { failure = caught; throw caught }
             finally { withContext(NonCancellable) {
                 try {
@@ -42,7 +49,7 @@ class FridaCancellationDeviceTest {
         }
     }
 
-    private suspend fun qualify(app: AuroraApplication, owner: String) = coroutineScope {
+    private suspend fun qualify(app: AuroraApplication, owner: String, rootDeath: Boolean) = supervisorScope {
         val tool = FridaTool(app, owner) { call, path -> app.toolRuns.attachArtifact(owner, call, path); Unit }
         suspend fun invoke(args: JsonObject): JsonObject = app.tasks.run(owner) {
             val call = ToolCall(UUID.randomUUID().toString(), "frida", args)
@@ -59,8 +66,12 @@ class FridaCancellationDeviceTest {
         val task = async { invoke(objectOf("action" to string("attach"), "pid" to JsonPrimitive(Process.myPid()),
             "startTicks" to JsonPrimitive(ticks), "source" to string("conversation"), "path" to string("cancel-owned.js"),
             "scriptSha256" to string(sha), "observeMs" to JsonPrimitive(60_000))) }
-        val ticket = try { awaitInjected(app, owner) } finally { task.cancelAndJoin() }
-        assertTrue(task.isCancelled)
+        val ticket = try {
+            val observed = awaitInjected(app, owner)
+            if (rootDeath) awaitRootDeath(app, observed, task) else task.cancelAndJoin()
+            observed
+        } finally { task.cancelAndJoin() }
+        if (!rootDeath) assertTrue(task.isCancelled)
         assertEquals(0, app.managedRuns.recover(owner))
         assertEquals(0L, app.managedRuns.pendingCount(owner))
         val log = app.spaces.commandRoot(owner).resolve("runs/${ticket.runId}/frida.log")
@@ -71,6 +82,26 @@ class FridaCancellationDeviceTest {
         assertTrue("Original App PID/start ticks must survive", Files.newInputStream(Path.of("/proc/self/stat")).use {
             linuxProcessStartTicks(it.readNBytes(65537).toString(Charsets.UTF_8)) == ticks
         })
+    }
+
+    private suspend fun awaitRootDeath(app: AuroraApplication, ticket: RootManagedRunTicket, task: Deferred<JsonObject>) {
+        val identity = requireNotNull(app.root.fridaConnection).identity
+        require(identity == ticket.identity && app.linux.runs.pendingCount() == 0)
+        InstrumentationRegistry.getInstrumentation().sendStatus(2, Bundle().apply {
+            putString("stream", "AURORA_FRIDA_ROOT_DEATH_READY=${identity.pid}:${identity.startTicks}\n")
+        })
+        // Host may signal only the exact verified endpoint via a pinned pidfd.
+        // This is an explicit device-fault fixture, never an Agent action.
+        withTimeout(20_000) { while (app.root.state.value.phase == RootPhase.READY) delay(25) }
+        val result = runCatching { withTimeout(40_000) { task.await() } }
+        assertTrue("Dead Binder must not report a normal successful dispatch: $result",
+            result.isFailure || result.getOrNull()?.get("workerSucceeded") != JsonPrimitive(true))
+        app.root.disconnect(); app.root.connect()
+        assertEquals(app.root.state.value.detail, RootPhase.READY, app.root.state.value.phase)
+        val current = requireNotNull(app.root.fridaConnection)
+        assertNotEquals(identity, current.identity)
+        val installed = current.client.packageInfo(current.identity)
+        assertFalse(installed.nativeProbePassed); assertFalse(installed.javaProbePassed)
     }
 
     private suspend fun awaitInjected(app: AuroraApplication, owner: String): RootManagedRunTicket = withTimeout(20_000) {

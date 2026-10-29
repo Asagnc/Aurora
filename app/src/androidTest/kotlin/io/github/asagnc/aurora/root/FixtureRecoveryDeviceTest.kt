@@ -24,7 +24,8 @@ class FixtureRecoveryDeviceTest {
         app.ready.await(); app.root.connect(); check(app.root.state.value.phase == RootPhase.READY)
         val names = setOf("Owned socket snapshot qualification", "Owned loopback injection qualification", "Aurora capture rotation qualification fixture",
             "Aurora long capture qualification fixture", "Aurora ordinary App attach qualification fixture", "Aurora owned spawn qualification",
-            "Aurora Frida qualification fixture", "Aurora Frida cancellation qualification fixture", "Aurora capture budget qualification fixture")
+            "Aurora Frida qualification fixture", "Aurora Frida cancellation qualification fixture", "Aurora capture budget qualification fixture",
+            "Aurora Frida App death qualification fixture")
         try {
             for (owner in owners) {
                 val header = app.conversations.header(owner) ?: continue

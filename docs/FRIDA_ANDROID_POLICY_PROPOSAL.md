@@ -44,3 +44,11 @@
 
 
 2026-10-29最新：所有Frida验收夹具各自持有临时MainActivity/KEEP_SCREEN_ON并恢复原flag、Root在finally断连后，无宿主中途唤醒干预的5项亮屏批次全部通过111.298秒：早期ART spawn hook、resume前脚本异常精确回收、Root native/selected attach/ART/status、普通App native attach、观察到实际注入事件后取消并确认卸载/分离/worker及任务域退出，原App PID/start ticks存活。原失败/受干预批次保留，不把结果扩成后台/Thanox或App/worker/Root死亡完整矩阵。另一个冻结失败自有App owner经精确恢复/删除1项通过1.285秒，两个早期spawn捕获前unknown仍保留。当前产品worker仍绑定9ceed07及其成功完整CI/审查包；最新改动仅测试夹具/验收记录。新增显式64段/512MiB配置预算设备夹具正在运行，尚未计通过。
+
+
+Root服务实际死亡专项1项通过15.566秒：已观察真实注入后，宿主使用本次测试明确提供的Root PID/startTicks、Root UID校验及pidfd_send_signal终止该确切进程，先验证错误ticks拒绝且不发信号；不按猜测PID发kill。新Root身份不同、native/ART资格均归零，旧票据只恢复不重放，实际卸载/分离/worker与任务域退出、原App PID/start ticks存活及自有会话删除通过。scripts/owned-root-signal-fixture.c仅显式测试临时二进制，不打包。首轮夹具误要求必须抛异常，生产实际也可保留结构化不确定结果；改为拒绝正常worker成功并独立要求恢复证明后通过，失败自有owner经既有恢复/删除2秒通过。App进程死亡专项继续；此项不冒充Root管理器撤权或boot变化资格。
+
+
+App进程死亡两阶段专项通过：prepare仅在自有fixture已捕获/注入/持久resume确认后自杀，预期Process crashed，不计JUnit通过；重启verify 1项通过3.061秒。启动未自动重连/重放，原票据保留，Root旧任务卸载/分离/worker与域退出证明成立，已resume的目标PID/startTicks仍存活，脚本事件仅1次，pending归零，自有会话/checkpoint清理。首次实际发现Root日志已发布但O_EXCL导致恢复不返回artifact；现仅对完整同字节的既有副本复用，检查regular/nlink1/0600/允许UID与GID、流式逐字节和前后stat/目录条目身份，同步后交付；拒绝不完整/篡改/链接/宽权限，不删改现存不匹配文件，诊断失败不编造清理事实。新建副本也补handoff目录条目身份检查。6项真机文件检查通过1.934秒，含实际Root创建硬链接拒绝；cache特殊GID/普通UID禁硬链的初始夹具失败已明确修正，未放松产品检查。
+
+本地主机完整核心/Debug/Release/R8/AndroidTest/lint224任务通过，356核心340通过/16跳过，356核心/247 Android编译JUnit均void，Android36 API守卫357源通过。一次构建重试过早与未退出旧构建重叠导致lint临时输出冲突，已串行重跑通过；不将失败记录算通过。0c057b4完整CI40866353580成功；新的日志恢复产品修复还需新CI和新精确源码审查包。
