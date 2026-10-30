@@ -987,3 +987,6 @@ App进程死亡两阶段专项通过：prepare仅在自有fixture已捕获/注�
 2026-10-30显式适配代码已接入：现有worker单次load/读回审计、Root Binder末尾事务与protocol协商、当前boot/Root身份/worker/内核摘要门控、Root私有原始基线、设置页资格状态。Debug仅显式qualification验收请求可启用；FridaPolicyAvailability.releaseQualified=false，正式入口和UI启用按钮关闭，须满足批准方案的新boot/撤权及剩余故障矩阵后再开放。最终worker0ca9bd59：17项纯检查、11项native启用/拒绝/同一已批准候选实际重载全部通过，Enforcing保持1、内核摘要前后相同；同boot已知原始策略仅由宿主显式复制为本次资格基线，产品不接管未知已有专用类型。Binder旧身份拒绝/启用/真实ART/重新启用清零/重连不继承专项1项19.426秒，Frida5项与普通Binder/Linux准备16项共21项115.127秒通过；最终发布门控/protocol变更后针对性复测待做。新增Root拒绝实机夹具已编译，未执行。用户改为亲自重启及操作管理器：先重启解锁、暂保留Root，核验新boot后再撤权；不得由ADB重启或自行改管理器授权。详见FRIDA_POLICY_IMPLEMENTATION及evidence/0.1.40/frida-policy-activation-device-20261030.json。
 
 补跑普通UID系统快照2项与浏览器同源/跨源边界1项通过；renderer死亡首次因未开显式开关跳过，随后单独显式运行1项通过0.582秒，不把跳过计通过。d9f5872完整CI40917630532成功；对应完整审查包release-review-d9f5872-complete绑定该提交且打包时clean，9项载荷/重建报告1,691,128,452字节、APK45,173,118字节、10条校验独立复核，仍unsigned-review/releaseReady=false。该包不包含后续显式启用实现，不能作为后续新代码审查包。
+
+
+新完整审查包release-review-5edfdc3-complete已生成并独立流式复核全部10条checksums：精确5edfdc319093fa0a38c1c93a47ddc8f14c140c1d、打包时clean；9项载荷/重建报告1,691,202,794字节、APK45,188,830字节。包含显式策略实现及关闭的正式资格门控，worker0ca9bd59；65份Frida/41项SDK/584项代理材料、精确自有源码快照、离线worker重链接与guard重建通过。仍unsigned-review/releaseReady=false，最终boot/撤权/设置页实测待用户手动重启解锁后接续。完整CI41057202983运行中，不先记成功。

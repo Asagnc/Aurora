@@ -7,3 +7,6 @@
 worker SHA256仍8776f1969d8ff75e168b4c871101a2d95bd624b6f65b93549fe49d4b5fe11607。65份Frida/41项SDK/584项代理来源材料和对应自有git源码快照、固定分发、当前原生对应源码、worker离线重链接与guard重建均纳入审查，16KiB/ABI/资产/图标检查通过。不是完整上游SDK重建或总体许可闭包证明。精确清单见evidence/0.1.40/release-review-16abd22-complete-manifest.json及对应SHA256SUMS。
 
 源码16abd22完整CI40906945348另行跟踪；前置0c057b4完整CI40866353580已成功。尚未使用正式签名密钥或付费模型；原生策略启用入口、撤权/boot失效、后台冻结与其他剩余故障矩阵仍有待完成内容。
+
+
+新完整审查包release-review-5edfdc3-complete已生成并独立流式复核全部10条checksums：精确5edfdc319093fa0a38c1c93a47ddc8f14c140c1d、打包时clean；9项载荷/重建报告1,691,202,794字节、APK45,188,830字节。包含显式策略实现及关闭的正式资格门控，worker0ca9bd59；65份Frida/41项SDK/584项代理材料、精确自有源码快照、离线worker重链接与guard重建通过。仍unsigned-review/releaseReady=false，最终boot/撤权/设置页实测待用户手动重启解锁后接续。完整CI41057202983运行中，不先记成功。
