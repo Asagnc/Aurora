@@ -54,6 +54,16 @@ class CacheBoundaryTest(unittest.TestCase):
             self.snapshot()
         self.assertEqual(b'owned inert public artifact fixture', (self.root / 'outside').read_bytes())
 
+    def test_gradle_non_padded_sha1_address_is_verified_against_complete_content(self):
+        data = next(b'owned leading-zero fixture ' + str(index).encode() for index in range(10000)
+                    if hashlib.sha1(b'owned leading-zero fixture ' + str(index).encode()).hexdigest().startswith('0'))
+        self.file.unlink(); self.file.parent.rmdir()
+        address = hashlib.sha1(data).hexdigest().lstrip('0')
+        self.file = self.file.parent.with_name(address) / self.file.name
+        self.file.parent.mkdir(); self.file.write_bytes(data)
+        _, manifest = self.snapshot()
+        self.assertEqual(hashlib.sha256(data).hexdigest(), next(iter(manifest['files'].values()))['sha256'])
+
     @unittest.skipIf(os.name == 'nt', 'Actual symlink qualification runs on Unix CI')
     def test_source_and_snapshot_links_are_rejected_without_touching_targets(self):
         (self.source / 'link').symlink_to(self.root / 'outside')

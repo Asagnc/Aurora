@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import shutil
 import subprocess
 import uuid
 import zipfile
@@ -37,6 +38,50 @@ def probe_apk(project, run_id):
         classes = verify_dex(archive, True, {b'Lio/github/asagnc/aurora/sdkprobe/Owned;',
                                           b'Lio/github/asagnc/aurora/sdkprobe/ScreenKt;'})
     return {'apkSha256': cache.digest(path), 'ownedDex': classes}
+
+
+def missing_artifact_fallback(output, baseline, script):
+    """A genuine missing probe AAR must fail offline and write only to its private cache online."""
+    manifest = cache.verify(baseline)
+    names = [name for name, record in manifest['files'].items()
+             if record.get('coordinate', '').startswith('androidx.compose.foundation:foundation-android:')
+             and name.endswith('.aar')]
+    if len(names) != 1:
+        raise ValueError('Expected one fixed foundation Android AAR for the cache-miss boundary')
+    selected = names[0]
+    trimmed = output / 'missing-artifact-cache'
+    shutil.copytree(baseline, trimmed)
+    (trimmed / selected).unlink()
+    record = manifest['files'].pop(selected)
+    manifest['fileCount'] -= 1; manifest['artifactFiles'] -= 1; manifest['bytes'] -= record['bytes']
+    (trimmed / 'manifest.json').write_text(json.dumps(manifest, sort_keys=True, indent=2) + '\n')
+    cache.verify(trimmed)
+    mount(trimmed, trimmed, True)
+    project = output / 'missing-artifact-project'; project.mkdir()
+    mount(project, '/mnt')
+    candidate = output / 'missing-artifact-offline.sh'
+    wrapper(script, candidate, 'offline')
+    identifier = str(uuid.uuid4())
+    try:
+        owned.execute(['/bin/sh', str(candidate), identifier], output / 'missing-offline.log', 270,
+                      {'GRADLE_RO_DEP_CACHE': str(trimmed)})
+    except subprocess.CalledProcessError:
+        log = (output / 'missing-offline.log').read_text(errors='replace')
+        if 'offline mode' not in log.lower() or 'foundation-android' not in log:
+            raise ValueError('The offline failure does not prove the deliberately missing dependency')
+    else:
+        raise ValueError('The deliberately absent artifact unexpectedly resolved offline')
+    cache.verify(trimmed)
+    # The failed offline invocation may have created the fixture; the production
+    # probe is intentionally rerun with the same project and private cache.
+    elapsed = owned.execute(['/bin/sh', str(script), identifier], output / 'missing-online.log', 270,
+                            {'GRADLE_RO_DEP_CACHE': str(trimmed)})
+    destination = project / '.gradle-cache/caches' / selected
+    if cache.digest(destination) != record['sha256'] or (trimmed / selected).exists():
+        raise ValueError('A cache miss was not confined to the private writable cache')
+    cache.verify(trimmed); cache.verify(baseline)
+    return {'offlineMissRejected': True, 'onlinePrivateWritePassed': True, 'seconds': elapsed,
+            'coordinate': record['coordinate'], 'sha256': record['sha256'], **probe_apk(project, identifier)}
 
 
 def qualify(args):
@@ -98,6 +143,7 @@ def qualify(args):
             cache.verify(baseline)
             report['freshProbes'].append({'seconds': elapsed, 'offline': True, 'independentWritableCache': True,
                                          'wrapperSha256': candidate_sha, **probe_apk(project, identifier)})
+        report['missingArtifactFallback'] = missing_artifact_fallback(output, baseline, script)
         report['archive'] = cache.export(baseline, output / 'public-apk-dependency-cache.tar.gz')
         report['cacheBytes'] = manifest['bytes']; report['cacheFiles'] = manifest['fileCount']
         report['qualified'] = True

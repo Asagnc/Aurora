@@ -119,7 +119,7 @@ class AndroidBuildDeviceTest {
         } finally { environment.close() }
     }
 
-    private fun verifyJni(app: AuroraApplication, apk: Path) {
+    internal fun verifyJni(app: AuroraApplication, apk: Path) {
         val temporary = Files.createTempDirectory(app.cacheDir.toPath(), "owned-sdk-jni-")
         try {
             val selected = temporary.resolve("owned.apk")

@@ -86,8 +86,11 @@ def snapshot(source, target, context, log):
             raise ValueError('Public cache exceeds its resource budget')
         record, sha1 = copy_checked(path, target / 'modules-2' / relative)
         if relative.parts[0] == 'files-2.1':
-            if len(relative.parts) != 6 or not re.fullmatch('[0-9a-f]{40}', relative.parts[4]) or sha1 != relative.parts[4]:
-                raise ValueError('Artifact does not match its Gradle content address')
+            # Gradle 9.8.2 GroupedAndNamedUniqueFileStore.stripLeadingZeros
+            # retains the historical non-padded SHA1 path representation.
+            if (len(relative.parts) != 6 or not re.fullmatch('[1-9a-f][0-9a-f]{0,39}', relative.parts[4])
+                    or sha1.lstrip('0') != relative.parts[4]):
+                raise ValueError('Artifact does not match its Gradle content address: ' + relative.as_posix())
             group, module, version, _, filename = relative.parts[1:]
             suffix = '/' + '/'.join([group.replace('.', '/'), module, version, filename])
             origins = [url for url in urls if unquote(urlsplit(url).path).endswith(suffix)]

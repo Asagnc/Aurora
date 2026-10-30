@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-30",
+  "decision": "User approved public readonly baseline plus private writable caches; qualify before integration",
+  "firstArm64Run": {
+    "id": 41069037872,
+    "conclusion": "failure",
+    "boundaryTestsPassed": 6,
+    "seedFullProbeSeconds": 96.528,
+    "seedDexVerified": true,
+    "failure": "Snapshot rejected Gradle non-padded SHA1 paths",
+    "archivePublished": false
+  },
+  "hostBoundaryTests": {
+    "total": 7,
+    "passed": 5,
+    "skippedWindowsOnly": 2
+  },
+  "androidFixture": {
+    "compiled": true,
+    "lintTasksPassed": 108,
+    "executed": false
+  },
+  "productionIntegrated": false,
+  "phoneRuntimeQualified": false
+}

@@ -24,3 +24,8 @@ Gradle官方提供GRADLE_RO_DEP_CACHE，标为incubating；只读缓存无锁，
 依据：[Gradle依赖缓存](https://docs.gradle.org/current/userguide/dependency_caching.html)、[依赖校验](https://docs.gradle.org/current/userguide/dependency_verification.html)、[Android官方仓库](https://developer.android.com/build/remote-repositories)。临时验收CONNECT夹具另已补入官方maven.google.com精确域名；此前拒绝该域名不影响94.172秒的通过事实，也不能据此宣布首次超时已修好。
 
 用户于2026-10-30明确采用推荐方案，先资格再接入。当前仅新增隔离ARM64 CI资格脚本：独立公开依赖准备、所有子进程退出屏障、逐文件来源/摘要封口、只读挂载以及两份全新私有缓存的离线完整探针。尚未发布或安装手机公共基线，正式运行路径不变；CI通过也不替代真机资格。
+
+
+首轮ARM64 CI 41069037872：6项边界测试通过，固定输入经生产Kotlin安装准备，独立完整Java/Compose/双ABI JNI/DEX探针96.528秒成功；封口拒绝Gradle去掉SHA1前导零的历史目录表示，未发布任何缓存归档，整体资格失败。已按固定Gradle9.8.2的GroupedAndNamedUniqueFileStore.stripLeadingZeros核对并修正完整内容地址比较，仍逐文件SHA256校验；新增前导零实物回归。来源：[固定Gradle实现](https://github.com/gradle/gradle/blob/v9.8.2/subprojects/core/src/main/java/org/gradle/internal/resource/local/GroupedAndNamedUniqueFileStore.java)。
+
+资格脚本增加真实缺项边界：从独立只读副本移除固定foundation Android AAR，要求离线因该缺项失败，再联网完成完整探针并核实相同SHA256文件只写入该项目的私有缓存；完整基线与缺项只读副本均不得变化。Android显式验收夹具验证CI归档/manifest SHA、既有有界TAR扫描、正常文件与工具/探针身份；只在自有新会话中解包，临时只读挂载、两份空写缓存离线完整构建及普通UID JNI。尚未执行，不授予runtimeReady，不安装生产共享版本。编译/lint108任务与365源API守卫通过，251个Android @Test返回void。
