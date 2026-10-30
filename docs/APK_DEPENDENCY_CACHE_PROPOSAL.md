@@ -29,3 +29,6 @@ Gradle官方提供GRADLE_RO_DEP_CACHE，标为incubating；只读缓存无锁，
 首轮ARM64 CI 41069037872：6项边界测试通过，固定输入经生产Kotlin安装准备，独立完整Java/Compose/双ABI JNI/DEX探针96.528秒成功；封口拒绝Gradle去掉SHA1前导零的历史目录表示，未发布任何缓存归档，整体资格失败。已按固定Gradle9.8.2的GroupedAndNamedUniqueFileStore.stripLeadingZeros核对并修正完整内容地址比较，仍逐文件SHA256校验；新增前导零实物回归。来源：[固定Gradle实现](https://github.com/gradle/gradle/blob/v9.8.2/subprojects/core/src/main/java/org/gradle/internal/resource/local/GroupedAndNamedUniqueFileStore.java)。
 
 资格脚本增加真实缺项边界：从独立只读副本移除固定foundation Android AAR，要求离线因该缺项失败，再联网完成完整探针并核实相同SHA256文件只写入该项目的私有缓存；完整基线与缺项只读副本均不得变化。Android显式验收夹具验证CI归档/manifest SHA、既有有界TAR扫描、正常文件与工具/探针身份；只在自有新会话中解包，临时只读挂载、两份空写缓存离线完整构建及普通UID JNI。尚未执行，不授予runtimeReady，不安装生产共享版本。编译/lint108任务与365源API守卫通过，251个Android @Test返回void。
+
+
+第二轮ARM64 CI41070232235：固定完整准备探针完成，但封口又拒绝Compose的重命名变体（cache内animation-core.aar，公开URL为animation-core-android-1.12.1.aar），整体仍失败、无归档发布。已实际读取Google Maven公开.module核对：平台发布可指回原始multiplatform组件，并通过variants.files声明name/url/size/sha256。现在仅在公开.module及原始组件请求链成立、声明URL确实已请求且实际文件大小/SHA256相同时接受重命名；不按模糊文件名推断来源。新增真实格式回归包含内容地址本身合法但与.module摘要不符的拒绝。Windows8项6通过/2项Unix专用跳过，下一轮ARM64待执行。

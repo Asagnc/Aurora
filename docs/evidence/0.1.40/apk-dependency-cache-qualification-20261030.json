@@ -11,8 +11,8 @@
     "archivePublished": false
   },
   "hostBoundaryTests": {
-    "total": 7,
-    "passed": 5,
+    "total": 8,
+    "passed": 6,
     "skippedWindowsOnly": 2
   },
   "androidFixture": {
@@ -21,5 +21,14 @@
     "executed": false
   },
   "productionIntegrated": false,
-  "phoneRuntimeQualified": false
+  "phoneRuntimeQualified": false,
+  "secondArm64Run": {
+    "id": 41070232235,
+    "conclusion": "failure",
+    "boundaryTestsPassed": 7,
+    "seedFullProbeSeconds": 102.678,
+    "seedDexVerified": true,
+    "failure": "Public provenance refused Compose renamed variant; added exact public module declaration chain, size and SHA256 validation",
+    "archivePublished": false
+  }
 }

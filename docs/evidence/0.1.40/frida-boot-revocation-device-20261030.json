@@ -53,7 +53,19 @@
     "combinedPassed": 6,
     "combinedSeconds": 133.086,
     "hostWakeIntervened": false,
-    "earlierCrashProvenFixed": false
+    "earlierCrashProvenFixed": false,
+    "additionalCombinedRepetitions": [
+      {
+        "passed": 6,
+        "seconds": 133.79,
+        "hostWakeIntervened": false
+      },
+      {
+        "passed": 6,
+        "seconds": 134.105,
+        "hostWakeIntervened": false
+      }
+    ]
   },
   "ordinaryFailureRegressions": {
     "passed": 21,

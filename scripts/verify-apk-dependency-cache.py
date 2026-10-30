@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Filesystem/provenance boundaries of the new public-cache qualification format."""
 import hashlib
+import json
 import os
 from pathlib import Path
 import tempfile
@@ -63,6 +64,28 @@ class CacheBoundaryTest(unittest.TestCase):
         self.file.parent.mkdir(); self.file.write_bytes(data)
         _, manifest = self.snapshot()
         self.assertEqual(hashlib.sha256(data).hexdigest(), next(iter(manifest['files'].values()))['sha256'])
+
+    def test_renamed_variant_requires_public_metadata_url_size_and_digest(self):
+        data = self.file.read_bytes()
+        renamed = self.file.with_name('owned.jar'); self.file.rename(renamed); self.file = renamed
+        metadata = {'component': {'group': 'example.public', 'module': 'owned-parent', 'version': '1.0',
+                                  'url': '../../owned-parent/1.0/owned-parent-1.0.module'},
+                    'variants': [{'files': [{'name': 'owned.jar', 'url': 'owned-1.0.jar',
+                                            'size': len(data), 'sha256': hashlib.sha256(data).hexdigest()}]}]}
+        encoded = json.dumps(metadata).encode()
+        address = hashlib.sha1(encoded).hexdigest().lstrip('0')
+        module = self.file.parent.parent / address / 'owned-1.0.module'
+        module.parent.mkdir(); module.write_bytes(encoded)
+        self.log += ('Downloading https://repo.maven.apache.org/maven2/example/public/owned/1.0/owned-1.0.module\n'
+                     'Downloading https://repo.maven.apache.org/maven2/example/public/owned-parent/1.0/owned-parent-1.0.module\n')
+        _, manifest = self.snapshot()
+        record = next(r for r in manifest['files'].values() if r.get('moduleMetadata'))
+        self.assertEqual(hashlib.sha256(encoded).hexdigest(), record['moduleMetadata']['sha256'])
+        tampered = data[:-1] + b'!'; self.file.unlink(); self.file.parent.rmdir()
+        self.file = self.file.parent.with_name(hashlib.sha1(tampered).hexdigest().lstrip('0')) / self.file.name
+        self.file.parent.mkdir(); self.file.write_bytes(tampered)
+        with self.assertRaisesRegex(ValueError, 'metadata digest'):
+            self.snapshot('tampered')
 
     @unittest.skipIf(os.name == 'nt', 'Actual symlink qualification runs on Unix CI')
     def test_source_and_snapshot_links_are_rejected_without_touching_targets(self):

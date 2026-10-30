@@ -8,7 +8,7 @@ import re
 import stat
 import tarfile
 import uuid
-from urllib.parse import unquote, urlsplit
+from urllib.parse import unquote, urlsplit, urljoin
 
 REPOSITORIES = ('https://dl.google.com/dl/android/maven2/', 'https://repo.maven.apache.org/maven2/',
                 'https://plugins.gradle.org/m2/')
@@ -60,6 +60,55 @@ def copy_checked(source, target):
         os.close(fd)
 
 
+def artifact_origins(name, record, inventory, target, urls):
+    group, module, version = record['coordinate'].split(':')
+    prefix = '/' + '/'.join([group.replace('.', '/'), module, version]) + '/'
+    direct = [url for url in urls if unquote(urlsplit(url).path).endswith(prefix + Path(name).name)]
+    if direct:
+        return direct
+    # Gradle module metadata can deliberately rename a downloaded artifact in
+    # files-2.1 (e.g. animation-core.aar). Require the exact public .module and
+    # its declared URL, size and digest rather than guessing a Maven filename.
+    for metadata_name, metadata_record in inventory.items():
+        if not metadata_name.endswith('.module') or metadata_record.get('coordinate') != record['coordinate']:
+            continue
+        origins = [url for url in urls if unquote(urlsplit(url).path).endswith(prefix + Path(metadata_name).name)]
+        if not origins or metadata_record['bytes'] > 16 * 1024 ** 2:
+            continue
+        metadata = json.loads((target / metadata_name).read_text(encoding='utf-8'))
+        component = metadata.get('component', {})
+        if component.get('group') != group or component.get('version') != version:
+            raise ValueError('Public Gradle module identity differs')
+        if component.get('module') != module:
+            # Multiplatform publications identify their original component and
+            # link back to its public metadata from the platform publication.
+            original = component.get('url', '')
+            parsed = urlsplit(original)
+            original_module = component.get('module', '')
+            suffix = '/' + '/'.join([group.replace('.', '/'), original_module, version,
+                                     original_module + '-' + version + '.module'])
+            if (not original or parsed.scheme or parsed.netloc or parsed.query or parsed.fragment
+                    or not any(urljoin(origin, original) in urls and
+                               unquote(urlsplit(urljoin(origin, original)).path).endswith(suffix) for origin in origins)):
+                raise ValueError('Original multiplatform component lacks public request evidence')
+        for variant in metadata.get('variants', []):
+            for file in variant.get('files', []):
+                if file.get('name') != Path(name).name:
+                    continue
+                declared = file.get('url', '')
+                parsed = urlsplit(declared)
+                if not declared or parsed.scheme or parsed.netloc or parsed.query or parsed.fragment:
+                    raise ValueError('Unexpected artifact relocation in the public module')
+                matched = [urljoin(origin, declared) for origin in origins if urljoin(origin, declared) in urls]
+                if not matched:
+                    continue
+                if file.get('size') != record['bytes'] or file.get('sha256') != record['sha256']:
+                    raise ValueError('Renamed public artifact metadata digest differs')
+                record['moduleMetadata'] = {'path': metadata_name, 'sha256': metadata_record['sha256']}
+                return matched
+    raise ValueError('Artifact lacks public seed request evidence: ' + name)
+
+
 def snapshot(source, target, context, log):
     if source.is_symlink() or not source.is_dir() or target.exists():
         raise ValueError('Expected an independent cache and a fresh snapshot directory')
@@ -92,11 +141,6 @@ def snapshot(source, target, context, log):
                     or sha1.lstrip('0') != relative.parts[4]):
                 raise ValueError('Artifact does not match its Gradle content address: ' + relative.as_posix())
             group, module, version, _, filename = relative.parts[1:]
-            suffix = '/' + '/'.join([group.replace('.', '/'), module, version, filename])
-            origins = [url for url in urls if unquote(urlsplit(url).path).endswith(suffix)]
-            if not origins:
-                raise ValueError('Artifact lacks public seed request evidence: ' + relative.as_posix())
-            record['requestedUrls'] = origins
             record['coordinate'] = f'{group}:{module}:{version}'
             artifacts += 1
         else:
@@ -107,6 +151,9 @@ def snapshot(source, target, context, log):
             raise ValueError('Public cache exceeds its resource budget')
     if not artifacts:
         raise ValueError('An empty public artifact cache is not a baseline')
+    for name, record in inventory.items():
+        if 'coordinate' in record:
+            record['requestedUrls'] = artifact_origins(name, record, inventory, target, urls)
     manifest = {'format': 1, 'scope': 'public Android probe dependencies only', 'gradleVersion': '9.8.2',
                 'repositories': list(REPOSITORIES), 'seed': context, 'files': inventory,
                 'fileCount': len(inventory), 'artifactFiles': artifacts, 'bytes': total,
