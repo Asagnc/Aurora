@@ -95,7 +95,7 @@ def build(args, archive, output):
         link_map = work / "worker.map"
         argv = [str(compiler), "-DANDROID", "-Wall", "-Wextra", "-Werror", "-Os",
                 "-ffunction-sections", "-fdata-sections", "-fstack-protector-strong", "-I" + str(work), "-I" + str(work / 'policy-include'),
-                *[str(ROOT / "app/src/main/cpp/frida" / name) for name in ["worker.c", "input.c", "channel_input.c", "fd_channel.c", "fd_io.c", "managed_control.c", "managed_protocol.c", "managed_watch.c", "events.c", "session.c", "spawn_record.c", "spawn_session.c", "policy_types.c", "policy_edit.c", "policy_command.c"]],
+                *[str(ROOT / "app/src/main/cpp/frida" / name) for name in ["worker.c", "input.c", "channel_input.c", "fd_channel.c", "fd_io.c", "managed_control.c", "managed_protocol.c", "managed_watch.c", "events.c", "session.c", "spawn_record.c", "spawn_session.c", "policy_types.c", "policy_edit.c", "policy_command.c", "policy_io.c", "policy_activate.c"]],
                 "-o", str(binary), "-L" + str(work),
                 "-lfrida-core", "-llog", "-ldl", "-lm", "-latomic", "-pthread", "-Wl,--export-dynamic",
                 "-Wl,--gc-sections", "-Wl,-Map," + str(link_map),

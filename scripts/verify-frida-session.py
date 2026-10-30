@@ -48,7 +48,7 @@ class FridaSessionTests(SpawnCases, GuardCases, ManagedCases, unittest.TestCase)
         native = ROOT / "app/src/main/cpp/frida"
         cls.worker = cls.root / "worker"
         subprocess.run(["cc", "-Wall", "-Wextra", "-Werror", "-Os", "-ffunction-sections", "-fdata-sections",
-                        "-I" + str(cls.root), *[str(native / name) for name in ["worker.c", "input.c", "channel_input.c", "fd_channel.c", "fd_io.c", "managed_control.c", "managed_protocol.c", "managed_watch.c", "events.c", "session.c", "spawn_record.c", "spawn_session.c", "policy_types.c", "policy_edit.c", "policy_command.c"]],
+                        "-I" + str(cls.root), *[str(native / name) for name in ["worker.c", "input.c", "channel_input.c", "fd_channel.c", "fd_io.c", "managed_control.c", "managed_protocol.c", "managed_watch.c", "events.c", "session.c", "spawn_record.c", "spawn_session.c", "policy_types.c", "policy_edit.c", "policy_command.c", "policy_io.c", "policy_activate.c"]],
                         "-o", str(cls.worker), "-L" + str(cls.root), "-lfrida-core", "-ldl", "-lrt", "-lm", "-lresolv",
                         "-pthread", "-Wl,--export-dynamic", "-Wl,--gc-sections", "-Wl,-z,noexecstack"], check=True)
         cls.worker_sha = hashlib.sha256(cls.worker.read_bytes()).hexdigest()

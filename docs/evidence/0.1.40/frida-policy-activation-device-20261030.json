@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-30",
+  "workerSha256": "0ca9bd596c919af1c6483f7747591a67c3de74c0af33413119bde2f58aa69dd8",
+  "pureCasesPassed": 17,
+  "nativeCasesPassed": 11,
+  "nativeCases": {
+    "plan": 0,
+    "attest": 0,
+    "activateExisting": 0,
+    "wrongBoot": 1,
+    "wrongRoot": 1,
+    "attributeApp": 1,
+    "baselineAsCandidate": 1,
+    "writableBaseline": 1,
+    "explicitOwnedReload": 0,
+    "attestAfterReload": 0,
+    "attestProductOwnedBaseline": 0
+  },
+  "actualOwnedReload": true,
+  "kernelHashUnchanged": true,
+  "enforcing": true,
+  "inverseAudit": true,
+  "memfdLabelAndPermissions": true,
+  "bootstrap": "Explicit pinned original policy from the same previously qualified boot; never automatic adoption of unknown existing type",
+  "binderDeviceTest": {
+    "passed": 1,
+    "seconds": 19.426,
+    "scope": "Before final release-gate/protocol-negotiation additions; rerun pending"
+  },
+  "regression": {
+    "passed": 21,
+    "seconds": 115.127,
+    "scope": "Frida five plus ordinary Binder/Linux preparation sixteen"
+  },
+  "releaseActivationQualified": false,
+  "newBootQualified": false,
+  "rootRevocationQualified": false,
+  "uiQualified": false,
+  "build": {
+    "tasks": 224,
+    "result": "success"
+  },
+  "ordinaryAdditions": {
+    "systemSnapshotPassed": 2,
+    "browserOriginBoundaryPassed": 1,
+    "rendererDeathPassed": 1,
+    "rendererGateSkippedInFirstBatch": true
+  },
+  "limitations": [
+    "No new boot or manager revocation qualification yet",
+    "Native/UI release gate remains closed; Debug explicit qualification only",
+    "Not background/Thanox qualification",
+    "No paid model or formal key access"
+  ]
+}

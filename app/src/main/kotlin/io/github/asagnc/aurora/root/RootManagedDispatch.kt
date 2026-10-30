@@ -6,6 +6,7 @@ import io.github.asagnc.aurora.core.*
 import kotlinx.coroutines.*
 import java.util.concurrent.atomic.AtomicInteger
 import java.nio.file.Path
+import kotlinx.coroutines.sync.withLock
 
 /** Pins installed code and snapshots until the process barrier, including cancellation before GO. */
 internal class RootManagedDispatch(private val context: Context, private val identity: () -> LinuxRootIdentity) {
@@ -14,6 +15,7 @@ internal class RootManagedDispatch(private val context: Context, private val ide
     private val runner = RootManagedProcessRunner(identity)
     private val recovery = RootManagedRecovery(context, identity)
     private val qualification = AtomicInteger()
+    private val policy = RootFridaPolicy(context, identity) { qualification.updateAndGet { it and 4 } }
     private data class Launch(val ticket: RootManagedRunTicket, val state: Path, val guard: RootManagedExecutable,
         val worker: RootManagedExecutable, val directory: ParcelFileDescriptor)
 
@@ -24,7 +26,20 @@ internal class RootManagedDispatch(private val context: Context, private val ide
 
     suspend fun captureMetadata(): RootCapturePackage = bundle.captureMetadata(qualification.get() and 4 != 0)
 
+    suspend fun policyOperation(expected: LinuxRootIdentity, type: String, activate: Boolean): String = try {
+        policy.operation(expected, type, activate)
+    } catch (failure: Throwable) { qualification.updateAndGet { it and 4 }; throw failure }
+
     suspend fun start(ticket: RootManagedRunTicket, snapshots: List<ParcelFileDescriptor>): String {
+        if (ticket.kind == "capture") return startChecked(ticket, snapshots)
+        return policy.gate.withLock {
+            try { policy.checkCurrent() }
+            catch (failure: Throwable) { qualification.updateAndGet { it and 4 }; throw failure }
+            startChecked(ticket, snapshots)
+        }
+    }
+
+    private suspend fun startChecked(ticket: RootManagedRunTicket, snapshots: List<ParcelFileDescriptor>): String {
         ticket.validate()
         require(ticket.identity == identity() && ticket.appUid == context.applicationInfo.uid)
         require(ticket.appBuild == context.packageManager.getPackageInfo(context.packageName, 0).longVersionCode.toString())

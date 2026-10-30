@@ -23,4 +23,5 @@ interface IRootControl {
     void recoverManagedRun(String id, in Bundle request, IRootResult callback);
     void startManagedRun(String id, in Bundle request, in ParcelFileDescriptor script, in ParcelFileDescriptor bridge, IRootResult callback);
     void injectPackets(String id, String conversation, in Bundle request, IRootResult callback);
+    void fridaPolicy(String id, in Bundle request, IRootResult callback);
 }

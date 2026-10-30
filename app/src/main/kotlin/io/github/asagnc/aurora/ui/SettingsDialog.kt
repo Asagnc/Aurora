@@ -42,6 +42,7 @@ import kotlinx.coroutines.withContext
     var about by remember { mutableStateOf(false) }
     var skills by remember { mutableStateOf(false) }
     var linux by remember { mutableStateOf(false) }
+    var fridaPolicy by remember { mutableStateOf(false) }
     FullPage("设置", dismiss) {
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
             Row(Modifier.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -60,6 +61,7 @@ import kotlinx.coroutines.withContext
                 SettingsRow("Linux 环境", "基础环境、安装与版本", R.drawable.ic_terminal, Color(0xFF347EDD)) { linux = true }
                 SettingsRow("Root 权限", root.phase.let { if (it == RootPhase.READY) "已连接" else if (it == RootPhase.CONNECTING) "连接中" else "未连接" },
                     R.drawable.ic_shield, Color(0xFF26A879)) { rootDetails = true }
+                SettingsRow("Frida 策略适配", "本次启动 · 显式验证与启用", R.drawable.ic_shield, Color(0xFF26A879)) { fridaPolicy = true }
                 SettingsRow("执行环境", "原生命令与交互终端 · 普通 / Root", R.drawable.ic_terminal, Color(0xFF347EDD)) { environment = false }
                 SettingsRow("工具能力", "文件、浏览器、图文、Skills 与终端", R.drawable.ic_extension, Color(0xFF9270D7)) { environment = true }
             }
@@ -87,6 +89,7 @@ import kotlinx.coroutines.withContext
         confirmButton = { TextButton({ about = false }) { Text("关闭") } })
     if (skills) SkillsPage { skills = false }
     if (linux) LinuxEnvironmentPage { linux = false }
+    if (fridaPolicy) FridaPolicyPage { fridaPolicy = false }
 }
 
 @Composable internal fun FullPage(title: String, dismiss: () -> Unit, content: @Composable () -> Unit) {

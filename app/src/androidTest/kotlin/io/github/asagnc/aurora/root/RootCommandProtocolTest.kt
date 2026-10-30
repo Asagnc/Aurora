@@ -25,6 +25,8 @@ class RootCommandProtocolTest {
         catch (_: SecurityException) {}
         try { remote.capturePackets(operation, UUID.randomUUID().toString(), Bundle(), callback); fail("Ordinary fixture captured packets") }
         catch (_: SecurityException) {}
+        try { remote.fridaPolicy(operation, Bundle(), callback); fail("Ordinary fixture adapted policy") }
+        catch (_: SecurityException) {}
         try { remote.discardLinux(operation); fail("Ordinary fixture discarded Root staging") }
         catch (_: SecurityException) {}
         try { remote.recoverManagedRun(operation, Bundle(), callback); fail("Ordinary fixture recovered privileged task") }
@@ -210,6 +212,7 @@ class RootCommandProtocolTest {
             override fun linuxFiles(id: String, owner: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
             override fun capturePackets(id: String, conversation: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture has no packet capability") }
             override fun injectPackets(id: String, conversation: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture has no packet capability") }
+            override fun fridaPolicy(id: String, request: Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }
         override fun maintainLinuxMetadata(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture has no metadata capability") }
             override fun openLinuxTerminal(id: String, request: android.os.Bundle, callback: IRootResult): android.os.Bundle { throw SecurityException("Fixture is not Root") }
             override fun startLinuxRun(id: String, request: android.os.Bundle, callback: IRootResult) { throw SecurityException("Fixture is not Root") }

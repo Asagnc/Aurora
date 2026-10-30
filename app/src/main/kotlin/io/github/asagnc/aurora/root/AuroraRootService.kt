@@ -73,6 +73,23 @@ class AuroraRootService : RootService() {
             runBlocking { commands.cancelAndWait(id) }
         }
 
+        override fun fridaPolicy(id: String, request: Bundle, callback: IRootResult) {
+            verifyCaller()
+            require(request.keySet() == setOf("identity", "activate", "qualification"))
+            if (request.getBoolean("activate") && !FridaPolicyAvailability.releaseQualified) {
+                require(request.getBoolean("qualification") && applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0) {
+                    "Policy activation is not release-qualified"
+                }
+            }
+            val encoded = requireNotNull(request.getString("identity")).also { require(it.length <= 1024) }
+            val expected = io.github.asagnc.aurora.core.WireJson.decodeFromString(
+                io.github.asagnc.aurora.core.LinuxRootIdentity.serializer(), encoded).also { it.validate() }
+            require(expected == linux.identity)
+            val type = RootFridaPolicy.domain(Binder.getCallingPid())
+            val activate = request.getBoolean("activate")
+            commands.start(id, callback) { managedDispatch.policyOperation(expected, type, activate) }
+        }
+
         override fun closeCommands() {
             verifyCaller()
             runBlocking { commands.close(); terminals.close(); metadata.close() }
@@ -161,6 +178,8 @@ class AuroraRootService : RootService() {
                 putInt("managedRecoveryProtocol", 1)
                 // Transport support is separate from worker/ART qualification; no ready claim.
                 putInt("managedRunProtocol", 1)
+                putInt("fridaPolicyProtocol", 1)
+                putBoolean("fridaPolicyReleaseQualified", FridaPolicyAvailability.releaseQualified)
                 runCatching {
                     putString("capturePackage", runBlocking(kotlinx.coroutines.Dispatchers.IO) {
                         io.github.asagnc.aurora.core.WireJson.encodeToString(

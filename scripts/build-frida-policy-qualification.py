@@ -44,7 +44,7 @@ def build(args):
         if name != 'frida-policy-load-fixture':
             sources += [ROOT / 'app/src/main/cpp/frida' / item for item in ['policy_types.c', 'policy_edit.c']]
         if name == 'frida-policy-fixture':
-            sources += [ROOT / 'app/src/main/cpp/frida/policy_command.c']
+            sources += [ROOT / 'app/src/main/cpp/frida' / item for item in ['policy_command.c', 'policy_io.c', 'policy_activate.c']]
         binary = output / name.removeprefix('frida-')
         subprocess.run([str(compiler), '-D_GNU_SOURCE', '-Wall', '-Wextra', '-Werror', '-Os',
                         '-ffunction-sections', '-fdata-sections', '-fstack-protector-strong',
@@ -56,7 +56,7 @@ def build(args):
         binary.with_suffix('.readelf.txt').write_text(elf)
         report['binaries'][binary.name] = {'sha256': digest(binary), 'bytes': binary.stat().st_size, 'needed': needed}
         report['sources'].update({str(p.relative_to(ROOT)).replace('\\', '/'): digest(p) for p in sources})
-    for name in ['app/src/main/cpp/frida/policy_types.h', 'app/src/main/cpp/frida/policy_edit.h', 'scripts/build-frida-policy-qualification.py', 'scripts/frida-policy-inputs.py']:
+    for name in ['app/src/main/cpp/frida/policy_types.h', 'app/src/main/cpp/frida/policy_edit.h', 'app/src/main/cpp/frida/policy_io.h', 'scripts/build-frida-policy-qualification.py', 'scripts/frida-policy-inputs.py']:
         report['sources'][name] = digest(ROOT / name)
     (output / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))

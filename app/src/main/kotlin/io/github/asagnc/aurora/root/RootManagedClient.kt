@@ -12,6 +12,36 @@ import kotlinx.serialization.encodeToString
 internal class RootManagedClient(private val remote: IRootControl, context: Context) {
     private val awake = CommandWakeLock(context, "ManagedRecovery")
 
+    /** Explicit native settings/test entry only; Agent definitions expose no policy mutation. */
+    suspend fun policy(identity: LinuxRootIdentity, activate: Boolean, qualification: Boolean = false): kotlinx.serialization.json.JsonObject = withContext(Dispatchers.IO) {
+        identity.validate()
+        require(!activate || FridaPolicyAvailability.releaseQualified || qualification) { "策略启用仍在设备验收，尚未开放" }
+        val snapshot = remote.snapshot()
+        require(snapshot.getInt("uid", -1) == 0 && snapshot.getInt("pid", -1) == identity.pid &&
+            snapshot.getInt("fridaPolicyProtocol") == 1) { "请重新连接支持策略验证的当前 Root 服务" }
+        val id = java.util.UUID.randomUUID().toString()
+        val result = CompletableDeferred<String>()
+        val binder = remote.asBinder()
+        val death = IBinder.DeathRecipient { result.completeExceptionally(IllegalStateException("Root service exited")) }
+        val lease = awake.acquire(90_000)
+        try {
+            binder.linkToDeath(death, 0)
+            remote.fridaPolicy(id, Bundle().apply {
+                putString("identity", WireJson.encodeToString(identity)); putBoolean("activate", activate)
+                putBoolean("qualification", qualification)
+            }, object : IRootResult.Stub() { override fun complete(value: String) { result.complete(value) } })
+            val value = withTimeout(80_000) { result.await() }.also { require(it.length <= 8192) }
+            val response = WireJson.parseToJsonElement(value) as kotlinx.serialization.json.JsonObject
+            require(response["error"] == null) { "策略资格未确认；未回滚全局策略，请检查当前状态" }
+            require(WireJson.decodeFromJsonElement(LinuxRootIdentity.serializer(), requireNotNull(response["identity"])) == identity)
+            require(packageInfo(identity).workerSha256 == (response["workerSha256"] as? kotlinx.serialization.json.JsonPrimitive)?.content || !activate)
+            response
+        } finally {
+            try { withContext(NonCancellable + Dispatchers.IO) { runCatching { remote.cancelAndWait(id) } } }
+            finally { runCatching { binder.unlinkToDeath(death, 0) }; lease.close() }
+        }
+    }
+
     suspend fun packageInfo(identity: LinuxRootIdentity): FridaManagedPackage = withContext(Dispatchers.IO) {
         val snapshot = remote.snapshot()
         require(snapshot.getInt("uid", -1) == 0 && snapshot.getInt("pid", -1) == identity.pid && snapshot.getInt("managedRunProtocol") == 1)
