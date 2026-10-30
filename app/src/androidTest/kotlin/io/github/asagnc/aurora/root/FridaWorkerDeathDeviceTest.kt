@@ -47,6 +47,7 @@ class FridaWorkerDeathDeviceTest {
     }
 
     private suspend fun qualify(app: AuroraApplication, owner: String) = supervisorScope {
+        qualifyFridaPolicyFixture(app)
         val tools = FridaDeviceTools(app, owner)
         val probe = tools.frida(objectOf("action" to string("probe")))
         assertEquals(probe.toString(), JsonPrimitive(true), probe["probeSucceeded"])

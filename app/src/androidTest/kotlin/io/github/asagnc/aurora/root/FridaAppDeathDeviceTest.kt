@@ -35,6 +35,7 @@ class FridaAppDeathDeviceTest {
         require(!Files.exists(checkpoint)) { "Verify the previous owned death checkpoint first" }
         FridaDeviceForeground(app).use { supervisorScope {
             app.root.connect(); check(app.root.state.value.phase == RootPhase.READY)
+            qualifyFridaPolicyFixture(app)
             val owner = app.conversations.create(title)
             val tools = FridaDeviceTools(app, owner)
             val probe = tools.frida(objectOf("action" to string("probe")))
@@ -70,6 +71,7 @@ class FridaAppDeathDeviceTest {
         FridaDeviceForeground(app).use { try {
             app.root.connect(); check(app.root.state.value.phase == RootPhase.READY)
             val connection = requireNotNull(app.root.fridaConnection)
+            assertFalse(connection.client.policy(connection.identity, false)["policyQualified"]!!.jsonPrimitive.boolean)
             val result = connection.client.recover(ticket)
             assertTrue(result.toString(), result.confirmed)
             val proof = requireNotNull(result.cleanup) { result.toString() }

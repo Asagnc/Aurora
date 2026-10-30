@@ -50,6 +50,7 @@ class FridaCancellationDeviceTest {
     }
 
     private suspend fun qualify(app: AuroraApplication, owner: String, rootDeath: Boolean) = supervisorScope {
+        qualifyFridaPolicyFixture(app)
         val tool = FridaTool(app, owner) { call, path -> app.toolRuns.attachArtifact(owner, call, path); Unit }
         suspend fun invoke(args: JsonObject): JsonObject = app.tasks.run(owner) {
             val call = ToolCall(UUID.randomUUID().toString(), "frida", args)
@@ -102,6 +103,7 @@ class FridaCancellationDeviceTest {
         assertNotEquals(identity, current.identity)
         val installed = current.client.packageInfo(current.identity)
         assertFalse(installed.nativeProbePassed); assertFalse(installed.javaProbePassed)
+        assertFalse(current.client.policy(current.identity, false)["policyQualified"]!!.jsonPrimitive.boolean)
     }
 
     private suspend fun awaitInjected(app: AuroraApplication, owner: String): RootManagedRunTicket = withTimeout(20_000) {

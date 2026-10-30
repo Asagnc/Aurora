@@ -1,0 +1,50 @@
+name: Public readonly APK dependency cache qualification
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  cache:
+    runs-on: ubuntu-26.04-arm
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Verify snapshot and provenance boundaries
+        run: python3 scripts/verify-apk-dependency-cache.py
+      - name: Obtain the exact approved native SDK artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import json, subprocess
+          run = '40282040597'
+          result = json.loads(subprocess.check_output(['gh', 'api', 'repos/Asagnc/Aurora/actions/runs/' + run]))
+          if result['head_sha'] != '3d42f73f089ae8edfcde466cfe3c5903de8f3e04' or result['conclusion'] != 'success' or result['path'] != '.github/workflows/apk-agp-jni-qualification.yml':
+              raise ValueError('Fixed SDK artifact provenance differs')
+          subprocess.run(['gh', 'run', 'download', run, '--name', 'apk-arm64-agp-jni-qualification', '--dir', 'app/build/outputs/dependency-cache-input'], check=True)
+          PY
+      - name: Prepare the same fixed official inputs and JDK
+        run: |
+          python3 scripts/qualify-apk-installed.py --directory app/build/outputs/cache-sdk --artifact app/build/outputs/dependency-cache-input
+          mkdir -p app/build/outputs/cache-bootstrap
+          tar -xf app/build/outputs/cache-sdk/jdk.archive -C app/build/outputs/cache-bootstrap
+          echo "JAVA_HOME=$PWD/app/build/outputs/cache-bootstrap/jdk-25.0.5+8" >> "$GITHUB_ENV"
+          echo "$PWD/app/build/outputs/cache-bootstrap/jdk-25.0.5+8/bin" >> "$GITHUB_PATH"
+      - name: Use production preparation without changing installed phone versions
+        env:
+          AURORA_ANDROID_BUILD_INPUTS: ${{ github.workspace }}/app/build/outputs/cache-sdk
+          AURORA_ANDROID_BUILD_DOWNLOAD: '1'
+        run: ./gradlew --configure-on-demand :core:test --tests '*AndroidBuildIntegrationTest' --console=plain
+      - name: Seed independently then run two fresh offline readonly probes
+        run: sudo -n unshare --mount --propagation private python3 scripts/qualify-apk-dependency-cache.py --directory app/build/outputs/cache-sdk --output app/build/outputs/apk-dependency-cache
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: apk-public-dependency-cache-qualification
+          path: |
+            app/build/outputs/apk-dependency-cache/qualification.json
+            app/build/outputs/apk-dependency-cache/*.log
+            app/build/outputs/apk-dependency-cache/public-apk-dependency-cache.tar.gz
+            core/build/test-results/test/*.xml
+          retention-days: 14

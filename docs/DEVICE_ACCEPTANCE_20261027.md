@@ -96,3 +96,15 @@ App进程死亡两阶段专项通过：prepare仅在自有fixture已捕获/注�
 2026-10-30显式适配代码已接入：现有worker单次load/读回审计、Root Binder末尾事务与protocol协商、当前boot/Root身份/worker/内核摘要门控、Root私有原始基线、设置页资格状态。Debug仅显式qualification验收请求可启用；FridaPolicyAvailability.releaseQualified=false，正式入口和UI启用按钮关闭，须满足批准方案的新boot/撤权及剩余故障矩阵后再开放。最终worker0ca9bd59：17项纯检查、11项native启用/拒绝/同一已批准候选实际重载全部通过，Enforcing保持1、内核摘要前后相同；同boot已知原始策略仅由宿主显式复制为本次资格基线，产品不接管未知已有专用类型。Binder旧身份拒绝/启用/真实ART/重新启用清零/重连不继承专项1项19.426秒，Frida5项与普通Binder/Linux准备16项共21项115.127秒通过；最终发布门控/protocol变更后针对性复测待做。新增Root拒绝实机夹具已编译，未执行。用户改为亲自重启及操作管理器：先重启解锁、暂保留Root，核验新boot后再撤权；不得由ADB重启或自行改管理器授权。详见FRIDA_POLICY_IMPLEMENTATION及evidence/0.1.40/frida-policy-activation-device-20261030.json。
 
 补跑普通UID系统快照2项与浏览器同源/跨源边界1项通过；renderer死亡首次因未开显式开关跳过，随后单独显式运行1项通过0.582秒，不把跳过计通过。d9f5872完整CI40917630532成功；对应完整审查包release-review-d9f5872-complete绑定该提交且打包时clean，9项载荷/重建报告1,691,128,452字节、APK45,173,118字节、10条校验独立复核，仍unsigned-review/releaseReady=false。该包不包含后续显式启用实现，不能作为后续新代码审查包。
+
+
+2026-10-30实际手动重启/撤权/恢复实测：新boot改变，启用前内核策略回到原始1ff62aa2且Enforcing，新boot产品基线不存在；没有旧策略持久装载。产品从零捕获的新基线与启用前内核字节完全一致，启用后完整差异/标签及Enforcing检查、Binder资格/重连失效1项19.388秒、只读17项通过。用户在FolkPatch拒绝Aurora后，Root连接UNAVAILABLE且特权接口均空，普通UID命令和不触发Root的系统快照1项1.735秒通过；随后由用户恢复授权。
+
+恢复后受限批次6项最终203.212秒但发生宿主唤醒干预，不计独立通过；透明自有fixture仅保证可见性，另一受限批次前5项通过后普通App出现原生SIGSEGV/PC0x320，整批失败，不直接归因Thanox。与固定Frida远程调用哨兵地址相同只作排查线索，未确认根因。失败自有owner经既有精确恢复/删除1项2.05秒完成，无强删unknown。
+
+用户随后明确解除Thanox中Aurora的冻结/后台限制：单独取消1项17.09秒、策略先资格后的Root服务死亡1项18.057秒、worker精确SIGKILL/活目标unknown删除屏障1项19.263秒、App已注入/resume后自杀prepare（非JUnit通过）＋重启verify1项3.188秒全部通过；Root/worker宿主仅依本次测试提供的PID/ticks执行pidfd信号，错误ticks先拒绝。断连/死亡后策略资格不继承，原目标保护与旧票据恢复无重放。完整六项组合无宿主中途唤醒通过133.086秒。此前原生崩溃仍保留、未声称被修复；正式策略启用门控仍false。浏览器异步/下载恢复、Skills验签/信任恢复及Root既有副本共21项复测通过7.125秒；新自有会话APK构建270秒预算复测运行中。
+
+356f157完整CI41057445450五个job全部成功，产品代码与5edfdc3审查包一致（其间仅文档）；5edfdc3的41057202983被后续推送取代取消，不计成功。当前新增只修改验收夹具/宿主脚本与记录；frida-fixture改为透明自有目标并临时KEEP_SCREEN_ON，不改任何系统/Thanox策略。
+
+
+2026-10-30补充验收：Root抓包/短轮转/静态逆向/代理14项通过51.824秒；当前用户解除Aurora限制的配置下，后台与约15秒熄屏Root tick两项通过35.423秒。实际设置页导航、Root连接、Frida启用按钮父控件禁用、只读状态和返回断连均通过。SDK新会话标准探针273.334秒超时（原生预算270秒、scopeRemoved=true）；保留工程诊断再次273.544秒超时，已到Java/Compose/JNI/DEX后下载Release lint依赖。保留部分缓存的标准完整探针/APK导出/普通UID JNI加载1项通过94.172秒，不是冷缓存通过。用户已批准公共只读依赖基线＋私有可写缓存，先ARM64隔离资格、再两份新会话真机资格；现仅增加CI准备/封口/只读与离线机制验证脚本，尚未改正式工具布局或安装手机基线。原270秒和全部检查保持，见APK_DEPENDENCY_CACHE_PROPOSAL。

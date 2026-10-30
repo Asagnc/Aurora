@@ -1,0 +1,106 @@
+{
+  "date": "2026-10-30",
+  "scope": "Actual user-operated reboot, FolkPatch revoke/restore, then user removed Aurora Thanox restrictions",
+  "workerSha256": "0ca9bd596c919af1c6483f7747591a67c3de74c0af33413119bde2f58aa69dd8",
+  "newBoot": {
+    "changed": true,
+    "stockPolicyRestored": true,
+    "oldPolicyWasNotPersisted": true,
+    "baselineAbsentBeforeEnable": true,
+    "productCapturedBaselineMatchesKernel": true,
+    "enforcingBeforeAndAfter": true,
+    "policyBinderTestsPassed": 1,
+    "seconds": 19.388,
+    "readonlyAuditCasesPassed": 17
+  },
+  "managerRevocation": {
+    "testsPassed": 1,
+    "seconds": 1.735,
+    "privilegedEndpointAbsent": true,
+    "ordinaryNativeCommandPassed": true,
+    "systemSnapshotDidNotRequestRoot": true
+  },
+  "restrictedRuns": [
+    {
+      "junitReported": 6,
+      "seconds": 203.212,
+      "hostWakeIntervened": true,
+      "independentPass": false
+    },
+    {
+      "completedBeforeCrash": 5,
+      "nativeAppCrash": true,
+      "signal": "SIGSEGV",
+      "pc": "0x320",
+      "independentPass": false,
+      "rootCause": "Unresolved; fixed Frida source uses this address as its remote-call sentinel; association is an inference, not proof of cause",
+      "ownedFailedOwnerRecovered": true,
+      "recoverySeconds": 2.05
+    }
+  ],
+  "afterUserRemovedAuroraRestrictions": {
+    "singleCancelPassed": 1,
+    "singleCancelSeconds": 17.09,
+    "rootDeathPassed": 1,
+    "rootDeathSeconds": 18.057,
+    "workerDeathPassed": 1,
+    "workerDeathSeconds": 19.263,
+    "bothFaultsUsedExactPidfdAndRejectedWrongTicks": true,
+    "policyQualifiedBeforeFaults": true,
+    "appDeathPrepare": "Expected self-kill after real injection/resume; not a JUnit pass",
+    "appDeathVerifyPassed": 1,
+    "appDeathVerifySeconds": 3.188,
+    "combinedPassed": 6,
+    "combinedSeconds": 133.086,
+    "hostWakeIntervened": false,
+    "earlierCrashProvenFixed": false
+  },
+  "ordinaryFailureRegressions": {
+    "passed": 21,
+    "seconds": 7.125,
+    "scope": "Browser async/download recovery, Skills trust/signatures, Root existing artifact checks"
+  },
+  "releaseActivationQualified": false,
+  "sdkFreshRetest": {
+    "freshStandard": {
+      "passed": false,
+      "seconds": 273.334,
+      "nativeBudgetSeconds": 270,
+      "scopeRemoved": true
+    },
+    "retainedDiagnostic": {
+      "passed": false,
+      "seconds": 273.544,
+      "stage": "Release lint dependency download after Java/Compose/JNI/DEX"
+    },
+    "retainedPartialCacheStandard": {
+      "passed": 1,
+      "seconds": 94.172,
+      "fullChecksUnchanged": true,
+      "apkExportAndOrdinaryUidJniPassed": true
+    },
+    "coldCacheQualified": false
+  },
+  "limitations": [
+    "Does not prove compatibility with all Thanox/background policies",
+    "Earlier native crash remains recorded; success after configuration change is not a causal fix",
+    "No formal signing or paid model calls"
+  ],
+  "additionalRootTools": {
+    "passed": 14,
+    "seconds": 51.824,
+    "scope": "Root capture, short rotation, static reverse and proxy"
+  },
+  "backgroundAndScreenOff": {
+    "passed": 2,
+    "seconds": 35.423,
+    "scope": "Current user-unrestricted Aurora configuration only"
+  },
+  "settingsUi": {
+    "actualNavigation": true,
+    "actualRootConnect": true,
+    "activationDisabled": true,
+    "readonlyStatusPassed": true,
+    "disconnectedAfterTest": true
+  }
+}

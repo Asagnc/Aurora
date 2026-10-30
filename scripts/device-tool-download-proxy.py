@@ -12,7 +12,7 @@ import select
 import socket
 
 HOSTS = frozenset(("github.com", "release-assets.githubusercontent.com", "objects.githubusercontent.com",
-                  "downloads.mitmproxy.org", "dl.google.com", "repo.maven.apache.org", "plugins.gradle.org",
+                  "downloads.mitmproxy.org", "dl.google.com", "maven.google.com", "repo.maven.apache.org", "plugins.gradle.org",
                   "plugins-artifacts.gradle.org", "repo.gradle.org", "services.gradle.org", "downloads.gradle.org"))
 
 
