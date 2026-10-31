@@ -7,6 +7,7 @@ from pathlib import Path
 import tempfile
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 import zipfile
 
 spec = importlib.util.spec_from_file_location('release', Path(__file__).with_name('package-release.py'))
@@ -15,6 +16,34 @@ spec.loader.exec_module(release)
 
 
 class ReleaseTest(unittest.TestCase):
+    def test_guard_apk_digest_and_owned_sources_are_checked_without_faking_profile_identity(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary); apk = root / 'app.apk'; source = root / 'source.zip'
+            files = {'app/src/main/cpp/CMakeLists.txt': b'owned top-level config',
+                     'app/src/main/cpp/managed/Guard.cmake': b'owned config',
+                     'app/src/main/cpp/managed/sources.txt': b'managed/guard.c\n',
+                     'app/src/main/cpp/managed/guard.c': b'owned inert guard source'}
+            for name, data in files.items():
+                path = root / name; path.parent.mkdir(parents=True, exist_ok=True); path.write_bytes(data)
+            guard = b'owned inert guard binary'; digest = hashlib.sha256(guard).hexdigest()
+            reference = {'sha256': 'b' * 64, 'sources': {name: hashlib.sha256(data).hexdigest()
+                         for name, data in files.items() if name.endswith('.c')}}
+            def artifacts(asset, changed=False):
+                with zipfile.ZipFile(apk, 'w') as archive:
+                    archive.writestr('lib/arm64-v8a/libaurora_managed_guard.so', guard)
+                    archive.writestr('assets/managed/arm64-v8a.guard.sha256', asset)
+                with zipfile.ZipFile(source, 'w') as archive:
+                    for name, data in files.items():
+                        archive.writestr(name, b'changed' if changed and name.endswith('.c') else data)
+            with patch.object(release, 'ROOT', root):
+                artifacts(digest)
+                result = release.guard_source_identity(apk, source, reference)
+                self.assertEqual(digest, result['apkGuardSha256']); self.assertFalse(result['byteIdentical'])
+                artifacts('a' * 64)
+                with self.assertRaises(ValueError): release.guard_source_identity(apk, source, reference)
+                artifacts(digest, True)
+                with self.assertRaises(ValueError): release.guard_source_identity(apk, source, reference)
+
     def test_wrong_package_debuggable_and_wrong_platform_are_rejected(self):
         sample = "package: name='io.github.asagnc.aurora' versionCode='41' versionName='0.1.40'\nminSdkVersion:'36'\ntargetSdkVersion:'37'\n"
         self.assertEqual('io.github.asagnc.aurora', release.manifest_identity(sample)['applicationId'])

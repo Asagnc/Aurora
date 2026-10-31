@@ -28,3 +28,8 @@ package-release.py同时传入--android-build-bundle与--android-build-sources�
 package-release.py成对接收--proxy-distribution与--proxy-sources：验证官方独立分发精确字节、编译安装器pin、APK实际八份profiles、固定源码清单和当前源码快照。代理分发和源码ZIP纳入manifest/SHA256SUMS。配套校验不执行下载的程序，不把主机资格写成手机proxyReady。增加4组惰性fixture覆盖完整/篡改/缺失/多余/重复/错源码快照/错APK profile/错分发拒绝。发布stage函数沿用单次临时目录中按顺序复制—审计—重建—发布的责任，新增可选材料仍在同一生命周期内；超过普通函数行数目标的例外保留以避免拆散失败清理范围。
 
 发布审查现在额外解析实际启动图标引用链和解码像素，绑定已批准原图；结果纳入manifest.launcherArtwork。此静态检查与机型launcher/mask视觉验收分别记录。
+
+
+2026-10-31只读依赖基线：SDK原生审查输入现在为固定484,215,713字节的组合包（f60e350b），原生base、公共cache、成功资格JSON和公共依赖材料作为4项固定重建输入纳入SDK材料，SDK输入共45项。package-apk-materials.py须额外传入--dependencies，目录内容按tools/apk-build/dependency-materials.json逐项核对。45项SDK/584项代理上游材料可以复用已有同摘要字节，两个材料ZIP中的aurora-source.zip必须重新使用当前HEAD，不能复用历史自有快照。
+
+Guard审查必须先使用当前源码运行build-managed-guard.py生成新的资格记录，再传入--guard-reference；脚本会拒绝旧source manifest。独立资格构建使用其自己的编译profile，APK内guard来自CMake，不能把独立重建摘要写成APK guard位级复现。发布manifest现在分开记录APK guard实际摘要、独立资格摘要、byteIdentical及51份自有源码/Guard.cmake/顶层CMake配置对应范围；APK实际摘要必须匹配其内置guard SHA资产，源码/config必须与当前可信目录和对应源码ZIP一致。verify-managed-source-roundtrip报告明确只对独立资格二进制做离线复现。

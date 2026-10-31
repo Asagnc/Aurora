@@ -42,6 +42,40 @@ def source_identity(apk, materials):
         return {'workerSha256': actual, 'bridge': bridge}
 
 
+def guard_source_identity(apk, materials, reference):
+    """Bind the APK digest to its exact owned sources without equating two compiler profiles."""
+    configuration = ['app/src/main/cpp/CMakeLists.txt', 'app/src/main/cpp/managed/Guard.cmake',
+                     'app/src/main/cpp/managed/sources.txt']
+    if not 1 <= len(reference['sources']) <= 256:
+        raise ValueError('Guard qualification source count exceeds budget')
+    with zipfile.ZipFile(materials) as sources:
+        names = sources.namelist()
+        if len(names) != len(set(names)):
+            raise ValueError('Duplicate guard source entries')
+        for name in configuration:
+            if sources.getinfo(name).file_size > 2 * 1024 * 1024:
+                raise ValueError('Guard build configuration exceeds budget')
+            if sources.read(name) != (ROOT / name).read_bytes():
+                raise ValueError('Packaged guard build configuration differs: ' + name)
+        for name, digest in reference['sources'].items():
+            if not re.fullmatch(r'app/src/main/cpp/(managed|linux|frida)/[a-z_-]+\.(c|h)', name):
+                raise ValueError('Unexpected guard qualification source path')
+            if sources.getinfo(name).file_size > 2 * 1024 * 1024:
+                raise ValueError('Guard source exceeds budget')
+            if hashlib.sha256(sources.read(name)).hexdigest() != digest or sha(ROOT / name) != digest:
+                raise ValueError('Packaged guard source differs from qualification: ' + name)
+    with zipfile.ZipFile(apk) as binary:
+        entry = binary.getinfo('lib/arm64-v8a/libaurora_managed_guard.so')
+        if not 0 < entry.file_size <= 2 * 1024 * 1024:
+            raise ValueError('APK guard exceeds budget')
+        digest = hashlib.sha256(binary.read(entry)).hexdigest()
+        if binary.read('assets/managed/arm64-v8a.guard.sha256') != digest.encode('ascii'):
+            raise ValueError('APK guard digest differs from its packaged manifest')
+    return {'apkGuardSha256': digest, 'standaloneQualificationSha256': reference['sha256'],
+            'byteIdentical': digest == reference['sha256'], 'ownedSourceFiles': len(reference['sources']),
+            'scope': 'Exact current owned sources/configuration and APK digest audit; standalone qualification uses its own compiler profile, not an APK CMake bit-rebuild claim'}
+
+
 def verify_signature(apk, args):
     if args.unsigned_review:
         if args.apksigner or args.certificate_sha256:
@@ -122,6 +156,8 @@ def stage(args):
         audit(work / 'Aurora.apk')
         application = android_identity(work / 'Aurora.apk', args)
         identity = source_identity(work / 'Aurora.apk', work / 'frida-source-materials.zip')
+        guard = guard_source_identity(work / 'Aurora.apk', work / 'native-corresponding-source.zip',
+                                      json.loads(args.guard_reference.read_text(encoding='utf-8')))
         reference = json.loads(args.frida_reference.read_text(encoding='utf-8'))
         if identity['workerSha256'] != reference['workerSha256']:
             raise ValueError('APK worker differs from trusted build reference')
@@ -144,7 +180,7 @@ def stage(args):
         manifest = {'format': 1, 'androidRuntime': 'NOT VERIFIED BY PACKAGING',
             'releaseReady': False, 'signature': signature, **identity, **application,
             'androidBuildTools': sdk,
-            'networkProxyTools': proxy,
+            'networkProxyTools': proxy, 'guardSourceCorrespondence': guard,
             'gitCommit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
             'workTreeDirty': bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT)),
             'files': [{'name': name, 'bytes': (work / name).stat().st_size, 'sha256': sha(work / name)}

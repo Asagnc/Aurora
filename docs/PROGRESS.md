@@ -1035,3 +1035,6 @@ App进程死亡两阶段专项通过：prepare仅在自有fixture已捕获/注�
 
 
 2026-10-31后续验证：95e7b7d完整CI41172360549五个job成功，实际ARM64生产安装专项41172360761成功（重建得到相同f60e350b组合包、Kotlin安装、私有runtime对应源码及只读标准探针）。手机已有新版本的新会话标准探针实测98.354秒，整项101.771秒、含导出/普通UID JNI，未配置宿主relay；未强制offline，不冒充无手机网络。公共依赖材料186二进制坐标已取得185份源归档，6个空占位经外层及嵌套JAR实物无class/dex/native证明；Google bundletool1.18.3/TF Lite metadata0.2.0按官方版本tag固定源码，原Maven占位/404保留事实。POM许可证声明186项均有记录，未做缺失继承推断；源材料/声明缺项0，787文件封口包204,253,459字节。源码归档与缓存/native重建输入纳入同一SDK源材料校验，不宣称完整法律闭包、全SDK源码重编译或正式发布。
+
+
+2026-10-31发布审计补充：完整重打首次因引用旧managed-qualification报告，source manifest与当前51份可信源码不一致而被拒绝，未发布目录。重建当前独立资格guard后发现其8040d174摘要与APK CMake guard的96ca7e27摘要不同，二者编译profile本来不同。现增加APK guard内置摘要与实际ELF校验、当前51份自有源码/Guard.cmake/顶层CMake对应检查，并在manifest区分两个摘要与byteIdentical，不把独立资格离线重建当APK guard位级复现。新增篡改APK摘要、源码及profile分离的主机回归通过，完整新审查包以此修正后的输出为准；旧9e48efa候选保留，不作为新交付。worker仍按其真实APK字节离线重链接匹配。

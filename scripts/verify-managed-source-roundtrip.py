@@ -62,7 +62,8 @@ def verify(args):
         with args.archive.open("rb") as incoming:
             archive_sha = hashlib.file_digest(incoming, "sha256").hexdigest()
         report = {"matchedSha256": actual["sha256"], "sourceArchiveSha256": archive_sha, "strippedBytes": actual["strippedBytes"],
-            "sourceHeaderCount": len(actual["sources"]), "offlineRebuild": True, "androidRuntime": "NOT TESTED"}
+            "sourceHeaderCount": len(actual["sources"]), "offlineRebuild": True, "androidRuntime": "NOT TESTED",
+            "scope": "Standalone guard qualification rebuild; APK CMake guard byte identity is not established by this report"}
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report))
