@@ -1,6 +1,7 @@
 package io.github.asagnc.aurora.linux
 
 import android.content.Intent
+import android.os.Bundle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import io.github.asagnc.aurora.AuroraApplication
@@ -8,7 +9,6 @@ import io.github.asagnc.aurora.MainActivity
 import io.github.asagnc.aurora.core.*
 import io.github.asagnc.aurora.root.RootRequired
 import io.github.asagnc.aurora.root.RootPhase
-import io.github.asagnc.aurora.runtime.CommandRequest
 import io.github.asagnc.aurora.terminal.*
 import java.nio.file.Files
 import kotlinx.coroutines.*
@@ -77,6 +77,7 @@ class RootLinuxTerminalDeviceTest {
     }
 
     @RootRequired @LinuxImageRequired @Test fun rootServiceDeathRetainsLeaseUntilFreshServiceProofWithoutReplay() = runBlocking {
+        check(InstrumentationRegistry.getArguments().getString("auroraLinuxRootDeathTest") == "true")
         fixture { owner ->
             check(app.linux.runs.pendingCount() == 0) { "Service-death qualification requires no other pending Linux tasks" }
             val record = app.terminals.startLinux(owner, PtyRequest(listOf("/bin/sh", "-c",
@@ -85,9 +86,13 @@ class RootLinuxTerminalDeviceTest {
             withTimeout(15_000) { session.version.first { session.bytes.sequence > 0 || !session.job.isActive } }
             assertTrue(app.terminals.read(owner, record.id).text("text").orEmpty().contains("ready"))
             val previous = requireNotNull(app.root.linuxClient).identity
-            val commands = requireNotNull(app.root.commandClient)
-            // Kill only Aurora's verified Root-service PID, never an external/system process.
-            runCatching { commands.execute(owner, CommandRequest(listOf("/system/bin/kill", "-9", previous.pid.toString()), timeoutMs = 5_000)) }
+            val ticket = io.github.asagnc.aurora.data.LinuxRunRegistry(app.conversations).pending(owner).single()
+            assertEquals(previous, ticket.identity)
+            // The explicit host fixture opens/rechecks pidfd and rejects wrong
+            // start ticks before signalling; no numeric-PID kill command.
+            instrumentation.sendStatus(2, Bundle().apply {
+                putString("stream", "AURORA_LINUX_PTY_ROOT_DEATH_READY=${previous.pid}:${previous.startTicks}\n")
+            })
             withTimeout(20_000) { app.root.state.first { it.phase == RootPhase.UNAVAILABLE } }
             withTimeout(20_000) { session.job.join() }
             assertNotEquals("exited", session.record.state)

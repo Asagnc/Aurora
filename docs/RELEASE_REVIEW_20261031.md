@@ -1,0 +1,13 @@
+# 0.1.40 完整未签名审查材料（2026-10-31）
+
+完整包精确绑定cba97ab62ffb274f50ce5af8fc5fbd8375334292，打包时工作树clean。后续验收夹具和文档不改变这份包的来源身份；不把后续HEAD写成旧包源码。
+
+本地目录为app/build/outputs/release-review-cba97ab-complete。9项载荷/重建报告共2,683,811,595字节，APK45,192,270字节；10条SHA256SUMS于本轮再次独立流式复核一致。完整清单见[evidence](evidence/0.1.40/release-review-cba97ab-complete-manifest.json)。
+
+SDK组合归档484,215,713字节，SHA256 f60e350b11aa1a970219a9300d0bd64ba9c4e26d307846cd854a0cbaaa073055，包含已资格的公共只读依赖基线。SDK来源输入45项、代理584项、Frida源码材料65份；包括原生base、公共cache、成功资格报告和公开依赖源材料。来源/许可声明材料不等于总体法律闭包或全SDK二进制逐字节重建。
+
+生产Frida仍为17.24.3，worker SHA256 0ca9bd596c919af1c6483f7747591a67c3de74c0af33413119bde2f58aa69dd8，离线重链接一致。17.25.0候选只做独立资格，未替换本包。
+
+受管guard的51份自有源码/构建配置与APK内置摘要均核对。APK CMake guard与独立资格guard编译profile不同，摘要分别为96ca7e27b0d695b6176d72886c723adf622fcbe3ecd19e83433bbad09e55c871、8040d174acb9e99ea89244285cd6e5f0094bf3483552506e3419d99912f371cf，byteIdentical=false；独立资格重建成功不能写成APK guard位级复现。
+
+仍为unsigned-review，signature.verified=false、releaseReady=false。正式签名密钥留待用户配置；默认正式APK运行、UI、真实私仓和付费模型仍按验收计划单独记录，不由打包或CI替代。cba97ab完整CI41173766390五job成功。

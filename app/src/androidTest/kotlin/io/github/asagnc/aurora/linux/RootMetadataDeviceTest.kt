@@ -1,5 +1,6 @@
 package io.github.asagnc.aurora.linux
 
+import android.os.Bundle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import io.github.asagnc.aurora.AuroraApplication
@@ -74,9 +75,12 @@ class RootMetadataDeviceTest {
     }
 
     private suspend fun restart(owner: String) {
+        check(InstrumentationRegistry.getArguments().getString("auroraRootMetadataDeathTest") == "true")
         val old = requireNotNull(app.root.linuxClient).identity
-        runCatching { requireNotNull(app.root.commandClient).execute(owner, CommandRequest(
-            listOf("/system/bin/kill", "-9", old.pid.toString()), timeoutMs = 5000)) }
+        check(app.conversations.header(owner) != null)
+        InstrumentationRegistry.getInstrumentation().sendStatus(2, Bundle().apply {
+            putString("stream", "AURORA_METADATA_ROOT_DEATH_READY=${old.pid}:${old.startTicks}\n")
+        })
         withTimeout(20_000) { app.root.state.first { it.phase == RootPhase.UNAVAILABLE } }
         app.root.connect()
         check(app.root.metadataClient != null)

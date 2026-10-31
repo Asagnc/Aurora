@@ -107,6 +107,8 @@ class RootLinuxRunDeviceTest {
                 "Prepare and select a real Root Linux generation first"
             }
             owner = app.conversations.create("Linux qualification")
+            // Readiness polling may run before async dispatch creates the conversation directory.
+            app.spaces.commandRoot(owner)
             block(app, owner)
         } catch (failure: Throwable) { original = failure; throw failure
         } finally {

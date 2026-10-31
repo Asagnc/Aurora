@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-31",
+  "scope": "Actual device faults recorded earlier today, exact pidfd/UID/startTicks; no numeric PID kill or replay",
+  "baseCommit": "cba97ab62ffb274f50ce5af8fc5fbd8375334292",
+  "testSources": {
+    "app/src/androidTest/kotlin/io/github/asagnc/aurora/reverse/AndroidBuildDeviceFixture.kt": "5f27ba18dcfc06c6fec113ed42aa1b68360bb7172166ac4abb4d6bc0b9a4133a",
+    "app/src/androidTest/kotlin/io/github/asagnc/aurora/reverse/AndroidBuildFaultDeviceTest.kt": "bb5f4b60d3f282f4943e584244aade4e0f4b0135e576d6d8a72b69400e1ff3f2",
+    "app/src/androidTest/kotlin/io/github/asagnc/aurora/linux/RootLinuxTerminalDeviceTest.kt": "fce219a96fc2894179a26462c830a380cc9b3a0d094aa0a45c5fdb8d0e975e0b",
+    "app/src/androidTest/kotlin/io/github/asagnc/aurora/linux/RootMetadataDeviceTest.kt": "5c290a2e13d380c7e6d1d2bf537294a10e7d1b995744c24d243dba4b1599e7aa"
+  },
+  "runs": [
+    {
+      "kind": "sdk-root",
+      "exactPidfdSignalled": true,
+      "wrongTicksRefused": true,
+      "policyQualifiedBeforeFault": false,
+      "sdkQualifiedBeforeFault": true,
+      "deviceTestsPassed": 1,
+      "junitSeconds": 102.468,
+      "logSha256": "4839fd8fe446fd1b7f161fc1ae080303fd454a68256fec465315b1a0700a92ba"
+    },
+    {
+      "kind": "linux-pty-root",
+      "exactPidfdSignalled": true,
+      "wrongTicksRefused": true,
+      "policyQualifiedBeforeFault": false,
+      "sdkQualifiedBeforeFault": false,
+      "linuxPtyAdmittedBeforeFault": true,
+      "deviceTestsPassed": 1,
+      "junitSeconds": 3.798,
+      "logSha256": "aa5d2b6775b72c26f686964fa4210c8bf9bf9eb8771093d7e0220947a4ee6223"
+    },
+    {
+      "kind": "metadata-root",
+      "exactPidfdSignalled": true,
+      "wrongTicksRefused": true,
+      "signals": 3,
+      "policyQualifiedBeforeFault": false,
+      "sdkQualifiedBeforeFault": false,
+      "linuxPtyAdmittedBeforeFault": false,
+      "deviceTestsPassed": 4,
+      "junitSeconds": 16.668,
+      "logSha256": "7b8454bb971b279744c7f996c9e3b328b42bc047ceec910daca4a59c72b9048d"
+    }
+  ]
+}

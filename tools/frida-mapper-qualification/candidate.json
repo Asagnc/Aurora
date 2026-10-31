@@ -1,0 +1,36 @@
+{
+  "version": "17.25.0",
+  "platform": "android-arm64",
+  "archive": "frida-core-devkit-17.25.0-android-arm64.tar.xz",
+  "url": "https://github.com/frida/frida/releases/download/17.25.0/frida-core-devkit-17.25.0-android-arm64.tar.xz",
+  "sha256": "985d334e4c71ed6190fdfbf748b96c121b69c360d0d36838244f7da4c35fe59f",
+  "bytes": 61054192,
+  "coreCommit": "f91556129517937e82831458d10f6b8f4ca06dbb",
+  "gumCommit": "5ebe3aeccab8dcd4b727378dab67fb15fa8a3cca",
+  "scope": "User-approved independent mapper qualification only; production remains 17.24.3",
+  "productionIntegrated": false,
+  "sourceLicenseClosureVerified": false,
+  "expandedBytes": 350867568,
+  "members": [
+    {
+      "name": ".",
+      "bytes": 0
+    },
+    {
+      "name": "./frida-core.h",
+      "bytes": 3139530
+    },
+    {
+      "name": "./frida-core-example.c",
+      "bytes": 4922
+    },
+    {
+      "name": "./frida-core.gir",
+      "bytes": 923050
+    },
+    {
+      "name": "./libfrida-core.a",
+      "bytes": 346800066
+    }
+  ]
+}

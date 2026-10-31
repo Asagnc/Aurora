@@ -24,9 +24,13 @@ class LinuxImageDeviceTest {
             catch (_: java.io.IOException) { false }
         } finally { io.github.asagnc.aurora.core.removeSkillTree(probe) }
         org.junit.Assume.assumeFalse("This negative case requires denied ordinary hardlinks", supportsHardlinks)
-        org.junit.Assume.assumeTrue("This negative case requires an uninstalled base", app.linux.registry.current() == null)
-        val failure = runCatching { app.linux.install() }.exceptionOrNull()
+        org.junit.Assume.assumeTrue("This negative case requires an uninstalled ordinary base",
+            app.linux.registry.versions().none { it.manifest.backend == io.github.asagnc.aurora.core.LinuxBackend.PROOT })
+        val previous = app.linux.registry.current()
+        check(app.root.linuxClient == null) { "Ordinary capability qualification requires a disconnected Root endpoint" }
+        val failure = runCatching { app.linux.install(io.github.asagnc.aurora.core.LinuxBackend.PROOT) }.exceptionOrNull()
         assertTrue(failure.toString(), failure is LinuxInstallCapabilityException)
+        assertEquals(previous, app.linux.registry.current())
         assertTrue(app.linux.status.value.contains("硬链接"))
         val stage = app.filesDir.toPath().resolve("spaces/resources/.linux-staging")
         java.nio.file.Files.newDirectoryStream(stage).use { assertFalse(it.iterator().hasNext()) }

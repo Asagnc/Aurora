@@ -1038,3 +1038,6 @@ App进程死亡两阶段专项通过：prepare仅在自有fixture已捕获/注�
 
 
 2026-10-31发布审计补充：完整重打首次因引用旧managed-qualification报告，source manifest与当前51份可信源码不一致而被拒绝，未发布目录。重建当前独立资格guard后发现其8040d174摘要与APK CMake guard的96ca7e27摘要不同，二者编译profile本来不同。现增加APK guard内置摘要与实际ELF校验、当前51份自有源码/Guard.cmake/顶层CMake对应检查，并在manifest区分两个摘要与byteIdentical，不把独立资格离线重建当APK guard位级复现。新增篡改APK摘要、源码及profile分离的主机回归通过，完整新审查包以此修正后的输出为准；旧9e48efa候选保留，不作为新交付。worker仍按其真实APK字节离线重链接匹配。
+
+
+2026-10-31当前安装回归：229次成功执行、227个去重用例，细分通过/跳过与两次保留失败见DEVICE_ACCEPTANCE_20261031。修正Root取消夹具的会话目录准备顺序，未改生产；真实ColorOS SAF取消/重新选择/自有ZIP导入/源文件移除后读取通过。现有Frida六项133.318秒通过，历史0x320与正式门槛保持未解决。新增SDK/PTY/元数据精确pidfd死亡夹具和证明归档；完整cba97ab审查包10条checksum重新流式核对一致。

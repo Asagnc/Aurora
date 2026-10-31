@@ -1,0 +1,204 @@
+{
+  "date": "2026-10-31",
+  "productionBaseCommit": "cba97ab62ffb274f50ce5af8fc5fbd8375334292",
+  "scope": "Actual current debug installation; test-only fixture changes; not default unsigned Release or paid-provider qualification",
+  "passedExecutions": 229,
+  "uniquePassedCases": 227,
+  "skipExecutions": [
+    {
+      "run": "ordinary-browser",
+      "case": "io.github.asagnc.aurora.browser.BrowserBoundaryTest#rendererTerminationClosesOwnedPageAndEndsPendingResultWithoutReplay"
+    },
+    {
+      "run": "root-linux-agent-fixed",
+      "case": "io.github.asagnc.aurora.linux.LinuxNamespaceDeviceTest#rootNamespaceProbeAndTimeoutPreserveCallerMountNamespace"
+    }
+  ],
+  "skippedWithoutLaterPass": [
+    {
+      "run": "root-linux-agent-fixed",
+      "case": "io.github.asagnc.aurora.linux.LinuxNamespaceDeviceTest#rootNamespaceProbeAndTimeoutPreserveCallerMountNamespace"
+    }
+  ],
+  "installedApksAtEnd": {
+    "io.github.asagnc.aurora": {
+      "apkSha256": "b1ea5d75b28048ce13f7cf511bbbf2961125f1f46989cd61676bf7596053433e",
+      "installedBytesMatch": true
+    },
+    "io.github.asagnc.aurora.test": {
+      "apkSha256": "323ae9d28b25a91bf87bcc9362a20158183ca7711e76b5b7c3588d3693b89982",
+      "installedBytesMatch": true
+    }
+  },
+  "runs": [
+    {
+      "name": "ordinary-browser",
+      "scope": "Current installed debug APK, explicit ordinary/browser/runtime/terminal/UI suites; no model API",
+      "hostSeconds": 39.467,
+      "adbReturnCode": 0,
+      "statusCounts": {
+        "0": 128,
+        "-1": 0,
+        "-2": 0,
+        "-3": 0,
+        "-4": 1
+      },
+      "junitSummary": [
+        "OK (129 tests)"
+      ],
+      "logSha256": "8249306fc7cee6500c060e304f62cf6176992dca75cd670d710437356672e979"
+    },
+    {
+      "name": "root-linux-agent-fixed",
+      "scope": "Current installed debug APK, explicit fixture suites; no paid model API",
+      "hostSeconds": 58.348,
+      "adbReturnCode": 0,
+      "statusCounts": {
+        "0": 28,
+        "-1": 0,
+        "-2": 0,
+        "-3": 0,
+        "-4": 1
+      },
+      "junitSummary": [
+        "OK (29 tests)"
+      ],
+      "logSha256": "5f5082f89b954f093e257704824e7d5a5a891ed5515596d6f92f43aa1136ff69"
+    },
+    {
+      "name": "browser-isolated",
+      "scope": "Current installed debug APK, explicit fixture suites; no paid model API",
+      "hostSeconds": 1.465,
+      "adbReturnCode": 0,
+      "statusCounts": {
+        "0": 2,
+        "-1": 0,
+        "-2": 0,
+        "-3": 0,
+        "-4": 0
+      },
+      "junitSummary": [
+        "OK (2 tests)"
+      ],
+      "logSha256": "5deec779aec20a594c8afff58870f53bca23675f8abbf9b0d639bf5ad91d4459"
+    },
+    {
+      "name": "capture-reverse-proxy",
+      "scope": "Current installed debug APK, explicit fixture suites; no paid model API",
+      "hostSeconds": 51.912,
+      "adbReturnCode": 0,
+      "statusCounts": {
+        "0": 14,
+        "-1": 0,
+        "-2": 0,
+        "-3": 0,
+        "-4": 0
+      },
+      "junitSummary": [
+        "OK (14 tests)"
+      ],
+      "logSha256": "2283bf96ee585cd0b2b6ab29cbfb98dfb2a6bbe77a8fda82ff451fb6d91ce62f"
+    },
+    {
+      "name": "frida-baseline",
+      "scope": "Current installed debug APK, explicit fixture suites; no paid model API",
+      "hostSeconds": 133.318,
+      "adbReturnCode": 0,
+      "statusCounts": {
+        "0": 6,
+        "-1": 0,
+        "-2": 0,
+        "-3": 0,
+        "-4": 0
+      },
+      "junitSummary": [
+        "OK (6 tests)"
+      ],
+      "logSha256": "ce008b4f903e07c7198853152aae0111b1ffd60117a02f05b3067f96cc4eaa2f"
+    },
+    {
+      "name": "ordinary-protocols",
+      "scope": "Ordinary UID Root/Linux wire, FD, memory, package and lifecycle fixtures; no privileged tests",
+      "hostSeconds": 5.816,
+      "adbReturnCode": 0,
+      "statusCounts": {
+        "0": 50,
+        "-1": 0,
+        "-2": 0,
+        "-3": 0,
+        "-4": 0
+      },
+      "junitSummary": [
+        "OK (50 tests)"
+      ],
+      "logSha256": "ed5347dd0c79a2f91dbad6cd46771bc42e20b3eae19db6e5d0a4ef2a03eab239"
+    },
+    {
+      "name": "native-saf-configured",
+      "scope": "Actual production Skills UI, real ColorOS picker cancellation and owned ZIP import; not large SDK archive",
+      "hostSeconds": 64.164,
+      "adbReturnCode": 0,
+      "statusCounts": {
+        "0": 1,
+        "-1": 0,
+        "-2": 0,
+        "-3": 0,
+        "-4": 0
+      },
+      "junitSummary": [
+        "OK (1 test)"
+      ],
+      "logSha256": "85b654d109c33699b94d654e4e24a9bda4691b06000457c80a33f12d34b6fd91"
+    }
+  ],
+  "retainedFailures": [
+    {
+      "run": "root-linux-agent",
+      "cause": "Test fixture read polled before async dispatch created the conversation directory; fixed by preparing directory before dispatch",
+      "report": {
+        "scope": "Current installed debug APK; Root/Linux/PTY/offline Agent/socket/packet/SDK leases",
+        "hostSeconds": 58.781,
+        "adbReturnCode": 0,
+        "statusCounts": {
+          "0": 27,
+          "-1": 0,
+          "-2": 1,
+          "-3": 0,
+          "-4": 1
+        },
+        "logSha256": "7d1cc7b06df64289d16f2680fea6c7f73303d8b4619eca9c14808a5d30f7af2b",
+        "junitSummary": [
+          "FAILURES!!!"
+        ]
+      }
+    },
+    {
+      "run": "native-saf",
+      "cause": "PackageManager resolved DocumentsUI but ColorOS displayed its picker; explicit observed package fixture passed; no default/package change",
+      "report": {
+        "scope": "Actual production Skills UI, real system picker cancellation and owned ZIP import; not large SDK archive",
+        "hostSeconds": 18.136,
+        "adbReturnCode": 0,
+        "statusCounts": {
+          "0": 0,
+          "-1": 0,
+          "-2": 1,
+          "-3": 0,
+          "-4": 0
+        },
+        "junitSummary": [
+          "FAILURES!!!"
+        ],
+        "logSha256": "a75a309d54eacb0730cafa20626c804745346e7f6476d08fca0a594b29404be5"
+      }
+    }
+  ],
+  "notQualified": [
+    "Historical Frida native SIGSEGV root cause",
+    "Frida 17.25 candidate Root injection and failure matrix",
+    "Large SDK archive through visible SAF installation",
+    "Real private repository with user-scoped credential",
+    "Default formal Release, signing and paid-provider usage",
+    "Complete long-background/failure/load matrix"
+  ]
+}
