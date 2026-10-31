@@ -1032,3 +1032,6 @@ App进程死亡两阶段专项通过：prepare仅在自有fixture已捕获/注�
 
 
 2026-10-31公共只读依赖基线接入：固定ARM64资格CI41071359765及666cc72完整CI41071281794五个job成功。手机两个全新私有缓存离线完整Java/Compose/双ABI JNI构建/APK导出/普通UID JNI1项215.886秒通过，未授予生产runtimeReady。随后将基线封入同一android-build-v1原生输入，组合包484,215,713字节、SHA256 f60e350b11aa1a970219a9300d0bd64ba9c4e26d307846cd854a0cbaaa073055；两次独立打包SHA相同，展开888,674,245字节。安装准备先核对固定manifest/逐文件摘要/完整清单，拒绝链接、外来配置和越界路径；启动器默认GRADLE_RO_DEP_CACHE=/opt/android-host/dependency-cache，GRADLE_USER_HOME仍在会话私有/mnt/.gradle-cache，Root只读挂载/版本租约/恢复不变。实际新组合包通过现有FileProvider固定大归档路径安装，正式标准探针/导出/普通UID JNI整项1项225.475秒（含安装）通过；没有延长270秒构建预算或关闭检查。自有会话清理/断连及临时官方TLS relay移除完成。不是大归档可视SAF或正式签名资格；材料收集已有186二进制坐标中的178份对应源jar，6个空二进制占位另有实物无class/dex/native证明，bundletool与TF metadata需补固定官方源归档，完整来源/许可闭包仍不宣称完成。
+
+
+2026-10-31后续验证：95e7b7d完整CI41172360549五个job成功，实际ARM64生产安装专项41172360761成功（重建得到相同f60e350b组合包、Kotlin安装、私有runtime对应源码及只读标准探针）。手机已有新版本的新会话标准探针实测98.354秒，整项101.771秒、含导出/普通UID JNI，未配置宿主relay；未强制offline，不冒充无手机网络。公共依赖材料186二进制坐标已取得185份源归档，6个空占位经外层及嵌套JAR实物无class/dex/native证明；Google bundletool1.18.3/TF Lite metadata0.2.0按官方版本tag固定源码，原Maven占位/404保留事实。POM许可证声明186项均有记录，未做缺失继承推断；源材料/声明缺项0，787文件封口包204,253,459字节。源码归档与缓存/native重建输入纳入同一SDK源材料校验，不宣称完整法律闭包、全SDK源码重编译或正式发布。

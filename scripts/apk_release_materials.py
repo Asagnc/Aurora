@@ -24,6 +24,10 @@ def entries():
             rows.append(('runtime', item['archive'], item['sha256'], item['bytes']))
     for row in json.loads((ROOT / 'tools/apk-build/host-sources.json').read_text())['sources']:
         rows.append(('host', row['archive'], row['sha256'], row['bytes']))
+    dependency_pin = ROOT / 'tools/apk-build/dependency-materials.json'
+    if dependency_pin.exists():
+        for row in json.loads(dependency_pin.read_text())['inputs']:
+            rows.append(('dependencies', row['archive'], row['sha256'], row['bytes']))
     return [{'group': group, 'archive': name, 'sha256': digest, 'bytes': size, 'entry': 'inputs/' + group + '/' + name}
         for group, name, digest, size in rows]
 

@@ -136,6 +136,39 @@
     "ownConversationRemoved": true,
     "temporaryTlsRelayRemoved": true,
     "visualSafQualified": false,
-    "formalSignedApkQualified": false
+    "formalSignedApkQualified": false,
+    "installedFreshRetest": {
+      "passed": 1,
+      "junitSeconds": 101.771,
+      "standardProbeMillis": 98354,
+      "hostRelayConfigured": false,
+      "offlineForced": false,
+      "freshPrivateConversation": true,
+      "exportAndOrdinaryUidJniPassed": true
+    }
+  },
+  "productionArm64Ci": {
+    "id": 41172360761,
+    "headSha": "95e7b7d5893134417859c635365fc45a1e3e321e",
+    "conclusion": "success",
+    "scope": "Current production Kotlin installer, exact native/cache assembly, runtime source correspondence and readonly full probe"
+  },
+  "fullIntegrationCi": {
+    "id": 41172360549,
+    "headSha": "95e7b7d5893134417859c635365fc45a1e3e321e",
+    "conclusion": "success",
+    "successfulJobs": 5
+  },
+  "dependencyMaterials": {
+    "binaryCoordinates": 186,
+    "sourceArchives": 185,
+    "emptyBinaryCoordinates": 6,
+    "metadataNoticeSourceFiles": 787,
+    "missingSources": 0,
+    "missingLicenseDeclarations": 0,
+    "materialsSha256": "f1b967b49d497db9e0bc56d148c81d7ff9bfbb7bd5257fbdd8d67c8cc75fab2a",
+    "materialsBytes": 204253459,
+    "sourceLicenseClosureVerified": false,
+    "scope": "Coordinate/version sources and recorded declarations; not a binary bit-rebuild or complete legal-closure claim"
   }
 }

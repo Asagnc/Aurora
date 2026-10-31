@@ -22,6 +22,10 @@ def package(args):
         raise FileExistsError('Preserve existing SDK source output')
     directories = {key: getattr(args, key).resolve() for key in ['resources', 'compiler', 'runtime', 'host']}
     expected = entries()
+    if any(row['group'] == 'dependencies' for row in expected):
+        if args.dependencies is None:
+            raise ValueError('The current SDK requires its fixed public dependency source/rebuild inputs')
+        directories['dependencies'] = args.dependencies.resolve()
     for row in expected:
         verify_file(directories[row['group']] / row['archive'], row)
     with tempfile.TemporaryDirectory(prefix='.aurora-sdk-materials-', dir=output.parent) as temporary:
@@ -54,4 +58,5 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ['resources', 'compiler', 'runtime', 'host', 'output']:
         parser.add_argument('--' + name, type=Path, required=True)
+    parser.add_argument('--dependencies', type=Path)
     package(parser.parse_args())

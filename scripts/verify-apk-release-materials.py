@@ -59,6 +59,15 @@ class ReleaseMaterials(unittest.TestCase):
     def test_complete_fixed_inventory_and_same_own_snapshot(self):
         self.assertEqual(5, len(materials.verify_sources(self.archive())['inputs']))
 
+    def test_new_dependency_source_and_rebuild_inputs_cannot_be_omitted(self):
+        name = 'owned-public-materials.zip'; self.payloads[name] = b'inert public source material'
+        row = {'archive': name, 'sha256': self.sha(self.payloads[name]), 'bytes': len(self.payloads[name])}
+        (self.root / 'tools/apk-build/dependency-materials.json').write_text(json.dumps({'inputs': [row]}))
+        self.assertEqual(6, len(materials.verify_sources(self.archive())['inputs']))
+        def missing(_, payloads): del payloads['inputs/dependencies/' + name]
+        with self.assertRaises(ValueError):
+            materials.verify_sources(self.archive(missing))
+
     def test_source_catalogue_uses_the_existing_id_commit_archive_convention(self):
         path = self.root / 'tools/apk-build/llvm-sources.json'
         row = dict(id='owned-clang', commit='a' * 40, archiveBytes=1, archiveSha256='b' * 64)

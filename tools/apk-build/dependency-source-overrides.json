@@ -1,0 +1,26 @@
+{
+  "sources": [
+    {
+      "coordinate": "com.android.tools.build:bundletool:1.18.3",
+      "repository": "https://github.com/google/bundletool",
+      "tag": "1.18.3",
+      "commit": "586a43a450712a1067f3d92cf7574dee68226302",
+      "url": "https://codeload.github.com/google/bundletool/tar.gz/586a43a450712a1067f3d92cf7574dee68226302",
+      "archive": "bundletool-586a43a450712a1067f3d92cf7574dee68226302.tar.gz",
+      "bytes": 8312851,
+      "sha256": "c44ea516b752452e577624ef0ef463e26ddd564d5b62c6e051e8527c8d5fa49b",
+      "scope": "Official coordinate/version source tag; no binary bit-rebuild claim"
+    },
+    {
+      "coordinate": "org.tensorflow:tensorflow-lite-metadata:0.2.0",
+      "repository": "https://github.com/tensorflow/tflite-support",
+      "tag": "v0.2.0",
+      "commit": "0f5fa0ff703c793d9df019bff912269d0f5bfaea",
+      "url": "https://codeload.github.com/tensorflow/tflite-support/tar.gz/0f5fa0ff703c793d9df019bff912269d0f5bfaea",
+      "archive": "tflite-support-0f5fa0ff703c793d9df019bff912269d0f5bfaea.tar.gz",
+      "bytes": 67067401,
+      "sha256": "94324e0404c7401203124276cadb695d6f164e9ae614a5843eec68532036aaf5",
+      "scope": "Official coordinate/version source tag; no binary bit-rebuild claim"
+    }
+  ]
+}
