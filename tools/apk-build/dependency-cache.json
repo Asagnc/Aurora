@@ -1,0 +1,20 @@
+{
+  "archive": "public-apk-dependency-cache.tar.gz",
+  "sha256": "c880978799a9fd02120e9532b1f4a754740362dc90d2011026f5c37f7fbaf2dd",
+  "bytes": 303975306,
+  "manifestSha256": "712153f795d65584e56a8a9effeb34bd5a56de08882965715f4a2b8dffd326be",
+  "expandedBytes": 341863935,
+  "files": 966,
+  "artifactFiles": 650,
+  "qualificationRun": 41071359765,
+  "qualificationCommit": "666cc72f8938d21f4bc930a9ecd95bc118afbbff",
+  "qualificationReportSha256": "de4d960508f092a0479d7d5b71ec972deb345fa40171c347ae46e618db7af501",
+  "repositories": [
+    "https://dl.google.com/dl/android/maven2/",
+    "https://repo.maven.apache.org/maven2/",
+    "https://plugins.gradle.org/m2/"
+  ],
+  "sourceLicenseClosureVerified": false,
+  "mechanismPhoneQualified": true,
+  "productionInstalledPhoneQualified": false
+}

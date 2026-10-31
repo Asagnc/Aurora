@@ -19,6 +19,7 @@ object AndroidBuildRuntime {
         export GRADLE_OPTS='-Xmx1024m -XX:ActiveProcessorCount=4 -Djava.awt.headless=true'
     """.trimIndent()
     val launcher = "#!/bin/sh\nset -eu\n$environment\n" + """
+        export GRADLE_RO_DEP_CACHE="${'$'}{GRADLE_RO_DEP_CACHE:-${AndroidDependencyCache.guestPath}}"
         [ "${'$'}#" -ge 2 ] || exit 64
         project=${'$'}1
         shift

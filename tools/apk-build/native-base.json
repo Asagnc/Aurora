@@ -1,0 +1,9 @@
+{
+  "archive": "android-host-arm64.tar.gz",
+  "bytes": 180242303,
+  "sha256": "f899eda7aee47fe3edc11546f26d7853aa6f8962f08bb2225f59a327b2327042",
+  "sourceCommit": "3d42f73f089ae8edfcde466cfe3c5903de8f3e04",
+  "qualificationRun": 40282040597,
+  "distribution": "review-local-import",
+  "phoneRuntimeQualified": false
+}

@@ -10,6 +10,10 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Reproduce the isolated seed without consuming the public cache that
+          # current production preparation now validates and mounts.
+          ref: 666cc72f8938d21f4bc930a9ecd95bc118afbbff
       - name: Verify snapshot and provenance boundaries
         run: python3 scripts/verify-apk-dependency-cache.py
       - name: Obtain the exact approved native SDK artifact

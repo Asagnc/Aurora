@@ -22,7 +22,7 @@ def module(filename):
     return value
 
 
-def acquire(directory, artifact):
+def acquire(directory, artifact, cache_qualification=None):
     directory.mkdir(parents=True, exist_ok=True)
     jvm = module('qualify-apk-jvm.py')
     entries = json.loads((ROOT / 'tools/apk-build/catalog.json').read_text())['jvm']
@@ -36,8 +36,16 @@ def acquire(directory, artifact):
             shutil.copyfile(incoming, directory / selected['archive'])
         jvm.acquire(selected, directory)
     native = json.loads((ROOT / 'tools/apk-build/native-bundle.json').read_text())
-    jvm.helper().verify(artifact / native['archive'], native['sha256'], native['bytes'])
-    shutil.copyfile(artifact / native['archive'], directory / 'android-host.archive')
+    supplied = artifact / native['archive']
+    if cache_qualification is not None:
+        pin = json.loads((ROOT / 'tools/apk-build/dependency-cache.json').read_text())
+        candidate = directory / 'android-host-candidate.tar.gz'
+        subprocess.run(['python3' if os.name != 'nt' else 'python', str(ROOT / 'scripts/prepare-apk-cache-bundle.py'),
+            '--native', str(supplied), '--qualification', str(cache_qualification),
+            '--qualification-sha256', pin['qualificationReportSha256'], '--output', str(candidate)], check=True)
+        supplied = candidate
+    jvm.helper().verify(supplied, native['sha256'], native['bytes'])
+    shutil.copyfile(supplied, directory / 'android-host.archive')
 
 
 def probe(directory):
@@ -82,9 +90,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--directory', type=Path, required=True)
     parser.add_argument('--artifact', type=Path)
+    parser.add_argument('--cache-qualification', type=Path)
     parser.add_argument('--probe', action='store_true')
     args = parser.parse_args()
     if args.probe:
         probe(args.directory.resolve())
     else:
-        acquire(args.directory.resolve(), args.artifact.resolve())
+        acquire(args.directory.resolve(), args.artifact.resolve(),
+                args.cache_qualification.resolve() if args.cache_qualification else None)

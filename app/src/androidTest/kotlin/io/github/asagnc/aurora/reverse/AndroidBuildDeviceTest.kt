@@ -107,7 +107,11 @@ class AndroidBuildDeviceTest {
                 assertEquals(0L, setup["completion"]?.jsonObject?.number("exitCode"))
             }
             args.getString("auroraBuildDiagnosticProject")?.let { diagnostic(app, owner, it) }
+            val started = android.os.SystemClock.elapsedRealtime()
             val result = app.sharedToolchain.probeAndroid(owner, generation) { }
+            InstrumentationRegistry.getInstrumentation().sendStatus(2, Bundle().apply {
+                putString("stream", "AURORA_APK_STANDARD_PROBE_MILLIS=${android.os.SystemClock.elapsedRealtime() - started}\n")
+            })
             assertEquals(result.toString(), JsonPrimitive(true), result["qualified"])
             assertEquals(JsonPrimitive(true), app.sharedToolchain.status(generation, "android-build")["runtimeReady"])
             val id = requireNotNull(result.text("logDirectory")).substringAfterLast('/')

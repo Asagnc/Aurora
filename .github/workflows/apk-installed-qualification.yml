@@ -21,10 +21,15 @@ jobs:
           if result['head_sha'] != '3d42f73f089ae8edfcde466cfe3c5903de8f3e04' or result['conclusion'] != 'success' or result['path'] != '.github/workflows/apk-agp-jni-qualification.yml':
               raise ValueError('Fixed portable bundle provenance differs')
           subprocess.run(['gh', 'run', 'download', run, '--name', 'apk-arm64-agp-jni-qualification', '--dir', 'app/build/outputs/portable-input'], check=True)
+          cache_run = '41071359765'
+          cache = json.loads(subprocess.check_output(['gh', 'api', 'repos/Asagnc/Aurora/actions/runs/' + cache_run]))
+          if cache['head_sha'] != '666cc72f8938d21f4bc930a9ecd95bc118afbbff' or cache['conclusion'] != 'success' or cache['path'] != '.github/workflows/apk-dependency-cache-qualification.yml':
+              raise ValueError('Fixed public dependency qualification provenance differs')
+          subprocess.run(['gh', 'run', 'download', cache_run, '--name', 'apk-public-dependency-cache-qualification', '--dir', 'app/build/outputs/cache-input'], check=True)
           PY
       - name: Obtain fixed official SDK distributions and bootstrap the same ARM64 JDK
         run: |
-          python3 scripts/qualify-apk-installed.py --directory app/build/outputs/installed-sdk --artifact app/build/outputs/portable-input
+          python3 scripts/qualify-apk-installed.py --directory app/build/outputs/installed-sdk --artifact app/build/outputs/portable-input --cache-qualification app/build/outputs/cache-input/app/build/outputs/apk-dependency-cache/qualification.json
           mkdir -p app/build/outputs/bootstrap
           tar -xf app/build/outputs/installed-sdk/jdk.archive -C app/build/outputs/bootstrap
           echo "JAVA_HOME=$PWD/app/build/outputs/bootstrap/jdk-25.0.5+8" >> "$GITHUB_ENV"
@@ -35,7 +40,7 @@ jobs:
           AURORA_ANDROID_BUILD_DOWNLOAD: '1'
         run: ./gradlew --configure-on-demand :core:test --tests '*AndroidBuildIntegrationTest' --console=plain
       - name: Verify exact private runtime source and notice correspondence without executing source
-        run: python3 scripts/prepare-apk-runtime-materials.py --directory app/build/outputs/sdk-runtime-materials --inputs app/build/outputs/sdk-runtime-inputs --bundle app/build/outputs/portable-input/android-host-arm64.tar.gz
+        run: python3 scripts/prepare-apk-runtime-materials.py --directory app/build/outputs/sdk-runtime-materials --inputs app/build/outputs/sdk-runtime-inputs --bundle app/build/outputs/installed-sdk/android-host.archive
       - name: Execute the production probe against the readonly installed bundle in a private namespace
         run: sudo -n unshare --mount --propagation private python3 scripts/qualify-apk-installed.py --directory app/build/outputs/installed-sdk --probe
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

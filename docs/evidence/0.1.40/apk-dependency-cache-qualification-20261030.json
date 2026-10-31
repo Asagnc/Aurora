@@ -18,10 +18,20 @@
   "androidFixture": {
     "compiled": true,
     "lintTasksPassed": 108,
-    "executed": false
+    "executed": true,
+    "status": "Passed on 2026-10-31",
+    "passed": 1,
+    "seconds": 215.886,
+    "freshPrivateConversations": 2,
+    "offline": true,
+    "fullProbeAndJniPassedTwice": true,
+    "readonlyWriteRejected": true,
+    "cacheDigestsUnchanged": true,
+    "ownConversationsRemoved": true,
+    "runtimeReadyGranted": false
   },
-  "productionIntegrated": false,
-  "phoneRuntimeQualified": false,
+  "productionIntegrated": true,
+  "phoneRuntimeQualified": true,
   "secondArm64Run": {
     "id": 41070232235,
     "conclusion": "failure",
@@ -30,5 +40,102 @@
     "seedDexVerified": true,
     "failure": "Public provenance refused Compose renamed variant; added exact public module declaration chain, size and SHA256 validation",
     "archivePublished": false
+  },
+  "thirdArm64Run": {
+    "id": 41071359765,
+    "headSha": "666cc72f8938d21f4bc930a9ecd95bc118afbbff",
+    "conclusion": "success",
+    "boundaryTestsPassed": 8,
+    "report": {
+      "format": 1,
+      "qualified": true,
+      "phoneRuntimeQualified": false,
+      "scope": "Isolated CI mechanism only; no production cache installation",
+      "nativeSdkSha256": "f899eda7aee47fe3edc11546f26d7853aa6f8962f08bb2225f59a327b2327042",
+      "probeSha256": "d151f5579b6c805d0420f5cdd39419c7c6fe6946744fe54cacdab9c27e4df2c1",
+      "freshProbes": [
+        {
+          "seconds": 73.256,
+          "offline": true,
+          "independentWritableCache": true,
+          "wrapperSha256": "98c78be0a34a23c8b0146bb06f6a38f2af8ceb5679d3da91b012a41e548692b2",
+          "apkSha256": "04b5490e706df9fc8c4b9ef75600083e5ccf9cc4874ac1bc124afc594402ea4f",
+          "ownedDex": {
+            "Lio/github/asagnc/aurora/sdkprobe/ScreenKt;": "classes.dex",
+            "Lio/github/asagnc/aurora/sdkprobe/Owned;": "classes2.dex"
+          }
+        },
+        {
+          "seconds": 76.219,
+          "offline": true,
+          "independentWritableCache": true,
+          "wrapperSha256": "98c78be0a34a23c8b0146bb06f6a38f2af8ceb5679d3da91b012a41e548692b2",
+          "apkSha256": "13455e81472e5cf1a800e622843353106ef261e7e84977f997519991a2fcac30",
+          "ownedDex": {
+            "Lio/github/asagnc/aurora/sdkprobe/ScreenKt;": "classes.dex",
+            "Lio/github/asagnc/aurora/sdkprobe/Owned;": "classes2.dex"
+          }
+        }
+      ],
+      "seed": {
+        "seconds": 96.504,
+        "wrapperSha256": "b879c8a2a8ae056582ca888783a3065314595dedecea3d8947d3fb13a126e241",
+        "apkSha256": "df80c7936f23da32bda672314e2bce459ca975875a9f567957c1c6f3b27c0872",
+        "ownedDex": {
+          "Lio/github/asagnc/aurora/sdkprobe/ScreenKt;": "classes.dex",
+          "Lio/github/asagnc/aurora/sdkprobe/Owned;": "classes2.dex"
+        }
+      },
+      "readonlyWriteRejected": true,
+      "missingArtifactFallback": {
+        "offlineMissRejected": true,
+        "onlinePrivateWritePassed": true,
+        "seconds": 64.692,
+        "coordinate": "androidx.compose.foundation:foundation-android:1.12.1",
+        "sha256": "444749ea7b5a563e530504b9035c87e47ed0fb62b9f7ba00e90af8aa81e6bfb8",
+        "apkSha256": "5ffeb4196401c6c8dd40c7ca98e3179dea186498536b7f01fb8514d5329fdb96",
+        "ownedDex": {
+          "Lio/github/asagnc/aurora/sdkprobe/ScreenKt;": "classes.dex",
+          "Lio/github/asagnc/aurora/sdkprobe/Owned;": "classes2.dex"
+        }
+      },
+      "archive": {
+        "archive": "public-apk-dependency-cache.tar.gz",
+        "sha256": "c880978799a9fd02120e9532b1f4a754740362dc90d2011026f5c37f7fbaf2dd",
+        "bytes": 303975306,
+        "manifestSha256": "712153f795d65584e56a8a9effeb34bd5a56de08882965715f4a2b8dffd326be",
+        "artifactFiles": 650
+      },
+      "cacheBytes": 341863935,
+      "cacheFiles": 966
+    }
+  },
+  "fullCi": {
+    "id": 41071281794,
+    "headSha": "666cc72f8938d21f4bc930a9ecd95bc118afbbff",
+    "conclusion": "success",
+    "successfulJobs": 5
+  },
+  "candidateAssembly": {
+    "sha256": "f60e350b11aa1a970219a9300d0bd64ba9c4e26d307846cd854a0cbaaa073055",
+    "bytes": 484215713,
+    "expandedBytes": 888674245,
+    "repeatedSha256Matched": true,
+    "catalogRuntimeIntegration": "Production install and current-identity standard probe passed; does not grant other identities or devices qualification"
+  },
+  "productionPhone": {
+    "date": "2026-10-31",
+    "passed": 1,
+    "secondsIncludingInstallation": 225.475,
+    "aggregateSha256": "f60e350b11aa1a970219a9300d0bd64ba9c4e26d307846cd854a0cbaaa073055",
+    "freshPrivateConversation": true,
+    "standardProbeBudgetMillis": 270000,
+    "fullChecksUnchanged": true,
+    "productionRuntimeReadyGrantedByCurrentProbe": true,
+    "apkExportAndOrdinaryUidJniPassed": true,
+    "ownConversationRemoved": true,
+    "temporaryTlsRelayRemoved": true,
+    "visualSafQualified": false,
+    "formalSignedApkQualified": false
   }
 }

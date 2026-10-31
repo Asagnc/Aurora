@@ -1002,3 +1002,6 @@ App进程死亡两阶段专项通过：prepare仅在自有fixture已捕获/注�
 
 
 2026-10-30补充验收：Root抓包/短轮转/静态逆向/代理14项通过51.824秒；当前用户解除Aurora限制的配置下，后台与约15秒熄屏Root tick两项通过35.423秒。实际设置页导航、Root连接、Frida启用按钮父控件禁用、只读状态和返回断连均通过。SDK新会话标准探针273.334秒超时（原生预算270秒、scopeRemoved=true）；保留工程诊断再次273.544秒超时，已到Java/Compose/JNI/DEX后下载Release lint依赖。保留部分缓存的标准完整探针/APK导出/普通UID JNI加载1项通过94.172秒，不是冷缓存通过。用户已批准公共只读依赖基线＋私有可写缓存，先ARM64隔离资格、再两份新会话真机资格；现仅增加CI准备/封口/只读与离线机制验证脚本，尚未改正式工具布局或安装手机基线。原270秒和全部检查保持，见APK_DEPENDENCY_CACHE_PROPOSAL。
+
+
+2026-10-31公共只读依赖基线接入：固定ARM64资格CI41071359765及666cc72完整CI41071281794五个job成功。手机两个全新私有缓存离线完整Java/Compose/双ABI JNI构建/APK导出/普通UID JNI1项215.886秒通过，未授予生产runtimeReady。随后将基线封入同一android-build-v1原生输入，组合包484,215,713字节、SHA256 f60e350b11aa1a970219a9300d0bd64ba9c4e26d307846cd854a0cbaaa073055；两次独立打包SHA相同，展开888,674,245字节。安装准备先核对固定manifest/逐文件摘要/完整清单，拒绝链接、外来配置和越界路径；启动器默认GRADLE_RO_DEP_CACHE=/opt/android-host/dependency-cache，GRADLE_USER_HOME仍在会话私有/mnt/.gradle-cache，Root只读挂载/版本租约/恢复不变。实际新组合包通过现有FileProvider固定大归档路径安装，正式标准探针/导出/普通UID JNI整项1项225.475秒（含安装）通过；没有延长270秒构建预算或关闭检查。自有会话清理/断连及临时官方TLS relay移除完成。不是大归档可视SAF或正式签名资格；材料收集已有186二进制坐标中的178份对应源jar，6个空二进制占位另有实物无class/dex/native证明，bundletool与TF metadata需补固定官方源归档，完整来源/许可闭包仍不宣称完成。

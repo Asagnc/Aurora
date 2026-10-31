@@ -20,6 +20,9 @@ object AndroidBuildPreparation {
                 val unpacker = RootfsArchive(RootfsBudget(expanded = 1024L * 1024 * 1024, entries = 30000))
                 val plan = unpacker.scan(archive)
                 require(plan.all { it.path == prefix || it.path.startsWith("$prefix/") })
+                if (component.id == "android-host") require(plan.filter {
+                    it.path.startsWith("android-host/dependency-cache/")
+                }.all { it.kind == "file" || it.kind == "directory" }) { "Public dependency cache links are forbidden" }
                 unpacker.extract(archive, target, plan, mode = mode)
             } else {
                 val executable = SkillArchive(SkillArchiveBudget(compressed = 512L * 1024 * 1024,
@@ -37,6 +40,7 @@ object AndroidBuildPreparation {
         val hostContainer = stage.resolve("android-host")
         val host = hostContainer.resolve("android-host")
         require(Files.isDirectory(host, LinkOption.NOFOLLOW_LINKS))
+        AndroidDependencyCache.verify(host.resolve("dependency-cache"))
         val sdk = Files.createDirectory(stage.resolve("sdk"))
         moveSdk(stage.resolve("platform/android-37.0"), sdk, "platforms/android-37.0")
         moveSdk(stage.resolve("build-tools/android-16"), sdk, "build-tools/36.0.0")

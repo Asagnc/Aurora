@@ -86,7 +86,7 @@ class AndroidDependencyCacheDeviceTest {
         val probeSha = MessageDigest.getInstance("SHA-256").digest(AndroidBuildRuntime.probe.toByteArray(Charsets.UTF_8))
             .joinToString("") { "%02x".format(it.toInt() and 255) }
         require(seed.text("probeSha256") == probeSha)
-        require(seed.text("nativeSdkSha256") == AndroidBuildTools.components.single { it.id == "android-host" }.sha256)
+        require(seed.text("nativeSdkSha256") == AndroidDependencyCache.nativeBaseSha256)
         val files = manifest.getValue("files").jsonObject
         require(files.size in 1..64000 && manifest.number("fileCount") == files.size.toLong())
         return files.mapKeys { (name, _) ->
