@@ -36,7 +36,12 @@ class FridaSessionTests(SpawnCases, GuardCases, ManagedCases, unittest.TestCase)
         spec.loader.exec_module(module)
         archive = cls.root / NAME
         helper = module.source_helpers()
-        helper.fetch(archive, "https://github.com/frida/frida/releases/download/17.24.3/" + NAME, DIGEST, SIZE)
+        cached = os.environ.get("AURORA_FRIDA_HOST_DEVKIT")
+        if cached:
+            helper.verify(Path(cached), DIGEST, SIZE)
+            shutil.copyfile(cached, archive)
+        else:
+            helper.fetch(archive, "https://github.com/frida/frida/releases/download/17.24.3/" + NAME, DIGEST, SIZE)
         helper.verify(archive, DIGEST, SIZE)
         with tarfile.open(archive) as source:
             for name in ["libfrida-core.a", "frida-core.h"]:
