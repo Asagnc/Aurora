@@ -14,6 +14,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.asagnc.aurora.AuroraApplication
 import io.github.asagnc.aurora.data.LinuxVersion
 import kotlinx.coroutines.*
+import kotlinx.serialization.json.jsonArray
+import io.github.asagnc.aurora.core.AndroidBuildTools
+import io.github.asagnc.aurora.core.string
 
 @Composable internal fun LinuxEnvironmentPage(dismiss: () -> Unit) {
     val app = LocalContext.current.applicationContext as AuroraApplication
@@ -28,6 +31,7 @@ import kotlinx.coroutines.*
     var work by remember { mutableStateOf<Job?>(null) }
     var busy by remember { mutableStateOf(false) }
     var notice by remember { mutableStateOf<String?>(null) }
+    var androidInstalled by remember { mutableStateOf(false) }
     fun run(action: suspend () -> Unit) {
         if (busy) return
         busy = true
@@ -42,11 +46,14 @@ import kotlinx.coroutines.*
     val nativePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) run {
             app.sharedToolchain.installAndroidArchive(uri)
+            androidInstalled = true
             notice = "APK 构建工具已校验安装；Agent 须在当前 Root 环境实际自检通过后才能构建。"
         }
     }
     LaunchedEffect(revision) {
-        try { app.ready.await(); versions = manager.registry.versions(); current = manager.registry.current(); pendingRuns = manager.runs.pendingCount() }
+        try { app.ready.await(); versions = manager.registry.versions(); current = manager.registry.current(); pendingRuns = manager.runs.pendingCount()
+            androidInstalled = string(AndroidBuildTools.bundleId) in app.sharedToolchain.status(current, "android-build")["installed"]!!.jsonArray
+        }
         catch (cancel: CancellationException) { throw cancel }
         catch (_: Exception) { notice = "环境状态读取失败，请重试。" }
     }
@@ -54,8 +61,15 @@ import kotlinx.coroutines.*
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
             Text("Ubuntu Base 26.10", style = MaterialTheme.typography.headlineSmall)
             Text("共享基础环境与已发布版本；会话文件和输出独立保存。基础包不包含完整编译及逆向工具。", color = AuroraMuted)
-            TextButton({ nativePicker.launch(arrayOf("application/gzip", "application/x-gzip", "application/octet-stream")) }, enabled = !busy) {
-                Text("安装 APK 构建工具（选择审查包中的原生归档）")
+            TextButton({ nativePicker.launch(arrayOf("application/gzip", "application/x-gzip", "application/octet-stream")) }, enabled = !busy && !androidInstalled) {
+                Text(if (androidInstalled) "APK 构建工具已安装" else "安装 APK 构建工具（选择审查包中的原生归档）")
+            }
+            if (androidInstalled) Text("已安装当前工具版本，无需重复导入。执行资格须在当前 Root 环境实际自检后确认。", color = AuroraMuted)
+            notice?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+            if (busy) {
+                LinearProgressIndicator(Modifier.fillMaxWidth())
+                Text("离开页面会取消当前操作，已完成的安装或清理会保留。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
+                TextButton({ work?.cancel() }) { Text("取消当前操作") }
             }
             Text("只接受固定审查版 android-host-arm64.tar.gz，并下载其余官方固定工具。可取消；不会安装 APK 或授予运行资格。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
             Text(status, style = MaterialTheme.typography.titleMedium)
@@ -92,11 +106,6 @@ import kotlinx.coroutines.*
                     notice = "恢复结果：$result"
                 } }, enabled = !busy && app.root.linuxRunClient != null) { Text("确认退出并恢复任务") }
             }
-            if (busy) {
-                LinearProgressIndicator(Modifier.fillMaxWidth())
-                Text("离开页面会取消当前操作，已完成的安装或清理会保留。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
-            }
-            notice?.let { Text(it) }
             versions.forEach { version ->
                 OutlinedCard(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {

@@ -1,0 +1,26 @@
+{
+  "scope": "Fixed upstream source inspection only; not symbolized runtime root cause",
+  "sourcePath": "gum/backend-linux/gumprocess-linux.c",
+  "versions": {
+    "17.24.3": {
+      "commit": "3f82ef6a5b2413867835a45fe341913455473303",
+      "url": "https://raw.githubusercontent.com/frida/frida-gum/3f82ef6a5b2413867835a45fe341913455473303/gum/backend-linux/gumprocess-linux.c",
+      "sha256": "f92f6f6a417fdee77c9f8d615b8b74627fad77d42940f4a3345192e7a2855fa1",
+      "libcInitBlockSha256": "499061b130708ef1230bb1013653ee07551d193999b196cbe0dc8fad6f2f1e75"
+    },
+    "17.25.0": {
+      "commit": "5ebe3aeccab8dcd4b727378dab67fb15fa8a3cca",
+      "url": "https://raw.githubusercontent.com/frida/frida-gum/5ebe3aeccab8dcd4b727378dab67fb15fa8a3cca/gum/backend-linux/gumprocess-linux.c",
+      "sha256": "5e1bd3b5cf2c3025542028b44cf7ab135ab987079ab93bb982f99e4a5eab5c16",
+      "libcInitBlockSha256": "499061b130708ef1230bb1013653ee07551d193999b196cbe0dc8fad6f2f1e75"
+    }
+  },
+  "libcInitBlockIdentical": true,
+  "abortMessageHasTwoCallSites": true,
+  "possibleFailureBranches": [
+    "libc info symbol resolution failed",
+    "libc module lookup by base address failed"
+  ],
+  "runtimeBranchConfirmed": false,
+  "noPatchApplied": true
+}

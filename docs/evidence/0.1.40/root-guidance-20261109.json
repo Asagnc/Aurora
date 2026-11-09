@@ -14,5 +14,16 @@
   "buildTasks": 224,
   "buildSucceeded": true,
   "debugReleaseAndAndroidTestBuilt": true,
-  "debugReleaseLintPassed": true
+  "debugReleaseLintPassed": true,
+  "sdkImportFeedback": {
+    "userObserved": "Selected twice; no apparent response",
+    "actualResult": "Existing complete version reused before native URI read",
+    "full484MbSafImportQualified": false,
+    "fixed": "Installed state at action; repeated picker disabled; progress/result/cancel near action",
+    "buildTasks": 190,
+    "debugReleaseAndBothLintPassed": true,
+    "actualDeviceUiChecked": true,
+    "privateUiXmlSha256": "fc3258d780834e494f524b3c21922a27c13a33e8a7a142703c5724cb51a0109c",
+    "updatedDebugApkSha256": "c15a724c0d730aef9beec959e727f1f3e8f5ebf0c1d8e99c1aaf05b0e2fc6720"
+  }
 }
