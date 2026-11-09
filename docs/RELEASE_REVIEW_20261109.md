@@ -11,3 +11,5 @@ unsigned-review、signature.verified=false、releaseReady=false。未读取用�
 最新UI反馈修复后的审查包：app/build/outputs/release-review-85b790e-complete，精确绑定85b790eaf6be441369993d0c12ee843076b0843f、打包时clean。9项载荷/重建报告2683892639字节，APK45192874字节；10条checksum再次独立流式校验通过，来源快照已重绑。61f4f6e包作为前一版本记录保留。仍未签名、releaseReady=false。
 
 61f4f6e完整CI42565543872五个job全部成功。后续85b790e只改SDK页面反馈，主机190任务及实际页面核对通过；将随本轮推送重新触发完整CI，不把前一提交结果算作新提交CI。
+
+最终复核：d4bbf03完整CI42569418729五job全部成功；85b790e之后没有生产应用源码变化，增加的是独立资格夹具、证据及CI传输准备。85b790e审查包仍精确绑定原提交，不重写其来源身份。主包新boot构建/导出/JNI通过100.062秒；真实484MB SAF全安装/清理另在独立空安装区通过，伴随输入为显式固定离线夹具。

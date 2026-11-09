@@ -47,5 +47,26 @@
     "passed": 1,
     "logSha256": "a96d49525c1dc78151bf1aa5b7314b282e2ef714d4633f682447ebddbd63eb0c",
     "junitSeconds": 2.571
+  },
+  "newBootSdkProbe": {
+    "date": "2026-11-09",
+    "scope": "Main debug on user-confirmed new boot; preinstalled tools, fresh owned build/export/JNI probe; not archive installation",
+    "hostSeconds": 101.066,
+    "statusCounts": {
+      "0": 1,
+      "-1": 0,
+      "-2": 0,
+      "-3": 0,
+      "-4": 0
+    },
+    "logSha256": "d9d8962ba08e7ade24793a606a20d56c9ce1e096313712db8a8852b0ead111d1",
+    "probeMillis": 96680,
+    "junitSeconds": 100.062
+  },
+  "latestCompleteCi": {
+    "commit": "d4bbf039947c242a388eef0c9bbb2b0882618bd0",
+    "run": 42569418729,
+    "passedJobs": 5,
+    "conclusion": "success"
   }
 }

@@ -1056,3 +1056,5 @@ App进程死亡两阶段专项通过：prepare仅在自有fixture已捕获/注�
 CI传输续查：aecf6db的Android工作已越过全部固定devkit/Node预取，进入Android构建；独立Linux frida-session job随后在其另一个固定Linux devkit公开下载504，尚未执行该job测试。现同样使用官方Release API预取固定78,853,964字节输入，显式环境路径仅用于主机夹具，复制前后保持原SHA/长度校验；不更换版本或执行未验证源码。
 
 用户再次手动重启解锁并恢复ADB授权后，启动标识变化已独立核实；17.26.2最小适配/Root native/ART/普通App attach/spawn/异常/取消六项新启动132.171秒全部通过，Enforcing保持，独立包待恢复票据复核0。候选累计22次通过、9个去重用例；不是未适配或stock平台策略资格。主Aurora新启动Root连接/断开重连1项2.571秒通过。bf2d135的Linux Frida及其余3job已成功，Android APK步骤另行重新下载同一devkit504失败，现复用已验证归档输入但重新编译/校验，不复用worker或report。
+
+2026-11-09：真实484MB SAF空安装区完整安装/清理1项55.051秒通过，安装28.280秒；主包新启动SDK构建/导出/JNI1项100.062秒通过（探针96.680秒）。独立夹具初次漏导入RootPhase的编译失败保留，修正后94任务成功，未进入生产。流式ADB输入改用exec-in并等远端完整SHA证明，不以exec-out返回0代表远端成功。d4bbf03完整CI42569418729五job成功。

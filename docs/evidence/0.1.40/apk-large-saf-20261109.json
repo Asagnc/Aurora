@@ -1,0 +1,61 @@
+{
+  "date": "2026-11-09",
+  "scope": "Real OpenDocument picker, content grant to isolated UID, empty tool store, complete production installer with explicit fixed offline companion archives; not official-network or fresh SDK runtime qualification",
+  "passed": 1,
+  "skipped": 0,
+  "junitSeconds": 55.051,
+  "installerMillis": 28280,
+  "nativeArchive": {
+    "bytes": 484215713,
+    "sha256": "f60e350b11aa1a970219a9300d0bd64ba9c4e26d307846cd854a0cbaaa073055"
+  },
+  "selectedProviderAuthority": "com.android.externalstorage.documents",
+  "existingVersionReused": false,
+  "publishedCompleteVersionObserved": true,
+  "removedThroughProductionLeaseAwareStore": true,
+  "absentAfterRemoval": true,
+  "offlineCompanionInputs": {
+    "jdk": {
+      "bytes": 140178170,
+      "sha256": "bb5b2ded252f21c6090cf780b0a408ad0d83bbb557e702955643557f13231880",
+      "deviceVerified": true
+    },
+    "gradle": {
+      "bytes": 151620138,
+      "sha256": "21bd5da2de49b642904077f38c0efdc7778e92b3ed0889392dca61b97e389607",
+      "deviceVerified": true
+    },
+    "platform": {
+      "bytes": 67281901,
+      "sha256": "840b23e827f96e64aea4c89a1194aac3dc5f6bad37edb231c5c795d890330e8d",
+      "deviceVerified": true
+    },
+    "build-tools": {
+      "bytes": 63737259,
+      "sha256": "5d9ac77fb6ff43d9da518a337b4fcf8f9097113df531d99ccefe80ef7ce8250b",
+      "deviceVerified": true
+    }
+  },
+  "fixture": {
+    "sourceHashes": {
+      "app/src/main/kotlin/io/github/asagnc/aurora/qualification/ApkSafQualificationActivity.kt": "24fa201f71d4d485ea76faa09ee304a23b81e122db4806d1f86dff8ff587e0d7",
+      "app/src/main/kotlin/io/github/asagnc/aurora/qualification/ApkSafOfflineInputs.kt": "c392f4466a339de0affa5f34c7ae41ec1324835e59ca7468c9ca36ebea2eb39e",
+      "app/src/androidTest/kotlin/io/github/asagnc/aurora/qualification/ApkSafDeviceTest.kt": "939d3193d0f6da249af155e367145477b4b5e68ef2e5cc74047496dd2591ee2d"
+    },
+    "exported": false,
+    "officialNetworkQualified": false,
+    "productionIntegrated": false,
+    "preparerSha256": "1cf0dc4ca75580b7e61e8b554c15fd03af643f9eccf05812d1584ff4a9319e56"
+  },
+  "baseCommit": "4eba89535b7f23078394195ff97e87a89305fef1",
+  "unexportedActivity": true,
+  "productionIntegrated": false,
+  "preparerRefusesProductionCheckout": true,
+  "mainDataPreserved": true,
+  "logSha256": "50ab94203c22da829452aba06fbd84650d1297e6c860067d91913552d7383346",
+  "apks": {
+    "app": "d043f926392d4fa17444f95d93b4731bb38b87621ad656a8221aa6ae0085b9b2",
+    "test": "3a2f1caa845b433f9cbc7291a10a3a9390136f15efa44c9689e4f3d1dfe8d3eb"
+  },
+  "retainedBuildFailure": "First fixture compile omitted RootPhase import; fixed before installation and selection; original failure log retained"
+}

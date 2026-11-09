@@ -19,7 +19,7 @@
 | Frida最小策略入口 | 纯差异编辑、单次load/读回、Root私有boot基线、Binder身份/protocol、当前身份资格清零、设置页均已接。用户手动新boot后从零捕获基线并启用通过；撤权时普通功能保活、恢复/死亡后资格不继承通过；实际UI禁用入口和只读状态通过。 | releaseQualified=false继续保持；不因当前配置测试通过就开放正式策略启用。无permissive、通用tmpfs执行、全域execmem、持久模块或旧整份策略回写。 |
 | 网络捕获/UID/轮转 | libpcap worker、离线PCAP、原始发包/精确回放、HTTP重放；NETLINK当前真实socket UID快照；protocol3/schema9轮转。30分钟低流量1800.018秒/16段/dropped0，以及64段/512MiB预算封口/发布/清账均通过。 | 高负载实测kernel dropped6678，明确非零丢包。熄屏/后台长时与故障完整矩阵仍需补齐；不冒充逐包历史UID或线速资格。 |
 | TLS/HTTP代理、静态逆向 | 固定mitmdump12.3.0 ARM64及JADX/Apktool/JRE共享只读版本/租约/Agent已接；实际HTTP/HTTPS/WS/未信任CA、CA导出/私有缓存清理及自有DEX/APK分析通过。最新Root工具回归合计14项51.824秒通过。 | 继续补全任务死亡/取消/恢复矩阵，不自动安装系统CA或改路由。 |
-| APK构建 | JDK25/Gradle9.8.2/AGP9.4.1/ARM64原生host、Java/Compose/双ABI JNI/DEX/16KiB/只读布局/Agent构建导出已接，固定180MiB归档导入已主机验证；实际手机标准构建/APK导出/普通UID JNI通过。 | 公共只读依赖基线已接入；新会话标准完整探针98.354秒通过，未配置宿主relay。历史无基线冷缓存超时保留。大归档可视SAF、故障矩阵、正式签名仍待，见下节。 |
+| APK构建 | JDK25/Gradle9.8.2/AGP9.4.1/ARM64原生host、Java/Compose/双ABI JNI/DEX/16KiB/只读布局/Agent构建导出已接，固定180MiB归档导入已主机验证；实际手机标准构建/APK导出/普通UID JNI通过。 | 公共只读依赖基线已接入；新会话标准完整探针98.354秒通过，未配置宿主relay。历史无基线冷缓存超时保留。真实484MB SAF完整安装/清理已在独立空安装区通过，使用固定离线伴随归档；其余故障矩阵及正式签名仍待，见最新补充。 |
 | Skills | 私有GitHub API/仓库限定PAT、现有KeyStore/schema10归属恢复、用户钉公钥/BC1.86轻量Ed25519、离线验签、来源/撤销UI与Agent profile已接。实际黄金向量/凭据库/迁移/恢复与信任回归通过；opt-in R8验签smoke通过。 | 自有私仓/撤销UI与默认正式APK、正式签名的最终验收；R8专用测试保留规则不等于正式包逐字节资格。 |
 | 浏览器/系统快照/基础运行 | 普通/浏览器172项及启动清理、真实renderer死亡、同源/跨源边界、普通UID系统快照2项、Linux/PTY/Agent恢复已有设备证据。最新浏览器异步/下载恢复、Skills信任和Root副本合计21项7.125秒通过。 | 浏览器/SAF/提供器完整矩阵按DEVICE_ACCEPTANCE逐项核对；不以已覆盖子集代替完整矩阵。当前解除限制配置下后台/约15秒熄屏Root tick两项35.423秒通过，不代表全部后台管理策略兼容。 |
 
@@ -74,3 +74,5 @@
 CI传输续查：aecf6db的Android工作已越过全部固定devkit/Node预取，进入Android构建；独立Linux frida-session job随后在其另一个固定Linux devkit公开下载504，尚未执行该job测试。现同样使用官方Release API预取固定78,853,964字节输入，显式环境路径仅用于主机夹具，复制前后保持原SHA/长度校验；不更换版本或执行未验证源码。
 
 用户再次手动重启解锁并恢复ADB授权后，启动标识变化已独立核实；17.26.2最小适配/Root native/ART/普通App attach/spawn/异常/取消六项新启动132.171秒全部通过，Enforcing保持，独立包待恢复票据复核0。候选累计22次通过、9个去重用例；不是未适配或stock平台策略资格。主Aurora新启动Root连接/断开重连1项2.571秒通过。bf2d135的Linux Frida及其余3job已成功，Android APK步骤另行重新下载同一devkit504失败，现复用已验证归档输入但重新编译/校验，不复用worker或report。
+
+2026-11-09大归档缺口补齐：新增仅复制进独立资格树的未导出Activity/opt-in测试，生产源码集无该入口。实际OpenDocument由用户选择484,215,713字节f60e350b归档，provider为com.android.externalstorage.documents；空安装区生产安装器完整读取/校验/发布28.280秒，整项55.051秒通过，生产租约感知删除后版本不存在，四份固定离线伴随归档清理完成。非官方网络下载或新安装SDK运行资格。主包新boot标准构建/导出/普通UID JNI另项100.062秒通过，标准探针96.680秒、仍原270秒预算；完整CI42569418729五job全部通过。见apk-large-saf-20261109.json和root-guidance-20261109.json。
