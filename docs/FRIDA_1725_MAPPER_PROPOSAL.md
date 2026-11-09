@@ -70,3 +70,5 @@
 固定17.26.2 devkit61,096,720字节、SHA256 3df0d73af88a7f81faa8f09f8d8c73ee83498c04d21014d54830463f250e340f；五成员、展开351,169,328字节。worker89,537,880字节、SHA256 05abea25b50257732963a0f22ce2f0efd66812a68c91f93198260dc1afb9bd20，主机编译/ELF/外层16KiB通过。政策补丁与头文件不变，libsepol仍固定507985d；wrap只从frida/selinux移到官方frida-forks/selinux。命名Fruity资源为图标对象，未发现命名后端对象；静态结果不替代运行时daemon检查。独立包沿用同一已授权测试身份，保留数据更新，生产包不变。
 
 来源：[17.25.1官方修复](https://frida.re/news/2026/11/01/frida-17-25-1-released/)、[17.25.2](https://frida.re/news/2026/11/02/frida-17-25-2-released/)、[17.26.2](https://frida.re/news/2026/11/07/frida-17-26-2-released/)。固定输入与静态审查分别在tools/frida-mapper-qualification/candidate-17.26.2.json、source-audit-17.26.2.json。
+
+17.26.2后续实际结果：Root死亡1项17.855秒、worker死亡1项18.734秒通过（精确pidfd，错误ticks先拒绝）；App自杀prepare为故障准备，不计通过，重启verify1项3.151秒通过。正确参数的完整六项131.554秒全部通过，无失败/跳过。本轮共16次通过执行、9个去重用例，原两次参数前置失败保留；独立包待恢复票据只读复核0，普通Shell实际版本17.26.2。仍不是stock策略、完整来源/许可或正式发行资格，不自动晋升生产；详见frida-1726-qualification.json。

@@ -79,5 +79,108 @@
   "productionIntegrated": false,
   "releaseGateEnabled": false,
   "stockPolicyQualified": false,
-  "historicalPc0x320Resolved": false
+  "historicalPc0x320Resolved": false,
+  "faults": {
+    "root": {
+      "kind": "root",
+      "applicationId": "io.github.asagnc.aurora.fridaqualification",
+      "exactPidfdSignalled": true,
+      "wrongTicksRefused": true,
+      "signals": 1,
+      "policyQualifiedBeforeFault": true,
+      "sdkQualifiedBeforeFault": false,
+      "linuxPtyAdmittedBeforeFault": false,
+      "deviceTestsPassed": 1,
+      "junitSeconds": 17.855,
+      "logSha256": "cadf6c2c9e358d4c7347afcdd807782decace3249f169af5831e8640457270b5"
+    },
+    "worker": {
+      "kind": "worker",
+      "applicationId": "io.github.asagnc.aurora.fridaqualification",
+      "exactPidfdSignalled": true,
+      "wrongTicksRefused": true,
+      "signals": 1,
+      "policyQualifiedBeforeFault": true,
+      "sdkQualifiedBeforeFault": false,
+      "linuxPtyAdmittedBeforeFault": false,
+      "deviceTestsPassed": 1,
+      "junitSeconds": 18.734,
+      "logSha256": "95f67004dbeb66895dd12b40439715f58d990ef84fb00ad47e761f754f29f131"
+    }
+  },
+  "appDeath": {
+    "prepare": {
+      "phase": "prepare",
+      "hostSeconds": 17.113,
+      "adbReturnCode": 0,
+      "logSha256": "caa105e311f9162ff557e2793dffd52fc69ca9506c31664000c7184bb7f0a1c1",
+      "statusCounts": {
+        "0": 0,
+        "-1": 0,
+        "-2": 0,
+        "-3": 0,
+        "-4": 0
+      },
+      "preparedMarker": true
+    },
+    "verify": {
+      "phase": "verify",
+      "hostSeconds": 3.9,
+      "adbReturnCode": 0,
+      "logSha256": "f561187e87e168aee50e54b645b54f39a5f32b1c329f72d9bcc813021c3815de",
+      "statusCounts": {
+        "0": 1,
+        "-1": 0,
+        "-2": 0,
+        "-3": 0,
+        "-4": 0
+      },
+      "preparedMarker": false
+    },
+    "prepareCountsAsPass": false
+  },
+  "installedApks": {
+    "io.github.asagnc.aurora": {
+      "sha256": "c15a724c0d730aef9beec959e727f1f3e8f5ebf0c1d8e99c1aaf05b0e2fc6720",
+      "bytes": 123680766,
+      "installedBytesMatch": true
+    },
+    "io.github.asagnc.aurora.fridaqualification": {
+      "sha256": "861b3230519bebb06ed3c1390f4597c86c2bebc0d0834dc87b348079099f0073",
+      "bytes": 92238100,
+      "installedBytesMatch": true
+    }
+  },
+  "matrixCorrected": {
+    "version": "17.26.2",
+    "hostSeconds": 132.462,
+    "adbReturnCode": 0,
+    "statusCounts": {
+      "0": 6,
+      "-1": 0,
+      "-2": 0,
+      "-3": 0,
+      "-4": 0
+    },
+    "logSha256": "bc6ab1e3481dafc09f4ceedfaa95589d1ddd801e6cd55ae41aa88b97f1052c8a",
+    "cases": [
+      "FridaPolicyDeviceTest#explicitOwnedAdaptationResetsProbesAndReconnectNeedsNewQualification",
+      "FridaManagedDeviceTest#nativeAndArtSelfProbesThenSelectedAttachUseTheRealLedgerAndArtifacts",
+      "FridaAppAttachDeviceTest#nativeScriptAttachesToTheOwnedOrdinaryAppProcess",
+      "FridaSpawnDeviceTest#earlyArtHookInExplicitOwnedPackageUsesManagedSpawnProofs",
+      "FridaSpawnDeviceTest#scriptErrorBeforeResumeRetiresOnlyTheOwnedCapturedTarget",
+      "FridaCancellationDeviceTest#cancelLoadedOwnAppScriptUnloadsWithoutKillingTheTarget"
+    ],
+    "productionIntegrated": false,
+    "junitSeconds": 131.554
+  },
+  "passedExecutions": 16,
+  "uniquePassedCases": 9,
+  "pendingManagedTicketsAtEnd": 0,
+  "actualOrdinaryShellVersion": "17.26.2",
+  "remainingQualification": [
+    "stock-policy boot and exact current-identity acceptance",
+    "full source/license material closure and release correspondence",
+    "runtime child/listener lifetime audit and remaining pressure windows"
+  ]
 }

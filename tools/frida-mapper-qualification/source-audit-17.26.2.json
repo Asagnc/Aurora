@@ -29,11 +29,6 @@
       "text": "frida_selinux_patch_policy ();"
     },
     {
-      "path": "lib/selinux/patch.c",
-      "line": 59,
-      "text": "frida_selinux_patch_policy (void)"
-    },
-    {
       "path": "server/server-glue.c",
       "line": 64,
       "text": "frida_selinux_patch_policy ();"
