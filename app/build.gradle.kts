@@ -47,10 +47,13 @@ android {
 dependencies {
     implementation(project(":terminal"))
     implementation(project(":core"))
-    implementation(platform("androidx.compose:compose-bom:2026.09.00"))
+    // COUI alpha9 qualification fixes the matching Compose alpha baseline.
+    implementation(platform("androidx.compose:compose-bom-alpha:2026.08.01"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.compose.material3:material3:1.5.0-rc01")
+    implementation("io.github.itoseo:coui:0.0.1-alpha9")
+    implementation("io.github.itoseo:coui-material3:0.0.1-alpha9")
     implementation("androidx.activity:activity-compose:1.13.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.11.0")

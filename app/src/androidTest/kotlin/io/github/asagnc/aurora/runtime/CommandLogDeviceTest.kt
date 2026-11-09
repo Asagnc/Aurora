@@ -124,7 +124,7 @@ class CommandLogDeviceTest {
                 execSQL("DROP INDEX IF EXISTS browser_download_pending")
                 execSQL("ALTER TABLE tool_runs DROP COLUMN artifact_directory")
                 execSQL("ALTER TABLE tool_runs DROP COLUMN presentation")
-                version = 2
+                execSQL("ALTER TABLE messages DROP COLUMN created_at"); version = 2
             }
             database.close()
             val upgraded = AuroraDatabase(app, name)

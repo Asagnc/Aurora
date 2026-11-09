@@ -3,6 +3,9 @@ package io.github.asagnc.aurora.ui
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.selection.toggleable
+import com.itos.coui.layout.Item
+import com.itos.coui.switch.Switch as CouiSwitch
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -11,6 +14,8 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
+import com.itos.coui.text.Text as CouiText
+import com.itos.coui.text.CouiTextKind
 
 @Composable internal fun AppearanceSheet(dismiss: () -> Unit) {
     val controller = LocalAppearance.current
@@ -31,9 +36,9 @@ import androidx.compose.ui.unit.dp
                 }
             }
             SettingsSection("主题") {
-                ListItem(onClick = { colors = true }, supportingContent = {
+                Item(onClick = { colors = true }, summary = {
                     Text(if (state.dynamic) "系统动态配色" else "${state.palette} · ${state.style}")
-                }, trailingContent = { SettingsChevron() }) { Text("主题配色") }
+                }, trailing = { SettingsChevron() }) { Text("主题配色") }
             }
             SettingsSection("显示") {
                 AppearanceSwitch("纯黑背景", "仅在深色模式生效", state.pureBlack) { controller.update(state.copy(pureBlack = it)) }
@@ -49,9 +54,10 @@ import androidx.compose.ui.unit.dp
 }
 
 @Composable private fun AppearanceSwitch(title: String, summary: String, checked: Boolean, change: (Boolean) -> Unit) {
-    ListItem(onClick = { change(!checked) }, supportingContent = { Text(summary) },
-        modifier = Modifier.semantics { role = Role.Switch; stateDescription = if (checked) "已开启" else "已关闭" },
-        trailingContent = { Switch(checked, onCheckedChange = null) }) { Text(title) }
+    Item(summary = { CouiText(text = summary, kind = CouiTextKind.PreferenceSummary, color = AuroraMuted) },
+        modifier = Modifier.toggleable(checked, role = Role.Switch, onValueChange = change)
+            .semantics { stateDescription = if (checked) "已开启" else "已关闭" },
+        trailing = { CouiSwitch(checked = checked, onCheckedChange = null) }) { CouiText(text = title, kind = CouiTextKind.PreferenceTitle) }
 }
 
 @Composable internal fun ThemePreview(scheme: ColorScheme, compact: Boolean = false) {

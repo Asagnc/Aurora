@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "upstream": "https://github.com/ItosEO/COUI-Kit",
+  "tag": "v0.0.1-alpha9",
+  "commit": "261658dc200c143c5ea883591662479344d25ba1",
+  "sources": [
+    {
+      "artifact": "coui",
+      "version": "0.0.1-alpha9",
+      "url": "https://repo.maven.apache.org/maven2/io/github/itoseo/coui/0.0.1-alpha9/coui-0.0.1-alpha9-sources.jar",
+      "bytes": 297218,
+      "sha256": "a002c91276d478512ee4b97b3713d2e0580ee7d1746de966fd9a258d7ee2cf1e"
+    },
+    {
+      "artifact": "coui-material3",
+      "version": "0.0.1-alpha9",
+      "url": "https://repo.maven.apache.org/maven2/io/github/itoseo/coui-material3/0.0.1-alpha9/coui-material3-0.0.1-alpha9-sources.jar",
+      "bytes": 9788,
+      "sha256": "25fe6609d127efcc0c66cb1b41db1dac48dbd9221fa3b9829cc414c9be227cc0"
+    }
+  ],
+  "licenseDeclaration": "MPL-2.0",
+  "notices": "app/src/main/assets/licenses/coui-0.0.1-alpha9",
+  "scope": "Pinned upstream sources and preserved notices; no claim of full transitive source or legal closure."
+}

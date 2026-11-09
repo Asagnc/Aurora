@@ -50,7 +50,7 @@ class LinuxRegistryTest {
             skills.begin("skill", listOf(skill.hash)); skills.finish("skill", listOf(skill))
             old.writableDatabase.apply {
                 listOf("linux_runs", "linux_leases", "linux_settings", "linux_versions", "linux_operations").forEach { execSQL("DROP TABLE $it") }
-                version = 4
+                execSQL("ALTER TABLE messages DROP COLUMN created_at"); version = 4
             }
             old.close()
             val upgraded = AuroraDatabase(context, name)
@@ -59,7 +59,7 @@ class LinuxRegistryTest {
                 assertEquals("saved", store.messages(owner).single().message.text)
                 assertEquals(skill.hash, SkillRegistry(store).entries().single().hash)
                 assertTrue(LinuxRegistry(store).versions().isEmpty())
-                assertEquals(10, upgraded.readableDatabase.version)
+                assertEquals(11, upgraded.readableDatabase.version)
             } finally { upgraded.close() }
         } finally { old.close(); context.deleteDatabase(name) }
     }

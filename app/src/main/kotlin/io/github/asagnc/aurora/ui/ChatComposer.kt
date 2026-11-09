@@ -33,7 +33,8 @@ import io.github.asagnc.aurora.runtime.ChatState
         }
         Column(Modifier.fillMaxWidth()) {
             Surface(Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(32.dp), color = MaterialTheme.colorScheme.surfaceContainer) {
+                shape = com.itos.coui.shape.CouiCapsuleShape, color = MaterialTheme.colorScheme.surfaceContainer,
+                tonalElevation = 1.dp, shadowElevation = 1.dp) {
                 Column(Modifier.padding(horizontal = 8.dp).padding(top = 12.dp, bottom = 4.dp)) {
                     if (state.attachments.isNotEmpty()) Text("已导入 ${state.attachments.size} 个文件", Modifier.padding(horizontal = 8.dp),
                         style = MaterialTheme.typography.bodySmall, color = AuroraMuted)

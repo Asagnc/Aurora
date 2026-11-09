@@ -71,7 +71,7 @@ import kotlinx.coroutines.launch
                 if (it == "resources") skills = true else { conversationFilesOnly = false; space = it }
             })
     }) {
-        Scaffold(containerColor = MaterialTheme.colorScheme.background, topBar = {
+        com.itos.coui.layout.Scaffold(containerColor = MaterialTheme.colorScheme.background, topBar = {
             ChatHeader({ scope.launch { drawer.open() } }, { menu = true }, state.current?.title)
         }, bottomBar = {
             ChatComposer(state, draft, { draft = it }, { picker.launch(arrayOf("*/*")) }, ::choose, { models = true },

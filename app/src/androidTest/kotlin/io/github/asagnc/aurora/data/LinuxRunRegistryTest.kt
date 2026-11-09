@@ -99,7 +99,7 @@ class LinuxRunRegistryTest {
             val registry = LinuxRegistry(store)
             registry.begin("publish", version.id); registry.publish("publish", version)
             val lease = registry.lease(owner, version.id)
-            database.writableDatabase.apply { execSQL("DROP TABLE linux_runs"); this.version = 5 }
+            database.writableDatabase.apply { execSQL("DROP TABLE linux_runs"); execSQL("ALTER TABLE messages DROP COLUMN created_at"); this.version = 5 }
             database.close()
             val upgraded = AuroraDatabase(context, name)
             try {
@@ -107,7 +107,7 @@ class LinuxRunRegistryTest {
                 assertEquals("preserved", next.messages(owner).single().message.text)
                 assertTrue(LinuxRunRegistry(next).pending().isEmpty())
                 assertEquals(1L, next.read { db -> android.database.DatabaseUtils.longForQuery(db, "SELECT COUNT(*) FROM linux_leases WHERE token=?", arrayOf(lease)) })
-                assertEquals(10, upgraded.readableDatabase.version)
+                assertEquals(11, upgraded.readableDatabase.version)
             } finally { upgraded.close() }
         } finally { database.close(); context.deleteDatabase(name) }
     }

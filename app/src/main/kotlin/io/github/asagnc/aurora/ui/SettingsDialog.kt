@@ -12,6 +12,13 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import com.itos.coui.layout.Group
+import com.itos.coui.layout.Item
+import com.itos.coui.layout.Divider
+import com.itos.coui.topappbar.CouiTopAppBarDefaults
+import com.itos.coui.topappbar.LargeTopAppBar
+import com.itos.coui.topappbar.TopAppBarButton
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -20,6 +27,8 @@ import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.asagnc.aurora.R
+import com.itos.coui.text.Text as CouiText
+import com.itos.coui.text.CouiTextKind
 import io.github.asagnc.aurora.root.RootPhase
 import io.github.asagnc.aurora.runtime.ChatViewModel
 import kotlinx.coroutines.Dispatchers
@@ -35,8 +44,8 @@ import kotlinx.coroutines.withContext
     val root by model.rootState.collectAsStateWithLifecycle()
     var page by remember { mutableStateOf<String?>(null) }
     FullPage("设置", dismiss) {
-        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)) {
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(4.dp)) {
             SettingsEntries("模型与工作流", listOf(
                 SettingsEntry("供应商与 API", "模型连接与密钥", R.drawable.ic_hub) { providers() },
                 SettingsEntry("Skills", "安装与管理工作流", R.drawable.ic_extension) { page = "skills" }))
@@ -89,13 +98,15 @@ import kotlinx.coroutines.withContext
                 isAppearanceLightNavigationBars = light
             }
         } }
-        val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-        Scaffold(modifier = Modifier.fillMaxSize().imePadding().nestedScroll(scroll.nestedScrollConnection),
-            containerColor = MaterialTheme.colorScheme.background,
-            topBar = { LargeFlexibleTopAppBar(title = { Text(title) },
-                navigationIcon = { IconButton(dismiss) { LocalIcon(R.drawable.ic_arrow_back, "返回") } },
+        val scroll = CouiTopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+        val density = LocalDensity.current
+        com.itos.coui.layout.Scaffold(
+            modifier = Modifier.fillMaxSize().imePadding().nestedScroll(scroll.nestedScrollConnection),
+            topBar = { LargeTopAppBar(title = { Text(title) },
+                navigationIcon = { TopAppBarButton(onClick = dismiss) { LocalIcon(R.drawable.ic_arrow_back, "返回") } },
                 scrollBehavior = scroll) }) { padding ->
-            Box(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) { content() }
+            Box(Modifier.fillMaxSize().padding(scroll.state.contentPadding(padding, density))
+                .consumeWindowInsets(padding)) { content() }
         }
     }
 }
@@ -103,11 +114,12 @@ import kotlinx.coroutines.withContext
 private data class SettingsEntry(val title: String, val summary: String, val icon: Int, val click: () -> Unit)
 
 @Composable private fun SettingsEntries(title: String, entries: List<SettingsEntry>) {
-    SettingsSection(title) {
+    Group(title = title) {
         entries.forEachIndexed { index, entry ->
-            SegmentedListItem(onClick = entry.click, shapes = ListItemDefaults.segmentedShapes(index, entries.size),
-                leadingContent = { IconBadge(entry.icon, MaterialTheme.colorScheme.primary) },
-                supportingContent = { Text(entry.summary) }, trailingContent = { SettingsChevron() }) { Text(entry.title) }
+            if (index > 0) Divider(startIndent = 60.dp)
+            Item(onClick = entry.click,
+                icon = { IconBadge(entry.icon, MaterialTheme.colorScheme.primary) },
+                summary = { CouiText(text = entry.summary, kind = CouiTextKind.PreferenceSummary, color = AuroraMuted) }, trailing = { SettingsChevron() }) { CouiText(text = entry.title, kind = CouiTextKind.PreferenceTitle) }
         }
     }
 }

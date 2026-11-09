@@ -71,7 +71,7 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
         require(credential.revision == connection.credentialRevision) { "API 密钥已改变" }
         ModelRules.validate(ModelRequest(connection, SYSTEM, emptyList(), tools.definitions))
         app.conversations.setRunState(id, "running")
-        val user = ChatMessage(role = "user", text = text)
+        val user = ChatMessage(role = "user", text = text, createdAt = System.currentTimeMillis())
         val previous = state.value.current?.activeScope?.let { app.nativeHistory.load(id, it) }
         val compatible = previous?.takeIf { CachePolicy.canReuse(it, connection, fingerprint) && state.value.current?.runState != "interrupted" }
         val projected = compatible?.entries ?: allMessages(id).filter { it.complete }.map { MessageProjection.message(connection.protocol, it.role, it.text) }
@@ -105,7 +105,7 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
             ModelRequest(continuation?.connection ?: connection, SYSTEM, history, tools.definitions),
             { update -> mutable.update { it.copy(streaming = update.text, stage = update.stage) } },
             { entries -> app.nativeHistory.append(id, scope, savedCount.toLong(), entries.drop(savedCount)); savedCount = entries.size })
-        app.conversations.appendMessage(id, ChatMessage(role = "assistant", text = result.text))
+        app.conversations.appendMessage(id, ChatMessage(role = "assistant", text = result.text, createdAt = System.currentTimeMillis()))
         app.conversations.setRunState(id, "idle")
         mutable.update { it.copy(usage = result.usage, totalUsage = result.totalUsage, requests = result.requests,
             seconds = (System.nanoTime() - started) / 1e9, stage = "完成") }
@@ -114,7 +114,7 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
     suspend fun markInterrupted(id: String) {
         if (app.conversations.header(id)?.runState != "running") return
         state.value.streaming.takeIf { it.isNotEmpty() }?.let {
-            app.conversations.appendMessage(id, ChatMessage(role = "assistant", text = it, complete = false))
+            app.conversations.appendMessage(id, ChatMessage(role = "assistant", text = it, complete = false, createdAt = System.currentTimeMillis()))
         }
         app.conversations.setRunState(id, "interrupted")
         app.toolRuns.markUncertain(id)

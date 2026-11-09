@@ -21,7 +21,7 @@ class SkillRegistryTest {
             store.appendMessage(owner, ChatMessage(role = "user", text = "keep"))
             original.writableDatabase.apply {
                 listOf("skill_pins", "skill_releases", "skills", "skill_versions", "skill_operations").forEach { execSQL("DROP TABLE $it") }
-                version = 3
+                execSQL("ALTER TABLE messages DROP COLUMN created_at"); version = 3
             }
             original.close()
             val migrated = AuroraDatabase(context, name)
@@ -29,7 +29,7 @@ class SkillRegistryTest {
                 val next = ConversationStore(migrated)
                 assertEquals("keep", next.messages(owner).single().message.text)
                 assertTrue(SkillRegistry(next).entries().isEmpty())
-                assertEquals(10, migrated.readableDatabase.version)
+                assertEquals(11, migrated.readableDatabase.version)
             } finally { migrated.close() }
         } finally { original.close(); context.deleteDatabase(name) }
     }

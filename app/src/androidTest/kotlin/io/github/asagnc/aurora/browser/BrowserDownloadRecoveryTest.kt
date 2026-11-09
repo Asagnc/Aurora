@@ -66,10 +66,10 @@ class BrowserDownloadRecoveryTest {
                 db.execSQL("INSERT INTO conversations(id,title,updated_at) VALUES(?,?,?)",arrayOf<Any>(owner,"preserved",1))
                 db.execSQL("INSERT INTO tool_runs(owner,id,call_id,tool,state,started_at,artifact_directory) VALUES(?,?,?,?,?,?,?)",
                     arrayOf<Any>(owner,"record","call","browser_download","uncertain",1,"runs/${UUID.randomUUID()}"))
-                db.version=6
+                db.execSQL("ALTER TABLE messages DROP COLUMN created_at"); db.version=6
             }
             io.github.asagnc.aurora.data.AuroraDatabase(context,name).use { helper ->
-                val db=helper.readableDatabase;assertEquals(10,db.version)
+                val db=helper.readableDatabase;assertEquals(11, db.version)
                 db.rawQuery("SELECT title FROM conversations WHERE id=?",arrayOf(owner)).use{assertTrue(it.moveToFirst());assertEquals("preserved",it.getString(0))}
                 for(filter in listOf(null,owner)){
                     val (sql,args)=io.github.asagnc.aurora.data.browserDownloadRecoveryQuery(filter,64)

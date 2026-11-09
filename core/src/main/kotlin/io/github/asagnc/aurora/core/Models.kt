@@ -31,6 +31,7 @@ data class ChatMessage(
     val role: String,
     val text: String,
     val complete: Boolean = true,
+    val createdAt: Long? = null,
 )
 
 @Serializable

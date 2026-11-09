@@ -11,6 +11,11 @@ import kotlinx.coroutines.*
 import io.github.asagnc.aurora.core.OwnedTasks
 
 class AuroraApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        com.itos.coui.theme.Coui.initialize(com.itos.coui.material3.CouiMaterial3Style())
+    }
+
     val database by lazy { AuroraDatabase(this) }
     val conversations by lazy { ConversationStore(database) }
     val credentials by lazy { CredentialVault(this) }

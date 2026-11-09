@@ -4,7 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenHelper(context, name, null, 10) {
+class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenHelper(context, name, null, 11) {
     init { setWriteAheadLoggingEnabled(true) }
 
     override fun onConfigure(db: SQLiteDatabase) { db.setForeignKeyConstraintsEnabled(true) }
@@ -18,7 +18,7 @@ class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenH
         db.execSQL("""CREATE TABLE messages (
             owner TEXT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
             seq INTEGER NOT NULL, id TEXT NOT NULL, role TEXT NOT NULL, content TEXT NOT NULL,
-            complete INTEGER NOT NULL, PRIMARY KEY(owner, seq), UNIQUE(owner, id))""")
+            complete INTEGER NOT NULL, created_at INTEGER, PRIMARY KEY(owner, seq), UNIQUE(owner, id))""")
         db.execSQL("""CREATE TABLE wire_scopes (
             owner TEXT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
             id TEXT NOT NULL, metadata TEXT NOT NULL, PRIMARY KEY(owner, id))""")
@@ -49,7 +49,7 @@ class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenH
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        require(oldVersion in 1..9 && newVersion == 10)
+        require(oldVersion in 1..10 && newVersion == 11)
         if (oldVersion < 2) createTaskRuns(db)
         if (oldVersion < 3) {
             db.execSQL("ALTER TABLE tool_runs ADD COLUMN artifact_directory TEXT")
@@ -64,6 +64,7 @@ class AuroraDatabase(context: Context, name: String = "aurora.db") : SQLiteOpenH
         if (oldVersion == 8) RootManagedRunRegistry.migrateCapture(db)
         RootManagedRunRegistry.create(db)
         SkillSourceRegistry.create(db)
+        db.execSQL("ALTER TABLE messages ADD COLUMN created_at INTEGER")
     }
     private fun createBrowserRecoveryIndex(db: SQLiteDatabase) {
         db.execSQL("CREATE INDEX IF NOT EXISTS browser_download_pending ON tool_runs(owner) WHERE $BROWSER_DOWNLOAD_PENDING")

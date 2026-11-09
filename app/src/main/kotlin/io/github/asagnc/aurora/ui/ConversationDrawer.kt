@@ -57,8 +57,12 @@ import kotlinx.coroutines.delay
                                     onLongClick = { menu = session.id }).padding(start = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                                     if (selecting) Checkbox(session.id in selected, { toggle(session.id) })
                                     else { LocalIcon(R.drawable.ic_chat_bubble, "会话"); Spacer(Modifier.width(10.dp)) }
-                                    Text(session.title, Modifier.weight(1f).padding(vertical = 14.dp), maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyMedium)
+                                    Column(Modifier.weight(1f).padding(vertical = 10.dp),
+                                        verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                                        Text(session.title, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                                            style = MaterialTheme.typography.bodyMedium)
+                                        MessageTime(session.updatedAt)
+                                    }
                                     Box {
                                         IconButton({ menu = session.id }) { LocalIcon(if (session.pinned) R.drawable.ic_push_pin else R.drawable.ic_more_vert, "会话操作") }
                                         DropdownMenu(menu == session.id, { menu = null }) {

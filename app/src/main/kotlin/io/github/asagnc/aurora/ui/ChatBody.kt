@@ -16,16 +16,15 @@ import io.github.asagnc.aurora.core.ChatMessage
 import io.github.asagnc.aurora.runtime.ChatState
 
 @Composable internal fun ChatHeader(drawer: () -> Unit, menu: () -> Unit, title: String? = null) {
-    Row(Modifier.fillMaxWidth().statusBarsPadding().height(52.dp).padding(horizontal = 12.dp),
-        verticalAlignment = Alignment.CenterVertically) {
-        IconButton(drawer) { LocalIcon(R.drawable.ic_menu, "会话抽屉") }
-        Column(Modifier.weight(1f).padding(start = 8.dp)) {
-            Text(title ?: "Aurora", style = MaterialTheme.typography.titleMedium, maxLines = 1,
-                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
-            if (title != null) Text("Aurora", color = AuroraMuted, style = MaterialTheme.typography.labelMedium)
-        }
-        IconButton(menu) { LocalIcon(R.drawable.ic_folder_open, "会话菜单") }
-    }
+    com.itos.coui.topappbar.TopAppBar(
+        title = { Text(title ?: "Aurora", maxLines = 1,
+            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis) },
+        navigationIcon = { com.itos.coui.topappbar.TopAppBarButton(onClick = drawer) {
+            LocalIcon(R.drawable.ic_menu, "会话抽屉")
+        } },
+        actions = { com.itos.coui.topappbar.TopAppBarButton(onClick = menu) {
+            LocalIcon(R.drawable.ic_more_vert, "会话菜单")
+        } })
 }
 
 @Composable internal fun ChatBody(state: ChatState, modifier: Modifier = Modifier,
@@ -60,22 +59,29 @@ import io.github.asagnc.aurora.runtime.ChatState
     openLink: (String) -> Unit = {}) {
     val user = message.role == "user"
     Row(Modifier.fillMaxWidth(), horizontalArrangement = if (user) Arrangement.End else Arrangement.Start) {
-        Surface(Modifier.widthIn(max = if (user) 310.dp else 600.dp),
-            shape = if (user) RoundedCornerShape(18.dp, 18.dp, 4.dp, 18.dp) else RoundedCornerShape(0.dp),
-            color = if (user) MaterialTheme.colorScheme.surfaceContainer else MaterialTheme.colorScheme.background) {
-            Column {
-            if (!user) Row(Modifier.padding(bottom = 10.dp), verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Icon(androidx.compose.ui.res.painterResource(R.drawable.ic_sparkle), null,
-                    Modifier.size(19.dp), tint = MaterialTheme.colorScheme.primary)
-                Text("Aurora", color = AuroraMuted, style = MaterialTheme.typography.labelLarge)
-                Spacer(Modifier.weight(1f))
-                if (!streaming) CopyTextButton(message.text, "复制回复")
+        Column(Modifier.widthIn(max = if (user) 310.dp else 600.dp),
+            horizontalAlignment = if (user) Alignment.End else Alignment.Start) {
+            if (user) Surface(shape = RoundedCornerShape(22.dp, 22.dp, 6.dp, 22.dp),
+                color = MaterialTheme.colorScheme.surfaceContainer) {
+                SelectionContainer {
+                    Text(message.text, Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                        style = MaterialTheme.typography.bodyLarge)
+                }
+            } else {
+                Row(Modifier.padding(bottom = 10.dp), verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Icon(androidx.compose.ui.res.painterResource(R.drawable.ic_sparkle), null,
+                        Modifier.size(19.dp), tint = MaterialTheme.colorScheme.primary)
+                    Text("Aurora", color = AuroraMuted, style = MaterialTheme.typography.labelLarge)
+                }
+                RichReply(message.text, owner, streaming, openLink)
             }
-            if (user) Row(Modifier.align(Alignment.End)) { CopyTextButton(message.text, "复制消息") }
-            if (user) SelectionContainer { Text(message.text, Modifier.padding(14.dp), style = MaterialTheme.typography.bodyLarge) }
-            else RichReply(message.text, owner, streaming, openLink)
-            if (!message.complete) Text("（未完成）", color = AuroraMuted, style = MaterialTheme.typography.labelMedium)
+            if (!message.complete) Text("回复未完成", Modifier.padding(top = 6.dp),
+                color = AuroraMuted, style = MaterialTheme.typography.labelMedium)
+            if (!streaming) Row(Modifier.padding(top = if (user) 6.dp else 2.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                if (!user) CopyTextButton(message.text, "复制回复")
+                message.createdAt?.let { MessageTime(it) }
             }
         }
     }

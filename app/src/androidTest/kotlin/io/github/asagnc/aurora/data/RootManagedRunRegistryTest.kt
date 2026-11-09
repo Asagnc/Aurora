@@ -41,12 +41,12 @@ class RootManagedRunRegistryTest {
                 execSQL("INSERT INTO root_managed_runs SELECT * FROM fixture_v9")
                 execSQL("DROP TABLE fixture_v9")
                 execSQL("CREATE INDEX root_managed_owner ON root_managed_runs(owner,id)")
-                version = 8; setTransactionSuccessful()
+                execSQL("ALTER TABLE messages DROP COLUMN created_at"); version = 8; setTransactionSuccessful()
             } finally { endTransaction() }
         }
         db.close()
         AuroraDatabase(context, db.databaseName).use { upgraded ->
-            assertEquals(10, upgraded.readableDatabase.version)
+            assertEquals(11, upgraded.readableDatabase.version)
             val migrated = ConversationStore(upgraded); val registry = RootManagedRunRegistry(migrated)
             assertEquals(listOf(ticket), registry.pending(ticket.owner))
             assertEquals(encoded, migrated.read { source -> source.rawQuery("SELECT ticket FROM root_managed_runs WHERE id=?", arrayOf(ticket.runId)).use {
@@ -204,7 +204,7 @@ class RootManagedRunRegistryTest {
         val linux = LinuxRunTicket(UUID.randomUUID().toString(), ticket.owner, version.id, ticket.identity,
             context.applicationInfo.uid, listOf("/bin/true"))
         LinuxRunRegistry(store).begin(linux)
-        db.writableDatabase.apply { execSQL("DROP TABLE root_managed_runs"); this.version = 7 }
+        db.writableDatabase.apply { execSQL("DROP TABLE root_managed_runs"); execSQL("ALTER TABLE messages DROP COLUMN created_at"); this.version = 7 }
         db.close()
         AuroraDatabase(context, db.databaseName).use { next ->
             val migrated = ConversationStore(next)
@@ -233,13 +233,13 @@ class RootManagedRunRegistryTest {
                         }
                         if (version < 6) listOf("linux_runs", "linux_leases", "linux_settings", "linux_versions", "linux_operations",
                             "skill_pins", "skill_releases", "skills", "skill_versions", "skill_operations").forEach { execSQL("DROP TABLE $it") }
-                        this.version = version
+                        execSQL("ALTER TABLE messages DROP COLUMN created_at"); this.version = version
                     }
                     owner
                 }
                 AuroraDatabase(context, name).use { upgraded ->
                     val store = ConversationStore(upgraded); val runs = RootManagedRunRegistry(store)
-                    assertEquals(10, upgraded.readableDatabase.version)
+                    assertEquals(11, upgraded.readableDatabase.version)
                     assertEquals("keep", store.messages(owner).single().message.text)
                     val ticket = ticket(owner); runs.begin(ticket)
                     assertEquals(listOf(ticket), runs.pending(owner))

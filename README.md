@@ -4,7 +4,9 @@ Aurora 是面向 **Android 16 及以上（API 36+）** 的手机 Agent 应用，
 
 应用包名：`io.github.asagnc.aurora`。项目仍在开发和验收中，未正式发布。
 
-本轮 UI 已按用户确认使用官方 **Material 3 Expressive 1.5.0-rc01**（候选版例外）：设置分组、状态与操作优先、详情按需展开，并修复抽屉键盘遮挡和设置返回路径。最终 Debug 包已保留数据更新到手机，12 类 UI 检查通过；大字体、横屏及完整功能矩阵不包含在这 12 类中。见 [UI 实现与验证记录](docs/UI_MD3E_IMPLEMENTATION.md)。
+前一轮 UI 按用户确认使用官方 **Material 3 Expressive 1.5.0-rc01**（候选版例外）：设置分组、状态与操作优先、详情按需展开，并修复抽屉键盘遮挡和设置返回路径。最终 Debug 包已保留数据更新到手机，12 类 UI 检查通过；大字体、横屏及完整功能矩阵不包含在这 12 类中。见 [UI 实现与验证记录](docs/UI_MD3E_IMPLEMENTATION.md)。
+
+用户随后要求整体参考新版 Eta／ColorOS17：消息时间、会话最后活动时间与复制布局已实现、宿主构建通过，已保留数据更新手机。COUI alpha9 已经隔离基础资格后接入主包预览，Compose 明确固定1.13.0-alpha02；主包数据／恢复47项及基础UI检查已通过，完整性能／无障碍／正式Release资格仍保留缺口。见 [本轮对话修复](docs/UI_CHAT_IMPLEMENTATION.md)和[ColorOS17 比较方案](docs/UI_COLOROS17_PROPOSAL.md)。
 
 ## 当前能力
 
@@ -19,7 +21,7 @@ Aurora 是面向 **Android 16 及以上（API 36+）** 的手机 Agent 应用，
 
 ## 最新验证与发布状态
 
-截至 **2026-11-09**，当前 UI 产品提交为 `401db41e8a34574a0422dda54c102032a876ceef`，本地构建、上述 12 类真机 UI 检查及 [完整 CI 五个任务](https://github.com/Asagnc/Aurora/actions/runs/42641876487)全部通过。完整后端验收与旧审查包基线为 `a621f7f06a455b0a968c0a2cfeae701977ea3618`，其范围不扩展为新 UI 的完整发布资格。
+截至 **2026-11-09**，上一轮已装手机的 UI 产品提交为 `401db41e8a34574a0422dda54c102032a876ceef`，本地构建、上述 12 类真机 UI 检查及 [完整 CI 五个任务](https://github.com/Asagnc/Aurora/actions/runs/42641876487)全部通过。完整后端验收与旧审查包基线为 `a621f7f06a455b0a968c0a2cfeae701977ea3618`，其范围不扩展为新 UI 的完整发布资格。
 
 | 项目 | 已取得的证据 | 当前边界 |
 | --- | --- | --- |

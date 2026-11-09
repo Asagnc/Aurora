@@ -55,11 +55,11 @@ class SkillSourceRegistryTest {
             val skills = SkillRegistry(store); skills.begin("install", listOf(skill.hash)); skills.finish("install", listOf(skill)); skills.pin(owner, listOf(skill))
             original.writableDatabase.apply {
                 execSQL("INSERT INTO root_managed_runs(id,owner,kind,ticket) VALUES (?,?,?,?)", arrayOf("capture", owner, "capture", "opaque retained ticket"))
-                execSQL("DROP TABLE skill_sources"); execSQL("DROP TABLE skill_source_secrets"); version = 9
+                execSQL("DROP TABLE skill_sources"); execSQL("DROP TABLE skill_source_secrets"); execSQL("ALTER TABLE messages DROP COLUMN created_at"); version = 9
             }
             original.close()
             AuroraDatabase(context, name).use { upgraded ->
-                assertEquals(10, upgraded.readableDatabase.version)
+                assertEquals(11, upgraded.readableDatabase.version)
                 val next = ConversationStore(upgraded)
                 assertEquals("keep", next.messages(owner).single().message.text)
                 assertEquals(listOf(skill), SkillRegistry(next).entries())

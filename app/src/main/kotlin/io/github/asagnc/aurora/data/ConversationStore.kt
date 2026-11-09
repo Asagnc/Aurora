@@ -49,7 +49,8 @@ class ConversationStore(private val database: AuroraDatabase) {
         database.readableDatabase.rawQuery("SELECT * FROM messages WHERE owner = ? AND seq < ? ORDER BY seq DESC LIMIT $limit", arrayOf(id, before.toString()))
             .use { cursor -> buildList {
                 while (cursor.moveToNext()) add(MessageRow(cursor.getLong(cursor.getColumnIndexOrThrow("seq")), ChatMessage(
-                    id = cursor.text("id"), role = cursor.text("role"), text = cursor.text("content"), complete = cursor.getInt(cursor.getColumnIndexOrThrow("complete")) != 0)))
+                    id = cursor.text("id"), role = cursor.text("role"), text = cursor.text("content"), complete = cursor.getInt(cursor.getColumnIndexOrThrow("complete")) != 0,
+                    createdAt = cursor.getColumnIndexOrThrow("created_at").let { if (cursor.isNull(it)) null else cursor.getLong(it) })))
             }.reversed() }
     }
 
@@ -58,7 +59,7 @@ class ConversationStore(private val database: AuroraDatabase) {
         val sequence = db.rawQuery("SELECT COALESCE(MAX(seq), -1) + 1 FROM messages WHERE owner = ?", arrayOf(id))
             .use { it.moveToFirst(); it.getLong(0) }
         db.insertOrThrow("messages", null, values("owner" to id, "seq" to sequence, "id" to message.id,
-            "role" to message.role, "content" to message.text, "complete" to if (message.complete) 1 else 0))
+            "role" to message.role, "content" to message.text, "created_at" to message.createdAt, "complete" to if (message.complete) 1 else 0))
         db.update("conversations", values("updated_at" to System.currentTimeMillis()), "id = ?", arrayOf(id))
         sequence
     }
