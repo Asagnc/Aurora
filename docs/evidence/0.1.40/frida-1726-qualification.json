@@ -174,13 +174,32 @@
     "productionIntegrated": false,
     "junitSeconds": 131.554
   },
-  "passedExecutions": 16,
+  "passedExecutions": 22,
   "uniquePassedCases": 9,
   "pendingManagedTicketsAtEnd": 0,
   "actualOrdinaryShellVersion": "17.26.2",
   "remainingQualification": [
-    "stock-policy boot and exact current-identity acceptance",
+    "operation without Aurora policy adaptation is not qualified",
     "full source/license material closure and release correspondence",
     "runtime child/listener lifetime audit and remaining pressure windows"
-  ]
+  ],
+  "newBoot": {
+    "version": "17.26.2",
+    "scope": "User reboot/unlock; same approved minimal adaptation on new boot, not no-adaptation or stock-platform qualification",
+    "bootChanged": true,
+    "hostSeconds": 133.763,
+    "statusCounts": {
+      "0": 6,
+      "-1": 0,
+      "-2": 0,
+      "-3": 0,
+      "-4": 0
+    },
+    "logSha256": "270018a163ded2471fd3385853b05b21388d09512a968dd1b32f0524dc3b8037",
+    "enforcingBeforeAndAfter": true,
+    "productionIntegrated": false,
+    "junitSeconds": 132.171,
+    "userRebootAndUnlockConfirmed": true,
+    "pendingManagedTicketsAtEnd": 0
+  }
 }

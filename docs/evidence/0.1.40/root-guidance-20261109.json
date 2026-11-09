@@ -41,5 +41,11 @@
     "scope": "Current debug; preinstalled SDK, fresh owned build probe and export/JNI; not fresh SAF installation",
     "probeMillis": 99728,
     "junitSeconds": 103.122
+  },
+  "mainNewBootRootConnection": {
+    "hostSeconds": 3.639,
+    "passed": 1,
+    "logSha256": "a96d49525c1dc78151bf1aa5b7314b282e2ef714d4633f682447ebddbd63eb0c",
+    "junitSeconds": 2.571
   }
 }

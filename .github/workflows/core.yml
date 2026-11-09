@@ -93,6 +93,11 @@ jobs:
           # Both builders still reject any byte count or SHA256 mismatch.
       - name: Build pinned Frida ARM64 qualification worker without packaging
         run: python3 scripts/build-frida-probe.py --directory app/build/outputs/frida-qualification --ndk "$ANDROID_HOME/ndk/30.0.16248370" --download
+      - name: Reuse verified source archives for the independent APK worker build
+        run: |
+          mkdir -p app/build/frida-worker
+          cp app/build/outputs/frida-qualification/frida-core-devkit-17.24.3-android-arm64.tar.xz app/build/frida-worker/
+          cp app/build/outputs/frida-qualification/selinux-507985d931eb1f0227218d5d845634e602426c20.tar.gz app/build/frida-worker/
       - name: Build and audit Android ARM64 managed guard without packaging
         run: python3 scripts/build-managed-guard.py --directory app/build/outputs/managed-qualification --ndk "$ANDROID_HOME/ndk/30.0.16248370"
       - name: Restore exact native source archive
