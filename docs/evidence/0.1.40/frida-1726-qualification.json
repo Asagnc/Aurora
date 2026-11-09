@@ -1,0 +1,83 @@
+{
+  "date": "2026-11-09",
+  "version": "17.26.2",
+  "scope": "Independent qualification; same approved mapper route; no production promotion",
+  "workerSha256": "05abea25b50257732963a0f22ce2f0efd66812a68c91f93198260dc1afb9bd20",
+  "host": {
+    "strippedBytes": 89537880,
+    "needed": [
+      "libc.so",
+      "libdl.so",
+      "liblog.so",
+      "libm.so"
+    ],
+    "retainedArchiveMembers": 1927,
+    "resourceDescriptors": 28,
+    "alignmentScope": "Outer worker only; not injected agents or loader/SELinux qualification"
+  },
+  "sourceCopy": {
+    "baseCommit": "4eba89535b7f23078394195ff97e87a89305fef1",
+    "sourceArchiveSha256": "dcbfd5928641e3ada48e9c60cb0e2cc9f243d901be5d679f80e3a964d2d85513",
+    "applicationId": "io.github.asagnc.aurora.fridaqualification",
+    "candidateWorkerSha256": "05abea25b50257732963a0f22ce2f0efd66812a68c91f93198260dc1afb9bd20",
+    "patchedSourceHashes": {
+      "app/build.gradle.kts": "dff044ba9b37865232f1ff82b9c9421b990ce75185b286f55df3f19c6cc1d735",
+      "app/src/main/AndroidManifest.xml": "ee0d5dabbdf05a48ba9711e6ecf8bdf829cecc502eb32640f7847b3cbe2aae1b",
+      "app/src/main/kotlin/io/github/asagnc/aurora/root/FridaTool.kt": "2b49bb27ed6158fe1361555c5e0a7596268268aa6b96c4c28645a228b1b5f156"
+    },
+    "preparerSha256": "c6fac6b3964ceee91d74facd3792ddd42ba6442e4a7261add24f5cabbceed971"
+  },
+  "apks": {
+    "app": "861b3230519bebb06ed3c1390f4597c86c2bebc0d0834dc87b348079099f0073",
+    "test": "05345be5387310d1399ced297232b7ca9cc0ec3245610f9e6334c884a984b3c2"
+  },
+  "nativeArtFirst": {
+    "version": "17.26.2",
+    "workerSha256": "05abea25b50257732963a0f22ce2f0efd66812a68c91f93198260dc1afb9bd20",
+    "hostSeconds": 35.547,
+    "adbReturnCode": 0,
+    "statusCounts": {
+      "0": 1,
+      "-1": 0,
+      "-2": 0,
+      "-3": 0,
+      "-4": 0
+    },
+    "logSha256": "a151c7b3c6108eeea468f5410b463172398c9af46b89efdd16a166a4fc598f57",
+    "productionIntegrated": false
+  },
+  "matrixFirst": {
+    "version": "17.26.2",
+    "scope": "Separate qualification identity on adapted enforcing boot; not stock policy or production promotion",
+    "hostSeconds": 118.452,
+    "adbReturnCode": 0,
+    "statusCounts": {
+      "0": 5,
+      "-1": 0,
+      "-2": 2,
+      "-3": 0,
+      "-4": 0
+    },
+    "logSha256": "95d728fb487f754080cda6e1c24ac2a779bba082e27482229a6a76a4dce7d88d",
+    "policyBytesUnchanged": false,
+    "enforcingBeforeAndAfter": true,
+    "productionIntegrated": false
+  },
+  "matrixFirstPreconditionFailures": "Two cancellation-class tests were invoked without their opt-in flags; both failed before Root operations; retained as failures",
+  "cancelCorrected": {
+    "hostSeconds": 17.586,
+    "statusCounts": {
+      "0": 1,
+      "-1": 0,
+      "-2": 0,
+      "-3": 0,
+      "-4": 0
+    },
+    "logSha256": "d6faf052a6fa291939eb6efe6f69d2b9d7b80b2cfafbc6de20b0f2a0729db8eb"
+  },
+  "phoneFullQualificationPassed": false,
+  "productionIntegrated": false,
+  "releaseGateEnabled": false,
+  "stockPolicyQualified": false,
+  "historicalPc0x320Resolved": false
+}

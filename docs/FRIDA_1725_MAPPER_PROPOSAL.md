@@ -62,3 +62,11 @@
 2026-11-09收尾实测：独立包9个精确自有夹具经现有恢复协议1项4.905秒通过，数据库只读复核待恢复票据0、自有会话0；没有强删数据库或声称脚本已卸载。主包保留数据更新后Root连接/重连/命令/PTY/取消/超时清理6项13.859秒通过；Debug/Release/AndroidTest及双lint共224任务构建成功。见root-guidance-20261109.json。
 
 固定gum源码继续核对：两版libc初始化代码块逐字相同，同一句abort有两个入口，分别可能是符号定位或按基址查询模块失败；未符号化该次agent栈，不能仅凭消息认定exit解析失败、mapper根因或手机Root策略问题。源码摘要及两个分支见tools/frida-mapper-qualification/libc-source-audit.json；未打补丁或升级候选。
+
+## 2026-11-09同路线修正版接续
+
+上游17.25.1明确修复Android16自定义mapper下agent不被Bionic识别、匿名命名空间无法通过RTLD_DEFAULT看到libc而启动abort的问题；这与本次消息相符，但不是本机根因已证实。17.25.2又修正ELF映射基址选择；当前官方稳定版17.26.2（11月7日）包含后续修正。比较后继续使用同一已批准独立worker/mapper资格路线验证当前稳定版，不引入新后端、数据库、daemon或策略路线，不自动替换生产。原17.25.0字节与失败证据保留。
+
+固定17.26.2 devkit61,096,720字节、SHA256 3df0d73af88a7f81faa8f09f8d8c73ee83498c04d21014d54830463f250e340f；五成员、展开351,169,328字节。worker89,537,880字节、SHA256 05abea25b50257732963a0f22ce2f0efd66812a68c91f93198260dc1afb9bd20，主机编译/ELF/外层16KiB通过。政策补丁与头文件不变，libsepol仍固定507985d；wrap只从frida/selinux移到官方frida-forks/selinux。命名Fruity资源为图标对象，未发现命名后端对象；静态结果不替代运行时daemon检查。独立包沿用同一已授权测试身份，保留数据更新，生产包不变。
+
+来源：[17.25.1官方修复](https://frida.re/news/2026/11/01/frida-17-25-1-released/)、[17.25.2](https://frida.re/news/2026/11/02/frida-17-25-2-released/)、[17.26.2](https://frida.re/news/2026/11/07/frida-17-26-2-released/)。固定输入与静态审查分别在tools/frida-mapper-qualification/candidate-17.26.2.json、source-audit-17.26.2.json。

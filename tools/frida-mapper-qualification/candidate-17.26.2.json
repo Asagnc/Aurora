@@ -1,0 +1,38 @@
+{
+  "version": "17.26.2",
+  "platform": "android-arm64",
+  "archive": "frida-core-devkit-17.26.2-android-arm64.tar.xz",
+  "url": "https://github.com/frida/frida/releases/download/17.26.2/frida-core-devkit-17.26.2-android-arm64.tar.xz",
+  "sha256": "3df0d73af88a7f81faa8f09f8d8c73ee83498c04d21014d54830463f250e340f",
+  "bytes": 61096720,
+  "coreCommit": "2a41a960fe9b7fc0ccc85003e4f31f0caeec4d8d",
+  "gumCommit": "00a05282d1074c0e043b285c70a4412d784c573d",
+  "scope": "Same approved isolated mapper route; current stable with upstream Android libc namespace fix; no production promotion",
+  "productionIntegrated": false,
+  "sourceLicenseClosureVerified": false,
+  "expandedBytes": 351169328,
+  "members": [
+    {
+      "name": ".",
+      "bytes": 0
+    },
+    {
+      "name": "./frida-core.h",
+      "bytes": 3139686
+    },
+    {
+      "name": "./frida-core-example.c",
+      "bytes": 4922
+    },
+    {
+      "name": "./frida-core.gir",
+      "bytes": 923050
+    },
+    {
+      "name": "./libfrida-core.a",
+      "bytes": 347101670
+    }
+  ],
+  "qualificationWorkerSha256": "05abea25b50257732963a0f22ce2f0efd66812a68c91f93198260dc1afb9bd20",
+  "qualificationWorkerBytes": 89537880
+}

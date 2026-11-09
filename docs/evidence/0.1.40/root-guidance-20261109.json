@@ -25,5 +25,21 @@
     "actualDeviceUiChecked": true,
     "privateUiXmlSha256": "fc3258d780834e494f524b3c21922a27c13a33e8a7a142703c5724cb51a0109c",
     "updatedDebugApkSha256": "c15a724c0d730aef9beec959e727f1f3e8f5ebf0c1d8e99c1aaf05b0e2fc6720"
+  },
+  "currentSdkProbe": {
+    "date": "2026-11-09",
+    "hostSeconds": 104.134,
+    "adbReturnCode": 0,
+    "statusCounts": {
+      "0": 1,
+      "-1": 0,
+      "-2": 0,
+      "-3": 0,
+      "-4": 0
+    },
+    "logSha256": "40d38f9291f4ed77d339858419d5bb4c6259e27d4c733df5eec77ec79abfc6f2",
+    "scope": "Current debug; preinstalled SDK, fresh owned build probe and export/JNI; not fresh SAF installation",
+    "probeMillis": 99728,
+    "junitSeconds": 103.122
   }
 }

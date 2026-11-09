@@ -43,8 +43,9 @@ def extract_candidate(archive, directory, pin):
 
 
 def qualify(args):
-    pin = json.loads((ROOT / 'tools/frida-mapper-qualification/candidate.json').read_text())
-    if pin['version'] != '17.25.0' or pin['productionIntegrated']:
+    name = 'candidate.json' if args.version == '17.25.0' else 'candidate-17.26.2.json'
+    pin = json.loads((ROOT / 'tools/frida-mapper-qualification' / name).read_text())
+    if pin['version'] != args.version or pin['productionIntegrated']:
         raise ValueError('Only the approved isolated candidate is allowed')
     output = args.directory.resolve(); output.mkdir(parents=True, exist_ok=False)
     legacy = builder()
@@ -86,6 +87,7 @@ def qualify(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--version', choices=['17.25.0', '17.26.2'], default='17.25.0')
     parser.add_argument('--directory', type=Path, required=True)
     parser.add_argument('--ndk', type=Path, required=True)
     parser.add_argument('--download', action='store_true')

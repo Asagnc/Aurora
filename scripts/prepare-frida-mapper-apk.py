@@ -44,7 +44,7 @@ def extract(archive, destination):
                     shutil.copyfileobj(incoming, output, 65536)
 
 
-def patch_build(source, worker_sha):
+def patch_build(source, worker_sha, version):
     path = source / 'app/build.gradle.kts'
     text = path.read_text(encoding='utf-8')
     text = replace_once(text, 'applicationId = "io.github.asagnc.aurora"', f'applicationId = "{PACKAGE}"')
@@ -72,13 +72,16 @@ def patch_build(source, worker_sha):
                                     'android:label="Aurora Frida Qualification"'), encoding='utf-8')
     tool = source / 'app/src/main/kotlin/io/github/asagnc/aurora/root/FridaTool.kt'
     tool.write_text(replace_once(tool.read_text(encoding='utf-8'), 'Root Frida17.24.3.',
-                                'Root Frida17.25.0 qualification.'), encoding='utf-8')
+                                f'Root Frida{version} qualification.'), encoding='utf-8')
 
 
 def stage_owned_native(source, apk):
     accepted = json.loads((ROOT / 'docs/evidence/0.1.40/device-regression-20261031.json').read_text(encoding='utf-8'))
-    expected = accepted['installedApksAtEnd']['io.github.asagnc.aurora']['apkSha256']
-    if digest(apk) != expected:
+    accepted_hashes = {accepted['installedApksAtEnd']['io.github.asagnc.aurora']['apkSha256']}
+    guidance = json.loads((ROOT / 'docs/evidence/0.1.40/root-guidance-20261109.json').read_text(encoding='utf-8'))
+    accepted_hashes.add(guidance['sdkImportFeedback']['updatedDebugApkSha256'])
+    expected = digest(apk)
+    if expected not in accepted_hashes:
         raise ValueError('Use the exact accepted baseline APK for owned native executors')
     inputs = []
     with zipfile.ZipFile(apk) as archive:
@@ -127,7 +130,10 @@ def stage_bridge(source):
 
 def prepare(args):
     candidate = args.candidate_directory.resolve()
-    pin = json.loads((ROOT / 'tools/frida-mapper-qualification/candidate.json').read_text(encoding='utf-8'))
+    name = 'candidate.json' if args.version == '17.25.0' else 'candidate-17.26.2.json'
+    pin = json.loads((ROOT / 'tools/frida-mapper-qualification' / name).read_text(encoding='utf-8'))
+    if pin['version'] != args.version or pin['productionIntegrated']:
+        raise ValueError('Candidate scope changed')
     report = json.loads((candidate / 'qualification.json').read_text(encoding='utf-8'))
     worker = candidate / 'aurora-frida-probe'
     worker_sha = digest(worker)
@@ -148,7 +154,7 @@ def prepare(args):
     subprocess.run(['git', '-C', str(ROOT), 'archive', '--format=zip', '--output=' + str(archive), commit], check=True)
     extract(archive, source)
     shutil.copyfile(worker, inputs / worker.name)
-    patch_build(source, worker_sha)
+    patch_build(source, worker_sha, pin['version'])
     bridge = stage_bridge(source)
     native = stage_owned_native(source, args.baseline_apk.resolve())
     reuse_native_build(source)
@@ -169,6 +175,7 @@ def prepare(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--version', choices=['17.25.0', '17.26.2'], default='17.25.0')
     parser.add_argument('--candidate-directory', type=Path, required=True)
     parser.add_argument('--source-directory', type=Path, required=True)
     parser.add_argument('--sdk', type=Path, required=True)

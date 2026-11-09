@@ -1,0 +1,54 @@
+{
+  "coreCommit": "2a41a960fe9b7fc0ccc85003e4f31f0caeec4d8d",
+  "archive": {
+    "url": "https://codeload.github.com/frida/frida-core/tar.gz/2a41a960fe9b7fc0ccc85003e4f31f0caeec4d8d",
+    "bytes": 4378200,
+    "sha256": "c862e4af3a762493b9a1d4691b45dfe4ab5af25822922f0ef8c58a8fe9f6ac0c"
+  },
+  "comparedPolicyInputs": [
+    {
+      "path": "lib/selinux/patch.c",
+      "sameAs1725": true,
+      "sha256": "eb8bc7e912508e8c4ca4535fbc684062c606293e940fa4a43e9896152aab8e37"
+    },
+    {
+      "path": "lib/selinux/frida-selinux.h",
+      "sameAs1725": true,
+      "sha256": "2a6887e0a00c9abee8da9c3b550da8a3e0b08967b505e2db972ac81aefe8fd7b"
+    },
+    {
+      "path": "subprojects/selinux.wrap",
+      "sameAs1725": false,
+      "sha256": "ce9cf07eaaeadbd56acba8098cca353ecc52744bb633ca63ab380e638fbee19d"
+    }
+  ],
+  "automaticPolicyPatchCallSites": [
+    {
+      "path": "inject/inject-glue.c",
+      "line": 14,
+      "text": "frida_selinux_patch_policy ();"
+    },
+    {
+      "path": "lib/selinux/patch.c",
+      "line": 59,
+      "text": "frida_selinux_patch_policy (void)"
+    },
+    {
+      "path": "server/server-glue.c",
+      "line": 64,
+      "text": "frida_selinux_patch_policy ();"
+    },
+    {
+      "path": "tests/runner-glue.c",
+      "line": 47,
+      "text": "frida_selinux_patch_policy ();"
+    }
+  ],
+  "selinuxRevisionUnchanged": "507985d931eb1f0227218d5d845634e602426c20",
+  "selinuxWrapChange": "Official repository move frida/selinux to frida-forks/selinux; same commit",
+  "runtimeDaemonAuditPassed": false,
+  "namedResourceObjects": [
+    "libfrida-core.a.p/meson-generated_.._frida-data-icons.c.o"
+  ],
+  "retainedFruityOrIdunBackendNamedObjects": []
+}

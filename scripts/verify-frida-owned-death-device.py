@@ -41,7 +41,7 @@ def verify(args):
     command = ['shell', 'am', 'instrument', '-w', '-r', '-e', 'class', full_test,
                '-e', 'notAnnotation', 'none', '-e', 'auroraRootTest', 'true', '-e', flag, 'true',
                '-e', 'auroraFridaPolicyTest', 'true',
-               'io.github.asagnc.aurora.test/androidx.test.runner.AndroidJUnitRunner']
+               args.package + '.test/androidx.test.runner.AndroidJUnitRunner']
     if args.kind in {'linux-pty-root', 'metadata-root'}:
         command[-1:-1] = ['-e', 'auroraLinuxImageTest', 'true']
     process = subprocess.Popen(prefix + command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -105,7 +105,7 @@ def verify(args):
                                  'INSTRUMENTATION_STATUS_CODE: 2'}
                         for line in statuses)), 'Device fault test did not pass without skips'
         proof = {**proofs[0], 'signals': len(proofs)}
-        (args.output / 'host.json').write_text(json.dumps({'kind': args.kind, **proof,
+        (args.output / 'host.json').write_text(json.dumps({'kind': args.kind, 'applicationId': args.package, **proof,
             'policyQualifiedBeforeFault': args.kind in {'root', 'worker'},
             'sdkQualifiedBeforeFault': args.kind == 'sdk-root',
             'linuxPtyAdmittedBeforeFault': args.kind == 'linux-pty-root', 'deviceTestsPassed': expected_tests}, indent=2) + '\n')
@@ -121,6 +121,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--adb', type=Path, required=True)
     parser.add_argument('--serial', required=True)
+    parser.add_argument('--package', choices=['io.github.asagnc.aurora',
+        'io.github.asagnc.aurora.fridaqualification'], default='io.github.asagnc.aurora')
     parser.add_argument('--kind', choices=['root', 'worker', 'sdk-root', 'linux-pty-root', 'metadata-root'], required=True)
     parser.add_argument('--signal-helper', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
