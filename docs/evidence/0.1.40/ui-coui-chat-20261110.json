@@ -1,0 +1,229 @@
+{
+  "schema": 1,
+  "dates": [
+    "2026-11-09",
+    "2026-11-10"
+  ],
+  "productCommit": "a418ded298ec4f709edc2e6b8cea20724a60148a",
+  "status": "preview-device-checked-not-release-qualified",
+  "artifact": {
+    "debugApkSha256": "a8f08f9f200fc64c66e5301575faed0bec1446efca6bbc5dc022b869e8d21b52",
+    "bytes": 123786051,
+    "installedHashMatched": true,
+    "sameDebugCertificateSha256": "46c0eb4f69334514e6ee98f55655f8ac6e5ddb07ca45f346739ba7ad8c765a2c",
+    "fridaWorkerSha256": "c9b22da8e0019fd052d9a87d54279b09acfc4eecbdf1fea6376137556b59439f",
+    "fridaProductionGate": false,
+    "couiOriginFilesInExactApkVerified": 7
+  },
+  "profile": {
+    "coui": "0.0.1-alpha9",
+    "material3": "1.5.0-rc01",
+    "composeBom": "androidx.compose:compose-bom-alpha:2026.08.01",
+    "composeRuntimeUiFoundation": "1.13.0-alpha02",
+    "stableHostCompatible": false,
+    "mainDependencyGraphPrereleases": [
+      "1.13.0-alpha02",
+      "1.5.0-rc01"
+    ]
+  },
+  "host": {
+    "coreReport": {
+      "tests": 362,
+      "passed": 346,
+      "skipped": 16,
+      "failures": 0,
+      "errors": 0
+    },
+    "mainCombinedBuild": {
+      "tasks": 224,
+      "seconds": 127,
+      "success": true
+    },
+    "finalCombinedBuild": {
+      "tasks": 221,
+      "seconds": 57,
+      "debug": true,
+      "defaultR8Release": true,
+      "androidTestCompile": true,
+      "lintDebug": true,
+      "lintRelease": true
+    },
+    "originOnlyFinalPackaging": {
+      "tasks": 160,
+      "seconds": 10,
+      "success": true
+    },
+    "androidTestDiscovery": {
+      "annotatedMethods": 257,
+      "nonVoidMethods": 0
+    },
+    "lintErrors": 0,
+    "lintWarnings": [
+      "GradleDependency: intentionally fixed Compose alpha BOM; newer available",
+      "NewerVersionAvailable: existing OkHttp pin",
+      "VectorPath: existing asset",
+      "MonochromeLauncherIcon: release only, existing"
+    ]
+  },
+  "deviceData": {
+    "realSchema10To11": true,
+    "originalTableValuesPreservedAfterUpgradeAndFinalCleanup": true,
+    "oldMessageTimesRemainNull": true,
+    "newTimestampReopenPaginationTest": {
+      "passed": 1,
+      "seconds": 0.089
+    },
+    "regressionBatches": [
+      {
+        "passed": 47,
+        "seconds": 6.782
+      },
+      {
+        "passed": 47,
+        "seconds": 5.003,
+        "exactFinalApk": true
+      }
+    ],
+    "uniqueRegressionCases": 47,
+    "fixtureSetupCleanupNotAcceptanceCases": true
+  },
+  "deviceUi": {
+    "exactFinalApkChecks": [
+      "message and code copy below appropriate content",
+      "no permanent copy above user text",
+      "cross-date fixture timestamps",
+      "conversation activity time in drawer",
+      "COUI header and grouped settings",
+      "manager-first Root guidance without connecting",
+      "Frida activation remains disabled"
+    ],
+    "earlierIntegratedProfileChecks": [
+      "native long-press copy/select-all toolbar visually observed",
+      "keyboard and drawer IME dismissal",
+      "dark/light/pure-black switch and original preferences restored",
+      "draft preserved across theme/settings",
+      "landscape and font-scale 1.3 draft present",
+      "original rotation/font settings restored"
+    ],
+    "earlierProfileToFinalChanges": "surface colour/style preservation and bundled origin notices; input/state/selection implementation unchanged",
+    "noClaim": "No full TalkBack, streaming performance, default release runtime or all-screen coverage"
+  },
+  "qualificationFailuresRetained": [
+    "initial isolated Gradle configuration timing error before resolution",
+    "stable host actual dependency guard rejected 1.13.0-alpha02 transitive modules",
+    "landscape host assertion missed offscreen draft; scrolling verified preservation",
+    "native selection toolbar absent in root XML; screenshot showed toolbar",
+    "Initial preview switch lookup found no matching node; no root cause asserted, preview relaunched and switch given an explicit accessibility label before successful testing"
+  ],
+  "cleanup": {
+    "onlyExactOwnedUiFixtureDeleted": true,
+    "mainDatabaseOriginalValuesRechecked": true,
+    "removedOwnedPackages": [
+      "io.github.asagnc.aurora.uiqualification",
+      "io.github.asagnc.aurora.test"
+    ],
+    "leftAt": "main settings",
+    "mainDataCleared": false,
+    "paidModelCalls": 0,
+    "rootConnected": false,
+    "deviceRebooted": false
+  },
+  "ci": {
+    "runId": 42652258424,
+    "url": "https://github.com/Asagnc/Aurora/actions/runs/42652258424",
+    "headSha": "a418ded298ec4f709edc2e6b8cea20724a60148a",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "test",
+        "conclusion": "success"
+      },
+      {
+        "name": "managed-supervision",
+        "conclusion": "success"
+      },
+      {
+        "name": "socket-diag",
+        "conclusion": "success"
+      },
+      {
+        "name": "capture-primitives",
+        "conclusion": "success"
+      },
+      {
+        "name": "frida-session",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "sources": {
+    "app/build.gradle.kts": {
+      "gitBlobSha256": "c87e47bc142752e58ff8953faed84a28d38592a36b09b729a7cc3978665c3662",
+      "worktreeSha256": "c87e47bc142752e58ff8953faed84a28d38592a36b09b729a7cc3978665c3662"
+    },
+    "app/src/main/kotlin/io/github/asagnc/aurora/AuroraApplication.kt": {
+      "gitBlobSha256": "c58b6a8f5502dbf5f819cdb433af645996736e8d649be24a39b666207f34c874",
+      "worktreeSha256": "c58b6a8f5502dbf5f819cdb433af645996736e8d649be24a39b666207f34c874"
+    },
+    "core/src/main/kotlin/io/github/asagnc/aurora/core/Models.kt": {
+      "gitBlobSha256": "2340041d3c7fa0fb25fa8f7b563dd6f5c1c52896b4fa853987b050afb383695b",
+      "worktreeSha256": "2340041d3c7fa0fb25fa8f7b563dd6f5c1c52896b4fa853987b050afb383695b"
+    },
+    "app/src/main/kotlin/io/github/asagnc/aurora/ui/AuroraTheme.kt": {
+      "gitBlobSha256": "cbe28ee3df10f3769b465c6fa5ae1d1af709f43a4c3a4a016a019e74c40114f6",
+      "worktreeSha256": "cbe28ee3df10f3769b465c6fa5ae1d1af709f43a4c3a4a016a019e74c40114f6"
+    },
+    "app/src/main/kotlin/io/github/asagnc/aurora/ui/AuroraScreen.kt": {
+      "gitBlobSha256": "eae08a66e105ba60cde077af82af8c1755ab4367952a084af9593f5f74c2fe89",
+      "worktreeSha256": "eae08a66e105ba60cde077af82af8c1755ab4367952a084af9593f5f74c2fe89"
+    },
+    "app/src/main/kotlin/io/github/asagnc/aurora/ui/ChatBody.kt": {
+      "gitBlobSha256": "307392c9fc3692194213e6bf8c07b6c7045d86f9cd026a310b1fe16c6707fcf2",
+      "worktreeSha256": "307392c9fc3692194213e6bf8c07b6c7045d86f9cd026a310b1fe16c6707fcf2"
+    },
+    "app/src/main/kotlin/io/github/asagnc/aurora/ui/ChatComposer.kt": {
+      "gitBlobSha256": "800fadd8f2260f4c8ac4901f7beae789753de2ec7f6c366a3554cec463ec3251",
+      "worktreeSha256": "800fadd8f2260f4c8ac4901f7beae789753de2ec7f6c366a3554cec463ec3251"
+    },
+    "app/src/main/kotlin/io/github/asagnc/aurora/ui/MessageTime.kt": {
+      "gitBlobSha256": "bec0dbc27c0a8d4633afdb33c08305415d49f699db607bd3e90c9807136c0be5",
+      "worktreeSha256": "bec0dbc27c0a8d4633afdb33c08305415d49f699db607bd3e90c9807136c0be5"
+    },
+    "app/src/main/kotlin/io/github/asagnc/aurora/ui/ConversationDrawer.kt": {
+      "gitBlobSha256": "b8bbc836af0da5f945732af67caae62e011648f437c93a183b30e86ab73e892a",
+      "worktreeSha256": "b8bbc836af0da5f945732af67caae62e011648f437c93a183b30e86ab73e892a"
+    },
+    "app/src/main/kotlin/io/github/asagnc/aurora/ui/SettingsDialog.kt": {
+      "gitBlobSha256": "cfa5f47a782ddb18204a6ee2767b607d54536b106efe4370acd199f5a414521d",
+      "worktreeSha256": "cfa5f47a782ddb18204a6ee2767b607d54536b106efe4370acd199f5a414521d"
+    },
+    "app/src/main/kotlin/io/github/asagnc/aurora/ui/SettingsComponents.kt": {
+      "gitBlobSha256": "3ef988f8b31908afc35fd95e2cc1bdeb8b292d96cf56e47c1a9b41c5b6a37e54",
+      "worktreeSha256": "3ef988f8b31908afc35fd95e2cc1bdeb8b292d96cf56e47c1a9b41c5b6a37e54"
+    },
+    "app/src/main/kotlin/io/github/asagnc/aurora/ui/AppearanceSheet.kt": {
+      "gitBlobSha256": "0e2d38adc97e68b3f6487b27b3035e78a963dda489885e9a4918eaa9b3b15783",
+      "worktreeSha256": "0e2d38adc97e68b3f6487b27b3035e78a963dda489885e9a4918eaa9b3b15783"
+    },
+    "app/src/main/kotlin/io/github/asagnc/aurora/data/AuroraDatabase.kt": {
+      "gitBlobSha256": "413db529a16ff1df1d45267fbe85c3be662541e54f7616aaa8a73d9b30fdf9bf",
+      "worktreeSha256": "413db529a16ff1df1d45267fbe85c3be662541e54f7616aaa8a73d9b30fdf9bf"
+    },
+    "app/src/main/kotlin/io/github/asagnc/aurora/data/ConversationStore.kt": {
+      "gitBlobSha256": "b5ff67534dd2d319195764e3ad2b51594a9f8003732e4c13c31c3a77660b95b3",
+      "worktreeSha256": "b5ff67534dd2d319195764e3ad2b51594a9f8003732e4c13c31c3a77660b95b3"
+    },
+    "app/src/main/kotlin/io/github/asagnc/aurora/runtime/AgentExecution.kt": {
+      "gitBlobSha256": "7b3f1d3c6700296e0d3ff61e7b99e2e0f2e13e12538ba430a608b77b4284247c",
+      "worktreeSha256": "7b3f1d3c6700296e0d3ff61e7b99e2e0f2e13e12538ba430a608b77b4284247c"
+    }
+  },
+  "limits": [
+    "Preview, not complete migration of every specialised Material control",
+    "R8 release built but not installed or formally signed",
+    "COUI third-party resource rights not declared covered by project MPL; upstream origin statements preserved",
+    "No rebuilt complete release-review bundle for this UI snapshot",
+    "Raw screenshots/XML/database backups stay in ignored build directories"
+  ]
+}

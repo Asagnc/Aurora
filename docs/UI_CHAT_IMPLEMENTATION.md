@@ -36,3 +36,14 @@ schema11升级后不支持直接降装schema10旧APK；后续视觉回退应在s
 - COUI源码jar两份摘要钉定在tools/coui-qualification/source-materials.json；MPL／NOTICE／商标与Skia／AndroidX、原资源来源说明保留到APK assets。上游说明中包含第三方原厂资源及未检出独立许可的来源，不能将库的MPL声明扩大为这些素材的独立发布许可或整体法律闭包。完整正式审查包仍待UI稳定后重打，releaseReady=false。
 
 未覆盖：TalkBack完整操作、系统所有字体／窗口组合、流式／长时间复杂页面的性能、默认Release真机、正式签名及真实模型。现有设备样例与47项不替代这些范围。
+
+
+## 最终包与清理
+
+产品提交a418ded298ec4f709edc2e6b8cea20724a60148a；Debug SHA256 a8f08f9f200fc64c66e5301575faed0bec1446efca6bbc5dc022b869e8d21b52，手机base.apk摘要一致，签名仍46c0eb4f69334514e6ee98f55655f8ac6e5ddb07ca45f346739ba7ad8c765a2c。Frida worker仍c9b22da8，正式门控false。七份COUI许可／来源文件已在精确APK中逐字节核对；新增GradleDependency警告提示有更新的alpha BOM，本轮按已验证上游组合固定，没有自动换2026.11.00。
+
+精确最终APK上再跑47项回归全部通过5.003秒；消息时间／复制／设置／Root引导和Frida关闭入口再次检查。键盘／明暗／草稿／横屏／130%字体的完整观察在此前集成配置上，最终只修正表面染色并补来源文件，相关交互代码未变；不冒称所有历史截图来自同一APK。
+
+仅本轮精确自有会话经显式夹具清理，升级前／最终原表原列值再次摘要相同；旧消息时间保持null。移除本轮安装的uiqualification与main.test两个包，主Aurora保留，当前停在设置页，手机这轮已结束。字体／旋转／外观设置均恢复，未调用付费模型或连接Root。证据见evidence/0.1.40/ui-coui-chat-20261110.json。产品a418ded完整CI42652258424五个job全部成功；后续仅文档与精简证据，不改变已装APK字节。
+
+日期格式依据：[Android DateUtils 官方API](https://developer.android.com/reference/android/text/format/DateUtils#formatDateTime(android.content.Context,%20long,%20int))，使用公开本地化格式API，不写死中文／24小时格式；12小时偏好变更的专项交互尚未单独实测。
