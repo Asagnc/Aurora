@@ -213,4 +213,4 @@ jobs:
             sudo apt-get install -y --no-install-recommends gdb
           fi
       - name: Verify actual Frida session lifecycle on owned Linux targets
-        run: sudo -n env AURORA_FRIDA_JAVA_BUNDLE="$PWD/tools/frida-bridge/build/java-bridge.js" AURORA_FRIDA_HOST_DEVKIT="$PWD/app/build/outputs/frida-host-inputs/frida-core-devkit-17.26.2-linux-x86_64.tar.xz" python3 scripts/verify-frida-session.py
+        run: sudo -n env AURORA_FRIDA_JAVA_BUNDLE="$PWD/tools/frida-bridge/build/java-bridge.js" AURORA_FRIDA_HOST_DEVKIT="$PWD/app/build/outputs/frida-host-inputs/frida-core-devkit-17.26.2-linux-x86_64.tar.xz" python3 scripts/verify-frida-session.py -f -v

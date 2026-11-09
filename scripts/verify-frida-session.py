@@ -107,6 +107,17 @@ class FridaSessionTests(SpawnCases, GuardCases, ManagedCases, unittest.TestCase)
         try:
             output, error = child.communicate(timeout=20)
         except subprocess.TimeoutExpired:
+            print(f"Owned worker timeout: returncode={child.poll()}", flush=True)
+            if child.poll() is None and shutil.which("gdb"):
+                try:
+                    trace = subprocess.run(["gdb", "--batch", "-ex", "set pagination off",
+                        "-ex", "thread apply all bt", "-ex", "detach", "-p", str(child.pid)],
+                        capture_output=True, timeout=15)
+                    print("Owned worker exit diagnostic:\n" +
+                        trace.stdout.decode(errors="replace")[-24000:] +
+                        trace.stderr.decode(errors="replace")[-4000:], flush=True)
+                except subprocess.TimeoutExpired:
+                    print("Owned worker diagnostic deadline exceeded", flush=True)
             child.kill()
             output, error = child.communicate(timeout=5)
             self.fail(f"Worker timed out; stdout={output[-8192:]!r}; stderr={error[-8192:]!r}")

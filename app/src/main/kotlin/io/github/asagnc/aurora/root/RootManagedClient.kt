@@ -32,7 +32,7 @@ internal class RootManagedClient(private val remote: IRootControl, context: Cont
             }, object : IRootResult.Stub() { override fun complete(value: String) { result.complete(value) } })
             val value = withTimeout(80_000) { result.await() }.also { require(it.length <= 8192) }
             val response = WireJson.parseToJsonElement(value) as kotlinx.serialization.json.JsonObject
-            require(response["error"] == null) { "策略资格未确认；未回滚全局策略，请检查当前状态" }
+            require(response["error"] == null) { "策略资格未确认（${response.text("reason")?.takeIf { it.matches(Regex("[A-Za-z]{1,80}")) } ?: "unknown"}）；未回滚全局策略，请检查当前状态" }
             require(WireJson.decodeFromJsonElement(LinuxRootIdentity.serializer(), requireNotNull(response["identity"])) == identity)
             require(packageInfo(identity).workerSha256 == (response["workerSha256"] as? kotlinx.serialization.json.JsonPrimitive)?.content || !activate)
             response
