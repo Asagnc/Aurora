@@ -3,6 +3,8 @@ package io.github.asagnc.aurora.ui
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.BackHandler
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,7 +25,12 @@ import kotlinx.coroutines.launch
     val state by model.state.collectAsStateWithLifecycle()
     val drawer = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val focus = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
+    fun closeInput() { focus.clearFocus(); keyboard?.hide() }
+    LaunchedEffect(drawer.targetValue) { closeInput() }
     var providers by remember { mutableStateOf(false) }
+    var settingsReturn by remember { mutableStateOf<String?>(null) }
     var skills by remember { mutableStateOf(false) }
     var menu by remember { mutableStateOf(false) }
     var browser by remember { mutableStateOf(false) }
@@ -53,10 +60,14 @@ import kotlinx.coroutines.launch
         if (state.messages.isNotEmpty() && state.selected?.let { CachePolicy.impact(it, connection) } != CacheImpact.UNCHANGED) pending = connection
         else model.selectConnection(connection)
     }
+    fun returnToSettings(destination: String) {
+        if (settingsReturn == destination) { settingsReturn = null; metrics = "settings" }
+    }
     BackHandler(enabled = drawer.isOpen) { scope.launch { drawer.close() } }
     ModalNavigationDrawer(drawerState = drawer, scrimColor = AuroraInk.copy(alpha = 0.28f), drawerContent = {
-        ConversationDrawer(state.sessions, model, onOpen = { id -> draft = ""; model.selectConversation(id); scope.launch { drawer.close() } },
-            onProviders = { providers = true }, onSettings = { metrics = "settings" }, onSpace = {
+        ConversationDrawer(state.sessions, model, onOpen = { id -> closeInput(); draft = ""; model.selectConversation(id); scope.launch { drawer.close() } },
+            onProviders = { closeInput(); providers = true }, onSettings = { closeInput(); metrics = "settings" }, onSpace = {
+                closeInput()
                 if (it == "resources") skills = true else { conversationFilesOnly = false; space = it }
             })
     }) {
@@ -78,18 +89,18 @@ import kotlinx.coroutines.launch
     if (menu) ConversationMenuSheet(state.current != null, { draft = ""; model.newConversation() },
         { conversationFilesOnly = true; space = "conversation" }, { browser = true }, { terminal = true }) { menu = false }
     if (models) ModelPickerSheet(state.connections, state.selected, ::choose, { models = false; providers = true }) { models = false }
-    if (providers) ProviderDialog(state.connections, ::choose, model::saveConnection) { providers = false }
+    if (providers) ProviderDialog(state.connections, ::choose, model::saveConnection) { providers = false; returnToSettings("providers") }
     if (skills) SkillsPage { skills = false }
-    space?.let { SpaceBrowserSheet(model, it, conversationFilesOnly, artifactFolder) { space = null; artifactFolder = "" } }
+    space?.let { SpaceBrowserSheet(model, it, conversationFilesOnly, artifactFolder) { space = null; artifactFolder = ""; returnToSettings("files") } }
     if (browser) state.current?.id?.let { BrowserPage(model.browser, it) { browser = false } }
     if (terminal) state.current?.id?.let { TerminalPage(it) { terminal = false } }
+    metrics?.let { kind -> if (kind == "settings") SettingsDialog(model,
+        { settingsReturn = "providers"; metrics = null; providers = true }, { settingsReturn = "files"; metrics = null; conversationFilesOnly = false; space = "workspace" }) { metrics = null }
+        }
     pending?.let { next -> AlertDialog(onDismissRequest = { pending = null }, title = { Text("切换配置") },
         text = { Text(CachePolicy.switchExplanation(state.selected?.let { CachePolicy.impact(it, next) } ?: CacheImpact.NEW_SCOPE)) },
         confirmButton = { TextButton({ model.selectConnection(next); pending = null }) { Text("确认切换") } },
         dismissButton = { TextButton({ pending = null }) { Text("取消") } }) }
-    metrics?.let { kind -> if (kind == "settings") SettingsDialog(model,
-        { metrics = null; providers = true }, { metrics = null; conversationFilesOnly = false; space = "workspace" }) { metrics = null }
-        }
     state.error?.let { error -> AlertDialog(onDismissRequest = model::clearError, title = { Text("操作未完成") }, text = { Text(error) },
         confirmButton = { TextButton(model::clearError) { Text("知道了") } }) }
 }

@@ -1,26 +1,23 @@
 package io.github.asagnc.aurora.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import android.os.Build
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.window.DialogWindowProvider
-import androidx.core.view.WindowCompat
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.DialogWindowProvider
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.asagnc.aurora.R
 import io.github.asagnc.aurora.root.RootPhase
@@ -36,65 +33,50 @@ import kotlinx.coroutines.withContext
         }.getOrNull() }
     }
     val root by model.rootState.collectAsStateWithLifecycle()
-    var appearance by remember { mutableStateOf(false) }
-    var rootDetails by remember { mutableStateOf(false) }
-    var environment by remember { mutableStateOf<Boolean?>(null) }
-    var about by remember { mutableStateOf(false) }
-    var skills by remember { mutableStateOf(false) }
-    var linux by remember { mutableStateOf(false) }
-    var fridaPolicy by remember { mutableStateOf(false) }
+    var page by remember { mutableStateOf<String?>(null) }
     FullPage("设置", dismiss) {
-        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
-            Row(Modifier.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                androidx.compose.foundation.Image(painterResource(R.drawable.aurora_artwork), "Aurora", Modifier.size(44.dp).clip(RoundedCornerShape(14.dp)))
-                Column(Modifier.padding(start = 14.dp)) {
-                    Text("Aurora", style = MaterialTheme.typography.headlineSmall)
-                    Text("你的 Android Agent", color = AuroraMuted, style = MaterialTheme.typography.bodyMedium)
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)) {
+            SettingsEntries("模型与工作流", listOf(
+                SettingsEntry("供应商与 API", "模型连接与密钥", R.drawable.ic_hub) { providers() },
+                SettingsEntry("Skills", "安装与管理工作流", R.drawable.ic_extension) { page = "skills" }))
+            SettingsEntries("设备与执行", listOf(
+                SettingsEntry("Root 权限", when (root.phase) {
+                    RootPhase.READY -> "已连接"
+                    RootPhase.CONNECTING -> "连接中"
+                    RootPhase.UNAVAILABLE -> "连接不可用"
+                    RootPhase.ORDINARY -> "未连接"
+                }, R.drawable.ic_shield) { page = "root" },
+                SettingsEntry("Linux 环境", "基础环境与构建工具", R.drawable.ic_terminal) { page = "linux" },
+                SettingsEntry("工具与执行", "查看能力与使用条件", R.drawable.ic_checklist) { page = "tools" }))
+            if (Build.VERSION.SDK_INT >= 37) SettingsSection("网络权限") { LocalNetworkPermissionRow() }
+            SettingsEntries("外观与数据", listOf(
+                SettingsEntry("外观与配色", LocalAppearance.current.state.let { if (it.dynamic) "系统动态配色" else it.palette },
+                    R.drawable.ic_palette) { page = "appearance" },
+                SettingsEntry("空间与文件", "会话、共享资源与工作区", R.drawable.ic_folder_open) { files() }))
+            SettingsEntries("关于", listOf(SettingsEntry("关于 Aurora", version ?: "开发版本", R.drawable.ic_info) { page = "about" }))
+            Spacer(Modifier.height(16.dp))
+        }
+    }
+    when (page) {
+        "appearance" -> AppearanceSheet { page = null }
+        "root" -> RootConnectionPage(model) { page = null }
+        "tools" -> ExecutionStatusPage(model.commandsAvailable) { page = null }
+        "skills" -> SkillsPage { page = null }
+        "linux" -> LinuxEnvironmentPage { page = null }
+        "about" -> FullPage("关于 Aurora", { page = null }) {
+            Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                SettingsStatus("Aurora", version ?: "开发版本", R.drawable.ic_info)
+                Text("你的 Android Agent", style = MaterialTheme.typography.headlineSmall)
+                Text("Android 16 及以上 · 开发预览", color = AuroraMuted)
+                SettingsDetails("隐私与项目状态", "自备模型密钥，能力按环境启用") {
+                    Text("模型密钥由你配置并加密保存在本机。")
+                    Text("系统工具按当前权限与实际自检结果开放，开发预览不代表全部场景已验收。")
                 }
             }
-            SettingsGroup("模型与连接") {
-                SettingsRow("供应商与 API", "官方服务与自定义中转", R.drawable.ic_hub, Color(0xFF347EDD), click = providers)
-            }
-            SettingsGroup("设备与执行") {
-                LocalNetworkPermissionRow()
-                SettingsRow("Skills", "工作流、版本与更新", R.drawable.ic_hub, Color(0xFF347EDD)) { skills = true }
-                SettingsRow("Linux 环境", "基础环境、安装与版本", R.drawable.ic_terminal, Color(0xFF347EDD)) { linux = true }
-                SettingsRow("Root 权限", root.phase.let { if (it == RootPhase.READY) "已连接" else if (it == RootPhase.CONNECTING) "连接中" else "未连接" },
-                    R.drawable.ic_shield, Color(0xFF26A879)) { rootDetails = true }
-                SettingsRow("Frida 策略适配", "本次启动 · 显式验证与启用", R.drawable.ic_shield, Color(0xFF26A879)) { fridaPolicy = true }
-                SettingsRow("执行环境", "原生命令与交互终端 · 普通 / Root", R.drawable.ic_terminal, Color(0xFF347EDD)) { environment = false }
-                SettingsRow("工具能力", "文件、浏览器、图文、Skills 与终端", R.drawable.ic_extension, Color(0xFF9270D7)) { environment = true }
-            }
-            SettingsGroup("数据与存储") {
-                SettingsRow("空间与文件", "会话文件、共享资源与保留工作区", R.drawable.ic_folder_open, Color(0xFF27A899), click = files)
-            }
-            SettingsGroup("偏好") {
-                SettingsRow("外观与配色", LocalAppearance.current.state.let { if (it.dynamic) "系统动态配色" else it.palette },
-                    R.drawable.ic_palette, Color(0xFF8B58D0)) { appearance = true }
-                SettingsRow("关于 Aurora", "${version ?: "开发版本"} · Android 16+", R.drawable.ic_info, Color(0xFF4086CC)) { about = true }
-            }
-            Spacer(Modifier.height(20.dp))
         }
     }
-    environment?.let { ExecutionStatusPage(model.commandsAvailable, it) { environment = null } }
-    if (appearance) AppearanceSheet { appearance = false }
-    if (rootDetails) FullPage("Root 连接", { rootDetails = false }) {
-        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp)) {
-            Text(root.detail, style = MaterialTheme.typography.titleMedium)
-            Text("请先在 Root 管理器（如 APatch、KernelSU、FolkPatch）中允许 Aurora 使用 Root，再返回这里连接。授权与撤销均由管理器控制。")
-            Text("连接后，新任务可调用 Root 命令与交互终端。Linux、抓包和逆向能力按当前环境的实际资格开放。", color = AuroraMuted)
-            Button({
-                if (root.phase == RootPhase.READY || root.phase == RootPhase.CONNECTING) model.disableRoot() else model.enableRoot()
-            }) { Text(if (root.phase == RootPhase.READY || root.phase == RootPhase.CONNECTING) "断开 Root" else "连接 Root") }
-        }
-    }
-    if (about) AlertDialog(onDismissRequest = { about = false }, title = { Text("Aurora · 开发版本") },
-        text = { Text("提供对话、文件、浏览器、图文消息、后台 Agent、Skills、HTTP 请求、普通 / Root 终端，以及按环境资格开放的 Linux、抓包与逆向工具。模型 API 密钥由用户自备并加密保存。") },
-        confirmButton = { TextButton({ about = false }) { Text("关闭") } })
-    if (skills) SkillsPage { skills = false }
-    if (linux) LinuxEnvironmentPage { linux = false }
-    if (fridaPolicy) FridaPolicyPage { fridaPolicy = false }
 }
 
 @Composable internal fun FullPage(title: String, dismiss: () -> Unit, content: @Composable () -> Unit) {
@@ -107,35 +89,29 @@ import kotlinx.coroutines.withContext
                 isAppearanceLightNavigationBars = light
             }
         } }
-        Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-            Column(Modifier.safeDrawingPadding()) {
-                Row(Modifier.fillMaxWidth().height(64.dp).padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(dismiss) { LocalIcon(R.drawable.ic_arrow_back, "返回") }
-                    Text(title, style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 8.dp))
-                }
-                Box(Modifier.weight(1f)) { content() }
-            }
+        val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+        Scaffold(modifier = Modifier.fillMaxSize().imePadding().nestedScroll(scroll.nestedScrollConnection),
+            containerColor = MaterialTheme.colorScheme.background,
+            topBar = { LargeFlexibleTopAppBar(title = { Text(title) },
+                navigationIcon = { IconButton(dismiss) { LocalIcon(R.drawable.ic_arrow_back, "返回") } },
+                scrollBehavior = scroll) }) { padding ->
+            Box(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) { content() }
         }
     }
 }
 
-@Composable private fun SettingsGroup(title: String, content: @Composable ColumnScope.() -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(title, color = AuroraMuted, style = MaterialTheme.typography.bodySmall)
-        Surface(shape = RoundedCornerShape(18.dp), color = MaterialTheme.colorScheme.surface) { Column(content = content) }
-    }
-}
+private data class SettingsEntry(val title: String, val summary: String, val icon: Int, val click: () -> Unit)
 
-@Composable private fun SettingsRow(title: String, summary: String, icon: Int, color: Color, click: () -> Unit) {
-    ListItem(headlineContent = { Text(title, style = MaterialTheme.typography.bodyLarge) },
-        supportingContent = { Text(summary, style = MaterialTheme.typography.bodySmall) },
-        leadingContent = { IconBadge(icon, color) }, trailingContent = { Text("›", color = AuroraMuted) },
-        modifier = Modifier.clickable(onClick = click), colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surface))
+@Composable private fun SettingsEntries(title: String, entries: List<SettingsEntry>) {
+    SettingsSection(title) {
+        entries.forEachIndexed { index, entry ->
+            SegmentedListItem(onClick = entry.click, shapes = ListItemDefaults.segmentedShapes(index, entries.size),
+                leadingContent = { IconBadge(entry.icon, MaterialTheme.colorScheme.primary) },
+                supportingContent = { Text(entry.summary) }, trailingContent = { SettingsChevron() }) { Text(entry.title) }
+        }
+    }
 }
 
 @Composable internal fun IconBadge(icon: Int, color: Color) {
-    val tint = if (LocalAppearance.current.state.colorful) color else AuroraMuted
-    Box(Modifier.size(36.dp).background(tint.copy(alpha = 0.09f), RoundedCornerShape(10.dp)), contentAlignment = Alignment.Center) {
-        Icon(painterResource(icon), null, Modifier.size(22.dp), tint = tint)
-    }
+    Icon(painterResource(icon), null, tint = if (LocalAppearance.current.state.colorful) color else AuroraMuted)
 }

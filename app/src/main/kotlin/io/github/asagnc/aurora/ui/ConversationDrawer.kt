@@ -1,6 +1,7 @@
 package io.github.asagnc.aurora.ui
 
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,6 +10,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -32,10 +35,10 @@ import kotlinx.coroutines.delay
     LaunchedEffect(query, sessions) { if (query.isNotBlank()) { delay(180); matches = model.searchSessions(query.take(200)) } }
     val displayed = if (query.isBlank()) sessions else matches
     fun toggle(id: String) { selected = if (id in selected) selected - id else selected + id }
-    ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.background, drawerShape = RoundedCornerShape(topEnd = 28.dp, bottomEnd = 28.dp)) {
-        Column(Modifier.fillMaxHeight().width(300.dp).padding(horizontal = 18.dp)) {
+    ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.background) {
+        Column(Modifier.fillMaxHeight().width(300.dp).imePadding().padding(horizontal = 18.dp)) {
             Row(Modifier.fillMaxWidth().height(64.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("会话", style = MaterialTheme.typography.headlineSmall)
+                Text("会话", Modifier.semantics { heading() }.focusable(), style = MaterialTheme.typography.headlineSmall)
                 IconButton({ selecting = !selecting; selected = emptySet() }) { LocalIcon(R.drawable.ic_checklist, "多选会话") }
             }
             SearchField(query, { query = it }, "搜索会话")

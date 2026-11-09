@@ -12,6 +12,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.asagnc.aurora.AuroraApplication
+import io.github.asagnc.aurora.R
+import io.github.asagnc.aurora.root.RootPhase
+import io.github.asagnc.aurora.core.LinuxBackend
 import io.github.asagnc.aurora.data.LinuxVersion
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.jsonArray
@@ -32,13 +35,15 @@ import io.github.asagnc.aurora.core.string
     var busy by remember { mutableStateOf(false) }
     var notice by remember { mutableStateOf<String?>(null) }
     var androidInstalled by remember { mutableStateOf(false) }
+    var stateLoaded by remember { mutableStateOf(false) }
+    var refresh by remember { mutableIntStateOf(0) }
     fun run(action: suspend () -> Unit) {
         if (busy) return
         busy = true
         work = scope.launch {
             notice = null
             try { app.ready.await(); action() }
-            catch (cancel: CancellationException) { throw cancel }
+            catch (cancel: CancellationException) { notice = "已取消，已完成的内容保留。"; throw cancel }
             catch (_: Exception) { notice = "操作未完成，请检查 Root 连接、网络、可用空间和环境完整性。" }
             finally { busy = false }
         }
@@ -47,82 +52,101 @@ import io.github.asagnc.aurora.core.string
         if (uri != null) run {
             app.sharedToolchain.installAndroidArchive(uri)
             androidInstalled = true
-            notice = "APK 构建工具已校验安装；Agent 须在当前 Root 环境实际自检通过后才能构建。"
+            notice = "构建工具已安装，执行前仍需通过环境自检。"
         }
     }
-    LaunchedEffect(revision) {
+    LaunchedEffect(revision, rootState.phase, refresh) {
+        stateLoaded = false
         try { app.ready.await(); versions = manager.registry.versions(); current = manager.registry.current(); pendingRuns = manager.runs.pendingCount()
             androidInstalled = string(AndroidBuildTools.bundleId) in app.sharedToolchain.status(current, "android-build")["installed"]!!.jsonArray
+            stateLoaded = true
         }
         catch (cancel: CancellationException) { throw cancel }
         catch (_: Exception) { notice = "环境状态读取失败，请重试。" }
     }
+    val targetBackend = if (app.root.linuxClient != null) LinuxBackend.CHROOT else LinuxBackend.PROOT
+    val existingImage = versions.firstOrNull { it.manifest.image.sha256 == manager.image.sha256 }
+    val extraEnvironment = stateLoaded && existingImage != null && versions.none {
+        it.manifest.image.sha256 == manager.image.sha256 && it.manifest.backend == targetBackend
+    }
+    val targetName = if (targetBackend == LinuxBackend.CHROOT) "Root" else "普通 PRoot"
     FullPage("Linux 环境", dismiss) {
-        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
-            Text("Ubuntu Base 26.10", style = MaterialTheme.typography.headlineSmall)
-            Text("共享基础环境与已发布版本；会话文件和输出独立保存。基础包不包含完整编译及逆向工具。", color = AuroraMuted)
-            TextButton({ nativePicker.launch(arrayOf("application/gzip", "application/x-gzip", "application/octet-stream")) }, enabled = !busy && !androidInstalled) {
-                Text(if (androidInstalled) "APK 构建工具已安装" else "安装 APK 构建工具（选择审查包中的原生归档）")
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)) {
+            SettingsStatus("Ubuntu Base 26.10", when {
+                !stateLoaded -> "状态尚未确认"
+                current == null -> "未安装基础环境"
+                else -> "已安装基础环境"
+            }, R.drawable.ic_terminal)
+            if (!stateLoaded && notice == null) LinearProgressIndicator(Modifier.fillMaxWidth())
+            if (extraEnvironment) Text("另备 $targetName 环境约增加 ${requireNotNull(existingImage).manifest.expandedBytes / (1024 * 1024)} MiB 文件，原环境会保留。", color = AuroraMuted)
+            Button({ run { manager.install() } }, modifier = Modifier.fillMaxWidth(), enabled = !busy && stateLoaded) {
+                Text(if (extraEnvironment) "准备 $targetName 环境" else if (current == null) "安装基础环境" else "检查基础环境")
             }
-            if (androidInstalled) Text("已安装当前工具版本，无需重复导入。执行资格须在当前 Root 环境实际自检后确认。", color = AuroraMuted)
-            notice?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+            if (rootState.phase != RootPhase.READY) Text("Root 未连接；普通环境需要设备支持硬链接。", color = AuroraMuted)
+            if (!stateLoaded && notice != null) TextButton({ refresh++ }, enabled = !busy) { Text("重试读取状态") }
             if (busy) {
                 LinearProgressIndicator(Modifier.fillMaxWidth())
-                Text("离开页面会取消当前操作，已完成的安装或清理会保留。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
+                Text("正在处理，离开页面会取消当前操作。", style = MaterialTheme.typography.bodyMedium, color = AuroraMuted)
                 TextButton({ work?.cancel() }) { Text("取消当前操作") }
             }
-            Text("只接受固定审查版 android-host-arm64.tar.gz，并下载其余官方固定工具。可取消；不会安装 APK 或授予运行资格。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
-            Text(status, style = MaterialTheme.typography.titleMedium)
-            Text(if (app.root.rootImagesAvailable && rootState.phase == io.github.asagnc.aurora.root.RootPhase.READY)
-                "默认准备共享 Root 环境并保留 Linux 原始属主；清理需要 Root。普通环境只在需要时另备。"
-                else if (app.root.linuxAvailable) "请断开并重新连接 Root，以更新环境安装协议。"
-                else "普通环境需支持硬链接；也可先在设置连接 Root，准备独立的 Root 环境。安装不自动申请授权。", color = AuroraMuted)
-            val targetBackend = if (app.root.rootImagesAvailable) io.github.asagnc.aurora.core.LinuxBackend.CHROOT else io.github.asagnc.aurora.core.LinuxBackend.PROOT
-            if (versions.none { it.manifest.backend == targetBackend && it.manifest.image.sha256 == manager.image.sha256 }) {
-                versions.firstOrNull { it.manifest.image.sha256 == manager.image.sha256 }?.let { existing ->
-                    Text("现有环境会保留；另备环境约增加 ${existing.manifest.expandedBytes / (1024 * 1024)} MiB 文件，另需目录和暂存空间。", color = AuroraMuted)
-                }
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilledTonalButton({ run { manager.install() } }, enabled = !busy) { Text(if (current == null) "安装基础环境" else "检查基础环境") }
-                if (busy) TextButton({ work?.cancel() }) { Text("取消") }
-                else TextButton({ run { notice = "已清理 ${manager.cleanup()} 个未使用版本" } }) { Text("清理闲置") }
-            }
-            if (app.root.rootImagesAvailable) TextButton({ run { manager.install(io.github.asagnc.aurora.core.LinuxBackend.PROOT) } }, enabled = !busy) {
-                Text("按需准备普通 PRoot 环境（额外存储）")
-            }
-            OutlinedButton({ run {
-                val result = manager.metadata.collect()
-                notice = "已回收 ${result["collected"]} 条旧运行记录；保留 ${result["retained"]} 条当前或待确认记录。"
-            } }, enabled = !busy && app.root.metadataClient != null) { Text("清理已确认的旧运行记录") }
-            if (rootState.phase == io.github.asagnc.aurora.root.RootPhase.READY && app.root.metadataClient == null)
-                Text("重新连接 Root 后可清理旧运行记录。", color = AuroraMuted)
+            notice?.let { SettingsNotice(it) }
             if (pendingRuns > 0) {
-                Text("有 $pendingRuns 个 Linux 任务等待确认退出，相关会话和环境暂时保留。", color = AuroraMuted)
+                SettingsNotice("有 $pendingRuns 个任务等待确认退出，相关会话和环境暂时保留。")
                 OutlinedButton({ run {
                     val result = manager.runs.recover()
                     pendingRuns = manager.runs.pendingCount()
                     app.spaces.recoverDeletes(app.browser::deleteOwner)
                     notice = "恢复结果：$result"
-                } }, enabled = !busy && app.root.linuxRunClient != null) { Text("确认退出并恢复任务") }
+                } }, modifier = Modifier.fillMaxWidth(), enabled = !busy && app.root.linuxRunClient != null) { Text("恢复待确认任务") }
             }
-            versions.forEach { version ->
-                OutlinedCard(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("${version.manifest.image.distribution} ${version.manifest.image.version}", style = MaterialTheme.typography.titleMedium)
-                        Text("${if (version.manifest.backend == io.github.asagnc.aurora.core.LinuxBackend.CHROOT) "Root" else "PRoot"} · ${version.manifest.image.architecture.abi} · ${version.manifest.expandedBytes / (1024 * 1024)} MiB 文件内容", color = AuroraMuted)
-                        Text("${version.id.take(16)}${if (version.id == current) " · 当前版本" else ""}", style = MaterialTheme.typography.bodySmall)
+            SettingsSection("APK 构建") {
+                SettingsStatus("构建工具", if (!stateLoaded) "状态尚未确认" else if (androidInstalled) "当前版本已安装" else "尚未安装", R.drawable.ic_extension)
+                if (stateLoaded && !androidInstalled) {
+                    Text("选择 android-host-arm64.tar.gz。", Modifier.padding(16.dp), color = AuroraMuted)
+                    FilledTonalButton({ nativePicker.launch(arrayOf("application/gzip", "application/x-gzip", "application/octet-stream")) },
+                        modifier = Modifier.fillMaxWidth(), enabled = !busy) { Text("导入构建工具") }
+                }
+            }
+            SettingsDetails("环境版本", if (stateLoaded) "${versions.size} 个已安装版本" else "等待状态读取") {
+                if (versions.isEmpty()) Text("尚无可显示的版本。", color = AuroraMuted)
+                versions.forEach { version ->
+                    ListItem(overlineContent = { Text(if (version.id == current) "当前版本" else "已安装版本") },
+                        supportingContent = { Text("${if (version.manifest.backend == LinuxBackend.CHROOT) "Root" else "PRoot"} · ${version.manifest.image.architecture.abi} · ${version.manifest.expandedBytes / (1024 * 1024)} MiB\n${version.id.take(16)}") }) {
+                        Text("${version.manifest.image.distribution} ${version.manifest.image.version}")
                     }
                 }
             }
-            HorizontalDivider()
-            Text("执行状态", style = MaterialTheme.typography.titleSmall)
-            Text("Agent 可执行 Root Linux 批量命令或启动交互终端；需要连接 Root 并安装对应环境。可在终端页面查看输出和停止任务；PRoot 仅支持基础能力检查。", color = AuroraMuted)
-            OutlinedButton({ run {
-                val result = manager.probe()
-                notice = if (result["workloadPassed"] == kotlinx.serialization.json.JsonPrimitive(true))
-                    "基础检查通过；完整执行能力仍待验收。" else "基础检查未通过：$result"
-            } }, enabled = !busy && versions.any { it.id == current && it.manifest.backend == io.github.asagnc.aurora.core.LinuxBackend.PROOT }) { Text("检查 PRoot 执行能力") }
+            SettingsDetails("维护与恢复", "清理闲置、旧记录与普通环境检查") {
+                Text("只回收已确认闲置的内容，活动任务或未知状态会保留。", color = AuroraMuted)
+                OutlinedButton({ run { notice = "已清理 ${manager.cleanup()} 个未使用版本" } }, enabled = !busy && stateLoaded) { Text("清理闲置版本") }
+                OutlinedButton({ run {
+                    val result = manager.metadata.collect()
+                    notice = "已回收 ${result["collected"]} 条旧记录，保留 ${result["retained"]} 条当前或待确认记录。"
+                } }, enabled = !busy && app.root.metadataClient != null) { Text("清理已确认的旧记录") }
+                if (rootState.phase == RootPhase.READY && app.root.metadataClient == null)
+                    Text("重新连接 Root 后可维护旧记录。", color = AuroraMuted)
+                if (app.root.rootImagesAvailable) {
+                    val ordinary = versions.firstOrNull { it.manifest.backend == LinuxBackend.PROOT && it.manifest.image.sha256 == manager.image.sha256 }
+                    if (ordinary == null) Text("普通 PRoot 使用独立环境，会额外占用存储空间。", color = AuroraMuted)
+                    TextButton({ run { manager.install(LinuxBackend.PROOT) } }, enabled = !busy && stateLoaded) { Text("准备普通 PRoot 环境") }
+                }
+                if (versions.any { it.id == current && it.manifest.backend == LinuxBackend.PROOT }) {
+                    OutlinedButton({ run {
+                        val result = manager.probe()
+                        notice = if (result["workloadPassed"] == kotlinx.serialization.json.JsonPrimitive(true))
+                            "基础检查通过；不等于完整运行资格。" else "基础检查未通过：$result"
+                    } }, enabled = !busy) { Text("检查 PRoot 基础能力") }
+                }
+            }
+            SettingsDetails("安装与运行说明", "共享基础环境，执行前检查实际资格") {
+                Text("基础环境与工具共享安装，会话文件和输出独立保存。基础包不包含完整编译和逆向工具。")
+                Text("构建工具仅接受固定审查版归档，其余组件使用官方固定版本。安装不会自动安装 APK 或授予执行资格。")
+                Text("Root Linux 命令与终端需要对应环境及当前连接自检；PRoot 单独检查，不自动切换执行方式。")
+                if (app.root.linuxAvailable && !app.root.rootImagesAvailable) Text("现有 Root 服务需重新连接以更新安装能力。")
+                Text(status, style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
+            }
+            Spacer(Modifier.height(16.dp))
         }
     }
 }

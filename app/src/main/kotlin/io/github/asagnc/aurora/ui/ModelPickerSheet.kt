@@ -20,7 +20,7 @@ import io.github.asagnc.aurora.core.Connection
     choose: (Connection) -> Unit, manage: () -> Unit, dismiss: () -> Unit) {
     var query by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("全部") }
-    ModalBottomSheet(dismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true), containerColor = MaterialTheme.colorScheme.surface) {
+    ModalBottomSheet(dismiss, sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden, enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded)), containerColor = MaterialTheme.colorScheme.surface) {
         if (connections.none { it.enabled }) {
             Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Text("选择模型", style = MaterialTheme.typography.titleLarge)

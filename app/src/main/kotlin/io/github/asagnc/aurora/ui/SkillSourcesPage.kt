@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
     val scope = rememberCoroutineScope()
     var entries by remember { mutableStateOf(emptyList<SkillSourceProfile>()) }
     var selected by remember { mutableStateOf<SkillSourceProfile?>(null) }
+    var editing by remember { mutableStateOf(false) }
     var repository by remember { mutableStateOf("") }
     var token by remember { mutableStateOf("") }
     var publicKey by remember { mutableStateOf("") }
@@ -31,8 +32,8 @@ import kotlinx.coroutines.launch
     }
     fun run(action: suspend () -> Unit) {
         if (busy) return
+        busy = true
         scope.launch {
-            busy = true
             try { action(); entries = manager.list() }
             catch (cancel: CancellationException) { throw cancel }
             catch (_: Exception) {
@@ -45,46 +46,55 @@ import kotlinx.coroutines.launch
         }
     }
     LaunchedEffect(Unit) { run { entries = manager.list() } }
-    FullPage("Skills 来源与信任", dismiss) {
-        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text("私有仓库使用该仓库 Contents 只读令牌。令牌只发送到 GitHub API，不交给模型。")
-            Text("公钥必须从你独立信任的渠道取得。验签不代表工作流安全，也不授予额外权限。", color = AuroraMuted)
-            TextButton({ edit(null) }, enabled = !busy) { Text("新建来源配置") }
-            entries.forEach { profile ->
-                OutlinedCard(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(12.dp)) {
-                        Text(profile.repository + if (profile.revoked) " · 已撤销" else "")
-                        Text("${if (profile.credentialId == null) "公共访问" else "已配置私有凭据"} · ${if (profile.publicKey.isBlank()) "未要求签名" else "要求发布者签名"}", color = AuroraMuted)
-                        if (profile.publicKey.isNotBlank()) Text("公钥 SHA256：${SkillSignatures.fingerprint(profile.publicKey)}", style = MaterialTheme.typography.bodySmall)
-                        Row {
-                            TextButton({ edit(profile) }, enabled = !busy) { Text("编辑") }
-                            TextButton({ run { manager.revoke(profile.id); edit(null); notice = "来源已撤销；后续安装/更新被阻止，已运行版本保留。" } }, enabled = !busy && !profile.revoked) { Text("撤销") }
+    fun back() {
+        token = ""
+        if (editing) { editing = false; edit(null) } else dismiss()
+    }
+    FullPage(if (editing) "编辑来源" else "来源与信任", ::back) {
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            if (!editing) {
+                FilledTonalButton({ edit(null); editing = true }, enabled = !busy) { Text("添加来源") }
+                if (entries.isEmpty() && !busy) Text("尚未配置来源。公共工作流也可以直接从链接安装。", color = AuroraMuted)
+                entries.forEach { profile ->
+                    Card(Modifier.fillMaxWidth()) {
+                        ListItem(supportingContent = {
+                            Text(if (profile.revoked) "已撤销" else "${if (profile.credentialId == null) "公共访问" else "已配置私有凭据"} · ${if (profile.publicKey.isBlank()) "未要求签名" else "要求发布者签名"}")
+                        }) { Text(profile.repository) }
+                        FlowRow(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            TextButton({ edit(profile); editing = true }, enabled = !busy) { Text("编辑") }
+                            TextButton({ run { manager.revoke(profile.id); edit(null); notice = "来源已撤销，后续安装和更新被阻止；已运行版本保留。" } }, enabled = !busy && !profile.revoked) { Text("撤销") }
                         }
                     }
                 }
+            } else {
+                OutlinedTextField(repository, { repository = it }, modifier = Modifier.fillMaxWidth(), label = { Text("GitHub 仓库 owner/repo") }, enabled = !busy && selected == null, singleLine = true)
+                OutlinedTextField(token, { token = it }, label = { Text(if (selected?.credentialId != null) "替换令牌（留空保留）" else "只读令牌（公共仓库留空）") },
+                    modifier = Modifier.fillMaxWidth(), visualTransformation = PasswordVisualTransformation(), enabled = !busy, singleLine = true)
+                if (selected?.credentialId != null) Row {
+                    Checkbox(removeCredential, { removeCredential = it }, enabled = !busy); Text("移除已保存的令牌")
+                }
+                OutlinedTextField(publicKey, { publicKey = it }, modifier = Modifier.fillMaxWidth(), label = { Text("Ed25519 公钥（SPKI Base64，可选）") }, enabled = !busy)
+                if (publicKey.isNotBlank()) {
+                    val fingerprint = runCatching { SkillSignatures.fingerprint(publicKey.trim()) }.getOrNull()
+                    Text(fingerprint?.let { "请独立核对公钥 SHA256：$it" } ?: "公钥格式尚不正确", style = MaterialTheme.typography.bodySmall)
+                }
+                OutlinedTextField(signatureUrl, { signatureUrl = it }, modifier = Modifier.fillMaxWidth(), label = { Text("签名文件 HTTPS 地址（可选）") }, enabled = !busy)
+                Text("填写公钥后将强制验签，请独立核对指纹。", color = AuroraMuted)
+                FilledTonalButton({ run {
+                    val profile = SkillSourceProfile(selected?.id ?: UUID.randomUUID().toString(), repository.trim().lowercase(java.util.Locale.ROOT),
+                        selected?.credentialId, publicKey.trim(), signatureUrl.trim())
+                    manager.save(profile, token.takeIf { it.isNotBlank() }, removeCredential)
+                    edit(null); editing = false; notice = "来源已保存，新配置不会替换正在运行的版本。"
+                } }, enabled = !busy && repository.isNotBlank()) { Text(if (selected?.revoked == true) "保存并重新启用来源" else "保存来源策略") }
             }
-            HorizontalDivider()
-            OutlinedTextField(repository, { repository = it }, label = { Text("GitHub 仓库 owner/repo") }, enabled = !busy && selected == null, singleLine = true)
-            OutlinedTextField(token, { token = it }, label = { Text(if (selected?.credentialId != null) "替换令牌（留空保留）" else "只读令牌（公共仓库留空）") },
-                visualTransformation = PasswordVisualTransformation(), enabled = !busy, singleLine = true)
-            if (selected?.credentialId != null) Row {
-                Checkbox(removeCredential, { removeCredential = it }, enabled = !busy); Text("移除已保存的令牌")
-            }
-            OutlinedTextField(publicKey, { publicKey = it }, label = { Text("可信 Ed25519 公钥（SPKI Base64，可选）") }, enabled = !busy)
-            if (publicKey.isNotBlank()) {
-                val fingerprint = runCatching { SkillSignatures.fingerprint(publicKey.trim()) }.getOrNull()
-                Text(fingerprint?.let { "请独立核对公钥 SHA256：$it" } ?: "公钥格式尚不正确", style = MaterialTheme.typography.bodySmall)
-            }
-            OutlinedTextField(signatureUrl, { signatureUrl = it }, label = { Text("旁路签名 HTTPS 地址（自动更新可选）") }, enabled = !busy)
-            Text("填写公钥即要求验签。签名地址留空时，安装需选择旁路文件；缺签名或验签失败都会被拒绝。", color = AuroraMuted)
-            FilledTonalButton({ run {
-                val profile = SkillSourceProfile(selected?.id ?: UUID.randomUUID().toString(), repository.trim().lowercase(java.util.Locale.ROOT),
-                    selected?.credentialId, publicKey.trim(), signatureUrl.trim())
-                manager.save(profile, token.takeIf { it.isNotBlank() }, removeCredential)
-                edit(null); notice = "已保存来源策略；不会替换正在运行的旧版本。"
-            } }, enabled = !busy && repository.isNotBlank()) { Text(if (selected?.revoked == true) "保存并重新启用来源" else "保存来源策略") }
             if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
-            notice?.let { Text(it) }
+            notice?.let { SettingsNotice(it) }
+            SettingsDetails("认证与签名说明", "凭据留在本机，发布者信任由你决定") {
+                Text("私有仓库使用仓库 Contents 只读令牌，仅发送到 GitHub API，不交给模型。")
+                Text("公钥必须从独立可信渠道取得。签名地址留空时需手动选择签名文件；缺少签名或验证失败将被拒绝。")
+                Text("验签只证明发布者签名和字节一致性，不代表工作流安全，也不授予额外权限。")
+            }
+            Spacer(Modifier.height(16.dp))
         }
     }
 }

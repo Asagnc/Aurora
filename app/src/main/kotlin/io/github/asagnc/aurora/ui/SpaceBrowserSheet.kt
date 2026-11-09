@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
         catch (cancel: CancellationException) { throw cancel }
         catch (_: Exception) { entries = emptyList(); error = "无法读取此空间；会话空间需要先创建会话" }
     }
-    ModalBottomSheet(dismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true), containerColor = MaterialTheme.colorScheme.surface) {
+    ModalBottomSheet(dismiss, sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden, enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded)), containerColor = MaterialTheme.colorScheme.surface) {
         Column(Modifier.fillMaxHeight(0.72f).padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(if (conversationOnly) "本会话文件" else if (space == "resources") "Skills 与共享资源" else "空间与工具", style = MaterialTheme.typography.headlineSmall)
             if (!conversationOnly) Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

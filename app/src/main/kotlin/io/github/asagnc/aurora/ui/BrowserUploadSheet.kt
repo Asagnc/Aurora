@@ -51,7 +51,7 @@ import kotlinx.coroutines.launch
         catch(_:Exception){entries=emptyList();listingError="无法读取此空间"}
     }
     ModalBottomSheet(onDismissRequest={manager.cancelPending(request.tab.owner)},
-        sheetState=rememberModalBottomSheetState(skipPartiallyExpanded=true),containerColor=MaterialTheme.colorScheme.surface){
+        sheetState=rememberBottomSheetState(initialValue=SheetValue.Hidden,enabledValues=setOf(SheetValue.Hidden,SheetValue.Expanded)),containerColor=MaterialTheme.colorScheme.surface){
         Column(Modifier.fillMaxHeight(0.85f).padding(horizontal=20.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
             Text("选择上传文件",style=MaterialTheme.typography.titleLarge)
             Text("文件按需复制为只读上传快照，关闭页面后释放。最多 ${if(request.multiple)8 else 1} 个，保留快照总量不超过 512 MiB。",

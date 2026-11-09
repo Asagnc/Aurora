@@ -1,6 +1,9 @@
 package io.github.asagnc.aurora.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import io.github.asagnc.aurora.R
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -19,8 +22,9 @@ import kotlinx.serialization.json.*
     val root by app.root.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     var busy by remember { mutableStateOf(false) }
-    var detail by remember { mutableStateOf("尚未验证当前 Root 连接") }
-    LaunchedEffect(root) { detail = "Root 连接变化后须重新验证，旧状态不代表当前资格" }
+    var detail by remember { mutableStateOf<String?>(null) }
+    var qualified by remember { mutableStateOf<Boolean?>(null) }
+    LaunchedEffect(root) { detail = null; qualified = null }
     fun execute(activate: Boolean) {
         if (busy) return
         busy = true
@@ -28,24 +32,38 @@ import kotlinx.serialization.json.*
             try {
                 val connection = requireNotNull(app.root.fridaConnection) { "请先连接 Root" }
                 val result = connection.client.policy(connection.identity, activate)
-                detail = if (result["policyQualified"]?.jsonPrimitive?.booleanOrNull == true)
+                qualified = result["policyQualified"]?.jsonPrimitive?.booleanOrNull == true
+                detail = if (qualified == true)
                     "当前启动与 Root 连接已验证。Frida native / ART 自测仍须另行通过。" else "当前连接尚未验证策略适配。"
             } catch (cancel: CancellationException) { throw cancel }
-            catch (failure: Exception) { detail = failure.message ?: "策略资格未确认" }
+            catch (failure: Exception) { qualified = null; detail = failure.message ?: "策略资格未确认" }
             finally { busy = false }
         }
     }
     FullPage("Frida 策略适配", dismiss) {
-        Column(Modifier.fillMaxWidth().padding(24.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
-            Text("适配会修改本次启动的全局 SELinux 策略，保持 Enforcing。仅增加 Frida 专用 memfd 类型及当前 App / Root 域的必要文件权限；重启后失效。", style = MaterialTheme.typography.bodyMedium)
-            Text("仅由你点击启用。若已有未知适配或策略变化，验证会停止；不覆盖未知记录、不回滚整个策略，也不安装持久模块。", color = AuroraMuted)
-            Text(detail)
-            if (!FridaPolicyAvailability.releaseQualified) Text("设备验收中：重启、撤权及剩余故障验证完成前，暂不开放启用。", color = AuroraMuted)
-            if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
-            Button({ execute(true) }, enabled = FridaPolicyAvailability.releaseQualified && !busy && root.phase == RootPhase.READY && !app.agentTasks.busy) {
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)) {
+            SettingsStatus("当前策略", when (qualified) {
+                true -> "本次连接已验证"
+                false -> "资格未确认"
+                null -> if (root.phase == RootPhase.READY) "尚未检查" else "请先连接 Root"
+            }, R.drawable.ic_shield)
+            if (!FridaPolicyAvailability.releaseQualified) SettingsNotice("设备验收中，暂未开放启用。")
+            Text("启用会修改本次启动的 SELinux 策略，保持 Enforcing，重启后失效。", color = AuroraMuted)
+            Button({ execute(true) }, modifier = Modifier.fillMaxWidth(),
+                enabled = FridaPolicyAvailability.releaseQualified && !busy && root.phase == RootPhase.READY && !app.agentTasks.busy) {
                 Text("验证并启用本次适配")
             }
-            OutlinedButton({ execute(false) }, enabled = !busy && root.phase == RootPhase.READY) { Text("检查当前资格") }
+            OutlinedButton({ execute(false) }, modifier = Modifier.fillMaxWidth(),
+                enabled = !busy && root.phase == RootPhase.READY) { Text("检查当前资格") }
+            if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
+            detail?.let { SettingsNotice(it) }
+            SettingsDetails("适配范围与限制", "仅本次启动，需单独通过 Frida 自检") {
+                Text("仅增加 Frida 专用 memfd 类型和当前 App／Root 域所需权限，不安装持久模块。")
+                Text("未知适配或策略变化会停止验证，不覆盖未知记录、不回滚整份策略。")
+                Text("Root 重连后须重新检查。策略验证不等于 native／ART 自测通过。")
+            }
+            Spacer(Modifier.height(16.dp))
         }
     }
 }

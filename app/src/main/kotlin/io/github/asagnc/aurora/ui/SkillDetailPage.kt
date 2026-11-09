@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.asagnc.aurora.core.*
+import io.github.asagnc.aurora.R
 import io.github.asagnc.aurora.data.SkillEntry
 import io.github.asagnc.aurora.skills.*
 import kotlinx.coroutines.CancellationException
@@ -25,8 +26,8 @@ import kotlinx.coroutines.launch
     var files by remember { mutableStateOf(false) }
     fun run(action: suspend () -> Unit) {
         if (busy) return
+        busy = true
         scope.launch {
-            busy = true
             try { action() }
             catch (cancel: CancellationException) { throw cancel }
             catch (_: Exception) { notice = "操作未完成；请检查来源、资源状态与网络。" }
@@ -52,16 +53,15 @@ import kotlinx.coroutines.launch
         catch (_: Exception) { body = "资源读取失败或校验不通过。" }
     }
     FullPage(current.metadata.name, dismiss) {
-        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(current.metadata.description, style = MaterialTheme.typography.titleMedium)
-            Text("${if (current.enabled) "已启用" else "已停用"} · ${current.bytes} 字节\n版本 ${current.hash}\n来源：${current.source.label.ifBlank { current.source.input.substringBefore('?') }}", color = AuroraMuted)
-            Text(current.source.verification?.let { "安装时发布者签名已验证\n公钥 SHA256：${it.keySha256}\nZIP SHA256：${it.archiveSha256}" }
-                ?: "发布者签名未认证；内容哈希只记录字节一致性。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
+            SettingsStatus("工作流状态", if (current.enabled) "已启用" else "已停用", R.drawable.ic_extension)
+            Text(if (current.source.verification != null) "安装时发布者签名已验证" else "发布者签名未认证", color = AuroraMuted)
             current.metadata.compatibility.takeIf { it.isNotBlank() }?.let { Text("环境要求：$it") }
             current.metadata.license.takeIf { it.isNotBlank() }?.let { Text("许可：$it") }
             current.metadata.warnings.forEach { Text(it, color = MaterialTheme.colorScheme.error) }
             TextButton({ files = true }) { Text("查看工作流文件") }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilledTonalButton({ run {
                     manager.remote(current.source, SkillInstallOptions(replaceId = current.id))
                     notice = "已检查并安装来源的最新版本；新任务生效。"
@@ -72,15 +72,22 @@ import kotlinx.coroutines.launch
                 } }, enabled = !busy) { Text("移除") }
             }
             if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
-            notice?.let { Text(it) }
+            notice?.let { SettingsNotice(it) }
             if (versions.size > 1) {
                 Text("已保留的版本", style = MaterialTheme.typography.titleSmall)
                 versions.forEach { previous -> TextButton({ run {
                     manager.rollback(current.id, previous.hash); notice = "已选择 ${previous.hash.take(10)}；新任务生效。"
                 } }, enabled = !busy && previous.hash != current.hash) { Text(previous.hash.take(16) + if (previous.hash == current.hash) " · 当前" else "") } }
             }
-            HorizontalDivider()
-            Text(body, style = MaterialTheme.typography.bodyMedium)
+            SettingsDetails("工作流内容", "查看 SKILL.md") {
+                Text(body, style = MaterialTheme.typography.bodyMedium)
+            }
+            SettingsDetails("版本与来源", "来源、内容摘要与签名证据") {
+                Text("${current.bytes} 字节\n版本 ${current.hash}\n来源：${current.source.label.ifBlank { current.source.input.substringBefore('?') }}", color = AuroraMuted)
+                Text(current.source.verification?.let { "公钥 SHA256：${it.keySha256}\nZIP SHA256：${it.archiveSha256}" }
+                    ?: "内容哈希只记录字节一致性，不等于发布者认证。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
+            }
+            Spacer(Modifier.height(16.dp))
         }
     }
     if (files) SkillFilesPage(current, manager) { files = false }

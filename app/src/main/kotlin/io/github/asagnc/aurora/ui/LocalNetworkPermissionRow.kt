@@ -6,11 +6,9 @@ import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.clickable
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -34,11 +32,10 @@ private const val LOCAL_NETWORK_PERMISSION = "android.permission.ACCESS_LOCAL_NE
         lifecycle.lifecycle.addObserver(observer)
         onDispose { lifecycle.lifecycle.removeObserver(observer) }
     }
-    ListItem(headlineContent = { Text("局域网访问") },
-        supportingContent = { Text(if (granted) "已允许连接选定的本地服务" else "连接局域网设备或代理时需要授权") },
-        leadingContent = { IconBadge(R.drawable.ic_hub, Color(0xFF347EDD)) },
-        trailingContent = { Text("›", color = AuroraMuted) }, modifier = Modifier.clickable { expanded = true },
-        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surface))
+    ListItem(onClick = { expanded = true },
+        supportingContent = { Text(if (granted) "已允许" else "未允许") },
+        leadingContent = { IconBadge(R.drawable.ic_hub, MaterialTheme.colorScheme.primary) },
+        trailingContent = { SettingsChevron() }) { Text("局域网访问") }
     if (expanded) LocalNetworkPermissionDialog(granted, { expanded = false },
         { request.launch(LOCAL_NETWORK_PERMISSION) }, {
             context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
