@@ -1,12 +1,12 @@
 {
-  "scope": "Pinned source-material superset for Frida17.24.3, bridge7.0.13, emitted compiler shims and identified NDK29/30 runtimes. Optional test integrations omitted; not an upstream SDK rebuild claim.",
+  "scope": "Frida17.26.2 runtime, bridge7.0.13 with frozen Frida17.24.3 build-host binding, emitted shims and identified NDK29/30 runtime source superset. Historical acquisition IDs retained; optional docs/profiling/Apple-only delta omitted. Not an upstream SDK rebuild or legal closure.",
   "sourceClosureVerified": false,
   "repositories": [
     {
       "id": "brotli",
       "repository": "https://github.com/frida/brotli",
       "commit": "dd581fd4fea06096e3949ad6cb16775538d0ef47",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "dd581fd4fea06096e3949ad6cb16775538d0ef47",
       "gitlinks": [],
       "noticeCandidates": [
@@ -23,7 +23,7 @@
       "id": "capstone",
       "repository": "https://github.com/frida/capstone",
       "commit": "f919a03a5417e1c7ea3af7035225073437030ef2",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "f919a03a5417e1c7ea3af7035225073437030ef2",
       "gitlinks": [],
       "noticeCandidates": [
@@ -55,7 +55,7 @@
       "id": "elfutils",
       "repository": "https://github.com/frida/elfutils",
       "commit": "7436d958b04c34b3ee3baee240a54284ee099630",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "7436d958b04c34b3ee3baee240a54284ee099630",
       "gitlinks": [],
       "noticeCandidates": [
@@ -87,7 +87,7 @@
       "id": "frida-core",
       "repository": "https://github.com/frida/frida-core",
       "commit": "57161b0ddd2311adf18e84f4680f9cb935ce8376",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "57161b0ddd2311adf18e84f4680f9cb935ce8376",
       "gitlinks": [
         {
@@ -110,7 +110,7 @@
       "id": "frida-gum",
       "repository": "https://github.com/frida/frida-gum",
       "commit": "3f82ef6a5b2413867835a45fe341913455473303",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "3f82ef6a5b2413867835a45fe341913455473303",
       "gitlinks": [
         {
@@ -133,7 +133,7 @@
       "id": "glib",
       "repository": "https://github.com/frida/glib",
       "commit": "ae4ec44f4484bf22ff387e712c5e9902af07c0c7",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "ae4ec44f4484bf22ff387e712c5e9902af07c0c7",
       "gitlinks": [
         {
@@ -176,7 +176,7 @@
       "id": "glib--subprojects--gvdb",
       "repository": "https://github.com/GNOME/gvdb",
       "commit": "2b42fc75f09dbe1cd1057580b5782b08f2dcb400",
-      "role": "nested-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "parent": "glib",
       "path": "subprojects/gvdb",
       "archiveSha256": "069a00aa1fc893f18423602f4e095583be5a220429f6e8a58d70511490b4b019",
@@ -186,7 +186,7 @@
       "id": "glib-networking",
       "repository": "https://github.com/frida/glib-networking",
       "commit": "c8d811a906659f59eabc9f4dc3ad2ba22772bf0f",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "c8d811a906659f59eabc9f4dc3ad2ba22772bf0f",
       "gitlinks": [],
       "noticeCandidates": [
@@ -208,7 +208,7 @@
       "id": "json-glib",
       "repository": "https://github.com/frida/json-glib",
       "commit": "0242c39f1f60f844c9df41e83434251b06609e82",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "0242c39f1f60f844c9df41e83434251b06609e82",
       "gitlinks": [],
       "noticeCandidates": [
@@ -225,7 +225,7 @@
       "id": "libbpf",
       "repository": "https://github.com/frida/libbpf",
       "commit": "9c4e176810717e27b6990a8722b252fc1967667f",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "9c4e176810717e27b6990a8722b252fc1967667f",
       "gitlinks": [],
       "noticeCandidates": [
@@ -252,7 +252,7 @@
       "id": "libdwarf",
       "repository": "https://github.com/frida/libdwarf",
       "commit": "9ac8cc22cab54d72cb355a44e85db716a7006f47",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "9ac8cc22cab54d72cb355a44e85db716a7006f47",
       "gitlinks": [],
       "noticeCandidates": [
@@ -289,7 +289,7 @@
       "id": "libffi",
       "repository": "https://github.com/frida/libffi",
       "commit": "3779ad36850879768c9aac5e424e7ecf55972859",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "3779ad36850879768c9aac5e424e7ecf55972859",
       "gitlinks": [],
       "noticeCandidates": [
@@ -311,7 +311,7 @@
       "id": "libgee",
       "repository": "https://github.com/frida/libgee",
       "commit": "69621d2c665b75c1e064abdecd540ef1749615ee",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "69621d2c665b75c1e064abdecd540ef1749615ee",
       "gitlinks": [],
       "noticeCandidates": [
@@ -328,7 +328,7 @@
       "id": "libiconv",
       "repository": "https://github.com/frida/libiconv",
       "commit": "2d7dbd28979f0f1ec200d0f23c0c0e403015b160",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "2d7dbd28979f0f1ec200d0f23c0c0e403015b160",
       "gitlinks": [],
       "noticeCandidates": [
@@ -355,7 +355,7 @@
       "id": "libnice",
       "repository": "https://github.com/frida/libnice",
       "commit": "91e2d02edb2999786d7ac854f99bdfd7832df64f",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "91e2d02edb2999786d7ac854f99bdfd7832df64f",
       "gitlinks": [],
       "noticeCandidates": [
@@ -382,7 +382,7 @@
       "id": "libpsl",
       "repository": "https://github.com/frida/libpsl",
       "commit": "5d3e465d00655a23bed31a716c5db318b3a58521",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "5d3e465d00655a23bed31a716c5db318b3a58521",
       "gitlinks": [
         {
@@ -415,7 +415,7 @@
       "id": "libpsl--list",
       "repository": "https://github.com/publicsuffix/list",
       "commit": "e1b8015c3b2f0f4f8c18659c2480fc1a22c07b20",
-      "role": "nested-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "parent": "libpsl",
       "path": "list",
       "archiveSha256": "8e8e3324565a15dc1705cffae420d4aeb6f0af9afcaae490691138b1d748905d",
@@ -425,7 +425,7 @@
       "id": "libsoup",
       "repository": "https://github.com/frida/libsoup",
       "commit": "2537f36926436ef7ac7e2430c25755216ed54ca5",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "2537f36926436ef7ac7e2430c25755216ed54ca5",
       "gitlinks": [],
       "noticeCandidates": [
@@ -442,7 +442,7 @@
       "id": "libunwind",
       "repository": "https://github.com/frida/libunwind",
       "commit": "733d7d1c73f3512d2a50add2337157fa385a7e6e",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "733d7d1c73f3512d2a50add2337157fa385a7e6e",
       "gitlinks": [],
       "noticeCandidates": [
@@ -464,7 +464,7 @@
       "id": "libxml2",
       "repository": "https://github.com/frida/libxml2",
       "commit": "cc05411555804869bcd28613a37992021b1ca974",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "cc05411555804869bcd28613a37992021b1ca974",
       "gitlinks": [],
       "noticeCandidates": [
@@ -491,7 +491,7 @@
       "id": "lwip",
       "repository": "https://github.com/frida/lwip",
       "commit": "7695262c0fdda77a2351def053fa69419364609f",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "7695262c0fdda77a2351def053fa69419364609f",
       "gitlinks": [],
       "noticeCandidates": [
@@ -513,7 +513,7 @@
       "id": "lzfse",
       "repository": "https://github.com/frida/lzfse",
       "commit": "5cfb7c86919d3c2c636d0d7552b51855a611ba1c",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "5cfb7c86919d3c2c636d0d7552b51855a611ba1c",
       "gitlinks": [],
       "noticeCandidates": [
@@ -530,7 +530,7 @@
       "id": "minizip-ng",
       "repository": "https://github.com/frida/minizip-ng",
       "commit": "6475b3c6f810f00d62bb5ed7ef90d4a985447909",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "6475b3c6f810f00d62bb5ed7ef90d4a985447909",
       "gitlinks": [],
       "noticeCandidates": [
@@ -552,7 +552,7 @@
       "id": "nghttp2",
       "repository": "https://github.com/frida/nghttp2",
       "commit": "3e516202a0df939d6ab6bab47780fa35c5c4662b",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "3e516202a0df939d6ab6bab47780fa35c5c4662b",
       "gitlinks": [
         {
@@ -605,7 +605,7 @@
       "id": "ngtcp2",
       "repository": "https://github.com/frida/ngtcp2",
       "commit": "0009518d5ac5e4ce80343fb5f3c719991ffd47af",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "0009518d5ac5e4ce80343fb5f3c719991ffd47af",
       "gitlinks": [
         {
@@ -638,7 +638,7 @@
       "id": "ninja",
       "repository": "https://github.com/frida/ninja",
       "commit": "113664f80d1a16c30284da8ff0106a121134670f",
-      "role": "build-tool",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "113664f80d1a16c30284da8ff0106a121134670f",
       "gitlinks": [],
       "noticeCandidates": [
@@ -655,7 +655,7 @@
       "id": "openssl",
       "repository": "https://github.com/frida/openssl",
       "commit": "a94348d1cd4fb009e7c590fe4e193c2ea89f5ab8",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "a94348d1cd4fb009e7c590fe4e193c2ea89f5ab8",
       "gitlinks": [
         {
@@ -743,7 +743,7 @@
       "id": "pcre2",
       "repository": "https://github.com/frida/pcre2",
       "commit": "683059230e4894342bb19f2776f0e50c757fde17",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "683059230e4894342bb19f2776f0e50c757fde17",
       "gitlinks": [
         {
@@ -781,7 +781,7 @@
       "id": "pcre2--deps--sljit",
       "repository": "https://github.com/zherczeg/sljit",
       "commit": "39c508d1b8fbae332d60c7450db20236913089da",
-      "role": "nested-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "parent": "pcre2",
       "path": "deps/sljit",
       "archiveSha256": "f5fd7b9d548d049dad9ec664ec520b4bbaebf5bcb1bdcb53f3f2821c190e4452",
@@ -791,7 +791,7 @@
       "id": "pkg-config",
       "repository": "https://github.com/frida/pkg-config",
       "commit": "4696795673d1d3dec46b663df48f8cbf66461d14",
-      "role": "build-tool",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "4696795673d1d3dec46b663df48f8cbf66461d14",
       "gitlinks": [],
       "noticeCandidates": [
@@ -813,7 +813,7 @@
       "id": "quickjs",
       "repository": "https://github.com/frida/quickjs",
       "commit": "cd41bdbf0c6c14a22f4a514bfe8efd6cbca50af3",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "cd41bdbf0c6c14a22f4a514bfe8efd6cbca50af3",
       "gitlinks": [],
       "noticeCandidates": [
@@ -830,7 +830,7 @@
       "id": "releng",
       "repository": "https://github.com/frida/releng",
       "commit": "8429c0c9caf8b071955f64869a1b0ede58ad9f34",
-      "role": "build-tool",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "8429c0c9caf8b071955f64869a1b0ede58ad9f34",
       "gitlinks": [
         {
@@ -852,7 +852,7 @@
       "id": "releng--meson",
       "repository": "https://github.com/frida/meson",
       "commit": "145667c57ed2649ddcc6fbb11b6008e0d451df1d",
-      "role": "nested-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "parent": "releng",
       "path": "meson",
       "archiveSha256": "ea5b1e009a402d58d15ffed3a402260a68138a60fae81c3369265194cf530630",
@@ -862,7 +862,7 @@
       "id": "releng--tomlkit",
       "repository": "https://github.com/python-poetry/tomlkit",
       "commit": "911cccd630965ff423316e25b4685ecf7df0ec0a",
-      "role": "nested-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "parent": "releng",
       "path": "tomlkit",
       "archiveSha256": "2f9e579cb4f88c4425554e74451e0cedefe39b3f8e9fc04407f196c62a8eff74",
@@ -872,7 +872,7 @@
       "id": "selinux",
       "repository": "https://github.com/frida/selinux",
       "commit": "507985d931eb1f0227218d5d845634e602426c20",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "507985d931eb1f0227218d5d845634e602426c20",
       "gitlinks": [],
       "noticeCandidates": [
@@ -959,7 +959,7 @@
       "id": "sqlite",
       "repository": "https://github.com/frida/sqlite",
       "commit": "2cfd2ffbef3fc25a11542f876a0ff8ecb2d50914",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "2cfd2ffbef3fc25a11542f876a0ff8ecb2d50914",
       "gitlinks": [],
       "noticeCandidates": [],
@@ -970,7 +970,7 @@
       "id": "tinycc",
       "repository": "https://github.com/frida/tinycc",
       "commit": "c0b84021e3e5c8359a469b1af2bf4abd83a7a26a",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "c0b84021e3e5c8359a469b1af2bf4abd83a7a26a",
       "gitlinks": [],
       "noticeCandidates": [
@@ -992,7 +992,7 @@
       "id": "usrsctp",
       "repository": "https://github.com/frida/usrsctp",
       "commit": "bfd359be44adc76c55efacce9a2f71ff0a7f8cd4",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "bfd359be44adc76c55efacce9a2f71ff0a7f8cd4",
       "gitlinks": [],
       "noticeCandidates": [
@@ -1009,7 +1009,7 @@
       "id": "v8",
       "repository": "https://github.com/frida/v8",
       "commit": "f6d7f6610f2f21e2817ed180b72ea750a3f63ce8",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "f6d7f6610f2f21e2817ed180b72ea750a3f63ce8",
       "gitlinks": [
         {
@@ -1202,7 +1202,7 @@
       "id": "v8--third_party--abseil-cpp--src",
       "repository": "https://github.com/abseil/abseil-cpp",
       "commit": "9f6e15d59ef994a25481ba8a428588f698cb96d8",
-      "role": "nested-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "parent": "v8",
       "path": "third_party/abseil-cpp/src",
       "archiveSha256": "42fc3088723c372874af14cd16865ee8aad94d54bf77672ae21aac9a1ec463da",
@@ -1212,7 +1212,7 @@
       "id": "v8--third_party--dragonbox--src",
       "repository": "https://github.com/jk-jeon/dragonbox",
       "commit": "beeeef91cf6fef89a4d4ba5e95d47ca64ccb3a44",
-      "role": "nested-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "parent": "v8",
       "path": "third_party/dragonbox/src",
       "archiveSha256": "2646de322a13cdabeeff52863665a492adbd68242c66b5279a5cfefbaa301e39",
@@ -1222,7 +1222,7 @@
       "id": "v8--third_party--fast_float--src",
       "repository": "https://github.com/fastfloat/fast_float",
       "commit": "f3f02c8ad0afd8181166dabce6a9e69f8aec24de",
-      "role": "nested-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "parent": "v8",
       "path": "third_party/fast_float/src",
       "archiveSha256": "459efe3b4dd8846f7412cb356dba7f8e65f0aa8632a8c062e3eb937a06342028",
@@ -1232,7 +1232,7 @@
       "id": "v8--third_party--fp16--src",
       "repository": "https://github.com/Maratyszcza/FP16",
       "commit": "782eea126dc5c755827be751a099eb01826175cf",
-      "role": "nested-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "parent": "v8",
       "path": "third_party/fp16/src",
       "archiveSha256": "6ca2e8bdb337c80984a3fa2d4900e6957bba4f2a1c15e7a40cc74dce38040741",
@@ -1242,7 +1242,7 @@
       "id": "v8--third_party--highway--src",
       "repository": "https://github.com/google/highway",
       "commit": "2607d3b5b0113992fe84d3848859eae13b3b52c1",
-      "role": "nested-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "parent": "v8",
       "path": "third_party/highway/src",
       "archiveSha256": "741d705781e0b3e406beda8f1f994fbae01321237ce8023a1ad90fbaf7940c25",
@@ -1252,7 +1252,7 @@
       "id": "v8--third_party--jinja2",
       "repository": "https://chromium.googlesource.com/chromium/src/third_party/jinja2",
       "commit": "c3027d884967773057bf74b957e3fea87e5df4d7",
-      "role": "nested-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "parent": "v8",
       "path": "third_party/jinja2",
       "contentSha256": "d0195b02e54122f36117e1ade139196029527a5c164b491639f7c6ddfc65910d",
@@ -1264,7 +1264,7 @@
       "id": "v8--third_party--llvm-libc--src",
       "repository": "https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libc",
       "commit": "d653cddea7c7b01a931fe3f22e34275c0057afe7",
-      "role": "nested-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "parent": "v8",
       "path": "third_party/llvm-libc/src",
       "contentSha256": "c0f221641bf67d66bea75475b7dfd0891862153d86f173127279560856d072cb",
@@ -1276,7 +1276,7 @@
       "id": "v8--third_party--markupsafe",
       "repository": "https://chromium.googlesource.com/chromium/src/third_party/markupsafe",
       "commit": "4256084ae14175d38a3ff7d739dca83ae49ccec6",
-      "role": "nested-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "parent": "v8",
       "path": "third_party/markupsafe",
       "contentSha256": "5919d00df46a0d60c04823c3741df199387839ea66d79df84f814ca4bef048f8",
@@ -1288,7 +1288,7 @@
       "id": "v8--third_party--simdutf--src",
       "repository": "https://chromium.googlesource.com/chromium/src/third_party/simdutf",
       "commit": "f7356eed293f8208c40b3c1b344a50bd70971983",
-      "role": "nested-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "parent": "v8",
       "path": "third_party/simdutf/src",
       "contentSha256": "d911a601bfb5406e247aa631aa424a5b682292460ab1a4a9f03a2734982806a2",
@@ -1300,7 +1300,7 @@
       "id": "v8--third_party--zlib",
       "repository": "https://chromium.googlesource.com/chromium/src/third_party/zlib",
       "commit": "456ae730017b9b4bd3371927abc82627fd51feef",
-      "role": "nested-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "parent": "v8",
       "path": "third_party/zlib",
       "contentSha256": "6ca6f7fa4b99c09cb11c9910274e68cb58b68bc0b4e24f8801600bf134357065",
@@ -1312,7 +1312,7 @@
       "id": "vala",
       "repository": "https://github.com/frida/vala",
       "commit": "2d33b4b49d7986fb14eef8078823caf1711ceea6",
-      "role": "build-tool",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "2d33b4b49d7986fb14eef8078823caf1711ceea6",
       "gitlinks": [],
       "noticeCandidates": [
@@ -1329,7 +1329,7 @@
       "id": "xz",
       "repository": "https://github.com/frida/xz",
       "commit": "68289232393af1ff1756bcf05164cedfd792df59",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "68289232393af1ff1756bcf05164cedfd792df59",
       "gitlinks": [],
       "noticeCandidates": [
@@ -1376,7 +1376,7 @@
       "id": "zlib",
       "repository": "https://github.com/frida/zlib",
       "commit": "b910f805561e24a7a25521de438c82942cd7885b",
-      "role": "runtime-source-superset",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "tree": "b910f805561e24a7a25521de438c82942cd7885b",
       "gitlinks": [],
       "noticeCandidates": [
@@ -1409,7 +1409,7 @@
       "repository": "https://android.googlesource.com/toolchain/llvm-project",
       "commit": "386af4a5c64ab75eaee2448dc38f2e34a40bfed0",
       "subdirectory": "compiler-rt",
-      "role": "toolchain-runtime-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "contentSha256": "9a889709d3ed991591b055e9fb70f1ae69b95a0dc074e36870dc17b461328d16",
       "observedArchiveSha256": "75cc02209672febaf95a01a52f0375ea33c894ab314cc1b46621f80ed2000087",
       "observedArchiveBytes": 4506635,
@@ -1420,7 +1420,7 @@
       "repository": "https://android.googlesource.com/toolchain/llvm-project",
       "commit": "386af4a5c64ab75eaee2448dc38f2e34a40bfed0",
       "subdirectory": "libcxx",
-      "role": "toolchain-runtime-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "contentSha256": "6c3a8d162f8b56a628e6213036aa8ff7b87c320cc56c9d72389fcc862c4ed040",
       "observedArchiveSha256": "af1d64fcecdd05d1ed36edb15dddbfc8bb7416d9d4d80f6247905c4e6cbecfa9",
       "observedArchiveBytes": 8797832,
@@ -1431,7 +1431,7 @@
       "repository": "https://android.googlesource.com/toolchain/llvm-project",
       "commit": "386af4a5c64ab75eaee2448dc38f2e34a40bfed0",
       "subdirectory": "libcxxabi",
-      "role": "toolchain-runtime-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "contentSha256": "0c3f8243f3497668bb1ae4b9b7c06fc5252ada45c31ae450026524801073ea1f",
       "observedArchiveSha256": "c2dd28d287ff17c9bd29b14613b062e53ab4d20ceb2aea2392ea4c2bdc0099d4",
       "observedArchiveBytes": 806290,
@@ -1442,7 +1442,7 @@
       "repository": "https://android.googlesource.com/toolchain/llvm-project",
       "commit": "386af4a5c64ab75eaee2448dc38f2e34a40bfed0",
       "subdirectory": "libunwind",
-      "role": "toolchain-runtime-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "contentSha256": "c10679e25a4cb915ab5e003de6e746b8237b302df05993da6f7ca709429db57b",
       "observedArchiveSha256": "026dba2861bf8c7fa33e83027eabbb643c9e6c7eae1e57f901f88c9639eff01d",
       "observedArchiveBytes": 167796,
@@ -1453,7 +1453,7 @@
       "repository": "https://android.googlesource.com/toolchain/llvm_android",
       "commit": "1dab3288f660d43a6cb2479107e2b54b3ab0a2a1",
       "subdirectory": "patches",
-      "role": "toolchain-patches",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "contentSha256": "254b7a64e9246ddd5d233815fc3db04572db38551ffb01f4fe54f336aea3f298",
       "observedArchiveSha256": "32d042b9c32423c07e676b8c6f5a3bab5774a8e6e77f80938d085ef4778cf776",
       "observedArchiveBytes": 183215,
@@ -1464,7 +1464,7 @@
       "repository": "https://android.googlesource.com/toolchain/llvm-project",
       "commit": "2d287f51eff2a5fbf84458a33f7fb2493cf67965",
       "subdirectory": "compiler-rt",
-      "role": "toolchain-runtime-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "contentSha256": "ea332c3dea5cb949dbcf4d82311a2e6f07e713452ff11d8f87782e5c80fcc208",
       "observedArchiveSha256": "75c88cacd1e46108a8e77c05de9ab8968e1a88e28fc1e2cac44fc753d4346061",
       "observedArchiveBytes": 4542280,
@@ -1475,7 +1475,7 @@
       "repository": "https://android.googlesource.com/toolchain/llvm-project",
       "commit": "2d287f51eff2a5fbf84458a33f7fb2493cf67965",
       "subdirectory": "libunwind",
-      "role": "toolchain-runtime-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "contentSha256": "838a9bd4031da5219813af6dc75a3b4071809860010c712d63040e75f1b382a7",
       "observedArchiveSha256": "a6e0064ca55f107e545dbe135f60b3f7b59b9eed1ccd5c4b30335f51ccfa1a3c",
       "observedArchiveBytes": 168169,
@@ -1486,7 +1486,7 @@
       "repository": "https://android.googlesource.com/toolchain/llvm_android",
       "commit": "9e20ac0b949feedcfe3da791189310f6ebcbc7a8",
       "subdirectory": "patches",
-      "role": "toolchain-patches",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "contentSha256": "d3611fd9c25694155a5af6babbb222486b2fb3d17cee4dc0352038cb227489d3",
       "observedArchiveSha256": "3505f6284c7c4cb83d04fa3c18d720fe3b36ac719abc9f8cdacb64efe5bd2163",
       "observedArchiveBytes": 314491,
@@ -1499,7 +1499,7 @@
       "url": "https://registry.npmjs.org/@frida/base64-js/-/base64-js-2.0.3.tgz",
       "integrity": "sha512-2w0F+1TynOTCZ/v7du9LdHPWwq0lJhazjo2fF9upMyQmA1zHetT14fLuQ1v/6T0qPgyeEGkiSrybstU8EsgeUA==",
       "declaredLicense": "MIT",
-      "role": "emitted-bridge-shim-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "archiveSha256": "a6df62a8b3f75a4269095678c6343cd8ab01bdb4c340fa44cf1d403451e5f724",
       "archiveBytes": 2680
     },
@@ -1510,7 +1510,7 @@
       "url": "https://registry.npmjs.org/@frida/buffer/-/buffer-7.1.0.tgz",
       "integrity": "sha512-nT2UtZchD46tbPsSyLy9BhtbeN5VNq+NkYVifEztEdf+ys1ifUvswYVO+i0xH/nnAPpJX/ZJepRlY9AIun5hnQ==",
       "declaredLicense": "MIT",
-      "role": "emitted-bridge-shim-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "archiveSha256": "011a22c19ea3f004923883beeb10f0c0b6f10b45c2e78e5d651e5f668e459a1c",
       "archiveBytes": 16087
     },
@@ -1521,7 +1521,7 @@
       "url": "https://registry.npmjs.org/@frida/ieee754/-/ieee754-2.0.2.tgz",
       "integrity": "sha512-wlcUebnne4ENN7GDr5pTH598ZDLMVOsh0FjenxeVOe6u7ewZkz9gGRnLnZKJAm9kl5G6XhdxhI0cSXVQK/rQUw==",
       "declaredLicense": "BSD-3-Clause",
-      "role": "emitted-bridge-shim-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "archiveSha256": "690c2fb186206abd4917e7c8c6139091b8cc469cc717e3495f47fa7f55e109c4",
       "archiveBytes": 2385
     },
@@ -1529,7 +1529,7 @@
       "id": "frida-java-bridge-git",
       "repository": "https://github.com/frida/frida-java-bridge",
       "commit": "6ab2a63e4b02ab881f11ea06632cebea4b1b435e",
-      "role": "java-bridge-repository",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "archiveSha256": "2da4ba68e8bc378220ac0a4e29b0b663f74d85d7e3170b8d4f8b9f00e1df48d4",
       "archiveBytes": 190164
     },
@@ -1540,9 +1540,301 @@
       "url": "https://registry.npmjs.org/frida-java-bridge/-/frida-java-bridge-7.0.13.tgz",
       "integrity": "sha512-YSyKjxbxKnSi3KSUy9vciOvTOuq0RRh9dkxzkQVEdfIIZlw20zE8D3Cq9eL2FDqUVj4YKas6Wf09kCjL5zbffg==",
       "declaredLicense": "LGPL-2.0 WITH WxWindows-exception-3.1",
-      "role": "java-bridge-source",
+      "role": "unchanged-runtime-or-bridge-build-host-source-superset",
       "archiveSha256": "0ae4e5393b5bf237ba7cfe23666248a7e6884cc9321ac0a77f073bcb30d951c0",
       "archiveBytes": 89343
+    },
+    {
+      "id": "candidate-compiler-rt",
+      "repository": "https://github.com/frida-forks/compiler-rt",
+      "commit": "1599be663aa01b1d7f59492a29a519cb0a2c329a",
+      "role": "frida-17.26.2-source-superset",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "LICENSE.TXT",
+          "gitBlobSha1": "5a79a1b9d5cb0af9a779751f07033e44ca3b14d8",
+          "bytes": 16708
+        }
+      ],
+      "archiveSha256": "59653bbf6c4df1a8f315fed5423b9f330912ff07a6fc49a1008ce547261eb19a",
+      "archiveBytes": 4700244
+    },
+    {
+      "id": "candidate-efni",
+      "repository": "https://github.com/frida/efni",
+      "commit": "72f90afcc1f7c663db4de934e9f7ab9d3f67d4b1",
+      "role": "frida-17.26.2-source-superset",
+      "gitlinks": [
+        {
+          "path": "releng",
+          "commit": "164a6a41179c38481e6afa4303abb92c9234ea2c",
+          "repositoryFromGitmodules": "https://github.com/frida/releng.git"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "b01d49c670e55dbff638eb294ac1a52416fb32e8",
+          "bytes": 2416
+        }
+      ],
+      "archiveSha256": "3969371ee21e2cf29227472eb45095a93b621fc823477b60bc590ad339f4250f",
+      "archiveBytes": 43254
+    },
+    {
+      "id": "candidate-frida-core",
+      "repository": "https://github.com/frida/frida-core",
+      "commit": "2a41a960fe9b7fc0ccc85003e4f31f0caeec4d8d",
+      "role": "frida-17.26.2-source-superset",
+      "gitlinks": [
+        {
+          "path": "releng",
+          "commit": "164a6a41179c38481e6afa4303abb92c9234ea2c",
+          "repositoryFromGitmodules": "https://github.com/frida/releng.git"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "b01d49c670e55dbff638eb294ac1a52416fb32e8",
+          "bytes": 2416
+        }
+      ],
+      "archiveSha256": "c862e4af3a762493b9a1d4691b45dfe4ab5af25822922f0ef8c58a8fe9f6ac0c",
+      "archiveBytes": 4378200
+    },
+    {
+      "id": "candidate-frida-gum",
+      "repository": "https://github.com/frida/frida-gum",
+      "commit": "00a05282d1074c0e043b285c70a4412d784c573d",
+      "role": "frida-17.26.2-source-superset",
+      "gitlinks": [
+        {
+          "path": "releng",
+          "commit": "164a6a41179c38481e6afa4303abb92c9234ea2c",
+          "repositoryFromGitmodules": "https://github.com/frida/releng.git"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "810ab7017801b3269dcee7931513e3e5e1910062",
+          "bytes": 5696
+        }
+      ],
+      "archiveSha256": "3717728001ee7d9e67da5d17e3eb6b1080bf368966c325ecdaa18124535e0307",
+      "archiveBytes": 14534200
+    },
+    {
+      "id": "candidate-glib",
+      "repository": "https://github.com/frida-forks/glib",
+      "commit": "f11db6352345ad21deb5f5783bb988bfca2a3d85",
+      "role": "frida-17.26.2-source-superset",
+      "gitlinks": [
+        {
+          "path": "subprojects/gvdb",
+          "commit": "2b42fc75f09dbe1cd1057580b5782b08f2dcb400",
+          "repositoryFromGitmodules": "../../GNOME/gvdb.git"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "e818e737a7833b56367e795cef6ee0d992c6e667",
+          "bytes": 30
+        },
+        {
+          "path": "LICENSES/LicenseRef-old-glib-tests.txt",
+          "gitBlobSha1": "d78b44306d8d5966923f643f1d576be233b00661",
+          "bytes": 841
+        },
+        {
+          "path": "docs/reference/COPYING",
+          "gitBlobSha1": "df952d3cab8f0465a5ebe29fee5a7ff0ea16c59c",
+          "bytes": 1698
+        },
+        {
+          "path": "gmodule/COPYING",
+          "gitBlobSha1": "ddf687147fc15a5d362353275aefaf3406af8630",
+          "bytes": 33
+        },
+        {
+          "path": "proxy-libintl-static/COPYING.LIB.txt",
+          "gitBlobSha1": "bf50f20de6ef55b52fe7832d3a4ed05f0c69d452",
+          "bytes": 25292
+        }
+      ],
+      "archiveSha256": "b4347eb43afb18aa4bb99870f9d5b6c9ff7a2b1d94adcc86275623fe164c6d99",
+      "archiveBytes": 10322633
+    },
+    {
+      "id": "candidate-idun",
+      "repository": "https://github.com/frida/idun",
+      "commit": "59f682f4aba229ca73d175f66f3fa6d9e2f4b7a0",
+      "role": "frida-17.26.2-source-superset",
+      "gitlinks": [
+        {
+          "path": "releng",
+          "commit": "164a6a41179c38481e6afa4303abb92c9234ea2c",
+          "repositoryFromGitmodules": "https://github.com/frida/releng.git"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "b01d49c670e55dbff638eb294ac1a52416fb32e8",
+          "bytes": 2416
+        }
+      ],
+      "archiveSha256": "28aa5388ff4c6496bf719ce0d3c787b77986d1b9662c643b754e89d6509dfcd2",
+      "archiveBytes": 237623
+    },
+    {
+      "id": "candidate-libffi",
+      "repository": "https://github.com/frida-forks/libffi",
+      "commit": "5cca756802a5d27988e7f9973e1299f684cfeff7",
+      "role": "frida-17.26.2-source-superset",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "LICENSE",
+          "gitBlobSha1": "90a8b230284e5cfbf02cbed3431116922bd84663",
+          "bytes": 1132
+        },
+        {
+          "path": "LICENSE-BUILDTOOLS",
+          "gitBlobSha1": "d1d626e00859030061ed7b071e84f8f893d84d93",
+          "bytes": 18698
+        }
+      ],
+      "archiveSha256": "dddd3318a12f87f1ef4e763571c6ba439094691779cd3b08468067f6f784647f",
+      "archiveBytes": 683860
+    },
+    {
+      "id": "candidate-libusb",
+      "repository": "https://github.com/frida-forks/libusb",
+      "commit": "23d5a2cdc55aa4f0895960d08528e5aa13e7f7e2",
+      "role": "frida-17.26.2-source-superset",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "602bfc94635ddf8f1bf2b00419a85ead645a5b67",
+          "bytes": 26434
+        },
+        {
+          "path": "LICENSE.build",
+          "gitBlobSha1": "b59833dedbe2e4a84304431f4acca5dc4599cec7",
+          "bytes": 1070
+        }
+      ],
+      "archiveSha256": "4f1825ffbb237e9889f5ccf04552b6c9fbaeab5f39d69162dd309dd17c0dee6f",
+      "archiveBytes": 487585
+    },
+    {
+      "id": "candidate-lwip",
+      "repository": "https://github.com/frida-forks/lwip",
+      "commit": "6ab74462bd4a5afb13394942ab031d7bee005b4c",
+      "role": "frida-17.26.2-source-superset",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "90465f592ceafc10f2e8d3374cf52d55a39d6cde",
+          "bytes": 1425
+        },
+        {
+          "path": "contrib/apps/LwipMibCompiler/SharpSnmpLib/license.txt",
+          "gitBlobSha1": "27946de210082fa0e30252ecf926cdf28db0d344",
+          "bytes": 24383
+        }
+      ],
+      "archiveSha256": "c1e01a1e119c9e6c89257dab79f2eeb20138194623ca12322126fc4351b81b6c",
+      "archiveBytes": 1609799
+    },
+    {
+      "id": "candidate-picolibc",
+      "repository": "https://github.com/frida-forks/picolibc",
+      "commit": "c0a11fff9b4ffbb8c0c60226c2fee31526e01b8b",
+      "role": "frida-17.26.2-source-superset",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING.picolibc",
+          "gitBlobSha1": "471fbeba259be46e645be5169674f170a9d438c9",
+          "bytes": 241866
+        }
+      ],
+      "archiveSha256": "95ac18b4b4c3e1201e4db47336931eecb3b504a7242bc51c2bbcf27ac0db7b72",
+      "archiveBytes": 9390855
+    },
+    {
+      "id": "candidate-quickjs",
+      "repository": "https://github.com/frida-forks/quickjs",
+      "commit": "6f3b5b4827d4c81af85627d66fce2ec3c8ab70d0",
+      "role": "frida-17.26.2-source-superset",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "LICENSE",
+          "gitBlobSha1": "2cf449dd3eea4291da7470bd322211b61981ccd8",
+          "bytes": 1130
+        }
+      ],
+      "archiveSha256": "7b03dfa9975d7873fc0143806c3ead726bc38f51cb517147183589c4c414e225",
+      "archiveBytes": 644786
+    },
+    {
+      "id": "candidate-releng",
+      "repository": "https://github.com/frida/releng",
+      "commit": "164a6a41179c38481e6afa4303abb92c9234ea2c",
+      "role": "frida-17.26.2-source-superset",
+      "gitlinks": [
+        {
+          "path": "meson",
+          "commit": "145667c57ed2649ddcc6fbb11b6008e0d451df1d"
+        },
+        {
+          "path": "tomlkit",
+          "commit": "911cccd630965ff423316e25b4685ecf7df0ec0a"
+        }
+      ],
+      "noticeCandidates": [],
+      "archiveSha256": "874ac88527bf75a29cae73f05cfb106bcbc9f55c824c5e7b4350cac2e14949d9",
+      "archiveBytes": 60075
+    },
+    {
+      "id": "candidate-termux-elf-cleaner",
+      "repository": "https://github.com/frida-forks/termux-elf-cleaner",
+      "commit": "85ed0baf1ce6abc1bf2cde92c808cc853d0bf791",
+      "role": "frida-17.26.2-source-superset",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "9cecc1d4669ee8af2ca727a5d8cde10cd8b2d7cc",
+          "bytes": 35141
+        }
+      ],
+      "archiveSha256": "5079bd69d0ce98aa3878d1fcc47d4b072eec0cc80087256702b310540d9542c4",
+      "archiveBytes": 9647065
+    },
+    {
+      "id": "candidate-vala",
+      "repository": "https://github.com/frida-forks/vala",
+      "commit": "fb982b3ccfb57bd9b6a833fc1653fbc6b0cd7b53",
+      "role": "frida-17.26.2-source-superset",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "5ab7695ab8cabe0c5c8a814bb0ab1e8066578fbb",
+          "bytes": 26436
+        }
+      ],
+      "archiveSha256": "aa8024774996d3cd97f9808c055d5b9edb709ef4056913b59bc40b09185e8c61",
+      "archiveBytes": 3628299
     }
   ]
 }

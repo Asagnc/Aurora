@@ -10,7 +10,7 @@ internal class FridaTool(private val app: AuroraApplication, private val owner: 
     prepared: suspend (String, String) -> Unit) : ToolExecutor {
     private val attachment = FridaAttachment(app, owner, prepared)
     override val definitions = listOf(ToolDefinition("frida",
-        "On-demand ARM64 Root Frida17.24.3. action=status/probe/attach/spawn. Does not require a Linux image. " +
+        "On-demand ARM64 Root Frida17.26.2. action=status/probe/attach/spawn. Does not require a Linux image. " +
             "probe tests a temporary CModule hook only inside the current Aurora Root service; java=true also tests its ART bridge. " +
             "Matching probe must pass in this Root service before attach. Probe success does not guarantee other targets work. " +
             "attach requires exact pid/startTicks, source=conversation/resources/workspace, relative script path and its current SHA256. " +

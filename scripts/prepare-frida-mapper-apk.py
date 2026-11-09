@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 import shutil
 import stat
@@ -71,8 +72,11 @@ def patch_build(source, worker_sha, version):
     manifest.write_text(replace_once(manifest.read_text(encoding='utf-8'), 'android:label="Aurora"',
                                     'android:label="Aurora Frida Qualification"'), encoding='utf-8')
     tool = source / 'app/src/main/kotlin/io/github/asagnc/aurora/root/FridaTool.kt'
-    tool.write_text(replace_once(tool.read_text(encoding='utf-8'), 'Root Frida17.24.3.',
-                                f'Root Frida{version} qualification.'), encoding='utf-8')
+    text = tool.read_text(encoding='utf-8')
+    versions = re.findall(r'Root Frida[0-9]+\.[0-9]+\.[0-9]+\.', text)
+    if len(versions) != 1:
+        raise ValueError('Frozen tool version description changed')
+    tool.write_text(replace_once(text, versions[0], f'Root Frida{version} qualification.'), encoding='utf-8')
 
 
 def stage_owned_native(source, apk):
@@ -150,7 +154,7 @@ def prepare(args):
     source.mkdir(parents=True, exist_ok=False)
     inputs = source / 'qualification-input'; inputs.mkdir()
     archive = inputs / 'frozen-source.zip'
-    commit = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD']).decode().strip()
+    commit = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', '--verify', '--end-of-options', args.commit + '^{commit}']).decode().strip()
     subprocess.run(['git', '-C', str(ROOT), 'archive', '--format=zip', '--output=' + str(archive), commit], check=True)
     extract(archive, source)
     shutil.copyfile(worker, inputs / worker.name)
@@ -175,6 +179,7 @@ def prepare(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--commit', default='HEAD', help='Frozen source commit; never changes the main checkout')
     parser.add_argument('--version', choices=['17.25.0', '17.26.2'], default='17.25.0')
     parser.add_argument('--candidate-directory', type=Path, required=True)
     parser.add_argument('--source-directory', type=Path, required=True)

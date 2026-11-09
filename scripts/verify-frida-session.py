@@ -20,9 +20,9 @@ from frida_spawn_cases import SpawnCases
 from managed_native_sources import guard_sources
 
 ROOT = Path(__file__).resolve().parents[1]
-NAME = "frida-core-devkit-17.24.3-linux-x86_64.tar.xz"
-DIGEST = "9a11abf474899a33af6dd9af8a064448b23947a29a3af747eb3c7851591ffec2"
-SIZE = 78853964
+NAME = "frida-core-devkit-17.26.2-linux-x86_64.tar.xz"
+DIGEST = "6e17519b702f82ff8b7fb08d44b239328de4ca1a4e6352b2ddd7d2e367f23cec"
+SIZE = 86846592
 
 
 @unittest.skipUnless(sys.platform.startswith("linux") and os.geteuid() == 0, "Explicit Linux Root host fixture")
@@ -41,7 +41,7 @@ class FridaSessionTests(SpawnCases, GuardCases, ManagedCases, unittest.TestCase)
             helper.verify(Path(cached), DIGEST, SIZE)
             shutil.copyfile(cached, archive)
         else:
-            helper.fetch(archive, "https://github.com/frida/frida/releases/download/17.24.3/" + NAME, DIGEST, SIZE)
+            helper.fetch(archive, "https://github.com/frida/frida/releases/download/17.26.2/" + NAME, DIGEST, SIZE)
         helper.verify(archive, DIGEST, SIZE)
         with tarfile.open(archive) as source:
             for name in ["libfrida-core.a", "frida-core.h"]:

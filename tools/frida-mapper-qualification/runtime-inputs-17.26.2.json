@@ -1,0 +1,269 @@
+{
+  "version": "17.26.2",
+  "scope": "Fixed core/Gum source wrap inventory; conservative superset, not proof of linked dependency or recursive source/license closure",
+  "gumSourceArchive": {
+    "url": "https://codeload.github.com/frida/frida-gum/tar.gz/00a05282d1074c0e043b285c70a4412d784c573d",
+    "bytes": 14534200,
+    "sha256": "3717728001ee7d9e67da5d17e3eb6b1080bf368966c325ecdaa18124535e0307"
+  },
+  "wraps": [
+    {
+      "owner": "core",
+      "path": "subprojects/brotli.wrap",
+      "repository": "https://github.com/frida-forks/brotli.git",
+      "revision": "dd581fd4fea06096e3949ad6cb16775538d0ef47",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "core",
+      "path": "subprojects/efni.wrap",
+      "repository": "https://github.com/frida/efni.git",
+      "revision": "72f90afcc1f7c663db4de934e9f7ab9d3f67d4b1",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": false
+    },
+    {
+      "owner": "core",
+      "path": "subprojects/frida-gum.wrap",
+      "repository": "https://github.com/frida/frida-gum.git",
+      "revision": "17.26.2",
+      "fixedCommit": false,
+      "alreadyInBaselineMaterials": false
+    },
+    {
+      "owner": "core",
+      "path": "subprojects/glib.wrap",
+      "repository": "https://github.com/frida-forks/glib.git",
+      "revision": "f11db6352345ad21deb5f5783bb988bfca2a3d85",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": false
+    },
+    {
+      "owner": "core",
+      "path": "subprojects/idun.wrap",
+      "repository": "https://github.com/frida/idun.git",
+      "revision": "59f682f4aba229ca73d175f66f3fa6d9e2f4b7a0",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": false
+    },
+    {
+      "owner": "core",
+      "path": "subprojects/libbpf.wrap",
+      "repository": "https://github.com/frida-forks/libbpf.git",
+      "revision": "9c4e176810717e27b6990a8722b252fc1967667f",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "core",
+      "path": "subprojects/libgee.wrap",
+      "repository": "https://github.com/frida-forks/libgee.git",
+      "revision": "69621d2c665b75c1e064abdecd540ef1749615ee",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "core",
+      "path": "subprojects/libnice.wrap",
+      "repository": "https://github.com/frida-forks/libnice.git",
+      "revision": "91e2d02edb2999786d7ac854f99bdfd7832df64f",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "core",
+      "path": "subprojects/libusb.wrap",
+      "repository": "https://github.com/frida-forks/libusb.git",
+      "revision": "23d5a2cdc55aa4f0895960d08528e5aa13e7f7e2",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": false
+    },
+    {
+      "owner": "core",
+      "path": "subprojects/lwip.wrap",
+      "repository": "https://github.com/frida-forks/lwip.git",
+      "revision": "6ab74462bd4a5afb13394942ab031d7bee005b4c",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": false
+    },
+    {
+      "owner": "core",
+      "path": "subprojects/lzfse.wrap",
+      "repository": "https://github.com/frida-forks/lzfse.git",
+      "revision": "5cfb7c86919d3c2c636d0d7552b51855a611ba1c",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "core",
+      "path": "subprojects/nghttp2.wrap",
+      "repository": "https://github.com/frida-forks/nghttp2.git",
+      "revision": "3e516202a0df939d6ab6bab47780fa35c5c4662b",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "core",
+      "path": "subprojects/ngtcp2.wrap",
+      "repository": "https://github.com/frida-forks/ngtcp2.git",
+      "revision": "0009518d5ac5e4ce80343fb5f3c719991ffd47af",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "core",
+      "path": "subprojects/openssl.wrap",
+      "repository": "https://github.com/frida-forks/openssl.git",
+      "revision": "a94348d1cd4fb009e7c590fe4e193c2ea89f5ab8",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "core",
+      "path": "subprojects/selinux.wrap",
+      "repository": "https://github.com/frida-forks/selinux.git",
+      "revision": "507985d931eb1f0227218d5d845634e602426c20",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "core",
+      "path": "subprojects/termux-elf-cleaner.wrap",
+      "repository": "https://github.com/frida-forks/termux-elf-cleaner.git",
+      "revision": "85ed0baf1ce6abc1bf2cde92c808cc853d0bf791",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": false
+    },
+    {
+      "owner": "core",
+      "path": "subprojects/usrsctp.wrap",
+      "repository": "https://github.com/frida-forks/usrsctp.git",
+      "revision": "bfd359be44adc76c55efacce9a2f71ff0a7f8cd4",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "gum",
+      "path": "subprojects/capstone.wrap",
+      "repository": "https://github.com/frida-forks/capstone.git",
+      "revision": "f919a03a5417e1c7ea3af7035225073437030ef2",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "gum",
+      "path": "subprojects/glib-networking.wrap",
+      "repository": "https://github.com/frida-forks/glib-networking.git",
+      "revision": "c8d811a906659f59eabc9f4dc3ad2ba22772bf0f",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "gum",
+      "path": "subprojects/glib.wrap",
+      "repository": "https://github.com/frida-forks/glib.git",
+      "revision": "f11db6352345ad21deb5f5783bb988bfca2a3d85",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": false
+    },
+    {
+      "owner": "gum",
+      "path": "subprojects/json-glib.wrap",
+      "repository": "https://github.com/frida-forks/json-glib.git",
+      "revision": "0242c39f1f60f844c9df41e83434251b06609e82",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "gum",
+      "path": "subprojects/libdwarf.wrap",
+      "repository": "https://github.com/frida-forks/libdwarf.git",
+      "revision": "9ac8cc22cab54d72cb355a44e85db716a7006f47",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "gum",
+      "path": "subprojects/libffi.wrap",
+      "repository": "https://github.com/frida-forks/libffi.git",
+      "revision": "5cca756802a5d27988e7f9973e1299f684cfeff7",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": false
+    },
+    {
+      "owner": "gum",
+      "path": "subprojects/libsoup.wrap",
+      "repository": "https://github.com/frida-forks/libsoup.git",
+      "revision": "2537f36926436ef7ac7e2430c25755216ed54ca5",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "gum",
+      "path": "subprojects/libunwind.wrap",
+      "repository": "https://github.com/frida-forks/libunwind.git",
+      "revision": "733d7d1c73f3512d2a50add2337157fa385a7e6e",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "gum",
+      "path": "subprojects/minizip-ng.wrap",
+      "repository": "https://github.com/frida-forks/minizip-ng.git",
+      "revision": "6475b3c6f810f00d62bb5ed7ef90d4a985447909",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "gum",
+      "path": "subprojects/openssl.wrap",
+      "repository": "https://github.com/frida-forks/openssl.git",
+      "revision": "a94348d1cd4fb009e7c590fe4e193c2ea89f5ab8",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "gum",
+      "path": "subprojects/quickjs.wrap",
+      "repository": "https://github.com/frida-forks/quickjs.git",
+      "revision": "6f3b5b4827d4c81af85627d66fce2ec3c8ab70d0",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": false
+    },
+    {
+      "owner": "gum",
+      "path": "subprojects/sqlite.wrap",
+      "repository": "https://github.com/frida-forks/sqlite.git",
+      "revision": "2cfd2ffbef3fc25a11542f876a0ff8ecb2d50914",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "gum",
+      "path": "subprojects/tinycc.wrap",
+      "repository": "https://github.com/frida-forks/tinycc.git",
+      "revision": "c0b84021e3e5c8359a469b1af2bf4abd83a7a26a",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "gum",
+      "path": "subprojects/v8.wrap",
+      "repository": "https://github.com/frida-forks/v8.git",
+      "revision": "f6d7f6610f2f21e2817ed180b72ea750a3f63ce8",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    },
+    {
+      "owner": "gum",
+      "path": "subprojects/xz.wrap",
+      "repository": "https://github.com/frida-forks/xz.git",
+      "revision": "68289232393af1ff1756bcf05164cedfd792df59",
+      "fixedCommit": true,
+      "alreadyInBaselineMaterials": true
+    }
+  ],
+  "fixedGitWraps": 31,
+  "missingFromBaseline": 9
+}

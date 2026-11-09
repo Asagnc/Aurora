@@ -68,7 +68,7 @@ def stage(args):
     output = args.output
     output.mkdir(parents=True, exist_ok=True)
     blocks = ['Aurora Frida source-material notices\n\n'
-              'Frida 17.24.3 / Java bridge 7.0.13. This corpus also preserves notices from build tools and optional source files.\n'
+              'Frida 17.26.2 runtime / Java bridge 7.0.13 / frozen Frida 17.24.3 build-host binding. This corpus also preserves notices from build tools and optional source files.\n'
               'Source versions, archive digests and paths are recorded in index.json and tools/frida-sources/catalog.json.\n'
               'The Java bridge declares LGPL-2.0 WITH WxWindows-exception-3.1 in package.json; its publication has no standalone license file.\n'
               'Companion LGPL and wxWindows texts below retain their own documented sources.\n'

@@ -1,0 +1,231 @@
+{
+  "version": "17.26.2",
+  "scope": "Independent candidate source inputs and offline outer-worker relink; not upstream SDK rebuild, legal closure, production APK or release authorization",
+  "baselineSourceInputs": 65,
+  "deltaSourceInputs": 14,
+  "sourceClosureVerified": false,
+  "productionIntegrated": false,
+  "workerSha256": "05abea25b50257732963a0f22ce2f0efd66812a68c91f93198260dc1afb9bd20",
+  "files": {
+    "app/src/main/cpp/frida/channel_input.c": {
+      "bytes": 8277,
+      "sha256": "fa1f9c6722db1b454b2648232a682615aad2921c32a8ceec009962bc3fd5d433"
+    },
+    "app/src/main/cpp/frida/events.c": {
+      "bytes": 4147,
+      "sha256": "adc87e33b280b84f7439df1626233ad58e880b4cf7f22df539c95264d0dc798e"
+    },
+    "app/src/main/cpp/frida/fd_channel.c": {
+      "bytes": 6121,
+      "sha256": "e4468456d544b1d761fdd49b094ca8e0bfeff6dc9150efd6fdd1fe485b697d49"
+    },
+    "app/src/main/cpp/frida/fd_channel.h": {
+      "bytes": 815,
+      "sha256": "492e2a260282679a860d4bfd3f4f1ec249e035d222c047e867c0014bc1917407"
+    },
+    "app/src/main/cpp/frida/fd_io.c": {
+      "bytes": 1830,
+      "sha256": "dc60460a168e84d2688be8f4d2424d5cb02ed7aa19e55d8f0b17dc329ee9be5f"
+    },
+    "app/src/main/cpp/frida/input.c": {
+      "bytes": 4169,
+      "sha256": "659961c50ea87b524cf4b9bdabafaf5447c92da46473ca21d1c894035f661f1e"
+    },
+    "app/src/main/cpp/frida/input.h": {
+      "bytes": 612,
+      "sha256": "6a721567eaa1abdfc7613cebfd334529b389778e4a5e8d0cc4776cefc42626ac"
+    },
+    "app/src/main/cpp/frida/managed_control.c": {
+      "bytes": 3256,
+      "sha256": "70bbcab12838952b691cac1fbbacd8748bd84300953c5d746eb5c21c49326ea0"
+    },
+    "app/src/main/cpp/frida/managed_control.h": {
+      "bytes": 1771,
+      "sha256": "ca3f770e7bae73a8c20361419849197f22497892322cb92e97b420c8a1d3b2a5"
+    },
+    "app/src/main/cpp/frida/managed_observe.c": {
+      "bytes": 4845,
+      "sha256": "058dcc0e5e2cd26dd64448c4ad77592a52dbbe30e069047a9710d35970721f8c"
+    },
+    "app/src/main/cpp/frida/managed_observe.h": {
+      "bytes": 1691,
+      "sha256": "952f9ab65a34400bfe76051cf76051326049029cfc2a5a33e8417c3b516fabdb"
+    },
+    "app/src/main/cpp/frida/managed_protocol.c": {
+      "bytes": 1994,
+      "sha256": "332ffda0bdeef3d0175434ee6103e2a054ccad3e21d8e23490cca9a525861855"
+    },
+    "app/src/main/cpp/frida/managed_receive.c": {
+      "bytes": 2958,
+      "sha256": "40eab3a9078313e697c268dff6188e374c113a32ad548767713b971b232ec609"
+    },
+    "app/src/main/cpp/frida/managed_receive.h": {
+      "bytes": 956,
+      "sha256": "d9aa3baa4de5e1111ed717ac00596172ff2d4972f3a07c6637e08ec23e4dfb02"
+    },
+    "app/src/main/cpp/frida/managed_watch.c": {
+      "bytes": 1306,
+      "sha256": "02437e25ad6d358516760388fc06abb89cc81c2faf7ceefc353bd59edbd8a66f"
+    },
+    "app/src/main/cpp/frida/policy_activate.c": {
+      "bytes": 6223,
+      "sha256": "6851568f914fd031ad769b67141d2c669c5e454653016e751b7799b9664f1e10"
+    },
+    "app/src/main/cpp/frida/policy_command.c": {
+      "bytes": 1631,
+      "sha256": "fd96e55a72b93f4466928f6da9c30dcd039c4d70fa16a2590aa53cec472152f5"
+    },
+    "app/src/main/cpp/frida/policy_edit.c": {
+      "bytes": 8565,
+      "sha256": "5ab79ee80581727650d91a86165d009bf3f77136b0f2304cdc4d0398c94a269c"
+    },
+    "app/src/main/cpp/frida/policy_edit.h": {
+      "bytes": 711,
+      "sha256": "0557fa03ea6d299c12a0f47687b8a52fa375e328664e6ccf0f99c3dbf9f491b3"
+    },
+    "app/src/main/cpp/frida/policy_io.c": {
+      "bytes": 2271,
+      "sha256": "4ea2add411302ec25579dc547cda9c820fbabd3f00f99300db870450e6272d72"
+    },
+    "app/src/main/cpp/frida/policy_io.h": {
+      "bytes": 298,
+      "sha256": "a1b901555f2601522f7f4205190528beffb34a042af0ec66d2e1ea97ca2df95a"
+    },
+    "app/src/main/cpp/frida/policy_types.c": {
+      "bytes": 3403,
+      "sha256": "a98e4908d171bdeb2238450722b5f16e87fa83e43597ac3b1ef2e9e988d8bfa7"
+    },
+    "app/src/main/cpp/frida/policy_types.h": {
+      "bytes": 317,
+      "sha256": "229fc53b466e6cef3e52685f58e3bf96d2c8e3b8bb601bdcea732cf4bc58e20e"
+    },
+    "app/src/main/cpp/frida/session.c": {
+      "bytes": 13658,
+      "sha256": "76c6f5dc9ad9986fcb789417c372514a7cdc5e50e8fe80757b7454023c9952bc"
+    },
+    "app/src/main/cpp/frida/session.h": {
+      "bytes": 1777,
+      "sha256": "0e22de8aa85e587ecf4fc942bebc975b4f91bced5c9364ce9756889dfdb9d4f1"
+    },
+    "app/src/main/cpp/frida/spawn_record.c": {
+      "bytes": 4325,
+      "sha256": "6a0cce4ba6a9f9d70d5c445aecfc1981ddee421861988c6451f0333d05931cdf"
+    },
+    "app/src/main/cpp/frida/spawn_record.h": {
+      "bytes": 543,
+      "sha256": "4eb9feb513bf8082ae9256910ef014c73860b183080a68e279acc3caee9e8f4a"
+    },
+    "app/src/main/cpp/frida/spawn_session.c": {
+      "bytes": 2920,
+      "sha256": "c34a2a7df2a3e1b13c3534326a7b8f482dc2d6c504ddb7998dd2f392ec085087"
+    },
+    "app/src/main/cpp/frida/worker.c": {
+      "bytes": 5692,
+      "sha256": "c3b344c9174b0e42d54274275b806162c4fb9cb44febae34617ce68aa35cd6d8"
+    },
+    "scripts/build-frida-probe.py": {
+      "bytes": 8818,
+      "sha256": "6b651dc094c6d39d0ba692d5b2562f898f18517c2774030359e3e9d2559d1d95"
+    },
+    "scripts/audit-frida-resources.py": {
+      "bytes": 7692,
+      "sha256": "bac19e3a2157159cad933f0744c63b0da6e13fb4b1418e9a3c0726d045689f5b"
+    },
+    "scripts/verify-static-reverse-sources.py": {
+      "bytes": 4954,
+      "sha256": "feb2d8454a15c66b7f85d33ddad7f4977a3cb94f30da0a53b3b6995036b56c54"
+    },
+    "scripts/frida-policy-inputs.py": {
+      "bytes": 2828,
+      "sha256": "52291b7605478dec11087ceb41de2a5795f00215f713a3f43d24756bde5a9128"
+    },
+    "scripts/qualify-frida-mapper.py": {
+      "bytes": 4930,
+      "sha256": "c4f4c1e5ae52d20dc111c0f89e5cca29115001ed91d654d19fa6a50fca6f5363"
+    },
+    "tools/frida-mapper-qualification/candidate-17.26.2.json": {
+      "bytes": 1221,
+      "sha256": "b4bcd6b655fb94e2ec9529fcc88c8e5eed39a53f3ac7137a57ce847f6ed5c2fb"
+    },
+    "tools/frida-mapper-qualification/source-delta-17.26.2.json": {
+      "bytes": 10535,
+      "sha256": "75b02ee2838831863a4a0101bf446136de01741e35e9828f125e9882f3fc4334"
+    },
+    "tools/frida-mapper-qualification/runtime-inputs-17.26.2.json": {
+      "bytes": 9448,
+      "sha256": "18b18db16b8ea1eec2e08e645f171a942a112bfa311fe559cbfa4d440d2c11e3"
+    },
+    "baseline/frida-17.24.3-source-materials.zip": {
+      "bytes": 349841610,
+      "sha256": "0c786ff3a39fc191def901acd0b5c47722bdaa6338236aa7ac39807cecb6ee6f"
+    },
+    "sources/candidate-compiler-rt-1599be663aa01b1d7f59492a29a519cb0a2c329a.tar.gz": {
+      "bytes": 4700244,
+      "sha256": "59653bbf6c4df1a8f315fed5423b9f330912ff07a6fc49a1008ce547261eb19a"
+    },
+    "sources/candidate-efni-72f90afcc1f7c663db4de934e9f7ab9d3f67d4b1.tar.gz": {
+      "bytes": 43254,
+      "sha256": "3969371ee21e2cf29227472eb45095a93b621fc823477b60bc590ad339f4250f"
+    },
+    "sources/candidate-frida-core-2a41a960fe9b7fc0ccc85003e4f31f0caeec4d8d.tar.gz": {
+      "bytes": 4378200,
+      "sha256": "c862e4af3a762493b9a1d4691b45dfe4ab5af25822922f0ef8c58a8fe9f6ac0c"
+    },
+    "sources/candidate-frida-gum-00a05282d1074c0e043b285c70a4412d784c573d.tar.gz": {
+      "bytes": 14534200,
+      "sha256": "3717728001ee7d9e67da5d17e3eb6b1080bf368966c325ecdaa18124535e0307"
+    },
+    "sources/candidate-glib-f11db6352345ad21deb5f5783bb988bfca2a3d85.tar.gz": {
+      "bytes": 10322633,
+      "sha256": "b4347eb43afb18aa4bb99870f9d5b6c9ff7a2b1d94adcc86275623fe164c6d99"
+    },
+    "sources/candidate-idun-59f682f4aba229ca73d175f66f3fa6d9e2f4b7a0.tar.gz": {
+      "bytes": 237623,
+      "sha256": "28aa5388ff4c6496bf719ce0d3c787b77986d1b9662c643b754e89d6509dfcd2"
+    },
+    "sources/candidate-libffi-5cca756802a5d27988e7f9973e1299f684cfeff7.tar.gz": {
+      "bytes": 683860,
+      "sha256": "dddd3318a12f87f1ef4e763571c6ba439094691779cd3b08468067f6f784647f"
+    },
+    "sources/candidate-libusb-23d5a2cdc55aa4f0895960d08528e5aa13e7f7e2.tar.gz": {
+      "bytes": 487585,
+      "sha256": "4f1825ffbb237e9889f5ccf04552b6c9fbaeab5f39d69162dd309dd17c0dee6f"
+    },
+    "sources/candidate-lwip-6ab74462bd4a5afb13394942ab031d7bee005b4c.tar.gz": {
+      "bytes": 1609799,
+      "sha256": "c1e01a1e119c9e6c89257dab79f2eeb20138194623ca12322126fc4351b81b6c"
+    },
+    "sources/candidate-picolibc-c0a11fff9b4ffbb8c0c60226c2fee31526e01b8b.tar.gz": {
+      "bytes": 9390855,
+      "sha256": "95ac18b4b4c3e1201e4db47336931eecb3b504a7242bc51c2bbcf27ac0db7b72"
+    },
+    "sources/candidate-quickjs-6f3b5b4827d4c81af85627d66fce2ec3c8ab70d0.tar.gz": {
+      "bytes": 644786,
+      "sha256": "7b03dfa9975d7873fc0143806c3ead726bc38f51cb517147183589c4c414e225"
+    },
+    "sources/candidate-releng-164a6a41179c38481e6afa4303abb92c9234ea2c.tar.gz": {
+      "bytes": 60075,
+      "sha256": "874ac88527bf75a29cae73f05cfb106bcbc9f55c824c5e7b4350cac2e14949d9"
+    },
+    "sources/candidate-termux-elf-cleaner-85ed0baf1ce6abc1bf2cde92c808cc853d0bf791.tar.gz": {
+      "bytes": 9647065,
+      "sha256": "5079bd69d0ce98aa3878d1fcc47d4b072eec0cc80087256702b310540d9542c4"
+    },
+    "sources/candidate-vala-fb982b3ccfb57bd9b6a833fc1653fbc6b0cd7b53.tar.gz": {
+      "bytes": 3628299,
+      "sha256": "aa8024774996d3cd97f9808c055d5b9edb709ef4056913b59bc40b09185e8c61"
+    },
+    "inputs/frida-core-devkit-17.26.2-android-arm64.tar.xz": {
+      "bytes": 61096720,
+      "sha256": "3df0d73af88a7f81faa8f09f8d8c73ee83498c04d21014d54830463f250e340f"
+    },
+    "app/build/outputs/frida-source-materials/selinux-507985d931eb1f0227218d5d845634e602426c20.tar.gz": {
+      "bytes": 6125398,
+      "sha256": "97cc89bd26d623232233b1ad86fc9322fc00e663f1e80b577ee0cbdd32321090"
+    }
+  },
+  "offlineRelinkByteIdentical": true,
+  "offlineRelinkSha256": "05abea25b50257732963a0f22ce2f0efd66812a68c91f93198260dc1afb9bd20",
+  "archiveBytes": 477598734,
+  "archiveSha256": "381a1f4013eb54cf8b3009024ca63976eacc1a3cf7f7a40578dea1c80ec6c8c0"
+}

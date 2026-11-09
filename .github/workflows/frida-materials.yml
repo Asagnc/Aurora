@@ -22,7 +22,7 @@ jobs:
         run: python3 scripts/build-frida-probe.py --directory app/build/outputs/frida-qualification --ndk "$ANDROID_HOME/ndk/30.0.16248370" --download
       - name: Package sources and verify offline worker relink
         run: |
-          python3 scripts/package-frida-materials.py --materials app/build/outputs/frida-source-materials --devkit app/build/outputs/frida-qualification/frida-core-devkit-17.24.3-android-arm64.tar.xz --reference app/build/outputs/frida-qualification/report.json --output app/build/outputs/frida-qualification/aurora-frida-source-materials.zip
+          python3 scripts/package-frida-materials.py --materials app/build/outputs/frida-source-materials --devkit app/build/outputs/frida-qualification/frida-core-devkit-17.26.2-android-arm64.tar.xz --reference app/build/outputs/frida-qualification/report.json --output app/build/outputs/frida-qualification/aurora-frida-source-materials.zip
           python3 scripts/verify-frida-source-roundtrip.py app/build/outputs/frida-qualification/aurora-frida-source-materials.zip --reference app/build/outputs/frida-qualification/report.json --ndk "$ANDROID_HOME/ndk/30.0.16248370" --report app/build/outputs/frida-qualification/offline-relink.json
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:

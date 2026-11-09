@@ -1,0 +1,300 @@
+{
+  "version": "17.26.2",
+  "scope": "Fixed candidate core/Gum direct wraps, matching releng/Vala and embedded freestanding runtime source delta; baseline 65 retained separately; optional documentation/profiling/Apple-only integration omitted, not upstream SDK rebuild or legal closure",
+  "sourceClosureVerified": false,
+  "baselineCatalogSha256": "a4d61091a0ff9b712ceddb946fe30188b3ce3bbed14466a4977089586568433f",
+  "repositories": [
+    {
+      "id": "candidate-compiler-rt",
+      "repository": "https://github.com/frida-forks/compiler-rt",
+      "commit": "1599be663aa01b1d7f59492a29a519cb0a2c329a",
+      "role": "candidate-compiler-or-embedded-freestanding-source",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "LICENSE.TXT",
+          "gitBlobSha1": "5a79a1b9d5cb0af9a779751f07033e44ca3b14d8",
+          "bytes": 16708
+        }
+      ],
+      "archiveSha256": "59653bbf6c4df1a8f315fed5423b9f330912ff07a6fc49a1008ce547261eb19a",
+      "archiveBytes": 4700244
+    },
+    {
+      "id": "candidate-efni",
+      "repository": "https://github.com/frida/efni",
+      "commit": "72f90afcc1f7c663db4de934e9f7ab9d3f67d4b1",
+      "role": "candidate-source-delta-superset",
+      "gitlinks": [
+        {
+          "path": "releng",
+          "commit": "164a6a41179c38481e6afa4303abb92c9234ea2c",
+          "repositoryFromGitmodules": "https://github.com/frida/releng.git"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "b01d49c670e55dbff638eb294ac1a52416fb32e8",
+          "bytes": 2416
+        }
+      ],
+      "archiveSha256": "3969371ee21e2cf29227472eb45095a93b621fc823477b60bc590ad339f4250f",
+      "archiveBytes": 43254
+    },
+    {
+      "id": "candidate-frida-core",
+      "repository": "https://github.com/frida/frida-core",
+      "commit": "2a41a960fe9b7fc0ccc85003e4f31f0caeec4d8d",
+      "role": "candidate-source-delta-superset",
+      "gitlinks": [
+        {
+          "path": "releng",
+          "commit": "164a6a41179c38481e6afa4303abb92c9234ea2c",
+          "repositoryFromGitmodules": "https://github.com/frida/releng.git"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "b01d49c670e55dbff638eb294ac1a52416fb32e8",
+          "bytes": 2416
+        }
+      ],
+      "archiveSha256": "c862e4af3a762493b9a1d4691b45dfe4ab5af25822922f0ef8c58a8fe9f6ac0c",
+      "archiveBytes": 4378200
+    },
+    {
+      "id": "candidate-frida-gum",
+      "repository": "https://github.com/frida/frida-gum",
+      "commit": "00a05282d1074c0e043b285c70a4412d784c573d",
+      "role": "candidate-source-delta-superset",
+      "gitlinks": [
+        {
+          "path": "releng",
+          "commit": "164a6a41179c38481e6afa4303abb92c9234ea2c",
+          "repositoryFromGitmodules": "https://github.com/frida/releng.git"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "810ab7017801b3269dcee7931513e3e5e1910062",
+          "bytes": 5696
+        }
+      ],
+      "archiveSha256": "3717728001ee7d9e67da5d17e3eb6b1080bf368966c325ecdaa18124535e0307",
+      "archiveBytes": 14534200
+    },
+    {
+      "id": "candidate-glib",
+      "repository": "https://github.com/frida-forks/glib",
+      "commit": "f11db6352345ad21deb5f5783bb988bfca2a3d85",
+      "role": "candidate-source-delta-superset",
+      "gitlinks": [
+        {
+          "path": "subprojects/gvdb",
+          "commit": "2b42fc75f09dbe1cd1057580b5782b08f2dcb400",
+          "repositoryFromGitmodules": "../../GNOME/gvdb.git"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "e818e737a7833b56367e795cef6ee0d992c6e667",
+          "bytes": 30
+        },
+        {
+          "path": "LICENSES/LicenseRef-old-glib-tests.txt",
+          "gitBlobSha1": "d78b44306d8d5966923f643f1d576be233b00661",
+          "bytes": 841
+        },
+        {
+          "path": "docs/reference/COPYING",
+          "gitBlobSha1": "df952d3cab8f0465a5ebe29fee5a7ff0ea16c59c",
+          "bytes": 1698
+        },
+        {
+          "path": "gmodule/COPYING",
+          "gitBlobSha1": "ddf687147fc15a5d362353275aefaf3406af8630",
+          "bytes": 33
+        },
+        {
+          "path": "proxy-libintl-static/COPYING.LIB.txt",
+          "gitBlobSha1": "bf50f20de6ef55b52fe7832d3a4ed05f0c69d452",
+          "bytes": 25292
+        }
+      ],
+      "archiveSha256": "b4347eb43afb18aa4bb99870f9d5b6c9ff7a2b1d94adcc86275623fe164c6d99",
+      "archiveBytes": 10322633
+    },
+    {
+      "id": "candidate-idun",
+      "repository": "https://github.com/frida/idun",
+      "commit": "59f682f4aba229ca73d175f66f3fa6d9e2f4b7a0",
+      "role": "candidate-source-delta-superset",
+      "gitlinks": [
+        {
+          "path": "releng",
+          "commit": "164a6a41179c38481e6afa4303abb92c9234ea2c",
+          "repositoryFromGitmodules": "https://github.com/frida/releng.git"
+        }
+      ],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "b01d49c670e55dbff638eb294ac1a52416fb32e8",
+          "bytes": 2416
+        }
+      ],
+      "archiveSha256": "28aa5388ff4c6496bf719ce0d3c787b77986d1b9662c643b754e89d6509dfcd2",
+      "archiveBytes": 237623
+    },
+    {
+      "id": "candidate-libffi",
+      "repository": "https://github.com/frida-forks/libffi",
+      "commit": "5cca756802a5d27988e7f9973e1299f684cfeff7",
+      "role": "candidate-source-delta-superset",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "LICENSE",
+          "gitBlobSha1": "90a8b230284e5cfbf02cbed3431116922bd84663",
+          "bytes": 1132
+        },
+        {
+          "path": "LICENSE-BUILDTOOLS",
+          "gitBlobSha1": "d1d626e00859030061ed7b071e84f8f893d84d93",
+          "bytes": 18698
+        }
+      ],
+      "archiveSha256": "dddd3318a12f87f1ef4e763571c6ba439094691779cd3b08468067f6f784647f",
+      "archiveBytes": 683860
+    },
+    {
+      "id": "candidate-libusb",
+      "repository": "https://github.com/frida-forks/libusb",
+      "commit": "23d5a2cdc55aa4f0895960d08528e5aa13e7f7e2",
+      "role": "candidate-source-delta-superset",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "602bfc94635ddf8f1bf2b00419a85ead645a5b67",
+          "bytes": 26434
+        },
+        {
+          "path": "LICENSE.build",
+          "gitBlobSha1": "b59833dedbe2e4a84304431f4acca5dc4599cec7",
+          "bytes": 1070
+        }
+      ],
+      "archiveSha256": "4f1825ffbb237e9889f5ccf04552b6c9fbaeab5f39d69162dd309dd17c0dee6f",
+      "archiveBytes": 487585
+    },
+    {
+      "id": "candidate-lwip",
+      "repository": "https://github.com/frida-forks/lwip",
+      "commit": "6ab74462bd4a5afb13394942ab031d7bee005b4c",
+      "role": "candidate-source-delta-superset",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "90465f592ceafc10f2e8d3374cf52d55a39d6cde",
+          "bytes": 1425
+        },
+        {
+          "path": "contrib/apps/LwipMibCompiler/SharpSnmpLib/license.txt",
+          "gitBlobSha1": "27946de210082fa0e30252ecf926cdf28db0d344",
+          "bytes": 24383
+        }
+      ],
+      "archiveSha256": "c1e01a1e119c9e6c89257dab79f2eeb20138194623ca12322126fc4351b81b6c",
+      "archiveBytes": 1609799
+    },
+    {
+      "id": "candidate-picolibc",
+      "repository": "https://github.com/frida-forks/picolibc",
+      "commit": "c0a11fff9b4ffbb8c0c60226c2fee31526e01b8b",
+      "role": "candidate-compiler-or-embedded-freestanding-source",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING.picolibc",
+          "gitBlobSha1": "471fbeba259be46e645be5169674f170a9d438c9",
+          "bytes": 241866
+        }
+      ],
+      "archiveSha256": "95ac18b4b4c3e1201e4db47336931eecb3b504a7242bc51c2bbcf27ac0db7b72",
+      "archiveBytes": 9390855
+    },
+    {
+      "id": "candidate-quickjs",
+      "repository": "https://github.com/frida-forks/quickjs",
+      "commit": "6f3b5b4827d4c81af85627d66fce2ec3c8ab70d0",
+      "role": "candidate-source-delta-superset",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "LICENSE",
+          "gitBlobSha1": "2cf449dd3eea4291da7470bd322211b61981ccd8",
+          "bytes": 1130
+        }
+      ],
+      "archiveSha256": "7b03dfa9975d7873fc0143806c3ead726bc38f51cb517147183589c4c414e225",
+      "archiveBytes": 644786
+    },
+    {
+      "id": "candidate-releng",
+      "repository": "https://github.com/frida/releng",
+      "commit": "164a6a41179c38481e6afa4303abb92c9234ea2c",
+      "role": "candidate-release-engineering-source",
+      "gitlinks": [
+        {
+          "path": "meson",
+          "commit": "145667c57ed2649ddcc6fbb11b6008e0d451df1d"
+        },
+        {
+          "path": "tomlkit",
+          "commit": "911cccd630965ff423316e25b4685ecf7df0ec0a"
+        }
+      ],
+      "noticeCandidates": [],
+      "archiveSha256": "874ac88527bf75a29cae73f05cfb106bcbc9f55c824c5e7b4350cac2e14949d9",
+      "archiveBytes": 60075
+    },
+    {
+      "id": "candidate-termux-elf-cleaner",
+      "repository": "https://github.com/frida-forks/termux-elf-cleaner",
+      "commit": "85ed0baf1ce6abc1bf2cde92c808cc853d0bf791",
+      "role": "candidate-source-delta-superset",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "9cecc1d4669ee8af2ca727a5d8cde10cd8b2d7cc",
+          "bytes": 35141
+        }
+      ],
+      "archiveSha256": "5079bd69d0ce98aa3878d1fcc47d4b072eec0cc80087256702b310540d9542c4",
+      "archiveBytes": 9647065
+    },
+    {
+      "id": "candidate-vala",
+      "repository": "https://github.com/frida-forks/vala",
+      "commit": "fb982b3ccfb57bd9b6a833fc1653fbc6b0cd7b53",
+      "role": "candidate-compiler-or-embedded-freestanding-source",
+      "gitlinks": [],
+      "noticeCandidates": [
+        {
+          "path": "COPYING",
+          "gitBlobSha1": "5ab7695ab8cabe0c5c8a814bb0ab1e8066578fbb",
+          "bytes": 26436
+        }
+      ],
+      "archiveSha256": "aa8024774996d3cd97f9808c055d5b9edb709ef4056913b59bc40b09185e8c61",
+      "archiveBytes": 3628299
+    }
+  ]
+}

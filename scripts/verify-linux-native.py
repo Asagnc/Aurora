@@ -89,7 +89,7 @@ def verify(apk):
             raise ValueError('Java bridge differs from packaged descriptor')
         notices = archive.read('assets/licenses/frida/NOTICE.txt')
         index = json.loads(archive.read('assets/licenses/frida/index.json'))
-        if hashlib.sha256(notices).hexdigest() != index['noticeSha256'] or index['sourceArchives'] != 65:
+        if hashlib.sha256(notices).hexdigest() != index['noticeSha256'] or index['sourceArchives'] != 79:
             raise ValueError('Frida source notice corpus changed')
 
 

@@ -14,10 +14,10 @@ import tempfile
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-NAME = "frida-core-devkit-17.24.3-android-arm64.tar.xz"
-DIGEST = "0c688824a24949e7be77109fd2c7306bba60cb47f608789e141bb24cd23b1005"
-SIZE = 60903232
-URL = "https://github.com/frida/frida/releases/download/17.24.3/" + NAME
+NAME = "frida-core-devkit-17.26.2-android-arm64.tar.xz"
+DIGEST = "3df0d73af88a7f81faa8f09f8d8c73ee83498c04d21014d54830463f250e340f"
+SIZE = 61096720
+URL = "https://github.com/frida/frida/releases/download/17.26.2/" + NAME
 
 
 def source_manifest():
@@ -42,13 +42,14 @@ def policy_inputs():
 
 
 def extract(archive, directory):
-    expected = {".", "./libfrida-core.a", "./frida-core.h", "./frida-core.gir", "./frida-core-example.c"}
+    expected = {".": 0, "./libfrida-core.a": 347101670, "./frida-core.h": 3139686,
+                "./frida-core.gir": 923050, "./frida-core-example.c": 4922}
     with tarfile.open(archive) as source:
         entries = source.getmembers()
-        if len(entries) != len(expected) or {entry.name for entry in entries} != expected:
+        if len(entries) != len(expected) or {entry.name for entry in entries} != set(expected):
             raise ValueError("Unexpected fixed devkit archive inventory")
-        if sum(entry.size for entry in entries) > 350_000_000:
-            raise ValueError("Devkit expansion exceeded expected budget")
+        if any(entry.size != expected[entry.name] or entry.issparse() for entry in entries):
+            raise ValueError("Fixed devkit member byte count or representation changed")
         for entry in entries:
             if entry.name == ".":
                 if not entry.isdir():
@@ -110,7 +111,7 @@ def build(args, archive, output):
             archive_zip.write(stripped, "lib/arm64-v8a/libaurora_frida.so")
         with stripped.open("rb") as stream:
             worker_digest = hashlib.file_digest(stream, "sha256").hexdigest()
-        report = {"version": "17.24.3", "archiveSha256": DIGEST, "unstrippedBytes": unstripped,
+        report = {"version": "17.26.2", "archiveSha256": DIGEST, "unstrippedBytes": unstripped,
                   "strippedBytes": stripped.stat().st_size, "deflatedWorkerZipBytes": packed.stat().st_size,
                   "workerSha256": worker_digest,
                   "needed": needed, "androidRuntime": "NOT TESTED", "packagedInApk": False,

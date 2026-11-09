@@ -81,11 +81,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          for selected in 'frida-core-devkit-17.24.3-android-arm64.tar.xz|app/build/outputs/frida-qualification' 'frida-v17.24.3-napi-v8-linux-x64.tar.gz|tools/frida-bridge/build/downloads'; do
-            IFS='|' read -r asset directory <<< "$selected"
+          for selected in '17.26.2|frida-core-devkit-17.26.2-android-arm64.tar.xz|app/build/outputs/frida-qualification' '17.24.3|frida-v17.24.3-napi-v8-linux-x64.tar.gz|tools/frida-bridge/build/downloads'; do
+            IFS='|' read -r version asset directory <<< "$selected"
             mkdir -p "$directory"
             for attempt in 1 2 3; do
-              if gh release download 17.24.3 --repo frida/frida --pattern "$asset" --dir "$directory" --clobber; then break; fi
+              if gh release download "$version" --repo frida/frida --pattern "$asset" --dir "$directory" --clobber; then break; fi
               if [ "$attempt" -eq 3 ]; then exit 1; fi
               sleep 5
             done
@@ -96,7 +96,7 @@ jobs:
       - name: Reuse verified source archives for the independent APK worker build
         run: |
           mkdir -p app/build/frida-worker
-          cp app/build/outputs/frida-qualification/frida-core-devkit-17.24.3-android-arm64.tar.xz app/build/frida-worker/
+          cp app/build/outputs/frida-qualification/frida-core-devkit-17.26.2-android-arm64.tar.xz app/build/frida-worker/
           cp app/build/outputs/frida-qualification/selinux-507985d931eb1f0227218d5d845634e602426c20.tar.gz app/build/frida-worker/
       - name: Build and audit Android ARM64 managed guard without packaging
         run: python3 scripts/build-managed-guard.py --directory app/build/outputs/managed-qualification --ndk "$ANDROID_HOME/ndk/30.0.16248370"
@@ -192,11 +192,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          for selected in 'frida-core-devkit-17.24.3-linux-x86_64.tar.xz|app/build/outputs/frida-host-inputs' 'frida-v17.24.3-napi-v8-linux-x64.tar.gz|tools/frida-bridge/build/downloads'; do
-            IFS='|' read -r asset directory <<< "$selected"
+          for selected in '17.26.2|frida-core-devkit-17.26.2-linux-x86_64.tar.xz|app/build/outputs/frida-host-inputs' '17.24.3|frida-v17.24.3-napi-v8-linux-x64.tar.gz|tools/frida-bridge/build/downloads'; do
+            IFS='|' read -r version asset directory <<< "$selected"
             mkdir -p "$directory"
             for attempt in 1 2 3; do
-              if gh release download 17.24.3 --repo frida/frida --pattern "$asset" --dir "$directory" --clobber; then break; fi
+              if gh release download "$version" --repo frida/frida --pattern "$asset" --dir "$directory" --clobber; then break; fi
               if [ "$attempt" -eq 3 ]; then exit 1; fi
               sleep 5
             done
@@ -213,4 +213,4 @@ jobs:
             sudo apt-get install -y --no-install-recommends gdb
           fi
       - name: Verify actual Frida session lifecycle on owned Linux targets
-        run: sudo -n env AURORA_FRIDA_JAVA_BUNDLE="$PWD/tools/frida-bridge/build/java-bridge.js" AURORA_FRIDA_HOST_DEVKIT="$PWD/app/build/outputs/frida-host-inputs/frida-core-devkit-17.24.3-linux-x86_64.tar.xz" python3 scripts/verify-frida-session.py
+        run: sudo -n env AURORA_FRIDA_JAVA_BUNDLE="$PWD/tools/frida-bridge/build/java-bridge.js" AURORA_FRIDA_HOST_DEVKIT="$PWD/app/build/outputs/frida-host-inputs/frida-core-devkit-17.26.2-linux-x86_64.tar.xz" python3 scripts/verify-frida-session.py

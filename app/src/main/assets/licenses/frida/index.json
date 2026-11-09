@@ -1,7 +1,7 @@
 {
-  "noticeSha256": "7337769b1ed56d85d32e02e133cd1742fa5efe7c94c65e0d4af741b82eae0594",
-  "uniqueTexts": 132,
-  "sourceArchives": 65,
+  "noticeSha256": "9cb1b52331407747358a73d96c0bf9e28c4289ba87b4b655ce70faa187c1e131",
+  "uniqueTexts": 137,
+  "sourceArchives": 79,
   "records": [
     {
       "source": "brotli",
@@ -1105,6 +1105,162 @@
       "bytes": 1465,
       "gitBlobSha1": "5aac82c78c2d9982865f4432ab6a9b5d77aa9245",
       "sha256": "18d45466ba3253deae04667e267a91ea8de8548f18c1125264d1c9db28194cc1"
+    },
+    {
+      "source": "candidate-compiler-rt",
+      "path": "LICENSE.TXT",
+      "bytes": 16708,
+      "gitBlobSha1": "5a79a1b9d5cb0af9a779751f07033e44ca3b14d8",
+      "sha256": "1a8f1058753f1ba890de984e48f0242a3a5c29a6a8f2ed9fd813f36985387e8d"
+    },
+    {
+      "source": "candidate-efni",
+      "path": "COPYING",
+      "bytes": 2416,
+      "gitBlobSha1": "b01d49c670e55dbff638eb294ac1a52416fb32e8",
+      "sha256": "5ea1544b51a28bc823b03159190d4108f9fb4f4ef912389f5137c6d295e175b2"
+    },
+    {
+      "source": "candidate-efni",
+      "path": "packaging/debian/copyright",
+      "bytes": 276,
+      "gitBlobSha1": "f6074984f61ecf9ca74e2de55f75fd7610f59267",
+      "sha256": "a1ea6927547f4fc51b8fd4a24324ad68692062371c01dca4569bf83d28843d75"
+    },
+    {
+      "source": "candidate-frida-core",
+      "path": "COPYING",
+      "bytes": 2416,
+      "gitBlobSha1": "b01d49c670e55dbff638eb294ac1a52416fb32e8",
+      "sha256": "5ea1544b51a28bc823b03159190d4108f9fb4f4ef912389f5137c6d295e175b2"
+    },
+    {
+      "source": "candidate-frida-gum",
+      "path": "COPYING",
+      "bytes": 5696,
+      "gitBlobSha1": "810ab7017801b3269dcee7931513e3e5e1910062",
+      "sha256": "00764fcc23f0f2ac6d2619a1f9192e55176ecaaa525e76a47aaabc5d87fb087f"
+    },
+    {
+      "source": "candidate-glib",
+      "path": "LICENSES/LicenseRef-old-glib-tests.txt",
+      "bytes": 841,
+      "gitBlobSha1": "d78b44306d8d5966923f643f1d576be233b00661",
+      "sha256": "fb261b2d5dbe76c4850f90da763210bc385e52428df6bbfd7b06295ac8a32914"
+    },
+    {
+      "source": "candidate-glib",
+      "path": "docs/reference/COPYING",
+      "bytes": 1698,
+      "gitBlobSha1": "df952d3cab8f0465a5ebe29fee5a7ff0ea16c59c",
+      "sha256": "b1ec1d0e5947f81e815d8771f7d4d90671a94bb10a42dc687fb566de461a57aa"
+    },
+    {
+      "source": "candidate-glib",
+      "path": "proxy-libintl-static/COPYING.LIB.txt",
+      "bytes": 25292,
+      "gitBlobSha1": "bf50f20de6ef55b52fe7832d3a4ed05f0c69d452",
+      "sha256": "d245807f90032872d1438d741ed21e2490e1175dc8aa3afa5ddb6c8e529b58e5"
+    },
+    {
+      "source": "candidate-glib",
+      "path": "COPYING",
+      "resolvedPath": "LICENSES/LGPL-2.1-or-later.txt",
+      "bytes": 25967,
+      "gitBlobSha1": "e818e737a7833b56367e795cef6ee0d992c6e667",
+      "sha256": "fa6f36630bb1e0c571d34b2bbdf188d08495c9dbf58f28cac112f303fc1f58fb"
+    },
+    {
+      "source": "candidate-glib",
+      "path": "gmodule/COPYING",
+      "resolvedPath": "LICENSES/LGPL-2.1-or-later.txt",
+      "bytes": 25967,
+      "gitBlobSha1": "ddf687147fc15a5d362353275aefaf3406af8630",
+      "sha256": "fa6f36630bb1e0c571d34b2bbdf188d08495c9dbf58f28cac112f303fc1f58fb"
+    },
+    {
+      "source": "candidate-idun",
+      "path": "COPYING",
+      "bytes": 2416,
+      "gitBlobSha1": "b01d49c670e55dbff638eb294ac1a52416fb32e8",
+      "sha256": "5ea1544b51a28bc823b03159190d4108f9fb4f4ef912389f5137c6d295e175b2"
+    },
+    {
+      "source": "candidate-idun",
+      "path": "packaging/debian/copyright",
+      "bytes": 276,
+      "gitBlobSha1": "fb1fe2e7e40a8822936999a34bb3e2eed83d0bd5",
+      "sha256": "ddd1778b24cb65607969809f2cbd8acc896133eb02c7cf8277b63ec462dada75"
+    },
+    {
+      "source": "candidate-libffi",
+      "path": "LICENSE",
+      "bytes": 1132,
+      "gitBlobSha1": "90a8b230284e5cfbf02cbed3431116922bd84663",
+      "sha256": "17b64dc60f3b6897a60f971e288b973f655c2edcdf08b25f3c3dd5549857881c"
+    },
+    {
+      "source": "candidate-libffi",
+      "path": "LICENSE-BUILDTOOLS",
+      "bytes": 18698,
+      "gitBlobSha1": "d1d626e00859030061ed7b071e84f8f893d84d93",
+      "sha256": "e67978cd18816c0cb7d29aaaacde7b7447402c2fb321a051698890a8eaedda94"
+    },
+    {
+      "source": "candidate-libusb",
+      "path": "COPYING",
+      "bytes": 26434,
+      "gitBlobSha1": "602bfc94635ddf8f1bf2b00419a85ead645a5b67",
+      "sha256": "36b6d3fa47916943fd5fec313c584784946047ec1337a78b440e5992cb595f89"
+    },
+    {
+      "source": "candidate-libusb",
+      "path": "LICENSE.build",
+      "bytes": 1070,
+      "gitBlobSha1": "b59833dedbe2e4a84304431f4acca5dc4599cec7",
+      "sha256": "7939f4c45423cec4a18236ad0a88570e33508dd7462e07b1038001f90ece65fb"
+    },
+    {
+      "source": "candidate-lwip",
+      "path": "COPYING",
+      "bytes": 1425,
+      "gitBlobSha1": "90465f592ceafc10f2e8d3374cf52d55a39d6cde",
+      "sha256": "ef4aac92e05e87cd1cdc140870ed52206ba03d4a7fe46c1e11d7ffa6c87d252b"
+    },
+    {
+      "source": "candidate-lwip",
+      "path": "contrib/apps/LwipMibCompiler/SharpSnmpLib/license.txt",
+      "bytes": 24383,
+      "gitBlobSha1": "27946de210082fa0e30252ecf926cdf28db0d344",
+      "sha256": "ef1f7505cfdff240e72602bc50ef1cdba37c681c84611cdf30e4371320c70942"
+    },
+    {
+      "source": "candidate-picolibc",
+      "path": "COPYING.picolibc",
+      "bytes": 241866,
+      "gitBlobSha1": "471fbeba259be46e645be5169674f170a9d438c9",
+      "sha256": "552f9ae0e5717d3a0c28ff24db792971d1047d771992e40ea4d19b3d0042d78b"
+    },
+    {
+      "source": "candidate-quickjs",
+      "path": "LICENSE",
+      "bytes": 1130,
+      "gitBlobSha1": "2cf449dd3eea4291da7470bd322211b61981ccd8",
+      "sha256": "598fd7fc928e4350abce36e337ba5a1346923c5c692f5be92c3d8e29ddd7c18d"
+    },
+    {
+      "source": "candidate-termux-elf-cleaner",
+      "path": "COPYING",
+      "bytes": 35141,
+      "gitBlobSha1": "9cecc1d4669ee8af2ca727a5d8cde10cd8b2d7cc",
+      "sha256": "589ed823e9a84c56feb95ac58e7cf384626b9cbf4fda2a907bc36e103de1bad2"
+    },
+    {
+      "source": "candidate-vala",
+      "path": "COPYING",
+      "bytes": 26436,
+      "gitBlobSha1": "5ab7695ab8cabe0c5c8a814bb0ab1e8066578fbb",
+      "sha256": "5df07007198989c622f5d41de8d703e7bef3d0e79d62e24332ee739a452af62a"
     },
     {
       "source": "companion-license",
