@@ -75,7 +75,10 @@ static int attach(int argc, char **argv) {
         status = aurora_frida_attach(&input, &control, &facts);
     }
     free(input.script); free(input.payload); free(input.spawn_program);
-    frida_deinit();
+    /* This worker executes one operation, then exits. Session cleanup already
+     * drains Frida's context; global GIO teardown can wait forever on SDK-owned
+     * DBus workers on Linux 17.26.2. Retain library globals until process exit,
+     * after publishing the unchanged, explicit session cleanup facts below. */
     status = finish_control(&control, &facts, status); alarm(0);
     return status;
 }

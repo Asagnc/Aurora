@@ -1011,3 +1011,6 @@ App进程死亡两阶段专项通过：prepare仅在自有fixture已捕获/注�
 
 
 2026-10-31发布审计补充：完整重打首次因引用旧managed-qualification报告，source manifest与当前51份可信源码不一致而被拒绝，未发布目录。重建当前独立资格guard后发现其8040d174摘要与APK CMake guard的96ca7e27摘要不同，二者编译profile本来不同。现增加APK guard内置摘要与实际ELF校验、当前51份自有源码/Guard.cmake/顶层CMake对应检查，并在manifest区分两个摘要与byteIdentical，不把独立资格离线重建当APK guard位级复现。新增篡改APK摘要、源码及profile分离的主机回归通过，完整新审查包以此修正后的输出为准；旧9e48efa候选保留，不作为新交付。worker仍按其真实APK字节离线重链接匹配。
+
+
+2026-11-09主包17.26.2集成：六项129.935秒全通过，Root/worker精确pidfd死亡恢复各1项、App死亡verify1项3.116秒通过（prepare为故障准备不计通过）。首轮4通过/2失败源于同boot独立包已适配但主包无原始基线；使用已有审计脚本严格逆差异验证后引入同boot Root私有原始基线，9项拒绝/证明用例通过，内核策略摘要不变，不回写整份策略。Linux CI42598766393保留22失败/7错误及超时；后续fail-fast诊断42601682617定位frida_deinit→gio_shutdown→_g_dbus_shutdown等待，非脚本清理阶段。一次性worker保留库全局状态至进程退出，不再在attach尾部做全局析构；实际unload/detach/manager close、context drain、监管报告和退出状态要求保持，正在重跑全部相关资格。正式门控false保持。
