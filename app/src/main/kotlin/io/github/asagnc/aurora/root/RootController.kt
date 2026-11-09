@@ -61,7 +61,7 @@ class RootController(private val context: Context) {
 
     private suspend fun connectLocked() {
         if (mutable.value.phase in setOf(RootPhase.CONNECTING, RootPhase.READY)) return
-        mutable.value = RootState(RootPhase.CONNECTING, "等待 Root 授权和服务连接…")
+        mutable.value = RootState(RootPhase.CONNECTING, "正在连接 Root 服务…")
         try {
             withTimeout(30_000) {
                 val granted = withContext(Dispatchers.IO) { Shell.getShell().isRoot }
@@ -90,7 +90,7 @@ class RootController(private val context: Context) {
             else throw cancel
         } catch (failure: Exception) {
             disconnectLocked()
-            mutable.value = RootState(RootPhase.UNAVAILABLE, "Root 未获授权或服务不可用（${failure.javaClass.simpleName}）；普通功能仍可使用")
+            mutable.value = RootState(RootPhase.UNAVAILABLE, "Root 未获授权或服务不可用（${failure.javaClass.simpleName}）。请在 Root 管理器中检查 Aurora 授权后重试连接；普通功能仍可使用")
         }
     }
 

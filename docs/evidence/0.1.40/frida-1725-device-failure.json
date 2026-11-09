@@ -1,0 +1,63 @@
+{
+  "scope": "Separate package/UID using current adapted enforcing boot; not stock policy or production promotion",
+  "applicationId": "io.github.asagnc.aurora.fridaqualification",
+  "candidateVersion": "17.25.0",
+  "workerSha256": "ad83aec06cbc42a542bc7c05108eb4be6146fd269ef7b969f5e5cf48a0cad06d",
+  "hostSeconds": 21.443,
+  "adbReturnCode": 0,
+  "statusCounts": {
+    "0": 0,
+    "-1": 0,
+    "-2": 6,
+    "-3": 0,
+    "-4": 0
+  },
+  "junitSummary": [
+    "FAILURES!!!"
+  ],
+  "policyBytesUnchanged": false,
+  "enforcingBeforeAndAfter": true,
+  "logSha256": "6b7148665b16ed810e9790f807d4850d7f6ed916b1df05c89eab022b956694a3",
+  "productionIntegrated": false,
+  "recordedDate": "2026-11-09",
+  "executionDate": "2026-10-31",
+  "qualificationPassed": false,
+  "promoted": false,
+  "failure": {
+    "rootServiceSignal": "SIGABRT",
+    "abortMessage": "Unable to locate the libc; please file a bug",
+    "clientObserved": "Root service exited",
+    "workerObserved": "Operation was cancelled",
+    "historicalPc0x320Resolved": false
+  },
+  "diagnosticReruns": 3,
+  "pendingTicketsObservedOnResume": 9,
+  "manualRootGuidanceAcceptance": {
+    "userConfirmedPageCorrect": true,
+    "userConfirmedConnected": true,
+    "managerGrantAlreadyPresent": true
+  },
+  "privateEvidenceSha256": {
+    "matrix-first.txt": "6b7148665b16ed810e9790f807d4850d7f6ed916b1df05c89eab022b956694a3",
+    "crash-buffer-private.txt": "437e8250ba73b93a26603a896b1887baa4e3aa62fef5902d655536d1b2d5905d",
+    "tool-private-stack.txt": "73d8517f0f7ecd847bce42b2dde1a118cf181de5654e09cfc811bfd2572b0592",
+    "first-worker-events.log": "0c38a3b0a170ef2e272ba1cb0874a517f0f517b82479946a0042a2c903a67614"
+  },
+  "limitations": [
+    "Adapted enforcing boot; not stock policy",
+    "Policy bytes changed during approved minimal adaptation",
+    "Runtime daemon/listener audit and full fault matrix not qualified",
+    "Native executor baseline reused from accepted APK; candidate worker alone replaced"
+  ],
+  "recovery": {
+    "date": "2026-11-09",
+    "explicitOwnedFixtures": 9,
+    "passedTests": 1,
+    "junitSeconds": 4.905,
+    "remainingManagedTickets": 0,
+    "remainingOwnedConversations": 0,
+    "forcedDatabaseDeletion": false,
+    "scriptUnloadClaimed": false,
+    "logSha256": "c20874a5054224fd83cc8cbd55dd60d0200fde7fa67d514ff9f7cbd5d3dcdc8f"
+  }
+}

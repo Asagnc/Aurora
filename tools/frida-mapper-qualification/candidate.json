@@ -32,5 +32,7 @@
       "name": "./libfrida-core.a",
       "bytes": 346800066
     }
-  ]
+  ],
+  "qualificationWorkerSha256": "ad83aec06cbc42a542bc7c05108eb4be6146fd269ef7b969f5e5cf48a0cad06d",
+  "qualificationWorkerBytes": 89491280
 }

@@ -78,12 +78,17 @@ import kotlinx.coroutines.withContext
     }
     environment?.let { ExecutionStatusPage(model.commandsAvailable, it) { environment = null } }
     if (appearance) AppearanceSheet { appearance = false }
-    if (rootDetails) AlertDialog(onDismissRequest = { rootDetails = false }, title = { Text("Root 连接") },
-        text = { Text(root.detail + "\n\n连接后，新任务可调用 Root 命令与交互终端。Linux、抓包和逆向能力按当前环境的实际资格开放。") },
-        confirmButton = { TextButton({
-            if (root.phase == RootPhase.READY || root.phase == RootPhase.CONNECTING) model.disableRoot() else model.enableRoot()
-        }) { Text(if (root.phase == RootPhase.READY || root.phase == RootPhase.CONNECTING) "断开 Root" else "授权并连接 Root") } },
-        dismissButton = { TextButton({ rootDetails = false }) { Text("关闭") } })
+    if (rootDetails) FullPage("Root 连接", { rootDetails = false }) {
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(18.dp)) {
+            Text(root.detail, style = MaterialTheme.typography.titleMedium)
+            Text("请先在 Root 管理器（如 APatch、KernelSU、FolkPatch）中允许 Aurora 使用 Root，再返回这里连接。授权与撤销均由管理器控制。")
+            Text("连接后，新任务可调用 Root 命令与交互终端。Linux、抓包和逆向能力按当前环境的实际资格开放。", color = AuroraMuted)
+            Button({
+                if (root.phase == RootPhase.READY || root.phase == RootPhase.CONNECTING) model.disableRoot() else model.enableRoot()
+            }) { Text(if (root.phase == RootPhase.READY || root.phase == RootPhase.CONNECTING) "断开 Root" else "连接 Root") }
+        }
+    }
     if (about) AlertDialog(onDismissRequest = { about = false }, title = { Text("Aurora · 开发版本") },
         text = { Text("提供对话、文件、浏览器、图文消息、后台 Agent、Skills、HTTP 请求、普通 / Root 终端，以及按环境资格开放的 Linux、抓包与逆向工具。模型 API 密钥由用户自备并加密保存。") },
         confirmButton = { TextButton({ about = false }) { Text("关闭") } })

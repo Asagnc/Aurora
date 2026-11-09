@@ -1,0 +1,68 @@
+{
+  "version": "17.25.0",
+  "coreCommit": "f91556129517937e82831458d10f6b8f4ca06dbb",
+  "coreSourceArchive": {
+    "url": "https://codeload.github.com/frida/frida-core/tar.gz/f91556129517937e82831458d10f6b8f4ca06dbb",
+    "archiveBytes": 4374507,
+    "sha256": "b36c4e6f85aa5fdf60b068b500949d676396bca63584dffe2f6af8c921ce3879"
+  },
+  "sourceTextFilesScanned": 312,
+  "automaticPolicyPatchCallSites": [
+    {
+      "path": "inject/inject-glue.c",
+      "line": 14,
+      "text": "frida_selinux_patch_policy ();"
+    },
+    {
+      "path": "lib/selinux/frida-selinux.h",
+      "line": 8,
+      "text": "void frida_selinux_patch_policy (void);"
+    },
+    {
+      "path": "server/server-glue.c",
+      "line": 64,
+      "text": "frida_selinux_patch_policy ();"
+    },
+    {
+      "path": "tests/runner-glue.c",
+      "line": 47,
+      "text": "frida_selinux_patch_policy ();"
+    }
+  ],
+  "policySourceComparison": [
+    {
+      "path": "lib/selinux/patch.c",
+      "oldCommit": "57161b0ddd2311adf18e84f4680f9cb935ce8376",
+      "newCommit": "f91556129517937e82831458d10f6b8f4ca06dbb",
+      "oldSha256": "eb8bc7e912508e8c4ca4535fbc684062c606293e940fa4a43e9896152aab8e37",
+      "newSha256": "eb8bc7e912508e8c4ca4535fbc684062c606293e940fa4a43e9896152aab8e37",
+      "identical": true
+    },
+    {
+      "path": "lib/selinux/frida-selinux.h",
+      "oldCommit": "57161b0ddd2311adf18e84f4680f9cb935ce8376",
+      "newCommit": "f91556129517937e82831458d10f6b8f4ca06dbb",
+      "oldSha256": "2a6887e0a00c9abee8da9c3b550da8a3e0b08967b505e2db972ac81aefe8fd7b",
+      "newSha256": "2a6887e0a00c9abee8da9c3b550da8a3e0b08967b505e2db972ac81aefe8fd7b",
+      "identical": true
+    },
+    {
+      "path": "subprojects/selinux.wrap",
+      "oldCommit": "57161b0ddd2311adf18e84f4680f9cb935ce8376",
+      "newCommit": "f91556129517937e82831458d10f6b8f4ca06dbb",
+      "oldSha256": "7ce0f5b1a329c502be1053d713d903a8bff374be78c93a6ff4d56bf9a15fb03e",
+      "newSha256": "7ce0f5b1a329c502be1053d713d903a8bff374be78c93a6ff4d56bf9a15fb03e",
+      "identical": true
+    }
+  ],
+  "efniCommit": "54525e06e27659afb6c664c18f9a10bbaac2dca9",
+  "idunCommit": "eaf98270beab0ecf174e611d99036db6843a1865",
+  "androidFruityDroidyPreprocessorExclusion": true,
+  "elfMapperArchiveMemberRetained": true,
+  "fruityOrIdunNamedRetainedMembers": [],
+  "automaticPolicyPatchNamedInLinkedMap": false,
+  "scope": "Static fixed-source and link evidence only; not proof of actual Root process, listener, injection, or policy behavior",
+  "phoneRuntimeQualified": false,
+  "productionIntegrated": false,
+  "sourceLicenseClosureVerified": false
+}

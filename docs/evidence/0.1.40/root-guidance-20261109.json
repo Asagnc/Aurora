@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-09",
+  "seconds": 15.689,
+  "returnCode": 0,
+  "apks": {
+    "app-debug.apk": "9c54a9f46a0ddea1f0a9f7eeda13604d7bf0603afb8801dcb408453beafa66c8",
+    "app-debug-androidTest.apk": "b5744080f5e780f0f15a0c42d9d73e7117585d9a2224511391039ab1670ec3e9"
+  },
+  "manualQualifierPageCorrect": true,
+  "manualQualifierConnectionSucceeded": true,
+  "mainRegressionPassed": 6,
+  "mainRegressionSkipped": 0,
+  "junitSeconds": 13.859,
+  "buildTasks": 224,
+  "buildSucceeded": true,
+  "debugReleaseAndAndroidTestBuilt": true,
+  "debugReleaseLintPassed": true
+}
