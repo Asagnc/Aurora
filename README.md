@@ -19,13 +19,13 @@ Aurora 是面向 **Android 16 及以上（API 36+）** 的手机 Agent 应用，
 
 ## 最新验证与发布状态
 
-截至 **2026-11-09**，最新已验证产品提交为 `a621f7f06a455b0a968c0a2cfeae701977ea3618`；后续文档提交不改变该审查包的来源身份。
+截至 **2026-11-09**，当前 UI 产品提交为 `401db41e8a34574a0422dda54c102032a876ceef`，本地构建、上述 12 类真机 UI 检查及 [完整 CI 五个任务](https://github.com/Asagnc/Aurora/actions/runs/42641876487)全部通过。完整后端验收与旧审查包基线为 `a621f7f06a455b0a968c0a2cfeae701977ea3618`，其范围不扩展为新 UI 的完整发布资格。
 
 | 项目 | 已取得的证据 | 当前边界 |
 | --- | --- | --- |
 | Frida 17.26.2 主包 | 当前启动九个用例全部通过：策略资格、Root native／ART、普通 App attach、spawn、resume 前异常、取消、Root／worker／App 死亡恢复 | 使用经审计的本次启动基线；不是主包空基线新启动或默认 Release 的替代证明。正式策略入口仍关闭 |
 | Linux Frida 生命周期 | 30 项真实会话测试全部通过；已定位并修正一次性 worker 全局 GIO 析构卡住问题 | 历史 PC 0x320 崩溃未确认根因，不声称已因果修复 |
-| 完整 CI | [42602162251](https://github.com/Asagnc/Aurora/actions/runs/42602162251) 五个任务全部成功 | 对应上述产品提交，主机通过不替代真机资格 |
+| 后端基线 CI | [42602162251](https://github.com/Asagnc/Aurora/actions/runs/42602162251) 五个任务全部成功 | 对应上述产品提交，主机通过不替代真机资格 |
 | 手机 APK 构建 | 标准构建、导出、普通 UID JNI 已有真机证据；484 MB 文件选择器完整安装／清理已在独立空安装区通过 | 后者使用固定离线伴随输入，不冒充官方下载或新安装后的运行资格 |
 | 完整审查包 | `app/build/outputs/release-review-a621f7f-complete`；10 条校验和独立复核、Frida 离线重链接和 guard 重建通过 | 未正式签名，`releaseReady=false`；不是正式发行包 |
 
