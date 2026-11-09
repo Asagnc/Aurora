@@ -1,6 +1,6 @@
 # Frida 17.26.2 主包接入提议（独立资格后决策）
 
-生产仍固定17.24.3，releaseQualified=false。用户此前确认的是先独立资格、再决定替换；本提议请求决定生产版本，尚未改主包pin或开放策略入口。
+本文件保留晋升时的比较与独立证据。用户已批准17.26.2，现已接入main并完成当前启动主包九项复验；releaseQualified=false。主包当前结果见evidence/0.1.40/frida-1726-main-integration.json，旧独立worker与新主包worker分别记录。
 
 ## 比较与建议
 

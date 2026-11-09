@@ -1014,3 +1014,13 @@ App进程死亡两阶段专项通过：prepare仅在自有fixture已捕获/注�
 
 
 2026-11-09主包17.26.2集成：六项129.935秒全通过，Root/worker精确pidfd死亡恢复各1项、App死亡verify1项3.116秒通过（prepare为故障准备不计通过）。首轮4通过/2失败源于同boot独立包已适配但主包无原始基线；使用已有审计脚本严格逆差异验证后引入同boot Root私有原始基线，9项拒绝/证明用例通过，内核策略摘要不变，不回写整份策略。Linux CI42598766393保留22失败/7错误及超时；后续fail-fast诊断42601682617定位frida_deinit→gio_shutdown→_g_dbus_shutdown等待，非脚本清理阶段。一次性worker保留库全局状态至进程退出，不再在attach尾部做全局析构；实际unload/detach/manager close、context drain、监管报告和退出状态要求保持，正在重跑全部相关资格。正式门控false保持。
+
+
+2026-11-09主包17.26.2集成最终批次：a621f7f的worker c9b22da8，已安装保留数据的Debug主包九项/九个去重用例全部通过；六项130.767秒，Root死亡17.760秒、worker死亡18.803秒、App死亡verify3.000秒。错误startTicks拒绝、精确pidfd、卸载/分离/监管证明、已resume目标存活与不重放均沿原断言；App自杀prepare不计通过。Enforcing复核保持。本批使用当前boot经审计的原始基线，不能冒充主包从空基线的新boot验收；独立包的新boot结果仍按原版本分别保留。当前手机工作结束，暂不需要连接。
+
+Linux17.26.2退出故障已修正并取得30项80.351秒全通过（CI42602162251的frida-session job129109148124）；原22失败/7错误和后续fail-fast诊断记录保留。一次性worker不执行进程全局GIO析构，Frida context已停止，自有源/描述符已关闭，显式会话清理事实及最终监管报告保持；全局库缓存由进程退出回收，不把它描述成全库析构通过。Android/Release/AndroidTest/双lint221任务16秒成功。
+
+完整未签名审查包release-review-a621f7f-complete精确绑定a621f7f06a455b0a968c0a2cfeae701977ea3618、打包时clean；9项载荷/重建报告2,744,829,128字节，APK45,349,526字节/SHA256 271e0eeb725ca0d14afbb728608710af0fb13771a351d92f6308cc05eda0fc52。10条checksum独立流式复核一致，79份Frida输入离线重链接同c9b22da8；SDK45、代理584项固定材料已重绑来源快照。unsigned-review/releaseReady=false，不宣称正式签名或默认Release真机资格。证据见frida-1726-main-integration.json及release-review-a621f7f-complete-*。
+
+
+最终核对：a621f7f完整CI42602162251五个job全部成功。后续提交仅增加/更新验收文档与证据，产品字节和完整审查包仍精确对应a621f7f，不重写旧包来源。

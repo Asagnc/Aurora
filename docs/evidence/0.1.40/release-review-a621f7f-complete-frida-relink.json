@@ -1,0 +1,9 @@
+{
+  "offlineWorkerRelink": true,
+  "upstreamSdkRebuilt": false,
+  "androidRuntime": "NOT TESTED",
+  "sourceArchiveSha256": "eeba8c2a06995e3058131cad31b5fe4e5007ecceaa71b7504ceb6e43b15033a5",
+  "workerSha256": "c9b22da8e0019fd052d9a87d54279b09acfc4eecbdf1fea6376137556b59439f",
+  "workerBytes": 89537880,
+  "sourceArchives": 79
+}

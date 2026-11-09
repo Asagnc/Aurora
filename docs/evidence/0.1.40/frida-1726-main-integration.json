@@ -1,0 +1,94 @@
+{
+  "date": "2026-11-09",
+  "applicationId": "io.github.asagnc.aurora",
+  "sourceCommit": "a621f7f06a455b0a968c0a2cfeae701977ea3618",
+  "version": "0.1.40",
+  "frida": "17.26.2",
+  "debugApkSha256": "e48924f654399a6dbd1d5a6474f7ea7a90dbeff11d378eb8795c8ce7f73d7150",
+  "workerSha256": "c9b22da8e0019fd052d9a87d54279b09acfc4eecbdf1fea6376137556b59439f",
+  "device": "Android 16 / ARM64; existing Root grant and adapted Enforcing policy",
+  "matrix": {
+    "passed": 6,
+    "skipped": 0,
+    "failed": 0,
+    "junitSeconds": 130.767,
+    "transcriptSha256": "49ac909eeba88ca76aded49a3128a43c69a4fd65b97e7cd63a1783ee526aaad4"
+  },
+  "rootDeath": {
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "junitSeconds": 17.76,
+    "transcriptSha256": "cc896463b69092eee645c2e12a19b46ea9d248500490b51226e6da3b3243355f"
+  },
+  "workerDeath": {
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "junitSeconds": 18.803,
+    "transcriptSha256": "df60ca3b40f6e815938f4861fa30406b15cae59557722300a9ee772c7b04233e"
+  },
+  "appDeathVerify": {
+    "passed": 1,
+    "skipped": 0,
+    "failed": 0,
+    "junitSeconds": 3.0,
+    "transcriptSha256": "f3946b9320230a00da990c1a132f45d68d32c4ffae3c519ff02963962ebba676"
+  },
+  "passedExecutions": 9,
+  "uniqueCases": 9,
+  "appDeathPrepare": "intentional owned App death, not a passing test",
+  "wrongStartTicksRefused": true,
+  "enforcingAfter": true,
+  "publicPolicyGate": false,
+  "globalLibraryFinalization": "One-operation process retains SDK globals until OS teardown; explicit unload/detach/manager-close and guard report checks unchanged",
+  "limitations": [
+    "Not stock/no-adaptation qualification",
+    "No claim that historic PC 0x320 is causally fixed",
+    "Existing unknown records are not force-deleted",
+    "Not default Release or formal signing qualification"
+  ],
+  "previousMainWorker05ab": {
+    "matrixPassed": 6,
+    "matrixSeconds": 129.935,
+    "rootAndWorkerDeathPassed": 2,
+    "appDeathVerifyPassed": 1,
+    "appDeathVerifySeconds": 3.116
+  },
+  "initialMainBatch": {
+    "passed": 4,
+    "failed": 2,
+    "cause": "Independent package had already adapted this boot; main lacked original pre-adaptation baseline",
+    "fixtureRepair": "Existing audited same-boot Root-owned baseline import, inverse delta verification; nine audit cases; kernel digest unchanged",
+    "kernelReloaded": false
+  },
+  "linuxCi": {
+    "run": 42602162251,
+    "job": 129109148124,
+    "testsPassed": 30,
+    "seconds": 80.351,
+    "fullRunStatus": "success",
+    "fullRunJobs": [
+      {
+        "name": "test",
+        "conclusion": "success"
+      },
+      {
+        "name": "capture-primitives",
+        "conclusion": "success"
+      },
+      {
+        "name": "managed-supervision",
+        "conclusion": "success"
+      },
+      {
+        "name": "frida-session",
+        "conclusion": "success"
+      },
+      {
+        "name": "socket-diag",
+        "conclusion": "success"
+      }
+    ]
+  }
+}
