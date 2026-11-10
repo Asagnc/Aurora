@@ -2,6 +2,14 @@ package io.github.asagnc.aurora.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.ui.graphics.Color
+import com.itos.coui.shape.CouiShape
+import com.itos.coui.theme.CouiTheme
+import com.itos.coui.menu.Menu
+import com.itos.coui.menu.CouiMenuItem
+import com.itos.coui.menu.couiMenuAnchor
+import com.itos.coui.menu.rememberCouiMenuAnchor
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,8 +41,9 @@ import io.github.asagnc.aurora.runtime.ChatState
         }
         Column(Modifier.fillMaxWidth()) {
             Surface(Modifier.fillMaxWidth(),
-                shape = com.itos.coui.shape.CouiCapsuleShape, color = MaterialTheme.colorScheme.surfaceContainer,
-                tonalElevation = 1.dp, shadowElevation = 1.dp) {
+                shape = CouiShape(24.dp, 2.4f), color = if (CouiTheme.isDark) Color(0xFF1E2024) else Color(0xFFF5F6F8),
+                border = BorderStroke(0.5.dp, if (CouiTheme.isDark) Color.White.copy(alpha = 0.13f) else Color.Black.copy(alpha = 0.06f)),
+                tonalElevation = 0.dp, shadowElevation = 1.dp) {
                 Column(Modifier.padding(horizontal = 8.dp).padding(top = 12.dp, bottom = 4.dp)) {
                     if (state.attachments.isNotEmpty()) Text("已导入 ${state.attachments.size} 个文件", Modifier.padding(horizontal = 8.dp),
                         style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
@@ -56,14 +65,15 @@ import io.github.asagnc.aurora.runtime.ChatState
                         }, contentPadding = PaddingValues(horizontal = 2.dp),
                             colors = ButtonDefaults.textButtonColors(contentColor = AuroraInk)) {
                             state.selected?.let { ModelBrand(it.model, 16.dp); Spacer(Modifier.width(3.dp)) }
-                            val label = remember(state.selected?.model) { composerModelLabel(state.selected?.model) }
+                            val label = state.selected?.let { connection -> connection.models.firstOrNull { it.id == connection.model }?.name }
+                                ?: composerModelLabel(state.selected?.model)
                             Text(label, Modifier.weight(1f, fill = false),
                                 maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.labelLarge)
                             Icon(painterResource(R.drawable.ic_keyboard_arrow_down), null, Modifier.padding(start = 2.dp).size(10.dp))
                         }
                         ComposerContext(state) { metric = if (metric == "context") null else "context" }
                         Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) {
-                            FilledIconButton(send, Modifier.size(40.dp), enabled = state.running || draft.isNotBlank(), colors = IconButtonDefaults.filledIconButtonColors(
+                            FilledIconButton(send, Modifier.size(32.dp), enabled = state.running || draft.isNotBlank(), colors = IconButtonDefaults.filledIconButtonColors(
                                 containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)) {
                                 LocalIcon(if (state.running) R.drawable.ic_stop else R.drawable.ic_arrow_upward, if (state.running) "停止生成" else "发送")
                             }
@@ -79,25 +89,15 @@ import io.github.asagnc.aurora.runtime.ChatState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable private fun EffortControl(connection: Connection?, choose: (Connection) -> Unit, modifier: Modifier) {
     var expanded by remember { mutableStateOf(false) }
-    IconButton({ expanded = true }, modifier, enabled = connection != null) {
+    val anchor = rememberCouiMenuAnchor()
+    IconButton({ anchor.open { expanded = true } }, modifier.couiMenuAnchor(anchor), enabled = connection != null) {
         Icon(painterResource(R.drawable.ic_thinking), "思考等级：${effortLabel(connection?.effort ?: "auto")}",
             Modifier.size(20.dp), tint = AuroraInk)
         Icon(painterResource(R.drawable.ic_keyboard_arrow_down), null, Modifier.padding(start = 22.dp).size(10.dp), tint = AuroraMuted)
     }
-    if (expanded && connection != null) ModalBottomSheet(onDismissRequest = { expanded = false },
-        containerColor = MaterialTheme.colorScheme.surface) {
-        Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(bottom = 24.dp)) {
-            Text("思考等级", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(bottom = 12.dp))
-            CachePolicy.supportedEfforts(connection).forEach { effort ->
-                TextButton({ choose(connection.copy(effort = effort)); expanded = false }, Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(vertical = 12.dp), colors = ButtonDefaults.textButtonColors(contentColor = AuroraInk)) {
-                    LocalIcon(R.drawable.ic_thinking, effortLabel(effort))
-                    Text(effortLabel(effort), Modifier.weight(1f).padding(start = 12.dp))
-                    if (connection.effort == effort) Text("已选", color = AuroraMuted)
-                }
-            }
-        }
-    }
+    if (connection != null) Menu(expanded = expanded, onDismissRequest = { expanded = false }, anchor = anchor,
+        items = CachePolicy.supportedEfforts(connection).map { CouiMenuItem(it, effortLabel(it), selected = connection.effort == it) },
+        onItemClick = { expanded = false; choose(connection.copy(effort = it.value)) }, headerText = "思考等级")
 }
 
 internal fun effortLabel(effort: String): String = when (effort) {

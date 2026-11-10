@@ -24,10 +24,10 @@ import kotlinx.coroutines.launch
     val scope=rememberCoroutineScope()
     var namespace by remember { mutableStateOf("conversation") }
     var directory by remember { mutableStateOf("") }
-    var entries by remember { mutableStateOf(emptyList<Pair<String,Boolean>>()) }
+    var entries by remember(namespace, directory) { mutableStateOf(emptyList<Pair<String,Boolean>>()) }
     var selected by remember { mutableStateOf(emptyList<BrowserUploadManager.Selection>()) }
-    var listingError by remember { mutableStateOf<String?>(null) }
-    suspend fun source(): OwnedFiles = when(namespace) {
+    var listingError by remember(namespace, directory) { mutableStateOf<String?>(null) }
+    suspend fun source(space: String): OwnedFiles = when(space) {
         "conversation" -> app.spaces.conversation(request.tab.owner)
         else -> app.spaces.sharedResources()
     }
@@ -44,24 +44,21 @@ import kotlinx.coroutines.launch
     }.ifEmpty{listOf("*/*")}.distinct().toTypedArray()}
     DisposableEffect(request.id){onDispose{if(manager.pending===request)manager.cancelPending(request.tab.owner)}}
     LaunchedEffect(namespace,directory){
+        val targetSpace = namespace; val targetDirectory = directory
         try{
-            entries=app.tasks.run(request.tab.owner){source().list(directory).filterNot{it.first.substringAfterLast('/').startsWith(".aurora-")}}
+            entries=app.tasks.run(request.tab.owner){source(targetSpace).list(targetDirectory).filterNot{it.first.substringAfterLast('/').startsWith(".aurora-")}}
             listingError=null
         }catch(cancel:CancellationException){throw cancel}
         catch(_:Exception){entries=emptyList();listingError="无法读取此空间"}
     }
-    ModalBottomSheet(onDismissRequest={manager.cancelPending(request.tab.owner)},
-        sheetState=rememberBottomSheetState(initialValue=SheetValue.Hidden,enabledValues=setOf(SheetValue.Hidden,SheetValue.Expanded)),containerColor=MaterialTheme.colorScheme.surface){
-        Column(Modifier.fillMaxHeight(0.85f).padding(horizontal=20.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
-            Text("选择上传文件",style=MaterialTheme.typography.titleLarge)
+    FullPage("选择上传文件", { manager.cancelPending(request.tab.owner) }) {
+        Column(Modifier.fillMaxSize().padding(horizontal=16.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
             Text("文件按需复制为只读上传快照，关闭页面后释放。最多 ${if(request.multiple)8 else 1} 个，保留快照总量不超过 512 MiB。",
                 color=AuroraMuted,style=MaterialTheme.typography.bodySmall)
-            Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){
-                for((key,label) in listOf("conversation" to "会话文件","resources" to "共享资源")){
-                    FilterChip(namespace==key,{namespace=key;directory=""},label={Text(label)},enabled=!request.busy)
-                }
-                TextButton({if(request.multiple)multiple.launch(mimeTypes)else single.launch(mimeTypes)},enabled=!request.busy){Text("系统文件")}
+            AuroraTabs(listOf("conversation" to "会话文件", "resources" to "共享资源"), namespace, !request.busy) {
+                namespace = it; directory = ""
             }
+            TextButton({if(request.multiple)multiple.launch(mimeTypes)else single.launch(mimeTypes)},enabled=!request.busy){Text("从系统文件选择")}
             if(directory.isNotEmpty())TextButton({directory=directory.substringBeforeLast('/',"")},enabled=!request.busy){Text("返回上级")}
             LazyColumn(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)){
                 items(entries,key={it.first}){(path,isDirectory)->

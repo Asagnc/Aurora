@@ -45,7 +45,7 @@ import io.github.asagnc.aurora.runtime.ChatState
         MetricButton(speed, R.drawable.ic_gauge, Modifier.weight(1f)) { metric("speed") }
         MetricButton(state.usage.input?.let { compactTokens(it) + " tok" } ?: "— tok", R.drawable.ic_database,
             Modifier.weight(1f)) { metric("context") }
-        MetricButton(state.usage.cacheShare?.let { "缓存 %.0f%%".format(it * 100) } ?: "缓存 —",
+        MetricButton(state.usage.cacheShare?.let { "缓存读 %.0f%%".format(it * 100) } ?: "缓存 —",
             R.drawable.ic_database, Modifier.weight(1f)) { metric("cache") }
     }
 }

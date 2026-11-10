@@ -25,8 +25,10 @@ object RequestEncoder {
                     "cache_control" to objectOf("type" to string("ephemeral")))))
                 fields["messages"] = JsonArray(withAnthropicBreakpoint(request.history))
                 fields["max_tokens"] = JsonPrimitive(8192)
-                fields["tools"] = JsonArray(request.tools.map { tool -> objectOf("name" to string(tool.name),
-                    "description" to string(tool.description), "input_schema" to tool.schema) })
+                fields["tools"] = JsonArray(request.tools.mapIndexed { index, tool ->
+                    val definition = objectOf("name" to string(tool.name), "description" to string(tool.description), "input_schema" to tool.schema)
+                    if (index == request.tools.lastIndex) JsonObject(definition + ("cache_control" to ephemeral())) else definition
+                })
                 if (connection.effort != "auto") {
                     fields["thinking"] = objectOf("type" to string("adaptive"))
                     fields["output_config"] = objectOf("effort" to string(connection.effort))
@@ -34,12 +36,15 @@ object RequestEncoder {
             }
         }
         if (request.tools.isEmpty()) fields.remove("tools")
+        ProviderCacheRouting.apply(request, fields)
         return JsonObject(fields)
     }
 
     private fun definition(tool: ToolDefinition): JsonObject = objectOf(
         "name" to string(tool.name), "description" to string(tool.description), "parameters" to tool.schema
     )
+
+    private fun ephemeral() = objectOf("type" to string("ephemeral"))
 
     private fun withAnthropicBreakpoint(history: List<JsonObject>): List<JsonObject> {
         if (history.isEmpty()) return history
@@ -49,7 +54,14 @@ object RequestEncoder {
             is JsonPrimitive -> mutableListOf<JsonElement>(objectOf("type" to string("text"), "text" to content))
             else -> return history
         }
-        val eligible = blocks.indexOfLast { block -> (block as? JsonObject)?.text("type") !in setOf("thinking", "redacted_thinking") }
+        val eligible = blocks.indexOfLast { candidate ->
+            val block = candidate as? JsonObject ?: return@indexOfLast false
+            when (block.text("type")) {
+                "text" -> !block.text("text").isNullOrEmpty()
+                "image", "document", "tool_use", "tool_result" -> true
+                else -> false
+            }
+        }
         if (eligible < 0) return history
         val block = blocks[eligible] as? JsonObject ?: return history
         blocks[eligible] = JsonObject(block + ("cache_control" to objectOf("type" to string("ephemeral"))))

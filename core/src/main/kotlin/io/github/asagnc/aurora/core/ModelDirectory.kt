@@ -9,6 +9,12 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @kotlinx.serialization.Serializable
 data class AvailableModel(val id: String, val name: String)
+/** Editing a catalogue must not silently switch the active model and its cache scope. */
+fun selectedCatalogModel(current: String, models: List<AvailableModel>): String {
+    require(models.isNotEmpty()) { "Select at least one model" }
+    return models.firstOrNull { it.id == current }?.id ?: models.first().id
+}
+
 class ModelDirectoryFailure(message: String) : IOException(message)
 
 /** Explicit catalogue GET only: no inference, redirects, logging or credential persistence. */

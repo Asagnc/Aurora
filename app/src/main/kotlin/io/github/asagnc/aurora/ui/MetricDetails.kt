@@ -14,7 +14,10 @@ import io.github.asagnc.aurora.R
     val rows = when (kind) {
         "speed" -> listOf("本轮输出 tokens" to state.totalUsage.output?.toString(), "模型请求数" to state.requests.toString(),
             "工具调用数" to state.steps.toString(), "本轮耗时" to "%.2f 秒".format(state.seconds))
-        "cache" -> listOf("输入 tokens" to state.usage.input?.toString(), "缓存读取" to state.usage.cacheRead?.toString(), "缓存写入" to state.usage.cacheWrite?.toString())
+        "cache" -> listOf("最近请求 · 输入" to state.usage.input?.toString(), "最近请求 · 缓存读" to state.usage.cacheRead?.toString(),
+            "最近请求 · 缓存写" to state.usage.cacheWrite?.toString(), "本轮合计 · 输入" to state.totalUsage.input?.toString(),
+            "本轮合计 · 缓存读" to state.totalUsage.cacheRead?.toString(), "本轮合计 · 缓存写" to state.totalUsage.cacheWrite?.toString(),
+            "本轮缓存读占比" to state.totalUsage.cacheShare?.let { "%.1f%%".format(it * 100) })
         else -> listOf("最近输入" to state.usage.input?.toString(), "窗口上限（配置）" to state.selected?.contextLimit?.toString())
     }
     Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -35,7 +38,11 @@ import io.github.asagnc.aurora.R
             Text(label, color = AuroraMuted, style = MaterialTheme.typography.bodySmall)
             Text(value ?: "服务未提供", style = MaterialTheme.typography.bodySmall)
         } }
-        Text(if (kind == "speed") "整轮端到端估算，包含等待和工具耗时。" else "最近一次请求，以服务实际用量为准。",
+        Text(when (kind) {
+            "speed" -> "整轮端到端估算，包含等待和工具耗时。"
+            "cache" -> "缓存读占比按输入 tokens 计算，不是请求成功率。未报告的统计或无效占比保持未知，以服务实际用量为准。"
+            else -> "最近一次请求，以服务实际用量为准。"
+        },
             color = AuroraMuted, style = MaterialTheme.typography.bodySmall)
     }
 }

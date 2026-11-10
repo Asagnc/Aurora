@@ -3,10 +3,6 @@ package io.github.asagnc.aurora.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.ui.semantics.Role
-import com.itos.coui.layout.Group
-import com.itos.coui.layout.Divider
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -67,19 +63,6 @@ import com.itos.coui.theme.CouiTheme
     Surface(Modifier.fillMaxWidth(), shape = CouiPageDefaults.shape, color = CouiTheme.colorScheme.card) {
         Item(icon = { Icon(painterResource(R.drawable.ic_info), null) }) {
             Text(message, style = MaterialTheme.typography.bodyMedium)
-        }
-    }
-}
-
-/** Whole-row choices retain radio semantics without a separate square control. */
-@Composable internal fun SettingsChoices(title: String, choices: List<String>, selected: String, choose: (String) -> Unit) {
-    Group(title = title) {
-        choices.forEachIndexed { index, choice ->
-            if (index > 0) Divider(startIndent = 16.dp)
-            Item(modifier = Modifier.selectable(selected == choice, role = Role.RadioButton, onClick = { choose(choice) }),
-                trailing = { if (selected == choice) Text("✓", color = MaterialTheme.colorScheme.primary) }) {
-                CouiText(text = choice, kind = CouiTextKind.PreferenceTitle)
-            }
         }
     }
 }

@@ -28,10 +28,10 @@ import com.itos.coui.text.CouiTextKind
     FullPage("外观与配色", dismiss) {
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)) {
-            SettingsChoices("界面模式", listOf("浅色", "深色", "跟随系统"), state.mode) {
-                controller.update(state.copy(mode = it))
-            }
             Group(title = "主题") {
+                AuroraChoice("界面模式", state.mode, listOf("浅色", "深色", "跟随系统"),
+                    { controller.update(state.copy(mode = it)) }, label = { it })
+                Divider(startIndent = 16.dp)
                 Item(onClick = { colors = true }, summary = {
                     CouiText(text = if (state.dynamic) "系统动态配色" else "${state.palette} · ${state.style}",
                         kind = CouiTextKind.PreferenceSummary, color = AuroraMuted)

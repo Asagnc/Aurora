@@ -7,6 +7,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import com.itos.coui.search.SearchBar
+import com.itos.coui.search.rememberCouiSearchBarState
+import com.itos.coui.menu.rememberCouiWindowBackdrop
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -37,9 +41,7 @@ import io.github.asagnc.aurora.core.Connection
             } }
             if (candidates.size > 1) {
             SearchField(query, { query = it }, "搜索供应商或模型")
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf("全部", "官方", "中转").forEach { name -> ChoiceCapsule(name, category == name, { category = name }) }
-            }
+            AuroraTabs(listOf("全部", "官方", "中转").map { it to it }, category) { category = it }
             }
             val matches = candidates.filter { (connection, label) ->
                 (category == "全部" || connection.official == (category == "官方")) &&
@@ -47,8 +49,10 @@ import io.github.asagnc.aurora.core.Connection
             LazyColumn(Modifier.weight(1f, fill = false), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 if (matches.isEmpty()) item { Text(if (connections.isEmpty()) "先添加自己的 API 连接" else "没有匹配的模型",
                     Modifier.padding(vertical = 24.dp), color = AuroraMuted, style = MaterialTheme.typography.bodyMedium) }
-                items(matches, key = { it.first.id + ":" + it.first.model }) { (connection, label) ->
-                    Text(connection.name, color = AuroraMuted, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 8.dp))
+                matches.groupBy { it.first.id }.forEach { (providerId, models) ->
+                  item("provider:$providerId") { Text(models.first().first.name, color = AuroraMuted,
+                    style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 8.dp)) }
+                  items(models, key = { it.first.id + ":" + it.first.model }) { (connection, label) ->
                     Surface(onClick = { choose(connection); dismiss() }, shape = RoundedCornerShape(18.dp),
                         color = if (connection.id == selected?.id && connection.model == selected.model) MaterialTheme.colorScheme.surfaceContainer else MaterialTheme.colorScheme.surface) {
                         Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically,
@@ -66,9 +70,10 @@ import io.github.asagnc.aurora.core.Connection
                             if (connection.id == selected?.id && connection.model == selected.model) Text("✓", color = MaterialTheme.colorScheme.primary)
                         }
                     }
+                  }
                 }
             }
-            TextButton(manage, Modifier.fillMaxWidth(), colors = ButtonDefaults.textButtonColors(contentColor = AuroraInk)) {
+            TextButton({ dismiss(); manage() }, Modifier.fillMaxWidth(), colors = ButtonDefaults.textButtonColors(contentColor = AuroraInk)) {
                 LocalIcon(R.drawable.ic_settings, "管理供应商"); Spacer(Modifier.width(8.dp)); Text("管理供应商和模型")
             }
             Text("仅显示已配置并启用的连接", Modifier.align(Alignment.CenterHorizontally).padding(bottom = 24.dp),
@@ -78,9 +83,10 @@ import io.github.asagnc.aurora.core.Connection
 }
 
 @Composable internal fun SearchField(value: String, change: (String) -> Unit, hint: String) {
-    TextField(value, change, Modifier.fillMaxWidth(), singleLine = true, shape = RoundedCornerShape(16.dp),
-        textStyle = MaterialTheme.typography.bodyMedium, placeholder = { Text(hint, style = MaterialTheme.typography.bodyMedium) },
-        leadingIcon = { Icon(painterResource(R.drawable.ic_search), "搜索", Modifier.size(20.dp), tint = AuroraMuted) },
-        colors = TextFieldDefaults.colors(focusedContainerColor = AuroraMist, unfocusedContainerColor = AuroraMist,
-            focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent, unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent))
+    var expanded by remember { mutableStateOf(false) }
+    val keyboard = LocalSoftwareKeyboardController.current
+    val backdrop = requireNotNull(rememberCouiWindowBackdrop()) { "Search requires the current page backdrop" }
+    SearchBar(modifier = Modifier.fillMaxWidth(), state = rememberCouiSearchBarState(expanded), query = value,
+        onQueryChange = change, onExpandedChange = { expanded = it; if (!it) change("") }, placeholder = hint,
+        cancelText = "取消", clearDescription = "清除搜索", backdrop = backdrop, onSearch = { keyboard?.hide() })
 }

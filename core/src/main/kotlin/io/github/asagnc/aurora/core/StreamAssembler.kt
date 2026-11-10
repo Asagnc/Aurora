@@ -41,7 +41,8 @@ class StreamAssembler(private val protocol: Protocol) {
 
     private fun chat(item: JsonObject): String {
         item.obj("usage")?.let { usage = Usage(it.number("prompt_tokens"), it.number("completion_tokens"),
-            it.obj("prompt_tokens_details")?.number("cached_tokens") ?: it.number("prompt_cache_hit_tokens"),
+            it.obj("prompt_tokens_details")?.number("cached_tokens") ?: it.number("prompt_cache_hit_tokens")
+                ?: it.number("cache_read_input_tokens") ?: it.number("cached_tokens"),
             it.obj("prompt_tokens_details")?.number("cache_write_tokens")) }
         val choice = item.array("choices").firstOrNull()?.jsonObject ?: return ""
         choice.text("finish_reason")?.let { stopReason = it }

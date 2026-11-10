@@ -35,7 +35,7 @@ import kotlinx.serialization.json.*
         if (selected == null) dismiss() else { selected = null; offset = 0 }
     }) {
         if (selected == null) LazyColumn(Modifier.fillMaxSize().padding(horizontal = 24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            item { AuroraInput(query, { query = it.take(200); page = 0 }, label = { Text("搜索文件") }, modifier = Modifier.fillMaxWidth(), singleLine = true) }
+            item { AuroraInput(query, { query = it.take(200); page = 0 }, label = "搜索文件", modifier = Modifier.fillMaxWidth(), singleLine = true) }
             listing?.let { result ->
                 val files = result["files"]?.jsonArray.orEmpty()
                 if (files.isEmpty()) item { Text("没有匹配的文件", color = AuroraMuted) }

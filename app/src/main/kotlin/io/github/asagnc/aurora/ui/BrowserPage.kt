@@ -8,6 +8,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
+import com.itos.coui.menu.CouiMenuItem
+import com.itos.coui.menu.Menu
+import com.itos.coui.menu.couiMenuAnchor
+import com.itos.coui.menu.rememberCouiMenuAnchor
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -26,6 +30,7 @@ import io.github.asagnc.aurora.browser.BrowserController
     var address by rememberSaveable { mutableStateOf("") }
     var proxySettings by remember { mutableStateOf(false) }
     var menu by remember { mutableStateOf(false) }
+    val menuAnchor = rememberCouiMenuAnchor()
     val tabs = browser.tabs.filter { it.owner == owner }
     val active = tabs.firstOrNull { it.id == selected } ?: tabs.firstOrNull()
     fun navigate() {
@@ -48,24 +53,30 @@ import io.github.asagnc.aurora.browser.BrowserController
                     keyboardActions = KeyboardActions(onGo = { openAddress() }))
                 TextButton(::openAddress, enabled = !browser.configuring && browser.supported && address.isNotBlank()) { Text("打开") }
                 Box {
-                    IconButton({ menu = true }) { LocalIcon(R.drawable.ic_more_vert, "浏览器菜单") }
-                    DropdownMenu(menu, { menu = false }) {
-                        DropdownMenuItem(text = { Text("新页面") }, onClick = { menu = false; browser.open(owner)?.let { selected = it.id } }, enabled = !browser.configuring)
-                        DropdownMenuItem(text = { Text("后退") }, enabled = active?.view?.canGoBack() == true && !browser.configuring,
-                            onClick = { menu = false; active?.view?.goBack() })
-                        DropdownMenuItem(text = { Text("前进") }, enabled = active?.view?.canGoForward() == true && !browser.configuring,
-                            onClick = { menu = false; active?.view?.goForward() })
-                        DropdownMenuItem(text = { Text("刷新") }, enabled = active != null && !browser.configuring,
-                            onClick = { menu = false; active?.view?.reload() })
-                        DropdownMenuItem(text = { Text("代理设置") }, onClick = { menu = false; proxySettings = true })
-                        DropdownMenuItem(text = { Text("关闭本会话所有页面") }, onClick = { menu = false; tabs.toList().forEach(browser::close) })
-                    }
+                    IconButton({ menuAnchor.open { menu = true } }, Modifier.couiMenuAnchor(menuAnchor)) { LocalIcon(R.drawable.ic_more_vert, "浏览器菜单") }
+                    Menu(expanded = menu, onDismissRequest = { menu = false }, anchor = menuAnchor,
+                        items = listOf(CouiMenuItem("new", "新页面", enabled = !browser.configuring),
+                            CouiMenuItem("back", "后退", enabled = active?.view?.canGoBack() == true && !browser.configuring),
+                            CouiMenuItem("forward", "前进", enabled = active?.view?.canGoForward() == true && !browser.configuring),
+                            CouiMenuItem("reload", "刷新", enabled = active != null && !browser.configuring),
+                            CouiMenuItem("proxy", "代理设置"), CouiMenuItem("close", "关闭本会话所有页面")),
+                        onItemClick = { action ->
+                            menu = false
+                            when (action.value) {
+                                "new" -> browser.open(owner)?.let { selected = it.id }
+                                "back" -> active?.view?.goBack()
+                                "forward" -> active?.view?.goForward()
+                                "reload" -> active?.view?.reload()
+                                "proxy" -> proxySettings = true
+                                "close" -> tabs.toList().forEach(browser::close)
+                            }
+                        })
                 }
             }
             Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 tabs.forEachIndexed { index, tab ->
-                    InputChip(selected = active == tab, onClick = { selected = tab.id }, label = { Text("${index + 1} · ${tab.title.take(12)}") },
+                    InputChip(shape = com.itos.coui.shape.CouiCapsuleShape, selected = active == tab, onClick = { selected = tab.id }, label = { Text("${index + 1} · ${tab.title.take(12)}") },
                         trailingIcon = { IconButton({ browser.close(tab) }, Modifier.size(24.dp)) { LocalIcon(R.drawable.ic_close, "关闭页面 ${index + 1}") } })
                 }
             }
@@ -112,7 +123,7 @@ import io.github.asagnc.aurora.browser.BrowserController
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text("仅影响 Aurora 所有浏览器页面，不改变模型 API 或手机其他应用的网络。更改前需关闭所有页面。", style = MaterialTheme.typography.bodyMedium)
             if (!browser.proxySupported) Text("当前 WebView 不支持代理覆盖。", color = MaterialTheme.colorScheme.error)
-            AuroraInput(value, { value = it }, label = { Text("http(s)://主机:端口 或 socks://主机:端口") }, singleLine = true)
+            AuroraInput(value, { value = it }, label = "http(s)://主机:端口 或 socks://主机:端口", singleLine = true)
             Text("不支持代理认证。回环和本地地址遵循 WebView 默认绕过规则。", color = AuroraMuted, style = MaterialTheme.typography.bodySmall)
             if (browser.tabs.isNotEmpty()) TextButton({ browser.tabs.toList().forEach(browser::close) }) { Text("关闭所有会话的浏览器页面") }
             TextButton({ browser.applyProxy("") { dismiss() } }, enabled = browser.tabs.isEmpty() && !browser.configuring) { Text("跟随系统") }

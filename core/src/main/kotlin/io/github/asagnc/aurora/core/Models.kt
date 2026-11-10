@@ -70,7 +70,7 @@ data class Usage(
         sum(cacheRead, other.cacheRead), sum(cacheWrite, other.cacheWrite))
     private fun sum(first: Long?, second: Long?) = if (first != null && second != null) Math.addExact(first, second) else null
     val cacheShare: Double? get() = input?.takeIf { it > 0 }?.let { total ->
-        cacheRead?.let { cached -> cached.toDouble() / total }
+        cacheRead?.takeIf { it in 0..total }?.let { cached -> cached.toDouble() / total }
     }
 }
 
@@ -88,6 +88,7 @@ data class ModelRequest(
     val system: String,
     val history: List<JsonObject>,
     val tools: List<ToolDefinition>,
+    val cacheScope: String? = null,
 )
 
 interface ModelTransport {

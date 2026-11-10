@@ -15,10 +15,12 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import com.itos.coui.layout.Group
+import com.itos.coui.menu.ProvideCouiMenuBackdrop
 import com.itos.coui.layout.Item
 import com.itos.coui.layout.Divider
 import com.itos.coui.topappbar.CouiTopAppBarDefaults
 import com.itos.coui.topappbar.LargeTopAppBar
+import com.itos.coui.topappbar.TopAppBar
 import com.itos.coui.topappbar.TopAppBarButton
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -89,7 +91,7 @@ import kotlinx.coroutines.withContext
     }
 }
 
-@Composable internal fun FullPage(title: String, dismiss: () -> Unit, content: @Composable () -> Unit) {
+@Composable internal fun FullPage(title: String, dismiss: () -> Unit, compact: Boolean = false, content: @Composable () -> Unit) {
     Dialog(dismiss, properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)) {
         val view = LocalView.current
         val light = MaterialTheme.colorScheme.background.luminance() > 0.5f
@@ -101,13 +103,17 @@ import kotlinx.coroutines.withContext
         } }
         val scroll = CouiTopAppBarDefaults.exitUntilCollapsedScrollBehavior()
         val density = LocalDensity.current
+        ProvideCouiMenuBackdrop { source ->
         com.itos.coui.layout.Scaffold(
-            modifier = Modifier.fillMaxSize().imePadding().nestedScroll(scroll.nestedScrollConnection),
-            topBar = { LargeTopAppBar(title = { Text(title, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis) },
+            modifier = source.fillMaxSize().imePadding().nestedScroll(scroll.nestedScrollConnection),
+            topBar = { if (compact) TopAppBar(title = { Text(title, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis) },
+                navigationIcon = { TopAppBarButton(onClick = dismiss) { LocalIcon(R.drawable.ic_arrow_back, "返回") } })
+                else LargeTopAppBar(title = { Text(title, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis) },
                 navigationIcon = { TopAppBarButton(onClick = dismiss) { LocalIcon(R.drawable.ic_arrow_back, "返回") } },
                 scrollBehavior = scroll) }) { padding ->
-            Box(Modifier.fillMaxSize().padding(scroll.state.contentPadding(padding, density))
+            Box(Modifier.fillMaxSize().padding(if (compact) padding else scroll.state.contentPadding(padding, density))
                 .consumeWindowInsets(padding)) { content() }
+        }
         }
     }
 }

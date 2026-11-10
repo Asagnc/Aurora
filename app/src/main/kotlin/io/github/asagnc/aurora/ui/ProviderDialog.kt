@@ -41,26 +41,29 @@ import kotlinx.coroutines.CancellationException
     var preset by remember { mutableStateOf<ProviderPreset?>(null) }
     var workspace by remember { mutableStateOf("") }
     var advanced by remember { mutableStateOf(false) }
+    var modelTab by remember { mutableStateOf(false) }
     fun usePreset(selected: ProviderPreset?) {
         editing = null; draftId = java.util.UUID.randomUUID().toString(); models = emptyList(); failure = null
-        preset = selected; workspace = ""; key = ""; contextLimit = ""; adding = true; advanced = false
+        preset = selected; workspace = ""; key = ""; contextLimit = ""; adding = true; advanced = false; modelTab = false
         name = selected?.name.orEmpty(); model = ""
         endpoint = selected?.baseUrl?.takeUnless { selected.requiresWorkspace }.orEmpty()
         protocol = selected?.protocol ?: Protocol.CHAT; auth = selected?.authentication ?: Authentication.AUTOMATIC
     }
     fun edit(connection: Connection) {
-        editing = connection; draftId = connection.id; preset = null; workspace = ""; key = ""
+        modelTab = false; editing = connection; draftId = connection.id; preset = null; workspace = ""; key = ""
         name = connection.name; endpoint = connection.baseUrl; protocol = connection.protocol; auth = connection.authentication
         model = connection.model; models = connection.models; contextLimit = connection.contextLimit?.toString().orEmpty()
         failure = null; advanced = false; adding = true
     }
     fun back() { if (!busy) { key = ""; failure = null; if (adding) adding = false else dismiss() } }
-    FullPage(if (adding) { if (editing != null) "编辑连接" else preset?.name ?: "自定义中转" } else "供应商", ::back) {
+    FullPage(if (adding) { if (editing != null) "编辑连接" else preset?.name ?: "自定义中转" } else "供应商", ::back, compact = adding) {
       CompositionLocalProvider(LocalFormEnabled provides !busy) {
         Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (adding) {
                     if (preset != null) Box(Modifier.padding(horizontal = 16.dp)) { ProviderPresetPicker(preset, ::usePreset) }
+                    ProviderTabs(modelTab, !busy) { modelTab = it }
+                    if (!modelTab) {
                     Group(title = "连接信息") {
                       Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     preset?.let { selected ->
@@ -81,11 +84,10 @@ import kotlinx.coroutines.CancellationException
                         Item(onClick = { advanced = !advanced }, enabled = !busy, summary = { Text("认证方式与上下文上限", color = AuroraMuted, style = MaterialTheme.typography.bodySmall) },
                             trailing = { SettingsChevron() }) { Text("高级设置") }
                     }
-                    Group(title = "模型") {
-                        ProviderModels(endpoint, key, protocol, auth, model, { model = it }, models, { models = it },
-                            draftId, editing != null, fetch)
                     }
-                    if (advanced) Group(title = "高级设置") {
+                    ProviderModels(endpoint, key, protocol, auth, model, { model = it }, models, { models = it },
+                        draftId, editing != null, fetch, visible = modelTab)
+                    if (!modelTab && advanced) Group(title = "高级设置") {
                       Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         ProviderChoice("认证方式", auth, Authentication.entries, { auth = it; model = ""; models = emptyList() }) { when (it) {
                             Authentication.AUTOMATIC -> "自动"; Authentication.BEARER -> "Bearer"; Authentication.API_KEY -> "x-api-key"; Authentication.API_KEY_HEADER -> "api-key"
@@ -93,8 +95,8 @@ import kotlinx.coroutines.CancellationException
                         ProviderField("上下文上限（可留空）", contextLimit, { contextLimit = it.filter(Char::isDigit) })
                     }
                     }
-                    Text("密钥在本机加密保存。", Modifier.padding(horizontal = 32.dp), style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
-                    Box(Modifier.padding(horizontal = 16.dp)) { SettingsDetails("连接说明", "端点与型号") {
+                    if (!modelTab) Text("密钥在本机加密保存。", Modifier.padding(horizontal = 32.dp), style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
+                    if (!modelTab) Box(Modifier.padding(horizontal = 16.dp)) { SettingsDetails("连接说明", "端点与型号") {
                         preset?.note?.takeIf { it.isNotBlank() }?.let { Text(it) }
                         Text("型号目录核查：${ProviderCatalog.checkedOn}。实际可用性取决于账号和所选端点。")
                     } }
@@ -125,7 +127,10 @@ import kotlinx.coroutines.CancellationException
             if (adding) {
                 if (editing != null) TextButton({ deleting = true }, enabled = !busy,
                     modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)) { Text("删除连接") }
-                Button({
+                if (!modelTab) Button({ modelTab = true }, Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    enabled = !busy && name.isNotBlank() && endpoint.isNotBlank() && (key.isNotBlank() || editing != null)) {
+                    Text("下一步：选择模型")
+                } else Button({
                     busy = true; failure = null
                     scope.launch {
                         try {
@@ -162,25 +167,20 @@ import kotlinx.coroutines.CancellationException
 }
 
 @Composable private fun ProviderField(label: String, value: String, change: (String) -> Unit, secret: Boolean = false) {
-    AuroraInput(value, change, Modifier.fillMaxWidth(), singleLine = true,
-        label = { Text(label) },
+    var revealed by remember { mutableStateOf(false) }
+    AuroraInput(value, change, Modifier.fillMaxWidth(), singleLine = true, label = label,
         keyboardOptions = KeyboardOptions(keyboardType = when {
             secret -> KeyboardType.Password
             label.contains("地址") -> KeyboardType.Uri
             else -> KeyboardType.Text
         }, autoCorrectEnabled = !secret),
-        visualTransformation = if (secret) PasswordVisualTransformation() else VisualTransformation.None)
+        trailingIcon = if (secret) ({ TextButton({ revealed = !revealed }) { Text(if (revealed) "隐藏" else "显示") } }) else null,
+        visualTransformation = if (secret && !revealed) PasswordVisualTransformation() else VisualTransformation.None)
 }
 
 @Composable private fun <T> ProviderChoice(title: String, selected: T, options: List<T>, choose: (T) -> Unit,
     label: (T) -> String) {
-    var expanded by remember { mutableStateOf(false) }
-    Box {
-        Item(onClick = { expanded = true }, enabled = LocalFormEnabled.current, trailing = { Text(label(selected), color = AuroraMuted, style = MaterialTheme.typography.bodyMedium) }) { Text(title) }
-        DropdownMenu(expanded, { expanded = false }) {
-            options.forEach { value -> DropdownMenuItem(text = { Text(label(value)) }, onClick = { choose(value); expanded = false }) }
-        }
-    }
+    AuroraChoice(title, selected, options, choose, label = label)
 }
 
 private fun providerError(failure: Exception): String = when (failure) {

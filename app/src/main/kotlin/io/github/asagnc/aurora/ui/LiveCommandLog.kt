@@ -33,10 +33,7 @@ import kotlinx.coroutines.launch
     }
     val output = if (stream == "stdout") snapshot.stdout else snapshot.stderr
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(stream == "stdout", { stream = "stdout" }, label = { Text("标准输出") })
-            FilterChip(stream == "stderr", { stream = "stderr" }, label = { Text("错误输出") })
-        }
+        AuroraTabs(listOf("stdout" to "标准输出", "stderr" to "错误输出"), stream) { stream = it }
         Text(if (live) "实时日志 · ${output.bytes} 字节已读取" else "输出末尾 · ${output.bytes} 字节",
             color = AuroraMuted, style = MaterialTheme.typography.labelMedium)
         if (output.previewClipped) Text("仅显示末尾 64 KiB；产物文件另受执行器保存预算约束。", color = AuroraMuted, style = MaterialTheme.typography.labelSmall)

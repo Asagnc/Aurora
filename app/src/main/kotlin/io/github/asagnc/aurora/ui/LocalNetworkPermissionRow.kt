@@ -7,6 +7,7 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.*
+import com.itos.coui.layout.Item
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -32,10 +33,10 @@ private const val LOCAL_NETWORK_PERMISSION = "android.permission.ACCESS_LOCAL_NE
         lifecycle.lifecycle.addObserver(observer)
         onDispose { lifecycle.lifecycle.removeObserver(observer) }
     }
-    ListItem(onClick = { expanded = true },
-        supportingContent = { Text(if (granted) "已允许" else "未允许") },
-        leadingContent = { IconBadge(R.drawable.ic_hub, MaterialTheme.colorScheme.primary) },
-        trailingContent = { SettingsChevron() }) { Text("局域网访问") }
+    Item(onClick = { expanded = true },
+        summary = { Text(if (granted) "已允许" else "未允许") },
+        icon = { IconBadge(R.drawable.ic_hub, MaterialTheme.colorScheme.primary) },
+        trailing = { SettingsChevron() }) { Text("局域网访问") }
     if (expanded) LocalNetworkPermissionDialog(granted, { expanded = false },
         { request.launch(LOCAL_NETWORK_PERMISSION) }, {
             context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,

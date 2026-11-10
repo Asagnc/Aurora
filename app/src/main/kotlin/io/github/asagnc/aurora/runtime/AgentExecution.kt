@@ -102,7 +102,7 @@ internal class AgentExecution(private val app: AuroraApplication, private val mu
                 if (current.current?.id == id) current.copy(toolRuns = events, steps = steps) else current
             }
         }).run(
-            ModelRequest(continuation?.connection ?: connection, SYSTEM, history, tools.definitions),
+            ModelRequest(continuation?.connection ?: connection, SYSTEM, history, tools.definitions, cacheScope = scope),
             { update -> mutable.update { it.copy(streaming = update.text, stage = update.stage) } },
             { entries -> app.nativeHistory.append(id, scope, savedCount.toLong(), entries.drop(savedCount)); savedCount = entries.size })
         app.conversations.appendMessage(id, ChatMessage(role = "assistant", text = result.text, createdAt = System.currentTimeMillis()))

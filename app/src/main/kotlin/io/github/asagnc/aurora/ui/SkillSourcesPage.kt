@@ -95,14 +95,14 @@ import kotlinx.coroutines.launch
             Group(title = "GitHub 仓库") {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     AuroraInput(repository, { repository = it }, modifier = Modifier.fillMaxWidth(),
-                        label = { Text("仓库 owner/repo") }, enabled = !busy && selected == null, singleLine = true)
+                        label = "仓库 owner/repo", enabled = !busy && selected == null, singleLine = true)
                     Text("只对这个仓库应用认证与签名规则。", color = AuroraMuted, style = MaterialTheme.typography.bodySmall)
                 }
             }
             Group(title = "私有访问 · 可选") {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     AuroraInput(token, { token = it; if (it.isNotBlank()) removeCredential = false },
-                        label = { Text(if (selected?.credentialId != null) "替换令牌（留空保留）" else "只读令牌") },
+                        label = if (selected?.credentialId != null) "替换令牌（留空保留）" else "只读令牌",
                         modifier = Modifier.fillMaxWidth(), visualTransformation = PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, autoCorrectEnabled = false),
                         enabled = !busy, singleLine = true)
@@ -120,14 +120,14 @@ import kotlinx.coroutines.launch
                         style = MaterialTheme.typography.bodySmall) }, trailing = { Text(if (signing) "收起" else "设置", color = MaterialTheme.colorScheme.primary) }) { Text("公钥与签名文件") }
                 if (signing) Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     AuroraInput(publicKey, { publicKey = it }, modifier = Modifier.fillMaxWidth(),
-                        label = { Text("Ed25519 公钥 · SPKI Base64") }, enabled = !busy)
+                        label = "Ed25519 公钥 · SPKI Base64", enabled = !busy)
                     if (publicKey.isNotBlank()) {
                         val fingerprint = runCatching { SkillSignatures.fingerprint(publicKey.trim()) }.getOrNull()
                         Text(fingerprint?.let { "请独立核对 SHA256 指纹：$it" } ?: "公钥格式尚不正确",
                             style = MaterialTheme.typography.bodySmall)
                     }
                     AuroraInput(signatureUrl, { signatureUrl = it }, modifier = Modifier.fillMaxWidth(),
-                        label = { Text("签名文件 HTTPS 地址（可选）") }, enabled = !busy)
+                        label = "签名文件 HTTPS 地址（可选）", enabled = !busy)
                     Text("填写公钥后强制验签；地址留空时需手动选择签名文件。请先独立核对指纹。", color = AuroraMuted,
                         style = MaterialTheme.typography.bodySmall)
                 }

@@ -22,16 +22,12 @@ import androidx.compose.ui.unit.dp
     var source by remember { mutableStateOf(if (state.dynamic) "系统" else if (state.palette == "自定义") "自定义" else "预设") }
     FullPage("配色", dismiss) {
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf("预设", "系统", "自定义").forEach { name ->
-                    ChoiceCapsule(name, source == name, click = {
-                        source = name
-                        when (name) {
-                            "系统" -> controller.update(state.copy(dynamic = true))
-                            "自定义" -> controller.update(state.copy(dynamic = false, palette = "自定义"))
-                            else -> controller.update(state.copy(dynamic = false, palette = if (state.palette == "自定义") "青岚" else state.palette))
-                        }
-                    })
+            AuroraTabs(listOf("预设", "系统", "自定义").map { it to it }, source) { name ->
+                source = name
+                when (name) {
+                    "系统" -> controller.update(state.copy(dynamic = true))
+                    "自定义" -> controller.update(state.copy(dynamic = false, palette = "自定义"))
+                    else -> controller.update(state.copy(dynamic = false, palette = if (state.palette == "自定义") "青岚" else state.palette))
                 }
             }
             when (source) {
@@ -58,8 +54,9 @@ import androidx.compose.ui.unit.dp
                 else -> key(state.custom) { CustomAccent(state.custom) { controller.update(state.copy(custom = it, palette = "自定义", dynamic = false)) } }
             }
             if (source != "系统") {
-                SettingsChoices("色彩风格", listOf("柔和", "鲜明", "单色"), state.style) {
-                    controller.update(state.copy(style = it))
+                com.itos.coui.layout.Group(title = "色彩风格") {
+                    AuroraChoice("风格", state.style, listOf("柔和", "鲜明", "单色"),
+                        { controller.update(state.copy(style = it)) }, label = { it })
                 }
             }
             Text("更改会即时应用。字体大小跟随系统。", color = AuroraMuted, style = MaterialTheme.typography.bodySmall)
@@ -84,6 +81,6 @@ import androidx.compose.ui.unit.dp
     Slider(state = brightness, onValueChange = { brightness.value = it })
     Button({ apply(selected) }) { Text("应用所选颜色") }
     AuroraInput(hex, { hex = it.filter { c -> c in "0123456789abcdefABCDEF" }.take(6) },
-        label = { Text("颜色值（可选）") }, prefix = { Text("#") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        label = "颜色值（可选）", prefix = { Text("#") }, singleLine = true, modifier = Modifier.fillMaxWidth())
     TextButton({ apply((0xFF000000L or hex.toLong(16)).toInt()) }, enabled = hex.length == 6) { Text("应用颜色值") }
 }

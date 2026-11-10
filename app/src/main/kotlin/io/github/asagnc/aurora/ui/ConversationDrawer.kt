@@ -3,10 +3,21 @@ package io.github.asagnc.aurora.ui
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.toggleableState
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import com.itos.coui.menu.CouiMenuItem
+import com.itos.coui.menu.Menu
+import com.itos.coui.menu.couiMenuAnchor
+import com.itos.coui.menu.rememberCouiMenuAnchor
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +50,7 @@ import kotlinx.coroutines.delay
         Column(Modifier.fillMaxHeight().width(300.dp).imePadding().padding(horizontal = 18.dp)) {
             Row(Modifier.fillMaxWidth().height(64.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("会话", Modifier.semantics { heading() }.focusable(), style = MaterialTheme.typography.headlineSmall)
-                IconButton({ selecting = !selecting; selected = emptySet() }) { LocalIcon(R.drawable.ic_checklist, "多选会话") }
+                IconButton({ selecting = !selecting; selected = emptySet() }) { LocalIcon(R.drawable.ic_checklist, if (selecting) "结束多选" else "多选会话") }
             }
             SearchField(query, { query = it }, "搜索会话")
             if (selecting) Row {
@@ -52,10 +63,24 @@ import kotlinx.coroutines.delay
                     if (rows.isNotEmpty()) {
                         item(label) { Text(label, Modifier.padding(vertical = 8.dp), color = AuroraMuted, style = MaterialTheme.typography.bodySmall) }
                         items(rows, key = { it.id }) { session ->
-                            Surface(shape = RoundedCornerShape(16.dp), color = if (session.id == state.current?.id) AuroraMist else Color.Transparent) {
-                                Row(Modifier.fillMaxWidth().combinedClickable(onClick = { if (selecting) toggle(session.id) else onOpen(session.id) },
-                                    onLongClick = { menu = session.id }).padding(start = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                                    if (selecting) Checkbox(session.id in selected, { toggle(session.id) })
+                            val anchor = rememberCouiMenuAnchor()
+                            Surface(shape = RoundedCornerShape(16.dp), color = when {
+                                selecting && session.id in selected -> MaterialTheme.colorScheme.primaryContainer
+                                session.id == state.current?.id -> AuroraMist
+                                else -> Color.Transparent
+                            }) {
+                                Row(Modifier.fillMaxWidth().couiMenuAnchor(anchor).combinedClickable(onClick = { if (selecting) toggle(session.id) else onOpen(session.id) },
+                                    onLongClick = if (selecting) null else ({ anchor.open { menu = session.id } }))
+                                    .semantics { if (selecting) { role = Role.Checkbox; toggleableState = ToggleableState(session.id in selected) } }
+                                    .padding(start = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                                    if (selecting) {
+                                        Box(Modifier.size(36.dp), contentAlignment = Alignment.Center) {
+                                            Box(Modifier.size(20.dp).background(if (session.id in selected) MaterialTheme.colorScheme.primary else Color.Transparent, CircleShape)
+                                                .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape), contentAlignment = Alignment.Center) {
+                                                if (session.id in selected) Text("✓", color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.labelSmall)
+                                            }
+                                        }
+                                    }
                                     else { LocalIcon(R.drawable.ic_chat_bubble, "会话"); Spacer(Modifier.width(10.dp)) }
                                     Column(Modifier.weight(1f).padding(vertical = 10.dp),
                                         verticalArrangement = Arrangement.spacedBy(3.dp)) {
@@ -64,13 +89,18 @@ import kotlinx.coroutines.delay
                                         MessageTime(session.updatedAt)
                                     }
                                     Box {
-                                        IconButton({ menu = session.id }) { LocalIcon(if (session.pinned) R.drawable.ic_push_pin else R.drawable.ic_more_vert, "会话操作") }
-                                        DropdownMenu(menu == session.id, { menu = null }) {
-                                            DropdownMenuItem(text = { Text("重命名") }, leadingIcon = { LocalIcon(R.drawable.ic_edit, "重命名") }, onClick = { renaming = session; renameText = session.title; menu = null })
-                                            DropdownMenuItem(text = { Text(if (session.pinned) "取消置顶" else "置顶") }, onClick = { model.pin(listOf(session.id), !session.pinned); menu = null })
-                                            DropdownMenuItem(text = { Text("多选") }, onClick = { selecting = true; toggle(session.id); menu = null })
-                                            DropdownMenuItem(text = { Text("删除") }, leadingIcon = { LocalIcon(R.drawable.ic_delete, "删除") }, onClick = { deleting = listOf(session.id); menu = null })
-                                        }
+                                        IconButton({ anchor.open { menu = session.id } }) { LocalIcon(if (session.pinned) R.drawable.ic_push_pin else R.drawable.ic_more_vert, "会话操作") }
+                                        Menu(expanded = menu == session.id, onDismissRequest = { menu = null }, anchor = anchor,
+                                            items = listOf(CouiMenuItem("rename", "重命名"),
+                                                CouiMenuItem("pin", if (session.pinned) "取消置顶" else "置顶"), CouiMenuItem("delete", "删除")),
+                                            onItemClick = { action ->
+                                                menu = null
+                                                when (action.value) {
+                                                    "rename" -> { renaming = session; renameText = session.title }
+                                                    "pin" -> model.pin(listOf(session.id), !session.pinned)
+                                                    "delete" -> deleting = listOf(session.id)
+                                                }
+                                            })
                                     }
                                 }
                             }
@@ -97,7 +127,7 @@ import kotlinx.coroutines.delay
         { model.rename(session.id, renameText); renaming = null }, { renaming = null },
         cancelLabel = "取消", confirmEnabled = renameText.isNotBlank()) {
         AuroraInput(renameText, { renameText = it }, Modifier.fillMaxWidth(), singleLine = true,
-            label = { Text("会话名称") })
+            label = "会话名称")
     } }
     deleting?.let { ids -> AuroraPrompt("删除 ${ids.size} 个会话？", "删除",
         { model.delete(ids); selected = emptySet(); deleting = null }, { deleting = null },
