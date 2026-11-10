@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -16,7 +17,7 @@ import io.github.asagnc.aurora.runtime.ChatViewModel
 
 @Composable internal fun RootConnectionPage(model: ChatViewModel, dismiss: () -> Unit) {
     val root by model.rootState.collectAsStateWithLifecycle()
-    var policy by remember { mutableStateOf(false) }
+    var policy by rememberSaveable { mutableStateOf(false) }
     val connected = root.phase == RootPhase.READY
     val connecting = root.phase == RootPhase.CONNECTING
     FullPage("Root 权限", dismiss) {

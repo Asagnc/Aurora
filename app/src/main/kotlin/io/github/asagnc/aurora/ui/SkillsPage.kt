@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -31,14 +32,14 @@ import kotlinx.coroutines.launch
     var entries by remember { mutableStateOf(emptyList<SkillEntry>()) }
     var query by remember { mutableStateOf("") }
     var url by remember { mutableStateOf("") }
-    var advanced by remember { mutableStateOf(false) }
-    var installing by remember { mutableStateOf(false) }
+    var advanced by rememberSaveable { mutableStateOf(false) }
+    var installing by rememberSaveable { mutableStateOf(false) }
     var ref by remember { mutableStateOf("") }
     var selection by remember { mutableStateOf("") }
     var busy by remember { mutableStateOf(false) }
     var notice by remember { mutableStateOf<String?>(null) }
     var selected by remember { mutableStateOf<SkillEntry?>(null) }
-    var sources by remember { mutableStateOf(false) }
+    var sources by rememberSaveable { mutableStateOf(false) }
     var profiles by remember { mutableStateOf(emptyList<SkillSourceProfile>()) }
     var selectedProfile by remember { mutableStateOf<String?>(null) }
     var profileMenu by remember { mutableStateOf(false) }

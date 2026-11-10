@@ -10,6 +10,7 @@ import com.itos.coui.layout.Divider
 import com.itos.coui.switch.Switch as CouiSwitch
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -22,7 +23,7 @@ import com.itos.coui.text.CouiTextKind
 @Composable internal fun AppearanceSheet(dismiss: () -> Unit) {
     val controller = LocalAppearance.current
     val state = controller.state
-    var colors by remember { mutableStateOf(false) }
+    var colors by rememberSaveable { mutableStateOf(false) }
     var reset by remember { mutableStateOf(false) }
     FullPage("外观与配色", dismiss) {
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),

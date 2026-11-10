@@ -6,6 +6,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
@@ -42,7 +43,7 @@ import kotlinx.coroutines.withContext
         }.getOrNull() }
     }
     val root by model.rootState.collectAsStateWithLifecycle()
-    var page by remember { mutableStateOf<String?>(null) }
+    var page by rememberSaveable { mutableStateOf<String?>(null) }
     FullPage("设置", dismiss) {
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(4.dp)) {

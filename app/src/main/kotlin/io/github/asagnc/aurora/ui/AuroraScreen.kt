@@ -29,14 +29,14 @@ import kotlinx.coroutines.launch
     val keyboard = LocalSoftwareKeyboardController.current
     fun closeInput() { focus.clearFocus(); keyboard?.hide() }
     LaunchedEffect(drawer.targetValue) { closeInput() }
-    var providers by remember { mutableStateOf(false) }
-    var settingsReturn by remember { mutableStateOf<String?>(null) }
-    var skills by remember { mutableStateOf(false) }
+    var providers by rememberSaveable { mutableStateOf(false) }
+    var settingsReturn by rememberSaveable { mutableStateOf<String?>(null) }
+    var skills by rememberSaveable { mutableStateOf(false) }
     var menu by remember { mutableStateOf(false) }
     var browser by remember { mutableStateOf(false) }
     var terminal by remember { mutableStateOf(false) }
     var models by remember { mutableStateOf(false) }
-    var metrics by remember { mutableStateOf<String?>(null) }
+    var metrics by rememberSaveable { mutableStateOf<String?>(null) }
     var space by remember { mutableStateOf<String?>(null) }
     var artifactFolder by remember { mutableStateOf("") }
     var conversationFilesOnly by remember { mutableStateOf(false) }
