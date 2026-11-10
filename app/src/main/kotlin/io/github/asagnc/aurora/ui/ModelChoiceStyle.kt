@@ -20,4 +20,3 @@ import com.itos.coui.shape.CouiCapsuleShape
         label = { Text(label, maxLines = 2, overflow = TextOverflow.Ellipsis) },
         leadingIcon = if (selected) ({ Text("✓", color = MaterialTheme.colorScheme.primary) }) else null)
 }
-

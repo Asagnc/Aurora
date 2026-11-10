@@ -17,6 +17,10 @@
       "androidTestCompile": true,
       "lintDebug": true,
       "lintRelease": true
+    },
+    "testDiscovery": {
+      "annotatedMethods": 370,
+      "nonVoidMethods": 0
     }
   },
   "deviceChecks": [
@@ -51,5 +55,19 @@
     "Initial non-void pagination test was not discovered; corrected to Unit and discovery verified",
     "Several host UI assertions missed content outside viewport; screenshots and later workflow verification retained",
     "First capsule implementation supplied positional modifier into label slot; corrected before device install"
-  ]
+  ],
+  "productCommit": "395820d24f5cd9a7a25d7f15a0595b8b3eb467de",
+  "ci": {
+    "runId": 42767158633,
+    "url": "https://github.com/Asagnc/Aurora/actions/runs/42767158633",
+    "productCommit": "395820d24f5cd9a7a25d7f15a0595b8b3eb467de",
+    "conclusion": "success",
+    "jobs": {
+      "test": "success",
+      "managed-supervision": "success",
+      "socket-diag": "success",
+      "capture-primitives": "success",
+      "frida-session": "success"
+    }
+  }
 }
