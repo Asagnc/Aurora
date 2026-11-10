@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "date": "2026-11-10",
+  "productCommit": "46feccea265ee5adaf2c94c5cb2e673c42c7df09",
+  "scope": "Skill source and Linux settings hierarchy; full UI remains in progress",
+  "debugApkSha256": "e3b685043b278299c2b1892d3f8bf92e6de67f29e2a311563412670e2758355b",
+  "fridaWorkerSha256": "c9b22da8e0019fd052d9a87d54279b09acfc4eecbdf1fea6376137556b59439f",
+  "host": {
+    "tasks": 221,
+    "seconds": 50,
+    "debug": true,
+    "defaultR8Release": true,
+    "androidTestCompile": true,
+    "lintDebug": true,
+    "lintRelease": true
+  },
+  "deviceChecks": [
+    "Preserved-data update with original debug signer",
+    "Source list and independent grouped editor",
+    "Signature fields expand without clearing draft; back discards own unsaved test draft",
+    "Invalid repository validation retains form and error; no source added",
+    "Linux overview to installed versions and back",
+    "Maintenance destination displays gated actions; none invoked",
+    "Installation/runtime explanation destination and back",
+    "Linux explanation preserved across font130 and landscape changes; complete text visually checked after scroll",
+    "Original appearance preferences and font/rotation settings restored"
+  ],
+  "notQualified": [
+    "Real source credential replacement/removal via new editor",
+    "Revocation confirmation via existing profile: source list empty, no profile created solely for UI test",
+    "Source editor draft across Activity recreation",
+    "Full accessibility and all device form factors",
+    "Default release device qualification"
+  ],
+  "boundaries": {
+    "modelRequests": 0,
+    "rootConnected": false,
+    "actualInstalls": 0,
+    "maintenanceActions": 0,
+    "policiesActivated": 0,
+    "sourceProfilesAdded": 0,
+    "realCredentialsUsed": false,
+    "releaseReady": false,
+    "wholeUiFinished": false,
+    "rawDeviceDataCommitted": false
+  },
+  "retainedFailures": [
+    "Version-group formatting briefly missed a closing brace; corrected and full host build/lint rerun before device update"
+  ],
+  "privateScreenshotDirectory": "app/build/source-environment-review",
+  "ci": {
+    "runId": 42772674262,
+    "url": "https://github.com/Asagnc/Aurora/actions/runs/42772674262",
+    "conclusion": "success",
+    "jobs": {
+      "test": "success",
+      "managed-supervision": "success",
+      "socket-diag": "success",
+      "capture-primitives": "success",
+      "frida-session": "success"
+    }
+  }
+}
