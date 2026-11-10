@@ -1129,3 +1129,5 @@ Linux 首页保留安装状态、必要限制与恢复提示，版本／维护�
 ## 2026-11-11 Eta 风格与缓存整合
 
 按用户决定比较当前 Eta v3.4.1／main 和官方缓存合同，不复制受限实现或替换已验证任务后端；新增缓存提示只匹配官方路由，不加依赖或持久表。Anthropic工具断点、OpenRouter匿名scope／Claude自动ephemeral、兼容usage、目录编辑保留当前模型，以及Eta式连接分栏、原生菜单／搜索／分栏、共有输入和文件页、Skills渐进展示已实现。新7项缓存合同及1项目录测试随核心全量通过；378项中362通过、16跳过，零失败。完整本地主机构建通过；最终证据和CI另绑提交。新界面尚未真机验证，不把旧版UI测试当新控件资格；不调用付费模型、不读正式签名密钥。见 AURORA_ETA_REVIEW_20261111、UI_ETA_ACCEPTANCE_20261111 和本轮精简证据。
+
+2026-11-11 本轮最终产品209be5e1742bce3556f0c24d5a816ddcf96342ed，[完整CI42886297026](https://github.com/Asagnc/Aurora/actions/runs/42886297026)五项全部成功；本地224任务51秒、378项核心362通过／16跳过、发现378注解方法／0非void，Debug原签名与Debug／Release Frida worker字节独立核对通过。Debug SHA256 f3e322e25bfd8e8ecc508b8f9783936eea8de4369b3dd0e0b449fbeb8c997e8e。新界面设备集中验收仍待；精简证据ui-eta-host-20261111.json，真实命中率／正式签名／旧后端缺口保留。

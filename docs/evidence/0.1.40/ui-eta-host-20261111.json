@@ -1,0 +1,116 @@
+{
+  "date": "2026-11-11",
+  "scope": "host-only; concentrated device acceptance pending",
+  "sourceCommit": "209be5e1742bce3556f0c24d5a816ddcf96342ed",
+  "core": {
+    "tests": 378,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 16,
+    "passed": 362
+  },
+  "junitDiscovery": {
+    "annotatedMethods": 378,
+    "nonVoidMethods": 0
+  },
+  "build": {
+    "result": "success",
+    "durationSeconds": 51,
+    "tasks": 224,
+    "targets": [
+      ":core:test",
+      ":app:assembleDebug",
+      ":app:assembleRelease",
+      ":app:assembleDebugAndroidTest",
+      ":app:lintDebug",
+      ":app:lintRelease"
+    ]
+  },
+  "debug": {
+    "sha256": "f3e322e25bfd8e8ecc508b8f9783936eea8de4369b3dd0e0b449fbeb8c997e8e",
+    "bytes": 123786125,
+    "signerCertificateSha256": "46c0eb4f69334514e6ee98f55655f8ac6e5ddb07ca45f346739ba7ad8c765a2c",
+    "fridaWorkers": [
+      {
+        "path": "lib/arm64-v8a/libaurora_frida.so",
+        "sha256": "c9b22da8e0019fd052d9a87d54279b09acfc4eecbdf1fea6376137556b59439f"
+      }
+    ]
+  },
+  "ci": {
+    "runId": 42886297026,
+    "url": "https://github.com/Asagnc/Aurora/actions/runs/42886297026",
+    "status": "completed",
+    "conclusion": "success",
+    "headSha": "209be5e1742bce3556f0c24d5a816ddcf96342ed",
+    "jobs": [
+      {
+        "name": "socket-diag",
+        "conclusion": "success"
+      },
+      {
+        "name": "managed-supervision",
+        "conclusion": "success"
+      },
+      {
+        "name": "frida-session",
+        "conclusion": "success"
+      },
+      {
+        "name": "test",
+        "conclusion": "success"
+      },
+      {
+        "name": "capture-primitives",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "device": {
+    "status": "not_run",
+    "plan": "docs/UI_ETA_ACCEPTANCE_20261111.md"
+  },
+  "paidInferenceCalls": 0,
+  "releaseReady": false,
+  "limitations": [
+    "Actual provider cache hit rate, routing, cost and latency unmeasured",
+    "New COUI controls, keyboard, layout, accessibility and process recreation require device acceptance",
+    "Formal signing and complete review package must bind final product bytes; prior backend gaps retained"
+  ],
+  "schema": 1,
+  "artifacts": [
+    {
+      "path": "app/build/outputs/apk/debug/app-debug.apk",
+      "bytes": 123786125,
+      "sha256": "f3e322e25bfd8e8ecc508b8f9783936eea8de4369b3dd0e0b449fbeb8c997e8e"
+    },
+    {
+      "path": "app/build/outputs/apk/release/app-release-unsigned.apk",
+      "bytes": 45805555,
+      "sha256": "461a70fc2ee91b17f37abc525f1c1fd0b8759c8e7d94778a3a63f1323dc920e8"
+    },
+    {
+      "path": "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk",
+      "bytes": 4264526,
+      "sha256": "0e36cd5e28b333357d2891ce5a36b442c1e98e8938240197903ed868a7948aff"
+    }
+  ],
+  "lint": {
+    "debug": {
+      "Warning": 5
+    },
+    "release": {
+      "Warning": 6
+    }
+  },
+  "release": {
+    "unsigned": true,
+    "fridaWorkers": [
+      {
+        "path": "lib/arm64-v8a/libaurora_frida.so",
+        "sha256": "c9b22da8e0019fd052d9a87d54279b09acfc4eecbdf1fea6376137556b59439f"
+      }
+    ]
+  },
+  "lintNotes": "No errors; warnings include pinned dependency update notices, existing vector/icon notices and icons made unused by native menu/search controls. No unapproved dependency update."
+}

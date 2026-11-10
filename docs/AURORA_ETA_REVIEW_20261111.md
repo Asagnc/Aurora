@@ -72,3 +72,5 @@ Skills 主页面只保留 ZIP 导入、从链接添加、已安装列表与开�
 Eta 的 AgentSkillsScreen 普通流程也是导入 ZIP 与开关列表；[Claude Code Skills](https://code.claude.com/docs/en/skills)采用 SKILL.md 及支持文件、按需加载，[Claude Skills 说明](https://support.claude.com/en/articles/12512176-what-are-skills)将添加／管理置于常用路径。这里学习其渐进展示，不声称它们使用 Aurora 的验签策略。高级管理不提高缓存命中率，也不额外授予系统权限。
 
 凭据复核必须区分种类：Eta 的 ProviderEntities.api_key、ProviderConfigDraft 的保存状态和 RuntimeConfigRepository 的 API_KEY JSON 路径传递 API key 字符串；OAuth 另有 KeyStore AES-GCM 存储。这里只描述这些源码路径，不推断系统文件加密失效或设备已泄漏。Aurora 保留现有凭据库，输入中的新秘密只在内存，不写入保存的界面状态；编辑留空继续保留原凭据修订。
+
+最终产品 `209be5e1742bce3556f0c24d5a816ddcf96342ed` 的[完整CI42886297026](https://github.com/Asagnc/Aurora/actions/runs/42886297026)五个任务全部成功。结果绑定该产品，不延伸为新界面真机或真实命中率资格；精简证据见 evidence/0.1.40/ui-eta-host-20261111.json。
