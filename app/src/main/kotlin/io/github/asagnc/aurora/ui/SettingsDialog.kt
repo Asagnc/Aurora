@@ -102,7 +102,7 @@ import kotlinx.coroutines.withContext
         val density = LocalDensity.current
         com.itos.coui.layout.Scaffold(
             modifier = Modifier.fillMaxSize().imePadding().nestedScroll(scroll.nestedScrollConnection),
-            topBar = { LargeTopAppBar(title = { Text(title) },
+            topBar = { LargeTopAppBar(title = { Text(title, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis) },
                 navigationIcon = { TopAppBarButton(onClick = dismiss) { LocalIcon(R.drawable.ic_arrow_back, "返回") } },
                 scrollBehavior = scroll) }) { padding ->
             Box(Modifier.fillMaxSize().padding(scroll.state.contentPadding(padding, density))

@@ -64,7 +64,7 @@ import kotlinx.coroutines.launch
             Text("每页最多列出 200 项", Modifier.padding(bottom = 24.dp), color = AuroraMuted, style = MaterialTheme.typography.bodySmall)
         }
     }
-    preview?.let { content -> AlertDialog(onDismissRequest = { preview = null }, title = { Text("文件预览") },
-        text = { LazyColumn { item { SelectionContainer { Text(content, style = MaterialTheme.typography.bodySmall) } } } },
-        confirmButton = { TextButton({ preview = null }) { Text("关闭") } }) }
+    preview?.let { content -> AuroraPrompt("文件预览", "关闭", { preview = null }, { preview = null }) {
+        SelectionContainer { Text(content, style = MaterialTheme.typography.bodySmall) }
+    } }
 }

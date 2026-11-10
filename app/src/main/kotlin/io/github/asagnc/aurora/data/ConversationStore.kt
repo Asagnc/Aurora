@@ -88,8 +88,14 @@ class ConversationStore(private val database: AuroraDatabase) {
     }
 
     suspend fun saveConnection(connection: Connection): Unit = write { db ->
+        require(connection.models.size <= 512 && connection.models.map { it.id }.distinct().size == connection.models.size) { "模型目录数量或标识无效" }
+        require(connection.models.isEmpty() || connection.models.any { it.id == connection.model }) { "请选择已添加的模型" }
         db.insertWithOnConflict("connections", null, values("id" to connection.id,
             "configuration" to WireJson.encodeToString(Connection.serializer(), connection)), SQLiteDatabase.CONFLICT_REPLACE)
+    }
+
+    suspend fun removeConnection(id: String): Unit = write { db ->
+        check(db.delete("connections", "id = ?", arrayOf(id)) == 1) { "连接已不存在" }
     }
 
     suspend fun connections(): List<Connection> = withContext(Dispatchers.IO) {

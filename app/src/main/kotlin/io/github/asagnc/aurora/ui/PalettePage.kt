@@ -89,7 +89,7 @@ import androidx.compose.ui.unit.dp
     Text("明度", style = MaterialTheme.typography.bodyMedium)
     Slider(state = brightness, onValueChange = { brightness.value = it })
     Button({ apply(selected) }) { Text("应用所选颜色") }
-    OutlinedTextField(hex, { hex = it.filter { c -> c in "0123456789abcdefABCDEF" }.take(6) },
+    AuroraInput(hex, { hex = it.filter { c -> c in "0123456789abcdefABCDEF" }.take(6) },
         label = { Text("颜色值（可选）") }, prefix = { Text("#") }, singleLine = true, modifier = Modifier.fillMaxWidth())
     TextButton({ apply((0xFF000000L or hex.toLong(16)).toInt()) }, enabled = hex.length == 6) { Text("应用颜色值") }
 }

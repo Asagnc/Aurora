@@ -67,18 +67,18 @@ import kotlinx.coroutines.launch
                     }
                 }
             } else {
-                OutlinedTextField(repository, { repository = it }, modifier = Modifier.fillMaxWidth(), label = { Text("GitHub 仓库 owner/repo") }, enabled = !busy && selected == null, singleLine = true)
-                OutlinedTextField(token, { token = it }, label = { Text(if (selected?.credentialId != null) "替换令牌（留空保留）" else "只读令牌（公共仓库留空）") },
+                AuroraInput(repository, { repository = it }, modifier = Modifier.fillMaxWidth(), label = { Text("GitHub 仓库 owner/repo") }, enabled = !busy && selected == null, singleLine = true)
+                AuroraInput(token, { token = it }, label = { Text(if (selected?.credentialId != null) "替换令牌（留空保留）" else "只读令牌（公共仓库留空）") },
                     modifier = Modifier.fillMaxWidth(), visualTransformation = PasswordVisualTransformation(), enabled = !busy, singleLine = true)
                 if (selected?.credentialId != null) Row {
                     Checkbox(removeCredential, { removeCredential = it }, enabled = !busy); Text("移除已保存的令牌")
                 }
-                OutlinedTextField(publicKey, { publicKey = it }, modifier = Modifier.fillMaxWidth(), label = { Text("Ed25519 公钥（SPKI Base64，可选）") }, enabled = !busy)
+                AuroraInput(publicKey, { publicKey = it }, modifier = Modifier.fillMaxWidth(), label = { Text("Ed25519 公钥（SPKI Base64，可选）") }, enabled = !busy)
                 if (publicKey.isNotBlank()) {
                     val fingerprint = runCatching { SkillSignatures.fingerprint(publicKey.trim()) }.getOrNull()
                     Text(fingerprint?.let { "请独立核对公钥 SHA256：$it" } ?: "公钥格式尚不正确", style = MaterialTheme.typography.bodySmall)
                 }
-                OutlinedTextField(signatureUrl, { signatureUrl = it }, modifier = Modifier.fillMaxWidth(), label = { Text("签名文件 HTTPS 地址（可选）") }, enabled = !busy)
+                AuroraInput(signatureUrl, { signatureUrl = it }, modifier = Modifier.fillMaxWidth(), label = { Text("签名文件 HTTPS 地址（可选）") }, enabled = !busy)
                 Text("填写公钥后将强制验签，请独立核对指纹。", color = AuroraMuted)
                 FilledTonalButton({ run {
                     val profile = SkillSourceProfile(selected?.id ?: UUID.randomUUID().toString(), repository.trim().lowercase(java.util.Locale.ROOT),

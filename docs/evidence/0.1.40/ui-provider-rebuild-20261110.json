@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "date": "2026-11-10",
+  "scope": "UI rebuild foundation and provider workflow; entire UI remains in progress",
+  "debugApkSha256": "b41b5bcf8cfcd76970f421856bf5a1749eedcc79a9dbab3d9dd12b963e252e46",
+  "fridaWorkerSha256": "c9b22da8e0019fd052d9a87d54279b09acfc4eecbdf1fea6376137556b59439f",
+  "host": {
+    "coreTests": 370,
+    "skipped": 16,
+    "failures": 0,
+    "errors": 0,
+    "latestBuild": {
+      "tasks": 224,
+      "seconds": 48,
+      "debug": true,
+      "defaultR8Release": true,
+      "androidTestCompile": true,
+      "lintDebug": true,
+      "lintRelease": true
+    }
+  },
+  "deviceChecks": [
+    "Read-only Eta provider/configuration/models/settings comparison",
+    "Public catalogue retrieval with own dummy token: 461 entries",
+    "Search and two-model selection",
+    "Persisted two selected models within one provider; switched active model",
+    "Edit with empty replacement key preserved existing own test credential",
+    "Cancel deletion then delete exact own provider and credential",
+    "Long ASCII name no longer becomes page title; edit header is separate and above section",
+    "Latest catalogue is detail-only, no density mode controls or square checkbox",
+    "Only exact own temporary connections created and removed"
+  ],
+  "cache": {
+    "metadataRequestJsonEqualityTest": true,
+    "sameScopeNativeHistoryReusableAfterLabelCatalogueChanges": true,
+    "modelChangeCreatesNewScope": true,
+    "editPreservesEffortEnabled": true,
+    "savingOtherProviderDoesNotSwitchActiveProvider": true,
+    "serverHitRateMeasured": false
+  },
+  "boundaries": {
+    "paidGenerationCalls": 0,
+    "rootRequested": false,
+    "rebooted": false,
+    "uiFinished": false,
+    "releaseReady": false,
+    "rawDeviceDataCommitted": false
+  },
+  "knownRetainedFailures": [
+    "First cache fixture used high effort on an unknown model and was correctly rejected; fixed fixture uses a supported model without relaxing production checks",
+    "Initial non-void pagination test was not discovered; corrected to Unit and discovery verified",
+    "Several host UI assertions missed content outside viewport; screenshots and later workflow verification retained",
+    "First capsule implementation supplied positional modifier into label slot; corrected before device install"
+  ]
+}

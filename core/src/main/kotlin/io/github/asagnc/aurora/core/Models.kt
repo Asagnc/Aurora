@@ -23,6 +23,7 @@ data class Connection(
     val official: Boolean = false,
     val authentication: Authentication = Authentication.AUTOMATIC,
     val credentialRevision: String = "",
+    val models: List<AvailableModel> = emptyList(),
 )
 
 @Serializable

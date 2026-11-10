@@ -113,13 +113,34 @@ internal class ChatController(application: Application,
             olderBefore = rows.firstOrNull()?.sequence?.takeIf { sequence -> sequence > 0 }) }
     }
 
-    fun saveConnection(connection: Connection, token: String) = action {
+    fun saveConnection(connection: Connection, token: String) = action { storeConnection(connection, token) }
+
+    suspend fun storeConnection(connection: Connection, token: String) {
+        check(!app.agentTasks.busy) { "请先结束当前任务，再修改模型连接" }
+        val selectedBefore = state.value.selected?.id
         HttpModelTransport.endpoint(connection)
         val revision = if (token.isNotEmpty()) app.credentials.put(connection.id, token)
             else requireNotNull(app.credentials.get(connection.id)) { "请填写 API 密钥" }.revision
         app.conversations.saveConnection(connection.copy(credentialRevision = revision))
         refresh()
-        mutable.update { it.copy(selected = it.connections.first { saved -> saved.id == connection.id }) }
+        if (selectedBefore == null || selectedBefore == connection.id)
+            mutable.update { it.copy(selected = it.connections.first { saved -> saved.id == connection.id }) }
+    }
+
+    suspend fun connectionModels(connection: Connection, typedToken: String): List<AvailableModel> {
+        val token = typedToken.ifBlank { requireNotNull(app.credentials.get(connection.id)) { "请填写 API 密钥" }.token }
+        return ModelDirectory().fetch(connection, token)
+    }
+
+    suspend fun removeConnection(id: String) {
+        check(!app.agentTasks.busy) { "请先结束当前任务，再删除模型连接" }
+        check(app.conversations.connections().any { it.id == id }) { "连接已不存在" }
+        // Keep the visible configuration as the retry reference until the secret is proved absent.
+        app.credentials.remove(id)
+        check(app.credentials.get(id) == null) { "密钥未能删除，连接已保留，请重试" }
+        app.conversations.removeConnection(id)
+        if (state.value.selected?.id == id) mutable.update { it.copy(selected = null) }
+        refresh()
     }
 
     fun selectConnection(connection: Connection) {

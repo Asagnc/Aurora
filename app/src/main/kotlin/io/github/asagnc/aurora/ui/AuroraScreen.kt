@@ -89,7 +89,7 @@ import kotlinx.coroutines.launch
     if (menu) ConversationMenuSheet(state.current != null, { draft = ""; model.newConversation() },
         { conversationFilesOnly = true; space = "conversation" }, { browser = true }, { terminal = true }) { menu = false }
     if (models) ModelPickerSheet(state.connections, state.selected, ::choose, { models = false; providers = true }) { models = false }
-    if (providers) ProviderDialog(state.connections, ::choose, model::saveConnection) { providers = false; returnToSettings("providers") }
+    if (providers) ProviderDialog(state.connections, model::storeConnection, model::connectionModels, model::removeConnection) { providers = false; returnToSettings("providers") }
     if (skills) SkillsPage { skills = false }
     space?.let { SpaceBrowserSheet(model, it, conversationFilesOnly, artifactFolder) { space = null; artifactFolder = ""; returnToSettings("files") } }
     if (browser) state.current?.id?.let { BrowserPage(model.browser, it) { browser = false } }
@@ -97,12 +97,12 @@ import kotlinx.coroutines.launch
     metrics?.let { kind -> if (kind == "settings") SettingsDialog(model,
         { settingsReturn = "providers"; metrics = null; providers = true }, { settingsReturn = "files"; metrics = null; conversationFilesOnly = false; space = "workspace" }) { metrics = null }
         }
-    pending?.let { next -> AlertDialog(onDismissRequest = { pending = null }, title = { Text("切换配置") },
-        text = { Text(CachePolicy.switchExplanation(state.selected?.let { CachePolicy.impact(it, next) } ?: CacheImpact.NEW_SCOPE)) },
-        confirmButton = { TextButton({ model.selectConnection(next); pending = null }) { Text("确认切换") } },
-        dismissButton = { TextButton({ pending = null }) { Text("取消") } }) }
-    state.error?.let { error -> AlertDialog(onDismissRequest = model::clearError, title = { Text("操作未完成") }, text = { Text(error) },
-        confirmButton = { TextButton(model::clearError) { Text("知道了") } }) }
+    pending?.let { next -> AuroraPrompt("切换配置", "确认切换",
+        { model.selectConnection(next); pending = null }, { pending = null },
+        message = CachePolicy.switchExplanation(state.selected?.let { CachePolicy.impact(it, next) } ?: CacheImpact.NEW_SCOPE),
+        cancelLabel = "取消") }
+    state.error?.let { error -> AuroraPrompt("操作未完成", "知道了", model::clearError, model::clearError, message = error) }
+
 }
 
 @Composable internal fun LocalIcon(resource: Int, label: String) { Icon(painterResource(resource), label, Modifier.size(22.dp)) }

@@ -41,11 +41,9 @@ import io.github.asagnc.aurora.browser.BrowserController
         fun openAddress() { navigate(); focus.clearFocus(); keyboard?.hide() }
         Column(Modifier.fillMaxSize()) {
             Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                OutlinedTextField(address, { address = it }, Modifier.weight(1f), singleLine = true,
+                AuroraInput(address, { address = it }, Modifier.weight(1f), singleLine = true,
                     placeholder = { Text("输入 HTTPS 地址", style = MaterialTheme.typography.bodyMedium) },
                     shape = RoundedCornerShape(24.dp), textStyle = MaterialTheme.typography.bodyMedium,
-                    colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = AuroraBorder,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Go),
                     keyboardActions = KeyboardActions(onGo = { openAddress() }))
                 TextButton(::openAddress, enabled = !browser.configuring && browser.supported && address.isNotBlank()) { Text("打开") }
@@ -103,23 +101,22 @@ import io.github.asagnc.aurora.browser.BrowserController
         key(request.id) { BrowserUploadSheet(browser.uploads,request) }
     }
     if (proxySettings) BrowserProxyDialog(browser) { proxySettings = false }
-    browser.error?.let { message -> AlertDialog(onDismissRequest = { browser.error = null }, title = { Text("浏览器提示") },
-        text = { Text(message) }, confirmButton = { TextButton({ browser.error = null }) { Text("知道了") } }) }
+    browser.error?.let { message -> AuroraPrompt("浏览器提示", "知道了", { browser.error = null },
+        { browser.error = null }, message = message) }
 }
 
 @Composable private fun BrowserProxyDialog(browser: BrowserController, dismiss: () -> Unit) {
     var value by remember { mutableStateOf(browser.proxy.takeUnless { it == "direct" }.orEmpty()) }
-    AlertDialog(onDismissRequest = dismiss, title = { Text("浏览器代理") }, text = {
+    AuroraPrompt("浏览器代理", "应用代理", { browser.applyProxy(value.trim()) { dismiss() } }, dismiss,
+        cancelLabel = "关闭", confirmEnabled = browser.proxySupported && browser.tabs.isEmpty() && !browser.configuring && value.isNotBlank()) {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text("仅影响 Aurora 所有浏览器页面，不改变模型 API 或手机其他应用的网络。更改前需关闭所有页面。", style = MaterialTheme.typography.bodyMedium)
             if (!browser.proxySupported) Text("当前 WebView 不支持代理覆盖。", color = MaterialTheme.colorScheme.error)
-            OutlinedTextField(value, { value = it }, label = { Text("http(s)://主机:端口 或 socks://主机:端口") }, singleLine = true)
+            AuroraInput(value, { value = it }, label = { Text("http(s)://主机:端口 或 socks://主机:端口") }, singleLine = true)
             Text("不支持代理认证。回环和本地地址遵循 WebView 默认绕过规则。", color = AuroraMuted, style = MaterialTheme.typography.bodySmall)
             if (browser.tabs.isNotEmpty()) TextButton({ browser.tabs.toList().forEach(browser::close) }) { Text("关闭所有会话的浏览器页面") }
             TextButton({ browser.applyProxy("") { dismiss() } }, enabled = browser.tabs.isEmpty() && !browser.configuring) { Text("跟随系统") }
             TextButton({ browser.applyProxy("direct") { dismiss() } }, enabled = browser.proxySupported && browser.tabs.isEmpty() && !browser.configuring) { Text("直连") }
         }
-    }, confirmButton = { TextButton({ browser.applyProxy(value.trim()) { dismiss() } },
-        enabled = browser.proxySupported && browser.tabs.isEmpty() && !browser.configuring && value.isNotBlank()) { Text("应用代理") } },
-        dismissButton = { TextButton(dismiss) { Text("关闭") } })
+    }
 }

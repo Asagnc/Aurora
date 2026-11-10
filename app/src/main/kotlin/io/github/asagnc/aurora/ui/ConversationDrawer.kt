@@ -93,14 +93,16 @@ import kotlinx.coroutines.delay
             }
         }
     }
-    renaming?.let { session -> AlertDialog(onDismissRequest = { renaming = null }, title = { Text("重命名会话") },
-        text = { OutlinedTextField(renameText, { renameText = it }, singleLine = true) },
-        confirmButton = { TextButton({ model.rename(session.id, renameText); renaming = null }, enabled = renameText.isNotBlank()) { Text("保存") } },
-        dismissButton = { TextButton({ renaming = null }) { Text("取消") } }) }
-    deleting?.let { ids -> AlertDialog(onDismissRequest = { deleting = null }, title = { Text("删除 ${ids.size} 个会话？") },
-        text = { Text("会话及其空间内的文件会一起删除。共享资源、保留工作区和原始文件会保留。") },
-        confirmButton = { TextButton({ model.delete(ids); selected = emptySet(); deleting = null }) { Text("删除") } },
-        dismissButton = { TextButton({ deleting = null }) { Text("取消") } }) }
+    renaming?.let { session -> AuroraPrompt("重命名会话", "保存",
+        { model.rename(session.id, renameText); renaming = null }, { renaming = null },
+        cancelLabel = "取消", confirmEnabled = renameText.isNotBlank()) {
+        AuroraInput(renameText, { renameText = it }, Modifier.fillMaxWidth(), singleLine = true,
+            label = { Text("会话名称") })
+    } }
+    deleting?.let { ids -> AuroraPrompt("删除 ${ids.size} 个会话？", "删除",
+        { model.delete(ids); selected = emptySet(); deleting = null }, { deleting = null },
+        message = "会话及其空间内的文件会一起删除。共享资源、保留工作区和原始文件会保留。", cancelLabel = "取消") }
+
 }
 
 @Composable private fun DrawerFooter(label: String, icon: Int, modifier: Modifier, click: () -> Unit) {

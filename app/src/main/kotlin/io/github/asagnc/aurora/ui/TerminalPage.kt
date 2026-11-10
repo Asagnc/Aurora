@@ -103,7 +103,7 @@ import io.github.asagnc.aurora.core.text
                     }
                     TextButton({ canvas?.follow() }) { Text("最新") }
                 }
-                OutlinedTextField(text, { text = it }, Modifier.fillMaxWidth(), enabled = item.state == "running", singleLine = true,
+                AuroraInput(text, { text = it }, Modifier.fillMaxWidth(), enabled = item.state == "running", singleLine = true,
                     placeholder = { Text("接手输入，发送后执行") }, trailingIcon = { TextButton({ val input = text; action {
                         manager.write(owner, item.id, "$input\n"); if (text == input) text = ""
                     } }) { Text("发送") } })

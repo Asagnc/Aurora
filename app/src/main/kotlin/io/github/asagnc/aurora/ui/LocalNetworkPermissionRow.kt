@@ -45,9 +45,8 @@ private const val LOCAL_NETWORK_PERMISSION = "android.permission.ACCESS_LOCAL_NE
 
 @Composable private fun LocalNetworkPermissionDialog(granted: Boolean, dismiss: () -> Unit,
     request: () -> Unit, settings: () -> Unit) {
-    AlertDialog(onDismissRequest = dismiss, title = { Text("局域网访问") },
-        text = { Text("Android 17 要求授权后才能连接局域网服务。Aurora 会按你选择的地址执行请求；授权本身不会修改系统代理、路由或证书。" +
-            if (granted) "\n\n当前已授权，可在系统设置中撤销。" else "\n\n未授权时，相关连接可能被系统拒绝。") },
-        confirmButton = { TextButton(if (granted) dismiss else request) { Text(if (granted) "完成" else "允许访问") } },
-        dismissButton = { TextButton(settings) { Text("系统设置") } })
+    AuroraPrompt("局域网访问", if (granted) "完成" else "允许访问", if (granted) dismiss else request, dismiss,
+        message = "Android 17 要求授权后才能连接局域网服务。Aurora 会按你选择的地址执行请求；授权本身不会修改系统代理、路由或证书。" +
+            if (granted) "\n\n当前已授权，可在系统设置中撤销。" else "\n\n未授权时，相关连接可能被系统拒绝。",
+        cancelLabel = "系统设置", cancel = settings)
 }

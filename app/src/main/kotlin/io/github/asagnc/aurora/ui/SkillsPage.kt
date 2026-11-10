@@ -65,14 +65,14 @@ import kotlinx.coroutines.launch
                         FilledTonalButton({ installing = !installing }, enabled = !busy) { Text(if (installing) "收起安装" else "安装工作流") }
                         TextButton({ sources = true }, enabled = !busy) { Text("来源与信任") }
                     }
-                    if (entries.isNotEmpty()) OutlinedTextField(query, { query = it }, label = { Text("搜索已安装") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                    if (entries.isNotEmpty()) AuroraInput(query, { query = it }, label = { Text("搜索已安装") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
                     if (installing) Card(Modifier.fillMaxWidth()) {
                         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            OutlinedTextField(url, { url = it }, label = { Text("GitHub 仓库或 HTTPS ZIP") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                            AuroraInput(url, { url = it }, label = { Text("GitHub 仓库或 HTTPS ZIP") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
                             TextButton({ advanced = !advanced }) { Text(if (advanced) "收起来源选项" else "指定子目录或分支") }
                             if (advanced) {
-                                OutlinedTextField(selection, { selection = it }, label = { Text("子目录（可选）") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-                                OutlinedTextField(ref, { ref = it }, label = { Text("GitHub 分支或标签（可选）") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                                AuroraInput(selection, { selection = it }, label = { Text("子目录（可选）") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                                AuroraInput(ref, { ref = it }, label = { Text("GitHub 分支或标签（可选）") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
                                 Text("留空时，仓库链接使用最新正式发布；tree 链接跟随所指引用。含斜杠的分支请在此完整填写。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
                                 Box {
                                     TextButton({ profileMenu = true }) { Text("来源策略：${profiles.firstOrNull { it.id == selectedProfile }?.repository ?: "自动匹配（本地ZIP默认未认证）"}") }
