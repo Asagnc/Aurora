@@ -1,6 +1,8 @@
 package io.github.asagnc.aurora.ui
 
 import androidx.compose.foundation.layout.*
+import com.itos.coui.layout.Group
+import com.itos.coui.layout.Item
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -33,9 +35,9 @@ import io.github.asagnc.aurora.runtime.ChatViewModel
                 Text(if (connected) "断开 Root" else if (connecting) "取消连接" else "连接 Root")
             }
             if (root.phase == RootPhase.UNAVAILABLE) SettingsNotice(root.detail)
-            SettingsSection("相关能力") {
-                ListItem(onClick = { policy = true }, leadingContent = { LocalIcon(R.drawable.ic_shield, "Frida") },
-                    supportingContent = { Text("当前策略与适配状态") }, trailingContent = { SettingsChevron() }) { Text("Frida 策略适配") }
+            Group(title = "相关能力") {
+                Item(onClick = { policy = true }, icon = { LocalIcon(R.drawable.ic_shield, "Frida") },
+                    summary = { Text("当前策略与适配状态") }, trailing = { SettingsChevron() }) { Text("Frida 策略适配") }
             }
             SettingsDetails("授权与连接说明", "APatch、KernelSU、FolkPatch 等管理器") {
                 Text("授权和撤销均在 Root 管理器内完成。这里仅连接已授权的 Root 服务，不发起授权弹窗。")

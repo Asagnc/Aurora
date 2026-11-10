@@ -3,6 +3,9 @@ package io.github.asagnc.aurora.ui
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import com.itos.coui.switch.Switch as CouiSwitch
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
@@ -62,39 +65,10 @@ import kotlinx.coroutines.launch
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        FilledTonalButton({ installing = !installing }, enabled = !busy) { Text(if (installing) "收起安装" else "安装工作流") }
+                        FilledTonalButton({ installing = !installing }, enabled = !busy) { Text("安装工作流") }
                         TextButton({ sources = true }, enabled = !busy) { Text("来源与信任") }
                     }
                     if (entries.isNotEmpty()) AuroraInput(query, { query = it }, label = { Text("搜索已安装") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-                    if (installing) Card(Modifier.fillMaxWidth()) {
-                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            AuroraInput(url, { url = it }, label = { Text("GitHub 仓库或 HTTPS ZIP") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-                            TextButton({ advanced = !advanced }) { Text(if (advanced) "收起来源选项" else "指定子目录或分支") }
-                            if (advanced) {
-                                AuroraInput(selection, { selection = it }, label = { Text("子目录（可选）") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-                                AuroraInput(ref, { ref = it }, label = { Text("GitHub 分支或标签（可选）") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-                                Text("留空时，仓库链接使用最新正式发布；tree 链接跟随所指引用。含斜杠的分支请在此完整填写。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
-                                Box {
-                                    TextButton({ profileMenu = true }) { Text("来源策略：${profiles.firstOrNull { it.id == selectedProfile }?.repository ?: "自动匹配（本地ZIP默认未认证）"}") }
-                                    DropdownMenu(profileMenu, { profileMenu = false }) {
-                                        DropdownMenuItem(text = { Text("自动匹配") }, onClick = { selectedProfile = null; profileMenu = false })
-                                        profiles.filter { !it.revoked }.forEach { profile ->
-                                            DropdownMenuItem(text = { Text(profile.repository) }, onClick = { selectedProfile = profile.id; profileMenu = false })
-                                        }
-                                    }
-                                }
-                                TextButton({ signaturePicker.launch(arrayOf("text/plain", "application/octet-stream")) }, enabled = !busy) {
-                                    Text(if (signature == null) "选择签名旁路文件（本地验签可用）" else "重新选择签名旁路文件")
-                                }
-                                if (signature != null) TextButton({ signature = null }, enabled = !busy) { Text("清除已选择的旁路签名") }
-                                Text("本地签名 ZIP 还需选择已有可信来源策略；不会信任 ZIP 自带公钥。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
-                            }
-                            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                FilledTonalButton({ run { manager.remote(SkillSource(url.trim(), selection.trim('/'), ref = ref.trim()), SkillInstallOptions(profileId = selectedProfile, signature = signature)); url = ""; selection = ""; ref = ""; signature = null; installing = false } }, enabled = !busy && url.isNotBlank()) { Text("安装") }
-                                TextButton({ picker.launch(arrayOf("application/zip", "application/octet-stream")) }, enabled = !busy) { Text("导入 ZIP") }
-                            }
-                        }
-                    }
                     if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
                     status?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = AuroraMuted) }
                     notice?.let { SettingsNotice(it) }
@@ -107,7 +81,7 @@ import kotlinx.coroutines.launch
                     Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Text(entry.metadata.name, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                            Switch(entry.enabled, { enabled -> run { manager.enable(entry.id, enabled) } }, enabled = !busy)
+                            CouiSwitch(checked = entry.enabled, onCheckedChange = { enabled -> run { manager.enable(entry.id, enabled) } }, enabled = !busy)
                         }
                         Text(entry.metadata.description, style = MaterialTheme.typography.bodyMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
                         Text("${entry.hash.take(10)} · ${entry.bytes / 1024} KiB · ${entry.source.label.ifBlank { "已安装" }}", color = AuroraMuted, style = MaterialTheme.typography.bodySmall)
@@ -122,6 +96,43 @@ import kotlinx.coroutines.launch
                 }
             }
             item { Spacer(Modifier.height(24.dp)) }
+        }
+    }
+    if (installing) FullPage("安装工作流", { installing = false }) {
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
+            status?.let { Text(it, color = AuroraMuted) }
+            notice?.let { SettingsNotice(it) }
+            androidx.compose.runtime.CompositionLocalProvider(LocalFormEnabled provides !busy) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    AuroraInput(url, { url = it }, label = { Text("GitHub 仓库或 HTTPS ZIP") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                    TextButton({ advanced = !advanced }, enabled = !busy) { Text(if (advanced) "收起来源选项" else "指定子目录或分支") }
+                    if (advanced) {
+                        AuroraInput(selection, { selection = it }, label = { Text("子目录（可选）") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                        AuroraInput(ref, { ref = it }, label = { Text("GitHub 分支或标签（可选）") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                        Text("留空时，仓库链接使用最新正式发布；tree 链接跟随所指引用。含斜杠的分支请在此完整填写。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
+                        Box {
+                            TextButton({ profileMenu = true }, enabled = !busy) { Text("来源策略：${profiles.firstOrNull { it.id == selectedProfile }?.repository ?: "自动匹配（本地ZIP默认未认证）"}") }
+                            DropdownMenu(profileMenu, { profileMenu = false }) {
+                                DropdownMenuItem(text = { Text("自动匹配") }, onClick = { selectedProfile = null; profileMenu = false })
+                                profiles.filter { !it.revoked }.forEach { profile ->
+                                    DropdownMenuItem(text = { Text(profile.repository) }, onClick = { selectedProfile = profile.id; profileMenu = false })
+                                }
+                            }
+                        }
+                        TextButton({ signaturePicker.launch(arrayOf("text/plain", "application/octet-stream")) }, enabled = !busy) {
+                            Text(if (signature == null) "选择签名旁路文件（本地验签可用）" else "重新选择签名旁路文件")
+                        }
+                        if (signature != null) TextButton({ signature = null }, enabled = !busy) { Text("清除已选择的旁路签名") }
+                        Text("本地签名 ZIP 还需选择已有可信来源策略；不会信任 ZIP 自带公钥。", style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
+                    }
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        FilledTonalButton({ run { manager.remote(SkillSource(url.trim(), selection.trim('/'), ref = ref.trim()), SkillInstallOptions(profileId = selectedProfile, signature = signature)); url = ""; selection = ""; ref = ""; signature = null; installing = false } }, enabled = !busy && url.isNotBlank()) { Text("安装") }
+                        TextButton({ picker.launch(arrayOf("application/zip", "application/octet-stream")) }, enabled = !busy) { Text("导入 ZIP") }
+                    }
+                }
+            }
         }
     }
     selected?.let { entry -> SkillDetailPage(entry, manager, { selected = null }) }

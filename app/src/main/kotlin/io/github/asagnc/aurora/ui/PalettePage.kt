@@ -22,17 +22,16 @@ import androidx.compose.ui.unit.dp
     var source by remember { mutableStateOf(if (state.dynamic) "系统" else if (state.palette == "自定义") "自定义" else "预设") }
     FullPage("配色", dismiss) {
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
-            SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-                val sources = listOf("预设", "系统", "自定义")
-                sources.forEachIndexed { index, name ->
-                    SegmentedButton(selected = source == name, onClick = {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf("预设", "系统", "自定义").forEach { name ->
+                    ChoiceCapsule(name, source == name, click = {
                         source = name
                         when (name) {
                             "系统" -> controller.update(state.copy(dynamic = true))
                             "自定义" -> controller.update(state.copy(dynamic = false, palette = "自定义"))
                             else -> controller.update(state.copy(dynamic = false, palette = if (state.palette == "自定义") "青岚" else state.palette))
                         }
-                    }, shape = SegmentedButtonDefaults.itemShape(index, sources.size)) { Text(name) }
+                    })
                 }
             }
             when (source) {
@@ -46,8 +45,8 @@ import androidx.compose.ui.unit.dp
                                 Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                     ThemePreview(remember(state, name, dark) { appearanceScheme(state.copy(palette = name), dark) }, compact = true)
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        RadioButton(chosen, onClick = null)
-                                        Text(name, style = MaterialTheme.typography.titleSmall)
+                                        Text(name, Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
+                                        if (chosen) Text("✓", color = MaterialTheme.colorScheme.primary)
                                     }
                                 }
                             }
@@ -59,13 +58,8 @@ import androidx.compose.ui.unit.dp
                 else -> key(state.custom) { CustomAccent(state.custom) { controller.update(state.copy(custom = it, palette = "自定义", dynamic = false)) } }
             }
             if (source != "系统") {
-                Text("色彩风格", style = MaterialTheme.typography.titleMedium)
-                SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-                    val styles = listOf("柔和", "鲜明", "单色")
-                    styles.forEachIndexed { index, style ->
-                        SegmentedButton(selected = state.style == style, onClick = { controller.update(state.copy(style = style)) },
-                            shape = SegmentedButtonDefaults.itemShape(index, styles.size)) { Text(style) }
-                    }
+                SettingsChoices("色彩风格", listOf("柔和", "鲜明", "单色"), state.style) {
+                    controller.update(state.copy(style = it))
                 }
             }
             Text("更改会即时应用。字体大小跟随系统。", color = AuroraMuted, style = MaterialTheme.typography.bodySmall)

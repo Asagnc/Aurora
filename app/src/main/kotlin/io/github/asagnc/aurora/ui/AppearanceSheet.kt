@@ -5,6 +5,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.selection.toggleable
 import com.itos.coui.layout.Item
+import com.itos.coui.layout.Group
+import com.itos.coui.layout.Divider
 import com.itos.coui.switch.Switch as CouiSwitch
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,36 +23,34 @@ import com.itos.coui.text.CouiTextKind
     val controller = LocalAppearance.current
     val state = controller.state
     var colors by remember { mutableStateOf(false) }
+    var reset by remember { mutableStateOf(false) }
     FullPage("外观与配色", dismiss) {
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)) {
-            SettingsSection("界面模式") {
-                val modes = listOf("浅色", "深色", "跟随系统")
-                SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-                    modes.forEachIndexed { index, mode ->
-                        SegmentedButton(selected = state.mode == mode, onClick = { controller.update(state.copy(mode = mode)) },
-                            shape = SegmentedButtonDefaults.itemShape(index, modes.size)) {
-                            Text(if (mode == "跟随系统") "系统" else mode)
-                        }
-                    }
-                }
+            SettingsChoices("界面模式", listOf("浅色", "深色", "跟随系统"), state.mode) {
+                controller.update(state.copy(mode = it))
             }
-            SettingsSection("主题") {
+            Group(title = "主题") {
                 Item(onClick = { colors = true }, summary = {
-                    Text(if (state.dynamic) "系统动态配色" else "${state.palette} · ${state.style}")
+                    CouiText(text = if (state.dynamic) "系统动态配色" else "${state.palette} · ${state.style}",
+                        kind = CouiTextKind.PreferenceSummary, color = AuroraMuted)
                 }, trailing = { SettingsChevron() }) { Text("主题配色") }
             }
-            SettingsSection("显示") {
+            Group(title = "显示") {
                 AppearanceSwitch("纯黑背景", "仅在深色模式生效", state.pureBlack) { controller.update(state.copy(pureBlack = it)) }
+                Divider(startIndent = 16.dp)
                 AppearanceSwitch("彩色功能图标", "关闭后使用统一图标色", state.colorful) { controller.update(state.copy(colorful = it)) }
             }
             SettingsSection("效果预览") { ThemePreview(MaterialTheme.colorScheme) }
-            TextButton({ controller.update(AppearanceState()) }) { Text("恢复默认外观") }
+            TextButton({ reset = true }) { Text("恢复默认外观") }
             Text("外观即时应用，字体大小跟随系统。", color = AuroraMuted, style = MaterialTheme.typography.bodySmall)
             Spacer(Modifier.height(16.dp))
         }
     }
     if (colors) PalettePage { colors = false }
+    if (reset) AuroraPrompt("恢复默认外观？", "恢复默认", {
+        controller.update(AppearanceState()); reset = false
+    }, { reset = false }, message = "配色、界面模式和显示选项将恢复默认。", cancelLabel = "取消")
 }
 
 @Composable private fun AppearanceSwitch(title: String, summary: String, checked: Boolean, change: (Boolean) -> Unit) {
