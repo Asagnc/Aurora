@@ -7,6 +7,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import com.itos.coui.layout.Group
+import com.itos.coui.layout.Item
+import com.itos.coui.layout.Divider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -28,6 +32,7 @@ import io.github.asagnc.aurora.core.string
     val status by manager.status.collectAsStateWithLifecycle()
     val rootState by app.root.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    var page by rememberSaveable { mutableStateOf<String?>(null) }
     var versions by remember { mutableStateOf(emptyList<LinuxVersion>()) }
     var pendingRuns by remember { mutableIntStateOf(0) }
     var current by remember { mutableStateOf<String?>(null) }
@@ -100,53 +105,86 @@ import io.github.asagnc.aurora.core.string
                     notice = "恢复结果：$result"
                 } }, modifier = Modifier.fillMaxWidth(), enabled = !busy && app.root.linuxRunClient != null) { Text("恢复待确认任务") }
             }
-            SettingsSection("APK 构建") {
-                SettingsStatus("构建工具", if (!stateLoaded) "状态尚未确认" else if (androidInstalled) "当前版本已安装" else "尚未安装", R.drawable.ic_extension)
-                if (stateLoaded && !androidInstalled) {
-                    Text("选择 android-host-arm64.tar.gz。", Modifier.padding(16.dp), color = AuroraMuted)
+            Group(title = "APK 构建") {
+                Item(icon = { LocalIcon(R.drawable.ic_extension, "构建工具") },
+                    summary = { Text(if (!stateLoaded) "状态尚未确认" else if (androidInstalled) "当前版本已安装" else "尚未安装",
+                        color = AuroraMuted, style = MaterialTheme.typography.bodySmall) }) { Text("构建工具") }
+                if (stateLoaded && !androidInstalled) Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text("选择 android-host-arm64.tar.gz。", color = AuroraMuted, style = MaterialTheme.typography.bodySmall)
                     FilledTonalButton({ nativePicker.launch(arrayOf("application/gzip", "application/x-gzip", "application/octet-stream")) },
                         modifier = Modifier.fillMaxWidth(), enabled = !busy) { Text("导入构建工具") }
                 }
             }
-            SettingsDetails("环境版本", if (stateLoaded) "${versions.size} 个已安装版本" else "等待状态读取") {
-                if (versions.isEmpty()) Text("尚无可显示的版本。", color = AuroraMuted)
-                versions.forEach { version ->
-                    ListItem(overlineContent = { Text(if (version.id == current) "当前版本" else "已安装版本") },
-                        supportingContent = { Text("${if (version.manifest.backend == LinuxBackend.CHROOT) "Root" else "PRoot"} · ${version.manifest.image.architecture.abi} · ${version.manifest.expandedBytes / (1024 * 1024)} MiB\n${version.id.take(16)}") }) {
-                        Text("${version.manifest.image.distribution} ${version.manifest.image.version}")
-                    }
-                }
-            }
-            SettingsDetails("维护与恢复", "清理闲置、旧记录与普通环境检查") {
-                Text("只回收已确认闲置的内容，活动任务或未知状态会保留。", color = AuroraMuted)
-                OutlinedButton({ run { notice = "已清理 ${manager.cleanup()} 个未使用版本" } }, enabled = !busy && stateLoaded) { Text("清理闲置版本") }
-                OutlinedButton({ run {
-                    val result = manager.metadata.collect()
-                    notice = "已回收 ${result["collected"]} 条旧记录，保留 ${result["retained"]} 条当前或待确认记录。"
-                } }, enabled = !busy && app.root.metadataClient != null) { Text("清理已确认的旧记录") }
-                if (rootState.phase == RootPhase.READY && app.root.metadataClient == null)
-                    Text("重新连接 Root 后可维护旧记录。", color = AuroraMuted)
-                if (app.root.rootImagesAvailable) {
-                    val ordinary = versions.firstOrNull { it.manifest.backend == LinuxBackend.PROOT && it.manifest.image.sha256 == manager.image.sha256 }
-                    if (ordinary == null) Text("普通 PRoot 使用独立环境，会额外占用存储空间。", color = AuroraMuted)
-                    TextButton({ run { manager.install(LinuxBackend.PROOT) } }, enabled = !busy && stateLoaded) { Text("准备普通 PRoot 环境") }
-                }
-                if (versions.any { it.id == current && it.manifest.backend == LinuxBackend.PROOT }) {
-                    OutlinedButton({ run {
-                        val result = manager.probe()
-                        notice = if (result["workloadPassed"] == kotlinx.serialization.json.JsonPrimitive(true))
-                            "基础检查通过；不等于完整运行资格。" else "基础检查未通过：$result"
-                    } }, enabled = !busy) { Text("检查 PRoot 基础能力") }
-                }
-            }
-            SettingsDetails("安装与运行说明", "共享基础环境，执行前检查实际资格") {
-                Text("基础环境与工具共享安装，会话文件和输出独立保存。基础包不包含完整编译和逆向工具。")
-                Text("构建工具仅接受固定审查版归档，其余组件使用官方固定版本。安装不会自动安装 APK 或授予执行资格。")
-                Text("Root Linux 命令与终端需要对应环境及当前连接自检；PRoot 单独检查，不自动切换执行方式。")
-                if (app.root.linuxAvailable && !app.root.rootImagesAvailable) Text("现有 Root 服务需重新连接以更新安装能力。")
-                Text(status, style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
+            Group(title = "环境管理") {
+                Item(onClick = { page = "versions" }, enabled = !busy,
+                    summary = { Text(if (stateLoaded) "${versions.size} 个已安装版本" else "等待状态读取", color = AuroraMuted,
+                        style = MaterialTheme.typography.bodySmall) }, trailing = { SettingsChevron() }) { Text("环境版本") }
+                Divider(startIndent = 16.dp)
+                Item(onClick = { page = "maintenance" }, enabled = !busy,
+                    summary = { Text("闲置版本与待确认记录", color = AuroraMuted, style = MaterialTheme.typography.bodySmall) },
+                    trailing = { SettingsChevron() }) { Text("维护与恢复") }
+                Divider(startIndent = 16.dp)
+                Item(onClick = { page = "help" }, trailing = { SettingsChevron() }) { Text("安装与运行说明") }
             }
             Spacer(Modifier.height(16.dp))
         }
     }
+    page?.let { destination ->
+        val title = when (destination) { "versions" -> "环境版本"; "maintenance" -> "维护与恢复"; else -> "安装与运行说明" }
+        FullPage(title, { page = null }) {
+            Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                if (busy) {
+                    LinearProgressIndicator(Modifier.fillMaxWidth())
+                    Text("正在处理，离开 Linux 环境会取消操作。", color = AuroraMuted)
+                    TextButton({ work?.cancel() }) { Text("取消当前操作") }
+                }
+                notice?.let { SettingsNotice(it) }
+                when (destination) {
+                    "versions" -> {
+                        if (versions.isEmpty()) Text("尚无可显示的版本。", color = AuroraMuted)
+                        else Group(title = "已安装版本") {
+                            versions.forEachIndexed { index, version ->
+                                if (index > 0) Divider(startIndent = 16.dp)
+                                Item(summary = {
+                                    Text("${if (version.id == current) "当前版本 · " else ""}${if (version.manifest.backend == LinuxBackend.CHROOT) "Root" else "PRoot"} · ${version.manifest.image.architecture.abi} · ${version.manifest.expandedBytes / (1024 * 1024)} MiB\n${version.id.take(16)}")
+                                }) { Text("${version.manifest.image.distribution} ${version.manifest.image.version}") }
+                            }
+                        }
+                    }
+                    "maintenance" -> {
+                        Text("只回收已确认闲置的内容，活动任务或未知状态会保留。", color = AuroraMuted)
+                        OutlinedButton({ run { notice = "已清理 ${manager.cleanup()} 个未使用版本" } }, enabled = !busy && stateLoaded) { Text("清理闲置版本") }
+                        OutlinedButton({ run {
+                            val result = manager.metadata.collect()
+                            notice = "已回收 ${result["collected"]} 条旧记录，保留 ${result["retained"]} 条当前或待确认记录。"
+                        } }, enabled = !busy && app.root.metadataClient != null) { Text("清理已确认的旧记录") }
+                        if (rootState.phase == RootPhase.READY && app.root.metadataClient == null)
+                            Text("重新连接 Root 后可维护旧记录。", color = AuroraMuted)
+                        if (app.root.rootImagesAvailable) {
+                            val ordinary = versions.firstOrNull { it.manifest.backend == LinuxBackend.PROOT && it.manifest.image.sha256 == manager.image.sha256 }
+                            if (ordinary == null) Text("普通 PRoot 使用独立环境，会额外占用存储空间。", color = AuroraMuted)
+                            TextButton({ run { manager.install(LinuxBackend.PROOT) } }, enabled = !busy && stateLoaded) { Text("准备普通 PRoot 环境") }
+                        }
+                        if (versions.any { it.id == current && it.manifest.backend == LinuxBackend.PROOT }) {
+                            OutlinedButton({ run {
+                                val result = manager.probe()
+                                notice = if (result["workloadPassed"] == kotlinx.serialization.json.JsonPrimitive(true))
+                                    "基础检查通过；不等于完整运行资格。" else "基础检查未通过：$result"
+                            } }, enabled = !busy) { Text("检查 PRoot 基础能力") }
+                        }
+                    }
+                    "help" -> {
+                        Text("基础环境与工具共享安装，会话文件和输出独立保存。基础包不包含完整编译和逆向工具。")
+                        Text("构建工具仅接受固定审查版归档，其余组件使用官方固定版本。安装不会自动安装 APK 或授予执行资格。")
+                        Text("Root Linux 命令与终端需要对应环境及当前连接自检；PRoot 单独检查，不自动切换执行方式。")
+                        if (app.root.linuxAvailable && !app.root.rootImagesAvailable) Text("现有 Root 服务需重新连接以更新安装能力。")
+                        Text(status, style = MaterialTheme.typography.bodySmall, color = AuroraMuted)
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+            }
+        }
+    }
+
 }
