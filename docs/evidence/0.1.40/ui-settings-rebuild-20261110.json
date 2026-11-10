@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "date": "2026-11-10",
+  "productCommit": "a45543fc4fcd34c2f12261d31befa1ca13cf1bfe",
+  "scope": "Settings hierarchy and navigation; whole UI rebuild remains in progress",
+  "debugApkSha256": "807e8696bc7bd72412035c9f0517d624f2a3672868be289d41e9ebd7902ba71b",
+  "fridaWorkerSha256": "c9b22da8e0019fd052d9a87d54279b09acfc4eecbdf1fea6376137556b59439f",
+  "host": {
+    "tasks": 221,
+    "seconds": 50,
+    "debug": true,
+    "defaultR8Release": true,
+    "androidTestCompile": true,
+    "lintDebug": true,
+    "lintRelease": true,
+    "newCoreBehavior": false
+  },
+  "deviceChecks": [
+    "Preserved-data main APK update with existing debug signer",
+    "Whole-row appearance selection and dark rendering",
+    "Palette source selection and original values restored",
+    "Restore-default confirmation cancelled",
+    "Tools overview to complete detail and back",
+    "Skills installer separated from installed list, advanced fields and back",
+    "Local non-network installer draft retained when leaving and reopening within same activity",
+    "Keyboard open: scroll reaches import/install actions",
+    "130 percent font: settings and tools detail readable",
+    "Configuration change preserves tools detail, landscape text scrolls completely into view",
+    "Landscape retains Skills installer page",
+    "Appearance preferences and font/rotation settings exactly restored"
+  ],
+  "boundaries": {
+    "modelRequests": 0,
+    "actualSkillInstalls": 0,
+    "rootConnected": false,
+    "rebooted": false,
+    "rawDeviceDataCommitted": false,
+    "releaseReady": false,
+    "wholeUiFinished": false,
+    "installerDraftAcrossConfigurationChangeQualified": false
+  },
+  "retainedFailures": [
+    "Initial positional COUI Switch arguments did not match upstream signature; corrected to named arguments before installation",
+    "First layout script assumed collapsed drawer navigation; adjusted using fresh observed UI",
+    "Landscape originally exited settings; fixed page state with existing rememberSaveable and reverified exact final APK",
+    "A script tapped back during restoration configuration transition and missed settings; allowed transition to settle and rechecked actual page"
+  ],
+  "ci": {
+    "runId": 42770875328,
+    "url": "https://github.com/Asagnc/Aurora/actions/runs/42770875328",
+    "conclusion": "success",
+    "jobs": {
+      "test": "success",
+      "managed-supervision": "success",
+      "socket-diag": "success",
+      "capture-primitives": "success",
+      "frida-session": "success"
+    },
+    "supersededRun": {
+      "runId": 42770328456,
+      "conclusion": "cancelled",
+      "reason": "New product commit fixes configuration-change navigation; workflow concurrency cancelled superseded source"
+    }
+  },
+  "privateScreenshotDirectory": "app/build/settings-rebuild-review"
+}

@@ -23,6 +23,8 @@ Aurora 是面向 **Android 16 及以上（API 36+）** 的手机 Agent 应用，
 
 ## 最新验证与发布状态
 
+**设置层级接续**：外观改为整行选择，工具能力采用分组目录与独立详情，Skills 安装独立成页；旋转后丢失设置位置的问题已修复。产品 `a45543f` 的[完整CI](https://github.com/Asagnc/Aurora/actions/runs/42770875328)五个任务全部通过，本地 Debug／R8 Release／测试包编译与双lint通过，手机明暗、返回、键盘、130%字体与横屏补验完成；原外观及系统布局设置已恢复。这轮无需继续占用手机，整套UI仍在推进。
+
 **2026-11-10 连接与模型列表重构**：产品提交 `395820d24f5cd9a7a25d7f15a0595b8b3eb467de`；[完整 CI](https://github.com/Asagnc/Aurora/actions/runs/42767158633)五个任务全部通过。本地核心354项通过／16项跳过、零失败，Debug／默认R8 Release／测试包编译及双lint通过。最终 Debug 摘要 `b41b5bcf…`，长标题与详情列表真机补验完成；整套UI仍在推进，尚未重打完整审查包。
 
 **上一轮 COUI 基础预览**：产品提交 `a418ded298ec4f709edc2e6b8cea20724a60148a`；[完整 CI](https://github.com/Asagnc/Aurora/actions/runs/42652258424)五个任务全部通过。手机最终 Debug 摘要 `a8f08f9f…` 已核对，精确包47项数据／恢复回归通过，原有数据保留；临时测试包和本轮自有样例已清理。手机这轮可以拔线。COUI首版仍有完整性能／无障碍、流式与默认Release等验收缺口，旧a621完整审查包不覆盖本轮UI。
